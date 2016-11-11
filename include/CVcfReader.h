@@ -31,7 +31,7 @@ public:
     bool Close();
     
     // Get next record in the file
-    bool GetNextRecord(CVariant* a_pVariant);
+    bool GetNextRecord(CVariant* a_pVariant, int a_nId);
     
     // Get the filename
     std::string GetFilename() const {return m_filename;};

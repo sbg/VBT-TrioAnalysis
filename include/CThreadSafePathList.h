@@ -11,72 +11,32 @@
 #include "CPath.h"
 #include <set>
 
-struct classcomp 
-{
-  bool operator() (const CPath& lhs, const CPath& rhs) const
-  {
-      return lhs.IsEqual(rhs);
-  }
-};
-
 class CThreadSafePathList
 {
   public:
 
-    int Size() const
-    {
-      return (int)(m_set.size());
-    }
+    CThreadSafePathList();
+    
+    int Size() const;
 
-    void Clear()
-    {
-      m_set.clear();
-    }
+    void Clear();
 
-    // Add the path to the processed path list if there is no better path with the same sequence number
-    void Add(const CPath& item) 
-    {
-      m_set.insert(item);
-    }
+    void Add(const CPath& item);
 
-    void Erase(const CPath& item)
-    {
-      m_set.erase(item);
-    }
-
+    void Erase(const CPath& item);
+    
     // Get the least advanced path
-    CPath GetLeastAdvanced() 
-    { 
-      CPath toRet = *m_set.begin();
-      m_set.erase(m_set.begin());
-      return toRet;
-    }
+    CPath GetLeastAdvanced();
 
-    bool Empty()
-    {
-      return m_set.empty();
-    }
+    bool Empty();
 
-    bool Contains(const CPath& item) const
-    {
-      std::set<CPath>::iterator it;
+    bool Contains(const CPath& item) const;
 
-      for(it = m_set.begin(); it != m_set.end(); ++it)
-      {
-        if(true == it->IsEqual(item))
-          return true;
-      }
+    CPath floor(const CPath& a_rObj);
 
-      return false;
-    }
-
-    CPath floor(const CPath& a_rObj)
-    {
-      return *m_set.lower_bound(a_rObj);  
-    }
-
-  private:  
-    std::set<CPath,classcomp>  m_set;
+  private:
+    
+    std::set<CPath> m_set;
 
 };
 

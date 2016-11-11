@@ -29,6 +29,9 @@ class COrientedVariant
     //Gets the start position of the allele
     int GetAlleleStartPos() const;
     
+    //Gets the index of the allele
+    int GetAlleleIndex() const;
+    
     //Gets the end position of the allele
     int GetAlleleEndPos() const;    
     
@@ -45,7 +48,11 @@ class COrientedVariant
     void SetToNull();
 
     private:
+    //Index of the selected allele of this variant
     int m_nAlleleIndex;
+    //Index of the other allele of this variant
+    int m_nOtherAlleleIndex;
+    //If the selected allele is first number or not (eg.  a/b   a-> true b-> false)
     bool m_bIsOrderOfGenotype;
     CVariant m_variant;
 

@@ -40,6 +40,9 @@ class CSemiPath
     //Return the index of last variant added
     int GetVariantIndex() const;
     
+    //Return pointer to included variants
+    const std::vector<COrientedVariant>& GetIncludedVariants() const;
+    
     //Check whether this half path is fully on the template (i.e. no haplotypes are within a variant)
     bool IsOnTemplate() const;
     
@@ -74,6 +77,9 @@ class CSemiPath
     void StepHaplotypeA();
     void StepHaplotypeB();
 
+    //[TEST Purpose]Print semipath
+    void Print() const;
+    
     private:
 
     // name of the semipath

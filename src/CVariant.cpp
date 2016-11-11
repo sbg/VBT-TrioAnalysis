@@ -93,6 +93,11 @@ void CVariant::Print() const
 
 }
 
+int CVariant::GetId() const
+{
+    return m_nId;
+}
+
 int CVariant::GetStart() const
 {
     return m_nPosition;

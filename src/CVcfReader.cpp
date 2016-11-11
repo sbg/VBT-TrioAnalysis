@@ -77,7 +77,7 @@ bool CVcfReader::Close()
     return true;
 }
 
-bool CVcfReader::GetNextRecord(CVariant * a_pVariant)
+bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId)
 {
     a_pVariant->Clear();
     a_pVariant->m_nVcfId = m_nVcfId;
@@ -97,6 +97,7 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant)
 
     if (ok == 0)
     {
+        a_pVariant->m_nId = a_nId;
         a_pVariant->m_nPosition = m_pRecord->pos;
         a_pVariant->m_chrName = m_pHeader->id[BCF_DT_CTG][m_pRecord->rid].key;
         a_pVariant->m_aSequences.push_back(m_pRecord->d.als);
@@ -164,7 +165,7 @@ void CVcfReader::PrintVCF()
 
     // READ SAMPLE VCF
     fprintf(stderr,"#CHR\tPOS\tREF\tALTs\n");
-    while(GetNextRecord(&variant))
+    while(GetNextRecord(&variant,0))
     {
         fprintf(stderr,"%s\t%d\t%s", variant.m_chrName.c_str(), variant.m_nPosition, variant.m_aSequences[0].c_str());
         if (variant.m_aSequences.size() > 1)

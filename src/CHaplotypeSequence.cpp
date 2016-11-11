@@ -9,7 +9,6 @@ CHaplotypeSequence::CHaplotypeSequence(const char* a_aRefSequence, int a_nRefSiz
     m_nTemplatePosition = -1;
     m_nLastVariantEnd = -1;
     m_nPositionInVariant = -1;
-    m_nCurrentLength = 0;
 }
 
 CHaplotypeSequence::CHaplotypeSequence(const CHaplotypeSequence& a_rObj)
@@ -18,7 +17,6 @@ CHaplotypeSequence::CHaplotypeSequence(const CHaplotypeSequence& a_rObj)
   m_aRefSequence(a_rObj.m_aRefSequence),
   m_aVariants(a_rObj.m_aVariants)
 {
-    m_nCurrentLength = a_rObj.m_nCurrentLength;
     m_nPositionInVariant = a_rObj.m_nPositionInVariant;
     m_nLastVariantEnd = a_rObj.m_nLastVariantEnd;
     m_nTemplatePosition = a_rObj.m_nTemplatePosition;
@@ -36,6 +34,7 @@ void CHaplotypeSequence::AddVariant(const COrientedVariant& a_rVariant)
     // Allow null allele to indicate no playback
     if(true == altString.empty())
     {
+        std::cout << "Alt string is empty" << std::endl;
         return;
     }
 
@@ -89,31 +88,27 @@ int CHaplotypeSequence::CompareTo(const CHaplotypeSequence& a_rObj) const
         return varPos;
 
     
-//    Iterator<OrientedVariant> thisIt = this.mVariants.iterator();
-//    Iterator<OrientedVariant> thatIt = that.mVariants.iterator();
-//    while (thisIt.hasNext())
-//    {
-//        if (!thatIt.hasNext())
-//        {
-//            return 1;
-//        }
-//        
-//        int future = thisIt.next().compareTo(thatIt.next());
-//        if (future != 0)
-//        {
-//            return future;
-//        }
-//    }
-//    
-//    if (thatIt.hasNext())
-//    {
-//        return -1;
-//    }
+    std::deque<COrientedVariant>::const_iterator itThis = m_aVariants.begin();
+    std::deque<COrientedVariant>::const_iterator itObj = a_rObj.m_aVariants.begin();
+    
+    while(itThis != m_aVariants.end())
+    {
+        if(itObj == a_rObj.m_aVariants.end())
+            return 1;
+        
+        ++itThis;
+        ++itObj;
+        
+        int future = itThis->CompareTo(*itObj);
+        if(future != 0)
+            return future;
+    }
+    
+    if(itObj != a_rObj.m_aVariants.end())
+        return -1;
+        
     return 0;
 
-    
-    
-    
 }
 
 int CHaplotypeSequence::GetTemplatePosition() const
@@ -235,5 +230,12 @@ bool CHaplotypeSequence::WantsFutureVariantBases() const
     }
     
     return true;
+}
+
+void CHaplotypeSequence::Print() const
+{
+    std::cout <<"Template Pos: " << m_nTemplatePosition << " Pos in Variant:" << m_nPositionInVariant << " Last Var end:" << m_nLastVariantEnd << std::endl;
+    std::cout <<"Variant Cnt:" << m_aVariants.size() << std::endl;
+    std::cout << (m_nextVariant.IsNull() ? "null" : "not null") << std::endl;
 }
 

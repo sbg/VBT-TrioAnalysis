@@ -120,7 +120,7 @@ std::vector<CPath> CPath::AddVariant(EVcfName a_nVcfName, const CVariant& a_rVar
     return pathListToAdd;
 }
 
-bool CPath::InSync() 
+bool CPath::InSync() const
 {
     if (m_calledSemiPath.CompareHaplotypePositions() != 0)
       return false;
@@ -144,6 +144,11 @@ bool CPath::InSync()
 bool CPath::HasFinished() const
 {
     return m_baseSemiPath.HasFinished() && m_calledSemiPath.HasFinished();
+}
+
+bool CPath::HasNoOperation() const
+{
+    return (m_nBSinceSync == 0 && m_nCSinceSync > 0) || (m_nCSinceSync == 0 && m_nBSinceSync > 0);
 }
 
 
@@ -183,13 +188,16 @@ bool CPath::Matches()
     return m_calledSemiPath.Matches(m_baseSemiPath);
 }
 
-void CPath::Print()
+void CPath::Print() const
 {
-    std::cout << "Base Hap End Posisition   : " << m_baseSemiPath.GetVariantEndPosition() << std::endl;
-    std::cout << "Base Hap Last Inc Var Pos : " << m_baseSemiPath.GetIncludedVariantEndPosition() << std::endl;
-    std::cout << "Var Cnt since last sync   : " << m_nBSinceSync << std::endl;
-
-    std::cout << "Called Hap End Posisition   : " << m_calledSemiPath.GetVariantEndPosition() << std::endl;
-    std::cout << "Called Hap Last Inc Var Pos : " << m_calledSemiPath.GetIncludedVariantEndPosition() << std::endl;
-    std::cout << "Var Cnt since last sync     : " << m_nCSinceSync << std::endl;
+    std::cout << "Printing Path:-----------------------------------------------" << std::endl;
+    std::cout << "Sync:" << m_nBSinceSync << " " << m_nCSinceSync << " " << std::endl;
+    std::cout << "Sync Points: ";
+    for (int i : m_aSyncPointList)
+        std::cout << i << " ";
+    std::cout<< std::endl;
+    std::cout << "--Base Semipath--" << std::endl;
+    m_baseSemiPath.Print();
+    std::cout << "--Called Semipath--" << std::endl;
+    m_calledSemiPath.Print();    
 }

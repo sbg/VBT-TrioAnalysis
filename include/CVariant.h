@@ -53,6 +53,9 @@ class CVariant
     
     //Check if variant is initialized
     bool IsNull() const;
+    
+    //Return the unique id of the variant
+    int GetId() const;
 
     //Return the reference sequences
     std::string GetRefSeq() const;
@@ -77,8 +80,8 @@ class CVariant
     EVariantType m_aVarTypes[2];
     //Return true if the variant genotype is phased
     bool m_bIsPhased;
-
-
+    //Unique Id of variant
+    int m_nId;
 
 };
 

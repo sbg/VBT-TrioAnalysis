@@ -23,7 +23,7 @@ class CPath
     CPath(const CPath& a_rObj);
     
     // Check if the two semipaths are synchronized
-    bool InSync();
+    bool InSync() const;
     
     //Check if the given path is equal to this
     bool IsEqual(const CPath& a_rObj) const;
@@ -40,6 +40,10 @@ class CPath
     //Add variant to the given side of path
     std::vector<CPath> AddVariant(EVcfName a_nVcfName, const CVariant& a_rVariant, int a_nVariantIndex);
     
+    bool operator<(const CPath& a_rObj) const
+    {
+        return CompareTo(a_rObj) < 0;
+    }
     //
     void Step();
     
@@ -47,11 +51,14 @@ class CPath
     void MoveForward(int a_nPosition);
 
     //[FOR TEST] Print the values of path
-    void Print();
+    void Print() const;
 
     //Check if baseline semipath matches with the called semipath
     bool Matches();
 
+    //return If the path has no called or based variant after last sync
+    bool HasNoOperation() const;
+    
     //Check if the path has finished
     bool HasFinished() const;
 

@@ -21,13 +21,13 @@ void CVariantProvider::InitializeReaders(const char* a_pBaseVcfFile, const char*
 void CVariantProvider::FillVariantLists()
 {
     CVariant variant;
-    
-    while(m_baseVCF.GetNextRecord(&variant))
+    int id = 0;
+    while(m_baseVCF.GetNextRecord(&variant, id++))
     {
         m_aBaseVariantList[variant.m_nChrId].push_back(variant);
     }
     
-    while(m_calledVCF.GetNextRecord(&variant))
+    while(m_calledVCF.GetNextRecord(&variant, id++))
     {
         m_aCalledVariantList[variant.m_nChrId].push_back(variant);
     }

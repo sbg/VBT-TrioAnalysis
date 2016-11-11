@@ -52,6 +52,9 @@ class CHaplotypeSequence
     //Test whether a deficit of variant bases are upstream in the queue in order to perform a step.
     //return false indicates that no variants need to be immediately enqueued
     bool WantsFutureVariantBases() const;
+ 
+    //[TEST Purpose] print the haplotype
+    void Print() const;
     
   private:
   // Sorted list of variants yet to be processed
@@ -68,8 +71,6 @@ class CHaplotypeSequence
   int m_nPositionInVariant;
 
   int m_nLastVariantEnd;
-
-  int m_nCurrentLength;
 
   // Variant that currently in or next one.
   COrientedVariant m_nextVariant;

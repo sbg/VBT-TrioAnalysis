@@ -101,13 +101,18 @@ int CSemiPath::GetIncludedVariantEndPosition() const
     return m_nIncludedVariantEndPosition;
 }
 
+const std::vector<COrientedVariant>& CSemiPath::GetIncludedVariants() const
+{
+    return m_aIncludedVariants;
+}
+
 int CSemiPath::CompareTo(const CSemiPath& a_rObj) const
 {
     int res = m_haplotypeA.CompareTo(a_rObj.m_haplotypeA);
     if(res != 0)
         return res;
     else
-        return m_haplotypeB.IsEqual(a_rObj.m_haplotypeB);
+        return m_haplotypeB.CompareTo(a_rObj.m_haplotypeB);
 }
 
 bool CSemiPath::IsEqual(const CSemiPath& a_rObj) const
@@ -176,3 +181,14 @@ void CSemiPath::StepHaplotypeB()
     else
         m_bFinishedHapB = true;
 }
+
+void CSemiPath::Print() const
+{
+    std::cout<< "Pos:" << GetPosition() << " VarEnd Pos:" << GetVariantEndPosition() << " VarEnd Ind:" << GetVariantIndex() << std::endl;
+    std::cout<< "Excluded Var Count:" << m_aExcludedVariants.size() << " Included Var Count:" << m_aIncludedVariants.size() << std::endl;
+    std::cout<< "Haplotype A:" << std::endl;
+    m_haplotypeA.Print();
+    std::cout<< "Haplotype B:" << std::endl;
+    m_haplotypeB.Print();
+}
+

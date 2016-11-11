@@ -40,13 +40,15 @@ CPath CPathReplay::FindBestPath(int a_nChrId)
 
     while(!m_pathList.Empty())
     {
-        std::cout << "Iteration No:" << currentIterations << std::endl;
         currentMax = max(currentMax, m_pathList.Size());
         currentMaxIterations = max(currentMaxIterations, currentIterations++);
         CPath processedPath = m_pathList.GetLeastAdvanced();
+        
+        std::cout << "-----------------------------" << std::endl;
+        std::cout << "size:" << m_pathList.Size() + 1 << " Range:" << lastSyncPos + 1 << "-" << m_nCurrentPosition + 1 << " Localiterations: " << currentIterations << std::endl;
+        
         if(m_pathList.Size() == 0)
         {
-            std::cout << "Pathlist size is 0" << std::endl;
             int currentSyncPos = processedPath.m_calledSemiPath.GetPosition();
             if(currentMax > maxPaths)
             {
@@ -143,6 +145,8 @@ void CPathReplay::AddIfBetter(std::vector<CPath> a_pathsToAdd)
     }
 }
 
+
+
 void CPathReplay::AddIfBetter(const CPath& a_path)
 {
     std::vector<CPath> pathstoAdd;
@@ -151,10 +155,57 @@ void CPathReplay::AddIfBetter(const CPath& a_path)
 }
 
 
+
+
 bool CPathReplay::FindBetter(const CPath& lhs, const CPath& rhs)
 {
-    //TODO: Implement
-    return false;
+    // See if we have obvious no-ops we would rather drop
+    bool lhsSync = lhs.InSync() || lhs.HasFinished();
+    bool rhsSync = rhs.InSync() || rhs.HasFinished();
+    
+    if(lhsSync && rhsSync)
+    {
+        if(lhs.HasNoOperation())
+        {
+            return false;
+        }
+        else if(rhs.HasNoOperation())
+        {
+            return true;
+        }
+    }
+    
+    // Prefer paths that maximise total number of included variants (baseline + called)
+
+    const std::vector<COrientedVariant> lhsIncludedVariants = (lhs.m_calledSemiPath.GetIncludedVariants().size() == 0) ? lhs.m_baseSemiPath.GetIncludedVariants() : lhs.m_calledSemiPath.GetIncludedVariants();
+    const std::vector<COrientedVariant> rhsIncludedVariants = (rhs.m_calledSemiPath.GetIncludedVariants().size() == 0) ? rhs.m_baseSemiPath.GetIncludedVariants() : rhs.m_calledSemiPath.GetIncludedVariants();
+    
+    const int lhsVariantCount = static_cast<int>(lhs.m_calledSemiPath.GetIncludedVariants().size() + lhs.m_baseSemiPath.GetIncludedVariants().size());
+    const int rhsVariantCount = static_cast<int>(rhs.m_calledSemiPath.GetIncludedVariants().size() + rhs.m_baseSemiPath.GetIncludedVariants().size());
+    
+    if(lhsVariantCount == rhsVariantCount)
+    {
+        //Tie break equivalently scoring paths for greater aesthetics
+        if(lhsIncludedVariants.size() != 0 && rhsIncludedVariants.size() != 0)
+        {
+            
+            // Prefer solutions that minimize discrepencies between baseline and call counts since last sync point
+            const int lhsDelta = abs(lhs.m_nBSinceSync - lhs.m_nCSinceSync);
+            const int rhsDelta = abs(rhs.m_nBSinceSync - rhs.m_nCSinceSync);
+            if(lhsDelta != rhsDelta)
+                return lhsDelta < rhsDelta ? true : false;
+
+            // Prefer solutions that sync more regularly (more likely to be "simpler")
+            const int syncDelta = (lhs.m_aSyncPointList.size() == 0 ? 0 : lhs.m_aSyncPointList.back()) - (rhs.m_aSyncPointList.size() == 0 ? 0 : rhs.m_aSyncPointList.back());
+            if(syncDelta != 0)
+                return syncDelta > 0 ? true : false;
+            
+            // At this point break ties arbitrarily based on allele ordering
+            return (lhsIncludedVariants.back().GetAlleleIndex() < rhsIncludedVariants.back().GetAlleleIndex()) ? true : false;
+        }
+    }
+    
+    return lhsVariantCount > rhsVariantCount ? true : false;
 }
 
 bool CPathReplay::EnqueueVariant(CPath& a_rPathToPlay, EVcfName a_uVcfSide, int a_nChromosomeId)
@@ -176,14 +227,13 @@ bool CPathReplay::EnqueueVariant(CPath& a_rPathToPlay, EVcfName a_uVcfSide, int 
     
     if(nVariantId != -1)
     {
+        std::cout << "Add alternatives to " << ((a_uVcfSide == eBASE) ? "BASE " : "CALLED ") << "at chr21: " << pNext->GetStart() + 1 << "-" << pNext->GetEnd() + 1 << "(" << ")" << std::endl;
+        
         m_nCurrentPosition = max(m_nCurrentPosition, pNext->GetStart());
         std::vector<CPath> paths = a_rPathToPlay.AddVariant(a_uVcfSide, *pNext, nVariantId);
         for(int k = 0; k < paths.size(); k++)
-        {
-            std::cout<< paths[k].m_nBSinceSync << " " << paths[k].m_nCSinceSync << " " << std::endl;
-            std::cout<< paths[k].m_baseSemiPath.GetPosition() << " " << paths[k].m_baseSemiPath.GetVariantEndPosition() << " " << paths[k].m_baseSemiPath.GetVariantIndex() << std::endl;
-            std::cout<< paths[k].m_calledSemiPath.GetPosition() << " " << paths[k].m_calledSemiPath.GetVariantEndPosition() << " " << paths[k].m_calledSemiPath.GetVariantIndex() << std::endl;
-        }
+            paths[k].Print();
+
         AddIfBetter(paths);
         return true;
     }
