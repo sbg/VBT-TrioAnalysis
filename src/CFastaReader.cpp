@@ -51,12 +51,12 @@ void CFastaReader::PrintContig()
     std::cout << m_pContig->seq.s << std::endl;
 }
 
-char* CFastaReader::GetRefSeq()
+char* CFastaReader::GetRefSeq() const
 {
     return m_pContig->seq.s;
 }
 
-int CFastaReader::GetRefSeqSize()
+int CFastaReader::GetRefSeqSize() const
 {
     return (int)strlen(m_pContig->seq.s);
 }

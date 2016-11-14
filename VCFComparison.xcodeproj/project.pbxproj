@@ -92,6 +92,7 @@
 		556D39C91DD3AF3800551040 /* SResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SResult.h; sourceTree = "<group>"; };
 		556D39CB1DD3AFAC00551040 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		556D39CD1DD4D75B00551040 /* CThreadSafePathList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CThreadSafePathList.cpp; sourceTree = "<group>"; };
+		556D39CF1DD66E1700551040 /* SConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SConfig.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -193,6 +194,7 @@
 				556D39B01DD3AF3800551040 /* EReplayChoice.h */,
 				556D39B11DD3AF3800551040 /* EVcfName.h */,
 				556D39C91DD3AF3800551040 /* SResult.h */,
+				556D39CF1DD66E1700551040 /* SConfig.h */,
 			);
 			path = include;
 			sourceTree = SOURCE_ROOT;

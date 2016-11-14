@@ -12,15 +12,13 @@ inline int min(int a, int b)
     return a < b ? a : b;
 }
 
-void CPathReplay::InitializeReaders(const char* a_pBaseVcfFile,
-                       const char* a_pCalledVcfFile,
-                       const char* a_pRefFastaFile)
+void CPathReplay::InitializeReaders(const SConfig& a_rConfig)
 {
     //Initialize variant provider
-    m_variantProvider.InitializeReaders(a_pBaseVcfFile, a_pCalledVcfFile);
+    m_variantProvider.InitializeReaders(a_rConfig);
 
     //Initialize refseq provider
-    m_refFASTA.Open(a_pRefFastaFile);
+    m_refFASTA.Open(a_rConfig.m_pFastaFileName);
     m_refFASTA.ReadContig();
 }
 
@@ -36,6 +34,7 @@ CPath CPathReplay::FindBestPath(int a_nChrId)
     int currentMax = 0;
     m_nCurrentPosition = 0;
     int lastSyncPos = 0;
+    int TestID = 0;
     std::string maxPathRegion;
 
     while(!m_pathList.Empty())
@@ -44,8 +43,8 @@ CPath CPathReplay::FindBestPath(int a_nChrId)
         currentMaxIterations = max(currentMaxIterations, currentIterations++);
         CPath processedPath = m_pathList.GetLeastAdvanced();
         
-        std::cout << "-----------------------------" << std::endl;
-        std::cout << "size:" << m_pathList.Size() + 1 << " Range:" << lastSyncPos + 1 << "-" << m_nCurrentPosition + 1 << " Localiterations: " << currentIterations << std::endl;
+        std::cout << "====" << TestID++ << "====" << std::endl;
+        std::cout << "Size:" << m_pathList.Size() + 1 << " Range:" << lastSyncPos + 1 << "-" << m_nCurrentPosition + 1 << " LocalIterations:" << currentIterations << std::endl;
         
         if(m_pathList.Size() == 0)
         {
@@ -53,7 +52,7 @@ CPath CPathReplay::FindBestPath(int a_nChrId)
             if(currentMax > maxPaths)
             {
                 maxPaths = currentMax;
-                maxPathRegion = ":" + std::to_string(lastSyncPos + 1) + "-" + std::to_string(currentSyncPos + 1);
+                maxPathRegion =  ":" + std::to_string(lastSyncPos + 1) + "-" + std::to_string(currentSyncPos + 1);
                 std::cout << "Maximum path complexity now " << maxPaths << ", at " << maxPathRegion << " with "  << currentIterations << " iterations" << std::endl;
             }
             currentMax = 0;
@@ -111,6 +110,7 @@ CPath CPathReplay::FindBestPath(int a_nChrId)
             std::cout << "Head matches, keeping" << std::endl;
             AddIfBetter(processedPath);
         }
+        
         else
         {
             std::cout << "Head mismatch, discard" << std::endl;
@@ -227,12 +227,12 @@ bool CPathReplay::EnqueueVariant(CPath& a_rPathToPlay, EVcfName a_uVcfSide, int 
     
     if(nVariantId != -1)
     {
-        std::cout << "Add alternatives to " << ((a_uVcfSide == eBASE) ? "BASE " : "CALLED ") << "at chr21: " << pNext->GetStart() + 1 << "-" << pNext->GetEnd() + 1 << "(" << ")" << std::endl;
+        std::cout << "Add alternatives to " << ((a_uVcfSide == eBASE) ? "BASE " : "CALLED ") << pNext->ToString() << std::endl;
         
         m_nCurrentPosition = max(m_nCurrentPosition, pNext->GetStart());
         std::vector<CPath> paths = a_rPathToPlay.AddVariant(a_uVcfSide, *pNext, nVariantId);
-        for(int k = 0; k < paths.size(); k++)
-            paths[k].Print();
+        //for(int k = 0; k < paths.size(); k++)
+        //    paths[k].Print();
 
         AddIfBetter(paths);
         return true;
@@ -250,12 +250,14 @@ void CPathReplay::SkipToNextVariant(CPath& a_rProcessedPath, int a_nChromosomeId
     // -1 because we want to be before the position
     int nextPos = min(min(aNext,bNext), lastTemplatePos) -1;
 
+    std::cout << "Next Position is:" << nextPos << std::endl;
+    
     if(nextPos > a_rProcessedPath.m_calledSemiPath.GetPosition())
        a_rProcessedPath.MoveForward(nextPos);
 
 }
 
-int CPathReplay::FutureVariantPosition(const CSemiPath& a_rSemiPath, EVcfName a_uVcfName, int a_nChromosomeId)
+int CPathReplay::FutureVariantPosition(const CSemiPath& a_rSemiPath, EVcfName a_uVcfName, int a_nChromosomeId) const
 {
     int nextIdx = a_rSemiPath.GetVariantIndex() + 1;
     
@@ -271,7 +273,7 @@ int CPathReplay::FutureVariantPosition(const CSemiPath& a_rSemiPath, EVcfName a_
 }
 
 
-int CPathReplay::GetNextVariant(const CSemiPath& a_rSemiPath, int a_nChromosomeId)
+int CPathReplay::GetNextVariant(const CSemiPath& a_rSemiPath, int a_nChromosomeId) const
 {
     int nextId = a_rSemiPath.GetVariantIndex() + 1;
     

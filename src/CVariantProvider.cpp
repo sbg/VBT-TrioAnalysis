@@ -1,19 +1,22 @@
 #include "CVariantProvider.h"
 #include <iostream>
 
-void CVariantProvider::InitializeReaders(const char* a_pBaseVcfFile, const char* a_pCalledVcfFile)
+void CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
 {
     bool bIsSuccess;
 
-    bIsSuccess = m_baseVCF.Open(a_pBaseVcfFile);
-    if(bIsSuccess)
-        std::cout << "Successfully open Base: " << a_pBaseVcfFile << std::endl;
+    m_bIsFilterPASS = a_rConfig.m_bIsFilterPASS;
+    
+    bIsSuccess = m_baseVCF.Open(a_rConfig.m_pBaseVcfFileName);
+    if(!bIsSuccess)
+        std::cout << "Baseline VCF file is unable to open!: " << a_rConfig.m_pBaseVcfFileName << std::endl;
     m_baseVCF.setID(0);
-    bIsSuccess = m_calledVCF.Open(a_pCalledVcfFile);
-    if(bIsSuccess)
-        std::cout << "Successfully open Caller: " << a_pCalledVcfFile << std::endl; 
+    bIsSuccess = m_calledVCF.Open(a_rConfig.m_pCalledVcfFileName);
+    if(!bIsSuccess)
+        std::cout << "Called VCF file is unable to open!: " << a_rConfig.m_pCalledVcfFileName << std::endl;
     m_calledVCF.setID(1);
     
+
     FillVariantLists();
 }
 
@@ -24,16 +27,22 @@ void CVariantProvider::FillVariantLists()
     int id = 0;
     while(m_baseVCF.GetNextRecord(&variant, id++))
     {
+       // if(m_bIsFilterPASS == true && !variant.IsFilterPASS())
+       //    continue;
+           
         m_aBaseVariantList[variant.m_nChrId].push_back(variant);
     }
     
     while(m_calledVCF.GetNextRecord(&variant, id++))
     {
+      //  if(m_bIsFilterPASS == true && !variant.IsFilterPASS())
+      //     continue;
+           
         m_aCalledVariantList[variant.m_nChrId].push_back(variant);
     }
 }
 
-const CVariant* CVariantProvider::GetVariant(EVcfName a_uFrom, int a_nChrNo, int a_nVariantId)
+const CVariant* CVariantProvider::GetVariant(EVcfName a_uFrom, int a_nChrNo, int a_nVariantId) const
 {
     switch(a_uFrom)
     {

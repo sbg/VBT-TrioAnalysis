@@ -75,7 +75,7 @@ int CSemiPath::CompareHaplotypePositions() const
 
 int CSemiPath::GetPosition() const
 {
-    if (m_haplotypeA.GetTemplatePosition() > m_haplotypeB.GetTemplatePosition()) 
+    if (m_haplotypeA.GetTemplatePosition() > m_haplotypeB.GetTemplatePosition())
         return m_haplotypeA.GetTemplatePosition();
     else 
         return m_haplotypeB.GetTemplatePosition();

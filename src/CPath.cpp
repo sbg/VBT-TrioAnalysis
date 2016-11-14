@@ -1,7 +1,7 @@
 #include "CPath.h"
 #include <iostream>
 
-CPath::CPath(const char* a_aRefSequence, int a_nRefSize) 
+CPath::CPath(const char* a_aRefSequence, int a_nRefSize)
 : m_baseSemiPath(a_aRefSequence, a_nRefSize, eBASE),
   m_calledSemiPath(a_aRefSequence, a_nRefSize, eCALLED),
   m_nCSinceSync(0),
@@ -24,7 +24,7 @@ CPath::CPath(const CPath& a_rObj, std::list<int>& a_rSyncPoints)
 {
     m_aSyncPointList = std::list<int>(a_rSyncPoints);
     m_nCSinceSync = a_rObj.m_nCSinceSync;
-    m_nBSinceSync = a_rObj.m_nBSinceSync;    
+    m_nBSinceSync = a_rObj.m_nBSinceSync;
 }
 
 bool CPath::IsEqual(const CPath& a_rObj) const

@@ -56,6 +56,9 @@ class CVariant
     
     //Return the unique id of the variant
     int GetId() const;
+    
+    //Return true if the variant filter column is PASS
+    bool IsFilterPASS() const;
 
     //Return the reference sequences
     std::string GetRefSeq() const;
@@ -65,17 +68,25 @@ class CVariant
     // Detects the type of of each alt with index 
     void SetType(int a_nAltIndex);    
 
+    // Print the variant [For Test Purpose]
+    std::string ToString() const;
+    
     //ID of which vcf file that the variant belongs to
     int m_nVcfId;
     int m_nChrId;
     int m_nPosition;
+    //Chromosome name
     std::string m_chrName;
+    //Sequence array. m_aSequences[0] is the ref string
     std::vector<std::string> m_aSequences;
-    // Variables to get Genotype
-    //Haplotype array 
-    int gt_arr[2];
-    //Haplotype count (2 in our case mostly)
-    int ngt_arr;
+    
+    //Genotype Data
+    int gt_arr[2]; //Haplotype array
+    int ngt_arr; //Haplotype count
+    
+    //Filter Data
+    bool m_bIsFilterPASS;
+    
     //Type of the variant array for each alt (SNP or INDEL)
     EVariantType m_aVarTypes[2];
     //Return true if the variant genotype is phased

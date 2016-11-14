@@ -83,6 +83,8 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId)
     a_pVariant->m_nVcfId = m_nVcfId;
     int* gt_arr = NULL;
     int ngt_arr = 0;
+    int* fi_arr = NULL;
+    int nfi_arr = 0;
 
     if (!m_bIsOpen)
     {
@@ -100,36 +102,38 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId)
         a_pVariant->m_nId = a_nId;
         a_pVariant->m_nPosition = m_pRecord->pos;
         a_pVariant->m_chrName = m_pHeader->id[BCF_DT_CTG][m_pRecord->rid].key;
-        a_pVariant->m_aSequences.push_back(m_pRecord->d.als);
         
-        //Chrid is 2 digit
+        //READ CHROMOSOME ID: (TODO: this should be renewed. there should be sth that reads the chromosome id)
         if(a_pVariant->m_chrName.length() == 5)
             a_pVariant->m_nChrId = atoi(a_pVariant->m_chrName.substr(3,2).c_str());
         else if(a_pVariant->m_chrName.length() == 4)
             a_pVariant->m_nChrId = atoi(a_pVariant->m_chrName.substr(3,1).c_str());
         else
             a_pVariant->m_nChrId = atoi(m_pHeader->id[BCF_DT_CTG][m_pRecord->rid].key);
-       
+    
+        //READ FILTER DATA
+        a_pVariant->m_bIsFilterPASS = (m_pRecord->d.flt[0] != 0);
+        //if(m_pRecord->d.flt[0] != 0)
+        //    std::cout << a_nId << std::endl;
+            
+        //READ GENOTYPE DATA
         int ngt = bcf_get_genotypes(m_pHeader, m_pRecord, &gt_arr, &ngt_arr);
         a_pVariant->ngt_arr = ngt_arr;
         for(int k = 0; k < ngt_arr ; k++)
-        {
-            //std::cout << gt_arr[k] << std::endl;
-            //std::cout << bcf_gt_allele(gt_arr[k]) << std::endl;
             a_pVariant->gt_arr[k] = bcf_gt_allele(gt_arr[k]);
-        }
-        
         a_pVariant->m_bIsPhased = bcf_gt_is_phased(a_pVariant->gt_arr[0]);
 
-        for (int i = 1; i < m_pRecord->n_allele; ++i)
+        //READ SEQUENCE DATA
+        for (int i = 0; i < m_pRecord->n_allele; ++i)
         {
             (*a_pVariant).m_aSequences.push_back(m_pRecord->d.allele[i]);
-            a_pVariant->SetType(i);
+            //a_pVariant->SetType(i);
         }
 
-        //for(int k = 0; k < ngt_arr ; k++)
-        //    std::cout << bcf_gt_allele(gt_arr[k]) << " ";
-        //std::cout<< std::endl;
+        //FREE BUFFERS
+        free(gt_arr);
+        free(fi_arr);
+        
         return true;
     }
     else 

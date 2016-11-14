@@ -8,15 +8,6 @@
 
 #include "CThreadSafePathList.h"
 
-
-
-bool compare2Path (const CPath& lhs, const CPath& rhs)
-{
-    bool res = !lhs.IsEqual(rhs) && !rhs.IsEqual(lhs);
-    
-    return lhs.IsEqual(rhs);
-}
-
 CThreadSafePathList::CThreadSafePathList()
 {
 }

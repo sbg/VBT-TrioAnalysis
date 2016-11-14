@@ -73,9 +73,10 @@ class CPath
     
     //Added variant count to called since last sync 
     int m_nCSinceSync;
+    
     //Added variant count to called since last sync
     int m_nBSinceSync;
-
+    
 };
 
 

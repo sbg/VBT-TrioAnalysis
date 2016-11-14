@@ -12,6 +12,7 @@
 #include "CVariant.h"
 #include "EReplayChoice.h"
 #include "CFastaReader.h"
+#include "SConfig.h"
 
 const int MAX_ITERATION = 10000000;
 const int MAX_COMPLEXITY = 50000;
@@ -21,9 +22,7 @@ class CPathReplay
     public:
 
         // Open the base and called VCF files and Reference Fasta file
-        void InitializeReaders(const char* a_pBaseVcfFile,
-                               const char* a_pCalledVcfFile,
-                               const char* a_pRefFastaFile);
+        void InitializeReaders(const SConfig& a_rConfig);
 
         // Finds the best path by generating all possible paths for the given chromosome
         CPath FindBestPath(int a_nChrId);
@@ -38,7 +37,7 @@ class CPathReplay
         void SkipToNextVariant(CPath& a_rProcessedPath, int a_nChromosomeId);
     
         //Gets the next upstream variant position
-        int FutureVariantPosition(const CSemiPath& a_rSemiPath, EVcfName a_uVcfName, int a_nChromosomeId);
+        int FutureVariantPosition(const CSemiPath& a_rSemiPath, EVcfName a_uVcfName, int a_nChromosomeId) const;
     
         //Compare the two paths and find the one that maximize TP count
         bool FindBetter(const CPath& lhs, const CPath& rhs);
@@ -48,7 +47,7 @@ class CPathReplay
     
         //Gets the index of the next variant if it should be enqueued to the supplied HalfPath at the current position,
         //or -1 if there is none to be enqueued at the current position
-        int GetNextVariant(const CSemiPath& a_rSemiPath, int a_nChromosomeId);
+        int GetNextVariant(const CSemiPath& a_rSemiPath, int a_nChromosomeId) const;
     
         //Path list to store generated paths
         CThreadSafePathList m_pathList;

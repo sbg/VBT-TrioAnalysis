@@ -141,7 +141,10 @@ void CHaplotypeSequence::MoveForward(int a_nPosition)
 
 char CHaplotypeSequence::NextBase() const
 {
-    return m_nRefSequenceLength > m_nTemplatePosition ? m_aRefSequence[m_nTemplatePosition] : 0;
+    if(m_nPositionInVariant == g_nINVALID)
+        return m_nRefSequenceLength > m_nTemplatePosition ? m_aRefSequence[m_nTemplatePosition] : 0;
+    else
+        return m_nextVariant.GetAlleleString()[m_nPositionInVariant];
 }
 
 void CHaplotypeSequence::Next()

@@ -130,3 +130,37 @@ bool CVariant::IsNull() const
     else
         return false;
 }
+
+std::string CVariant::ToString() const
+{
+    std::string toRet = "";
+    
+    toRet = m_chrName + ":" + std::to_string(GetStart() + 1) + "-" + std::to_string(GetEnd() + 1) + " (";
+    
+    for(int k=0; k < m_aSequences.size(); k++)
+    {
+        if(k > 0)
+            toRet = toRet + ":";
+        
+        toRet = toRet + m_aSequences[k];
+    }
+    toRet = toRet + ")";
+    
+    return toRet;
+}
+
+bool CVariant::IsFilterPASS() const
+{
+    return m_bIsFilterPASS;
+}
+
+
+
+
+
+
+
+
+
+
+

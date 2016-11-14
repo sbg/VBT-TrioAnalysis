@@ -30,9 +30,9 @@ class CFastaReader
     //Print the last read Contig in FASTA file
     void PrintContig();
     //Returns a pointer to the sequence array of last read Contig //TODO:Should take Chromosome id as input
-    char* GetRefSeq();
+    char* GetRefSeq() const;
     //Returns the size of ref sequence array of last read Contig //TODO:Should take Chromosome id as input
-    int GetRefSeqSize();
+    int GetRefSeqSize() const;
     
     private:
 
