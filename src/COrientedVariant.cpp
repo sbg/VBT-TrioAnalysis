@@ -5,11 +5,14 @@ COrientedVariant::COrientedVariant()
 {
     m_nAlleleIndex = -1;
     m_nOtherAlleleIndex = -1;
+    m_bIsNull = true;
 }
 
 COrientedVariant::COrientedVariant(const CVariant& a_rObj, bool a_bIsOrder)
-: m_variant(a_rObj)
 {
+    m_variant = &a_rObj;
+    m_bIsNull = a_rObj.IsNull();
+    
     if(a_rObj.IsHeterozygous() && false == a_bIsOrder)
     {
         m_nAlleleIndex = a_rObj.gt_arr[1];
@@ -24,18 +27,19 @@ COrientedVariant::COrientedVariant(const CVariant& a_rObj, bool a_bIsOrder)
 }
 
 COrientedVariant::COrientedVariant(const COrientedVariant& a_rObj)
-: m_variant(a_rObj.m_variant)
 {
+    m_variant = a_rObj.m_variant;
     m_nAlleleIndex = a_rObj.m_nAlleleIndex;
     m_nOtherAlleleIndex = a_rObj.m_nOtherAlleleIndex;
     m_bIsOrderOfGenotype = a_rObj.m_bIsOrderOfGenotype;
+    m_bIsNull = a_rObj.m_bIsNull;
 }
 
 
 int COrientedVariant::CompareTo(const COrientedVariant& a_rObj) const
 {
     //decide by variant id
-    int id = (m_variant.GetId() < a_rObj.m_variant.GetId()) ? -1 : ((m_variant.GetId() == a_rObj.m_variant.GetId()) ? 0 : 1);
+    int id = (m_variant->GetId() < a_rObj.m_variant->GetId()) ? -1 : ((m_variant->GetId() == a_rObj.m_variant->GetId()) ? 0 : 1);
     if(id != 0)
         return id;
     
@@ -55,17 +59,17 @@ int COrientedVariant::CompareTo(const COrientedVariant& a_rObj) const
 
 std::string COrientedVariant::GetAlleleString() const
 {
-    return m_variant.m_aSequences[m_nAlleleIndex];
+    return m_variant->m_aSequences[m_nAlleleIndex];
 }
 
 int COrientedVariant::GetAlleleStartPos() const
 {
-    return m_variant.GetStart();
+    return m_variant->GetStart();
 }
 
 int COrientedVariant::GetAlleleEndPos() const
 {
-    return m_variant.GetStart() + (int)m_variant.m_aSequences[m_nAlleleIndex].length();
+    return m_variant->GetStart() + (int)m_variant->m_aSequences[m_nAlleleIndex].length();
 }
 
 int COrientedVariant::GetAlleleIndex() const
@@ -75,20 +79,20 @@ int COrientedVariant::GetAlleleIndex() const
 
 COrientedVariant COrientedVariant::Other() const
 {
-    return COrientedVariant(m_variant, !m_bIsOrderOfGenotype);
+    return COrientedVariant(*m_variant, !m_bIsOrderOfGenotype);
 }
 
 bool COrientedVariant::IsNull() const
 {
-    return m_variant.IsNull();
+    return m_bIsNull;
 }
 
 void COrientedVariant::SetToNull()
 {
-    m_variant.m_nVcfId = -1;
+    m_bIsNull = true;
 }
 
 const CVariant& COrientedVariant::GetVariant() const
 {
-    return m_variant;
+    return *m_variant;
 }

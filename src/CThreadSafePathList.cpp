@@ -62,3 +62,13 @@ CPath CThreadSafePathList::floor(const CPath& a_rObj)
 {
     return *m_set.lower_bound(a_rObj);
 }
+
+std::set<CPath>::iterator CThreadSafePathList::Find(const CPath& item)
+{
+    return m_set.find(item);
+}
+
+std::set<CPath>::iterator CThreadSafePathList::End() const
+{
+    return m_set.end();
+}

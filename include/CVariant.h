@@ -59,6 +59,9 @@ class CVariant
     
     //Return true if the variant filter column is PASS
     bool IsFilterPASS() const;
+    
+    //Returns the maximum sequance size
+    int GetMaxLength() const;
 
     //Return the reference sequences
     std::string GetRefSeq() const;
@@ -93,6 +96,11 @@ class CVariant
     bool m_bIsPhased;
     //Unique Id of variant
     int m_nId;
+    
+    //Start Position of the variant
+    int m_nStartPos;
+    //End Position of the variant
+    int m_nEndPos;
 
 };
 

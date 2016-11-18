@@ -10,6 +10,7 @@
 #include "CVcfReader.h"
 #include "CPath.h"
 #include "SConfig.h"
+#include "CFastaReader.h"
 
 const int CHROMOSOME_COUNT = 23;
 
@@ -29,7 +30,10 @@ class CVariantProvider
     
         // Returns the size of variant list for that chromosome
         int GetVariantListSize(EVcfName a_uFrom, int a_nChrNo) const;
-        
+    
+        //Sets the fasta reader reference object
+        void SetFastaReader(const CFastaReader& m_rFastaReader);
+    
     private:
         //VCF Readers
         CVcfReader m_baseVCF;
@@ -40,7 +44,10 @@ class CVariantProvider
         //List that stores called Variants in order
         std::vector<CVariant> m_aCalledVariantList[CHROMOSOME_COUNT];
     
-        bool m_bIsFilterPASS;
+        SConfig m_config;
+    
+        //Reference to the fasta reader object
+        const CFastaReader* m_pFastaReader;
 };
 
 

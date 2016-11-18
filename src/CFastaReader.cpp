@@ -41,6 +41,9 @@ bool CFastaReader::Open(const char *a_pFileName)
 void CFastaReader::ReadContig()
 {
     kseq_read(m_pContig);
+    
+    //Save the reference sequence size for later reads
+    m_LastContigSequenceSize = (int)strlen(m_pContig->seq.s);
 }
 
 void CFastaReader::PrintContig()
@@ -58,7 +61,7 @@ char* CFastaReader::GetRefSeq() const
 
 int CFastaReader::GetRefSeqSize() const
 {
-    return (int)strlen(m_pContig->seq.s);
+    return m_LastContigSequenceSize;
 }
 
 bool CFastaReader::Close()

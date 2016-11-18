@@ -1,30 +1,39 @@
 #include "CPath.h"
 #include <iostream>
 
+CPath::CPath()
+{}
+
 CPath::CPath(const char* a_aRefSequence, int a_nRefSize)
 : m_baseSemiPath(a_aRefSequence, a_nRefSize, eBASE),
   m_calledSemiPath(a_aRefSequence, a_nRefSize, eCALLED),
   m_nCSinceSync(0),
   m_nBSinceSync(0)
 {
+    //m_PathID = "-";
 }
 
 CPath::CPath(const CPath& a_rObj) 
 : m_baseSemiPath(a_rObj.m_baseSemiPath),
   m_calledSemiPath(a_rObj.m_calledSemiPath)
 {
-    m_aSyncPointList = std::list<int>(a_rObj.m_aSyncPointList);
+    m_aSyncPointList = std::vector<int>(a_rObj.m_aSyncPointList);
     m_nCSinceSync = a_rObj.m_nCSinceSync;
     m_nBSinceSync = a_rObj.m_nBSinceSync;
+    
+    //m_PathID = a_rObj.m_PathID;
 }
 
-CPath::CPath(const CPath& a_rObj, std::list<int>& a_rSyncPoints)
+CPath::CPath(const CPath& a_rObj, int  a_nSyncPointToPush)
 : m_baseSemiPath(a_rObj.m_baseSemiPath),
   m_calledSemiPath(a_rObj.m_calledSemiPath)
 {
-    m_aSyncPointList = std::list<int>(a_rSyncPoints);
+    m_aSyncPointList = std::vector<int>(a_rObj.m_aSyncPointList);
+    m_aSyncPointList.push_back(a_nSyncPointToPush);
     m_nCSinceSync = a_rObj.m_nCSinceSync;
     m_nBSinceSync = a_rObj.m_nBSinceSync;
+    
+    //m_PathID = a_rObj.m_PathID;
 }
 
 bool CPath::IsEqual(const CPath& a_rObj) const
@@ -74,50 +83,86 @@ CPath& CPath::Include(EVcfName a_nVCF, const COrientedVariant& a_rVariant, int a
     return *this;
 }
 
-std::vector<CPath> CPath::AddVariant(EVcfName a_nVcfName, const CVariant& a_rVariant, int a_nVariantIndex)
+int CPath::AddVariant(CPath* a_pPathList, EVcfName a_nVcfName, const CVariant& a_rVariant, int a_nVariantIndex)
 {
-    std::vector<CPath> pathListToAdd;
-
-    std::list<int> syncPoints(m_aSyncPointList);
-
+    int pathCount = 0;
+    
     if (true == InSync()) 
     {
-        syncPoints.push_front(m_calledSemiPath.GetPosition());
         m_nCSinceSync = 0;
         m_nBSinceSync = 0;
-    }
 
-    // Create a path extension that excludes this variant
-    CPath PathExclude(*this,syncPoints);  
-    PathExclude.Exclude(a_nVcfName, a_rVariant, a_nVariantIndex);
-    pathListToAdd.push_back(PathExclude);
+        // Create a path extension that excludes this variant
+        a_pPathList[pathCount] = CPath(*this, m_calledSemiPath.GetPosition());
+        a_pPathList[pathCount].Exclude(a_nVcfName, a_rVariant, a_nVariantIndex);
+        //a_pPathList[pathCount].m_PathID += "1";
+        pathCount++;
     
-    // Create a path extension that includes this variant in the possible phases
-    if (!a_rVariant.IsHeterozygous())
-    {
-        CPath PathInclude(*this, syncPoints);
-        COrientedVariant Ovar1(a_rVariant, true);
-        PathInclude.Include(a_nVcfName, Ovar1, a_nVariantIndex);
-        pathListToAdd.push_back(PathInclude);
+        // Create a path extension that includes this variant in the possible phases
+        if (!a_rVariant.IsHeterozygous())
+        {
+            a_pPathList[pathCount] =  CPath(*this, m_calledSemiPath.GetPosition());
+            COrientedVariant Ovar1(a_rVariant, true);
+            a_pPathList[pathCount].Include(a_nVcfName, Ovar1, a_nVariantIndex);
+            //a_pPathList[pathCount].m_PathID += "2";
+            pathCount++;
+        }
+        else
+        {
+            //Include with ordered genotype
+            a_pPathList[pathCount] =  CPath(*this, m_calledSemiPath.GetPosition());
+            COrientedVariant Ovar1(a_rVariant, true);
+            a_pPathList[pathCount].Include(a_nVcfName, Ovar1, a_nVariantIndex);
+            //a_pPathList[pathCount].m_PathID += "2";
+            pathCount++;
+        
+            //Include with unordered genotype
+            a_pPathList[pathCount] =  CPath(*this, m_calledSemiPath.GetPosition());
+            COrientedVariant Ovar2(a_rVariant, false);
+            a_pPathList[pathCount].Include(a_nVcfName, Ovar2, a_nVariantIndex);
+            //a_pPathList[pathCount].m_PathID += "3";
+            pathCount++;
+        }
+        
     }
+    
     else
     {
-        //Include with ordered genotype
-        CPath PathInclude1(*this, syncPoints);
-        COrientedVariant Ovar1(a_rVariant, true);
-
-        PathInclude1.Include(a_nVcfName, Ovar1, a_nVariantIndex);
-        pathListToAdd.push_back(PathInclude1);
-
-        //Include with unordered genotype
-        CPath PathInclude2(*this, syncPoints);
-        COrientedVariant Ovar2(a_rVariant, false);
-
-        PathInclude2.Include(a_nVcfName, Ovar2, a_nVariantIndex);
-        pathListToAdd.push_back(PathInclude2);
+        // Create a path extension that excludes this variant
+        a_pPathList[pathCount] = CPath(*this);
+        a_pPathList[pathCount].Exclude(a_nVcfName, a_rVariant, a_nVariantIndex);
+        //a_pPathList[pathCount].m_PathID += "1";
+        pathCount++;
+        
+        // Create a path extension that includes this variant in the possible phases
+        if (!a_rVariant.IsHeterozygous())
+        {
+            a_pPathList[pathCount] =  CPath(*this);
+            COrientedVariant Ovar1(a_rVariant, true);
+            a_pPathList[pathCount].Include(a_nVcfName, Ovar1, a_nVariantIndex);
+            //a_pPathList[pathCount].m_PathID += "2";
+            pathCount++;
+        }
+        else
+        {
+            //Include with ordered genotype
+            a_pPathList[pathCount] =  CPath(*this);
+            COrientedVariant Ovar1(a_rVariant, true);
+            a_pPathList[pathCount].Include(a_nVcfName, Ovar1, a_nVariantIndex);
+            //a_pPathList[pathCount].m_PathID += "2";
+            pathCount++;
+            
+            //Include with unordered genotype
+            a_pPathList[pathCount] =  CPath(*this);
+            COrientedVariant Ovar2(a_rVariant, false);
+            a_pPathList[pathCount].Include(a_nVcfName, Ovar2, a_nVariantIndex);
+            //a_pPathList[pathCount].m_PathID += "3";
+            pathCount++;
+        }
     }
-
-    return pathListToAdd;
+    
+    
+    return pathCount;
 }
 
 bool CPath::InSync() const

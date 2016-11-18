@@ -10,14 +10,14 @@
 #include "CSemiPath.h"
 #include "EReplayChoice.h"
 #include "EVcfName.h"
-#include <list>
 
 class CPath
 {
     public:
-
+    
+    CPath();
     CPath(const char* a_aRefSequence, int a_nRefSize);
-    CPath(const CPath& a_rObj, std::list<int>& a_syncPoints);
+    CPath(const CPath& a_rObj, int a_nSyncPointToPush);
     
     //Copy constructor
     CPath(const CPath& a_rObj);
@@ -37,8 +37,8 @@ class CPath
     //Include variant to the given side
     CPath& Include(EVcfName a_nVCF, const COrientedVariant& a_rVariant, int a_nVariantIndex);
     
-    //Add variant to the given side of path
-    std::vector<CPath> AddVariant(EVcfName a_nVcfName, const CVariant& a_rVariant, int a_nVariantIndex);
+    //Add variant to the given side of path and return the path count
+    int AddVariant(CPath* a_pPathList, EVcfName a_nVcfName, const CVariant& a_rVariant, int a_nVariantIndex);
     
     bool operator<(const CPath& a_rObj) const
     {
@@ -69,13 +69,17 @@ class CPath
     CSemiPath m_calledSemiPath;
     
     //Position index list of the syncronisation points
-    std::list<int> m_aSyncPointList;
+    std::vector<int> m_aSyncPointList;
     
     //Added variant count to called since last sync 
     int m_nCSinceSync;
     
     //Added variant count to called since last sync
     int m_nBSinceSync;
+    
+    
+    //TEST Purpose
+    //std::string m_PathID;
     
 };
 

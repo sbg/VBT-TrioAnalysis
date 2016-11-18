@@ -54,8 +54,11 @@ class COrientedVariant
     int m_nOtherAlleleIndex;
     //If the selected allele is first number or not (eg.  a/b   a-> true b-> false)
     bool m_bIsOrderOfGenotype;
-    CVariant m_variant;
-
+    
+    bool m_bIsNull;
+    
+    const CVariant* m_variant;
+    
 };
 
 #endif //_C_ORIENTED_VARIANT_H_

@@ -15,6 +15,9 @@ const int g_nINVALID = -1;
 class CHaplotypeSequence
 {    
   public:
+    //Empty Object
+    CHaplotypeSequence();
+    
     //Default constructor
     CHaplotypeSequence(const char* a_aRefSequence, int a_nRefSize);
 

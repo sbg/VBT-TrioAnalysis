@@ -13,6 +13,9 @@ struct SConfig
     //Set true to read only the PASS variants to the variant list
     bool m_bIsFilterPASS;
     
+    //Maximum size of the variant that will be processed by VCF comparison algorithm (Use it to eliminate SVs)
+    int m_nMaxVariantSize;
+    
     //Base Vcf file
     const char* m_pBaseVcfFileName;
     

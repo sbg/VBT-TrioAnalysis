@@ -129,11 +129,18 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId)
             (*a_pVariant).m_aSequences.push_back(m_pRecord->d.allele[i]);
             //a_pVariant->SetType(i);
         }
-
+        
+        //SET START AND END POSITIONS
+        int maxEnd = 0;
+        a_pVariant->m_nStartPos = m_pRecord->pos;
+        for(int k=0; k < ngt_arr; k++)
+            maxEnd = std::max(maxEnd, (int)a_pVariant->m_aSequences[a_pVariant->gt_arr[k]].length());
+        a_pVariant->m_nEndPos = a_pVariant->m_nStartPos + maxEnd;
+        
+        
         //FREE BUFFERS
         free(gt_arr);
         free(fi_arr);
-        
         return true;
     }
     else 

@@ -36,12 +36,14 @@ class CFastaReader
     
     private:
 
-        std::string m_fileName;
-        //If FASTA file is open
-        bool m_bIsOpen;
-        gzFile m_fastaFile;
-        kseq_t *m_pContig;
-
+    std::string m_fileName;
+    //If FASTA file is open
+    bool m_bIsOpen;
+    gzFile m_fastaFile;
+    kseq_t *m_pContig;
+    
+    int m_LastContigSequenceSize;
+    
 };
 
 

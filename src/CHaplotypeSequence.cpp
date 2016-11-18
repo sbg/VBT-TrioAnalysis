@@ -1,6 +1,8 @@
 #include "CHaplotypeSequence.h"
 #include <iostream>
 
+CHaplotypeSequence::CHaplotypeSequence()
+{}
 
 CHaplotypeSequence::CHaplotypeSequence(const char* a_aRefSequence, int a_nRefSize) 
 : m_aRefSequence(a_aRefSequence),
@@ -59,7 +61,7 @@ int CHaplotypeSequence::CompareTo(const CHaplotypeSequence& a_rObj) const
 {
     
     //Check by Position
-    int position = GetTemplatePosition() - a_rObj.GetTemplatePosition();
+    int position = m_nTemplatePosition - a_rObj.m_nTemplatePosition;
     if (position != 0)
         return position;
     
@@ -71,7 +73,6 @@ int CHaplotypeSequence::CompareTo(const CHaplotypeSequence& a_rObj) const
         else
             return -1;
     }
-    
     else if (a_rObj.m_nextVariant.IsNull())
     {
         return 1;
@@ -91,24 +92,23 @@ int CHaplotypeSequence::CompareTo(const CHaplotypeSequence& a_rObj) const
     std::deque<COrientedVariant>::const_iterator itThis = m_aVariants.begin();
     std::deque<COrientedVariant>::const_iterator itObj = a_rObj.m_aVariants.begin();
     
-    while(itThis != m_aVariants.end())
+    while((itThis) != m_aVariants.end())
     {
-        if(itObj == a_rObj.m_aVariants.end())
+        if((itObj) == a_rObj.m_aVariants.end())
             return 1;
-        
-        ++itThis;
-        ++itObj;
         
         int future = itThis->CompareTo(*itObj);
         if(future != 0)
             return future;
+        
+        ++itThis;
+        ++itObj;
     }
     
     if(itObj != a_rObj.m_aVariants.end())
         return -1;
         
     return 0;
-
 }
 
 int CHaplotypeSequence::GetTemplatePosition() const
@@ -149,10 +149,10 @@ char CHaplotypeSequence::NextBase() const
 
 void CHaplotypeSequence::Next()
 {
-    if(!HasNext())
-    {
-        std::cout << "Attempt to fetch nucleotide past the end of the template" << std::endl;
-    }
+//    if(!HasNext())
+//    {
+//        std::cout << "Attempt to fetch nucleotide past the end of the template" << std::endl;
+//    }
 
     if(IsOnTemplate())
     {
@@ -166,11 +166,6 @@ void CHaplotypeSequence::Next()
 
     else
     {
-        if(m_nPositionInVariant == g_nINVALID)
-        {
-            std::cout << "Position in variant fail " << std::endl;
-            return;
-        }
         m_nPositionInVariant++;
     }
 
@@ -197,7 +192,7 @@ void CHaplotypeSequence::Next()
                 }
                 else
                 {
-                    //Set next variat to null
+                    //Set next variant to null
                     m_nextVariant.SetToNull();
                     break; 
                 }
@@ -206,7 +201,7 @@ void CHaplotypeSequence::Next()
                     break;
 
                 m_nPositionInVariant = 0;
-                std::cout << "templatePosition=" << m_nTemplatePosition << " varStartPosition=" << m_nextVariant.GetVariant().GetStart() << std::endl;
+                //std::cout << "templatePosition=" << m_nTemplatePosition << " varStartPosition=" << m_nextVariant.GetVariant().GetStart() << std::endl;
 
                 if(m_nTemplatePosition != m_nextVariant.GetAlleleStartPos())
                 {

@@ -18,12 +18,16 @@ class CThreadSafePathList
     CThreadSafePathList();
     
     int Size() const;
+    
+    std::set<CPath>::iterator End() const;
 
     void Clear();
 
     void Add(const CPath& item);
 
     void Erase(const CPath& item);
+    
+    std::set<CPath>::iterator Find(const CPath& item);
     
     // Get the least advanced path
     CPath GetLeastAdvanced();

@@ -13,6 +13,7 @@ class CSemiPath
 {
     public:
 
+    CSemiPath();
     CSemiPath(const char* a_aRefSequence, int a_nRefSize, EVcfName a_uVcfName);
     CSemiPath(const CSemiPath& a_rObj);
 
@@ -27,6 +28,12 @@ class CSemiPath
 
     //Return vcf name of the semi path
     EVcfName GetVcfName() const;
+    
+    //Return the list of excluded variants
+    std::vector<int> GetExcluded() const;
+    
+    //Return the list of included variants
+    std::vector<COrientedVariant> GetIncluded() const;
     
     //Gets the end position the semipath (max of hapA and hapB)
     int GetPosition() const;
@@ -92,7 +99,7 @@ class CSemiPath
     int m_nIncludedVariantEndPosition;
 
     std::vector<COrientedVariant> m_aIncludedVariants;
-    std::vector<CVariant> m_aExcludedVariants; 
+    std::vector<int> m_aExcludedVariantIndexes;
 
     CHaplotypeSequence m_haplotypeA;
     CHaplotypeSequence m_haplotypeB;

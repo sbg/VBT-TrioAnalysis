@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <iostream>
-#include "CVcfReader.h"
-#include "CFastaReader.h"
+
 #include "CPathReplay.h"
 #include "SConfig.h"
+#include <ctime>
 #include <fstream>
 
 int main (int argc, char** argv)
@@ -14,9 +14,9 @@ int main (int argc, char** argv)
         return 1;       
     }
     
-    std::ofstream out("/Users/c1ms21p6h3qk/Desktop/outXCODE.txt");
-    std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
-    std::cout.rdbuf(out.rdbuf()); //redirect std::cout to out.txt!
+    //std::ofstream out("/Users/c1ms21p6h3qk/Desktop/outXCODE.txt");
+    //std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
+    //std::cout.rdbuf(out.rdbuf()); //redirect std::cout to out.txt!
     
     SConfig configurations;
     
@@ -24,9 +24,26 @@ int main (int argc, char** argv)
     configurations.m_pBaseVcfFileName = argv[1];
     configurations.m_pCalledVcfFileName = argv[2];
     configurations.m_pFastaFileName = argv[3];
+    configurations.m_nMaxVariantSize = 1000;
 
     CPathReplay pathReplay;
     pathReplay.InitializeReaders(configurations);
-    pathReplay.FindBestPath(21);
+
+    
+    std::clock_t start;
+    double duration;
+    
+    start = std::clock();
+    CPath bestPath = pathReplay.FindBestPath(21);
+    duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
+    
+    std::cout << "Called Included Count: " << bestPath.m_calledSemiPath.GetIncluded().size() << std::endl;
+    std::cout << "Called Excluded Count: " << bestPath.m_calledSemiPath.GetExcluded().size() << std::endl;
+    
+    std::cout << "Baseline Included Count: " << bestPath.m_baseSemiPath.GetIncluded().size() << std::endl;
+    std::cout << "Baseline Excluded Count: " << bestPath.m_baseSemiPath.GetExcluded().size() << std::endl;
+    
+    
+    std::cout << "Program Completed :" << duration << " secs" << std::endl;
 
 }

@@ -5,7 +5,7 @@ void CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
 {
     bool bIsSuccess;
 
-    m_bIsFilterPASS = a_rConfig.m_bIsFilterPASS;
+    m_config = a_rConfig;
     
     bIsSuccess = m_baseVCF.Open(a_rConfig.m_pBaseVcfFileName);
     if(!bIsSuccess)
@@ -20,6 +20,11 @@ void CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
     FillVariantLists();
 }
 
+void CVariantProvider::SetFastaReader(const CFastaReader& a_rFastaReader)
+{
+    m_pFastaReader = &a_rFastaReader;
+}
+
 
 void CVariantProvider::FillVariantLists()
 {
@@ -29,7 +34,12 @@ void CVariantProvider::FillVariantLists()
     {
        // if(m_bIsFilterPASS == true && !variant.IsFilterPASS())
        //    continue;
-           
+        if(variant.GetMaxLength() > m_config.m_nMaxVariantSize)
+            continue;
+
+        else if(m_pFastaReader->GetRefSeqSize() < variant.GetStart() || m_pFastaReader->GetRefSeqSize() < variant.GetEnd())
+            continue;
+        
         m_aBaseVariantList[variant.m_nChrId].push_back(variant);
     }
     
@@ -37,7 +47,12 @@ void CVariantProvider::FillVariantLists()
     {
       //  if(m_bIsFilterPASS == true && !variant.IsFilterPASS())
       //     continue;
-           
+        if(variant.GetMaxLength() > m_config.m_nMaxVariantSize)
+            continue;
+        
+        else if(m_pFastaReader->GetRefSeqSize() < variant.GetStart() || m_pFastaReader->GetRefSeqSize() < variant.GetEnd())
+            continue;
+        
         m_aCalledVariantList[variant.m_nChrId].push_back(variant);
     }
 }

@@ -23,6 +23,8 @@ CVariant::CVariant(const CVariant& a_rObj)
     gt_arr[0] = a_rObj.gt_arr[0];
     gt_arr[1] = a_rObj.gt_arr[1];
     ngt_arr = a_rObj.ngt_arr;
+    m_nStartPos = a_rObj.m_nStartPos;
+    m_nEndPos = a_rObj.m_nEndPos;
 }
 
 
@@ -100,12 +102,12 @@ int CVariant::GetId() const
 
 int CVariant::GetStart() const
 {
-    return m_nPosition;
+    return m_nStartPos;
 }
 
 int CVariant::GetEnd() const
 {
-    return m_nPosition + (int)m_aSequences[0].length();
+    return m_nEndPos;
 }
 
 bool CVariant::IsPhased() const
@@ -137,12 +139,12 @@ std::string CVariant::ToString() const
     
     toRet = m_chrName + ":" + std::to_string(GetStart() + 1) + "-" + std::to_string(GetEnd() + 1) + " (";
     
-    for(int k=0; k < m_aSequences.size(); k++)
+    for(int k=0; k < ngt_arr; k++)
     {
         if(k > 0)
             toRet = toRet + ":";
         
-        toRet = toRet + m_aSequences[k];
+        toRet = toRet + m_aSequences[gt_arr[k]];
     }
     toRet = toRet + ")";
     
@@ -152,6 +154,18 @@ std::string CVariant::ToString() const
 bool CVariant::IsFilterPASS() const
 {
     return m_bIsFilterPASS;
+}
+
+int CVariant::GetMaxLength() const
+{
+    int max = 0;
+    
+    for(int k= 0; k < m_aSequences.size(); k++)
+    {
+        if(m_aSequences[k].length() > max)
+            max = (int)m_aSequences[k].length();
+    }
+    return max;
 }
 
 
