@@ -30,7 +30,7 @@ class CThreadSafePathList
     std::set<CPath>::iterator Find(const CPath& item);
     
     // Get the least advanced path
-    CPath GetLeastAdvanced();
+    void GetLeastAdvanced(CPath& items);
 
     bool Empty();
 

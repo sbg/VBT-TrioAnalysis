@@ -41,11 +41,17 @@ class COrientedVariant
     //Return if the variant is null
     bool IsNull() const;
     
+    //Return true if hap A is used and return false if hap B is used
+    bool IsOrderOfGenotype() const;
+    
     //Return the variant
     const CVariant& GetVariant() const;
     
     //Set variant to null
     void SetToNull();
+    
+    //Set the weight(proportion of variant inside 2 consecutive syncpoints) of the variant
+    void SetWeight(double a_fWeight) const;
 
     private:
     //Index of the selected allele of this variant
@@ -54,7 +60,8 @@ class COrientedVariant
     int m_nOtherAlleleIndex;
     //If the selected allele is first number or not (eg.  a/b   a-> true b-> false)
     bool m_bIsOrderOfGenotype;
-    
+    //Weight of the variant
+    mutable double m_fWeight;
     bool m_bIsNull;
     
     const CVariant* m_variant;

@@ -35,7 +35,7 @@ class CPath
     CPath& Exclude(EVcfName a_nVCF, const CVariant& a_rVariant, int a_nVariantIndex);
     
     //Include variant to the given side
-    CPath& Include(EVcfName a_nVCF, const COrientedVariant& a_rVariant, int a_nVariantIndex);
+    CPath& Include(EVcfName a_nVCF, COrientedVariant& a_rVariant, int a_nVariantIndex);
     
     //Add variant to the given side of path and return the path count
     int AddVariant(CPath* a_pPathList, EVcfName a_nVcfName, const CVariant& a_rVariant, int a_nVariantIndex);
@@ -44,6 +44,7 @@ class CPath
     {
         return CompareTo(a_rObj) < 0;
     }
+    
     //
     void Step();
     
@@ -62,6 +63,12 @@ class CPath
     //Check if the path has finished
     bool HasFinished() const;
 
+    //Find a weighting for all the TP calls in a path. this is done by sync points, within each SyncPoint
+    //this will assure that the total number of TP we output will always reflect number of TP in baseline file
+    //if there are any call TP without corresponding baseline TP, these are simply assigned a weight of 0.
+    //(this can happen when two calls cancel each other out when replayed, although the default path finding now avoids this)
+    void CalculateWeights();
+    
     //Semi path object for base 
     CSemiPath m_baseSemiPath;
     

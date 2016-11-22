@@ -25,6 +25,9 @@ class CVariantProvider
         //Read through the variant file and fill the variant lists. It assumes that positions are sorted.
         void FillVariantLists();
     
+        //Read through the variant lists and generate oriented variant list for call and base
+        void FillOrientedVariantLists();
+    
         //Get the variant with given Chr number and variant id
         const CVariant* GetVariant(EVcfName a_uFrom, int a_nChrNo, int a_nVariantId) const;
     
@@ -33,6 +36,9 @@ class CVariantProvider
     
         //Sets the fasta reader reference object
         void SetFastaReader(const CFastaReader& m_rFastaReader);
+    
+        //Return the variant list with the given index list
+        std::vector<CVariant> GetVariantList(EVcfName a_uFrom, int a_nChrNo, std::vector<int> a_VariantIndexes);
     
     private:
         //VCF Readers
@@ -43,6 +49,11 @@ class CVariantProvider
         std::vector<CVariant> m_aBaseVariantList[CHROMOSOME_COUNT];
         //List that stores called Variants in order
         std::vector<CVariant> m_aCalledVariantList[CHROMOSOME_COUNT];
+    
+        //List that store the base Oriented variant tuples (In the order of genotype)
+        std::vector<COrientedVariant> m_aBaseOrientedVariantList[CHROMOSOME_COUNT];
+        //List that store the called Oriented variant tuples (In the order of genotype)
+        std::vector<COrientedVariant> m_aCalledOrientedVariantList[CHROMOSOME_COUNT];
     
         SConfig m_config;
     

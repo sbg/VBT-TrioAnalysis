@@ -33,11 +33,10 @@ void CThreadSafePathList::Erase(const CPath& item)
 }
 
 // Get the least advanced path
-CPath CThreadSafePathList::GetLeastAdvanced()
+void CThreadSafePathList::GetLeastAdvanced(CPath& item)
 {
-    CPath toRet = *m_set.begin();
+    item = *m_set.begin();
     m_set.erase(m_set.begin());
-    return toRet;
 }
 
 bool CThreadSafePathList::Empty()

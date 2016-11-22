@@ -69,7 +69,7 @@ class CVariant
     std::string GetAllele(int a_nAlleleId) const;
 
     // Detects the type of of each alt with index 
-    void SetType(int a_nAltIndex);    
+    void SetType(int a_nAltIndex);
 
     // Print the variant [For Test Purpose]
     std::string ToString() const;

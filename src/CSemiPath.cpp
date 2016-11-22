@@ -30,8 +30,8 @@ CSemiPath::CSemiPath(const CSemiPath& a_rObj)
     m_nIncludedVariantEndPosition = a_rObj.m_nIncludedVariantEndPosition;  
     m_nVariantEndPosition = a_rObj.m_nVariantEndPosition;
 
-    m_aIncludedVariants = std::vector<COrientedVariant>(a_rObj.m_aIncludedVariants);
-    m_aExcludedVariantIndexes = std::vector<int>(a_rObj.m_aExcludedVariantIndexes);
+    m_aIncludedVariants = std::vector<COrientedVariant*>(a_rObj.m_aIncludedVariants);
+    m_aExcludedVariants = std::vector<int>(a_rObj.m_aExcludedVariants);
 
     m_bFinishedHapA = a_rObj.m_bFinishedHapA;
     m_bFinishedHapB = a_rObj.m_bFinishedHapB;
@@ -42,11 +42,11 @@ EVcfName CSemiPath::GetVcfName() const
     return m_uVcfName;
 }
 
-void CSemiPath::IncludeVariant(const COrientedVariant& a_rVariant, int a_nVariantIndex)
+void CSemiPath::IncludeVariant(COrientedVariant& a_rVariant, int a_nVariantIndex)
 {
     assert(a_nVariantIndex > m_nVariantIndex);
 
-    m_aIncludedVariants.push_back(a_rVariant);
+    m_aIncludedVariants.push_back(&a_rVariant);
     m_nVariantIndex = a_nVariantIndex;
     m_nVariantEndPosition = max(m_nVariantEndPosition, a_rVariant.GetVariant().GetEnd());
     m_nIncludedVariantEndPosition = max(m_nIncludedVariantEndPosition, a_rVariant.GetVariant().GetEnd());
@@ -59,7 +59,8 @@ void CSemiPath::ExcludeVariant(const CVariant& a_rVariant, int a_nVariantIndex)
 {
     assert(a_nVariantIndex > m_nVariantIndex);
 
-    m_aExcludedVariantIndexes.push_back(a_nVariantIndex);
+    const CVariant* pVariant = &a_rVariant;
+    m_aExcludedVariants.push_back(a_nVariantIndex);
     m_nVariantEndPosition = max(m_nVariantEndPosition, a_rVariant.GetEnd());
     m_nVariantIndex = a_nVariantIndex;
 }
@@ -72,10 +73,10 @@ int CSemiPath::CompareHaplotypePositions() const
 
 std::vector<int> CSemiPath::GetExcluded() const
 {
-    return m_aExcludedVariantIndexes;
+    return m_aExcludedVariants;
 }
 
-std::vector<COrientedVariant> CSemiPath::GetIncluded() const
+std::vector<COrientedVariant*> CSemiPath::GetIncluded() const
 {
     return m_aIncludedVariants;
 }
@@ -108,7 +109,7 @@ int CSemiPath::GetIncludedVariantEndPosition() const
     return m_nIncludedVariantEndPosition;
 }
 
-const std::vector<COrientedVariant>& CSemiPath::GetIncludedVariants() const
+const std::vector<COrientedVariant*>& CSemiPath::GetIncludedVariants() const
 {
     return m_aIncludedVariants;
 }
@@ -192,7 +193,7 @@ void CSemiPath::StepHaplotypeB()
 void CSemiPath::Print() const
 {
     std::cout<< "Pos:" << GetPosition() << " VarEnd Pos:" << GetVariantEndPosition() << " VarEnd Ind:" << GetVariantIndex() << std::endl;
-    std::cout<< "Excluded Var Count:" << m_aExcludedVariantIndexes.size() << " Included Var Count:" << m_aIncludedVariants.size() << std::endl;
+    std::cout<< "Excluded Var Count:" << m_aExcludedVariants.size() << " Included Var Count:" << m_aIncludedVariants.size() << std::endl;
     std::cout<< "Haplotype A:" << std::endl;
     m_haplotypeA.Print();
     std::cout<< "Haplotype B:" << std::endl;

@@ -14,9 +14,8 @@ int main (int argc, char** argv)
         return 1;       
     }
     
-    //std::ofstream out("/Users/c1ms21p6h3qk/Desktop/outXCODE.txt");
-    //std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
-    //std::cout.rdbuf(out.rdbuf()); //redirect std::cout to out.txt!
+    std::ofstream out("/Users/c1ms21p6h3qk/Desktop/outXCODE.txt");
+    std::cout.rdbuf(out.rdbuf()); //redirect std::cout to out.txt!
     
     SConfig configurations;
     
@@ -39,7 +38,6 @@ int main (int argc, char** argv)
     
     std::cout << "Called Included Count: " << bestPath.m_calledSemiPath.GetIncluded().size() << std::endl;
     std::cout << "Called Excluded Count: " << bestPath.m_calledSemiPath.GetExcluded().size() << std::endl;
-    
     std::cout << "Baseline Included Count: " << bestPath.m_baseSemiPath.GetIncluded().size() << std::endl;
     std::cout << "Baseline Excluded Count: " << bestPath.m_baseSemiPath.GetExcluded().size() << std::endl;
     

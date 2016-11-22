@@ -32,6 +32,9 @@ void CVariantProvider::FillVariantLists()
     int id = 0;
     while(m_baseVCF.GetNextRecord(&variant, id++))
     {
+       //if(id == 15000)
+       //    break;
+        
        // if(m_bIsFilterPASS == true && !variant.IsFilterPASS())
        //    continue;
         if(variant.GetMaxLength() > m_config.m_nMaxVariantSize)
@@ -45,6 +48,9 @@ void CVariantProvider::FillVariantLists()
     
     while(m_calledVCF.GetNextRecord(&variant, id++))
     {
+       //if(id == 30000)
+       //    break;
+        
       //  if(m_bIsFilterPASS == true && !variant.IsFilterPASS())
       //     continue;
         if(variant.GetMaxLength() > m_config.m_nMaxVariantSize)
@@ -56,6 +62,26 @@ void CVariantProvider::FillVariantLists()
         m_aCalledVariantList[variant.m_nChrId].push_back(variant);
     }
 }
+
+void CVariantProvider::FillOrientedVariantLists()
+{
+    for(int i=0; i < CHROMOSOME_COUNT; i++)
+    {
+        for(int j=0; j < m_aBaseVariantList[i].size(); j++)
+        {
+            m_aBaseOrientedVariantList[i].push_back(COrientedVariant(m_aBaseVariantList[i][j], true));
+            m_aBaseOrientedVariantList[i].push_back(COrientedVariant(m_aBaseVariantList[i][j], false));
+        }
+        
+        for(int j=0; j < m_aCalledVariantList[i].size(); j++)
+        {
+            m_aCalledOrientedVariantList[i].push_back(COrientedVariant(m_aCalledVariantList[i][j], true));
+            m_aCalledOrientedVariantList[i].push_back(COrientedVariant(m_aCalledVariantList[i][j], false));
+        }
+    }
+}
+
+
 
 const CVariant* CVariantProvider::GetVariant(EVcfName a_uFrom, int a_nChrNo, int a_nVariantId) const
 {
@@ -78,3 +104,33 @@ int CVariantProvider::GetVariantListSize(EVcfName a_uFrom, int a_nChrNo) const
             return (int)m_aCalledVariantList[a_nChrNo].size();
     }
 }
+
+
+
+std::vector<CVariant> CVariantProvider::GetVariantList(EVcfName a_uFrom, int a_nChrNo, std::vector<int> a_VariantIndexes)
+{
+    std::vector<CVariant> result;
+
+    switch (a_uFrom)
+    {
+        case eBASE:
+            for(int k=0; k< a_VariantIndexes.size(); k++)
+                result.push_back(m_aBaseVariantList[a_nChrNo][a_VariantIndexes[k]]);
+            break;
+            
+        case eCALLED:
+            for(int k=0; k< a_VariantIndexes.size(); k++)
+                result.push_back(m_aCalledVariantList[a_nChrNo][a_VariantIndexes[k]]);
+            
+        default:
+            break;
+    }
+
+    return result;
+}
+
+
+
+
+
+

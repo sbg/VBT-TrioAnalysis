@@ -39,12 +39,14 @@ CPath CPathReplay::FindBestPath(int a_nChrId)
     int lastSyncPos = 0;
     int TestID = 0;
     std::string maxPathRegion;
-
+    
+    CPath processedPath;
+    
     while(!m_pathList.Empty())
     {
         currentMax = max(currentMax, m_pathList.Size());
         currentMaxIterations = max(currentMaxIterations, currentIterations++);
-        CPath processedPath = m_pathList.GetLeastAdvanced();
+        m_pathList.GetLeastAdvanced(processedPath);
         
         std::cout << "====" << TestID++ << "====" << std::endl;
         std::cout << "Size:" << m_pathList.Size() + 1 << " Range:" << lastSyncPos + 1 << "-" << m_nCurrentPosition + 1 << " LocalIterations:" << currentIterations << std::endl;
@@ -176,8 +178,8 @@ bool CPathReplay::FindBetter(const CPath& lhs, const CPath& rhs)
     
     // Prefer paths that maximise total number of included variants (baseline + called)
 
-    const std::vector<COrientedVariant> lhsIncludedVariants = (lhs.m_calledSemiPath.GetIncludedVariants().size() == 0) ? lhs.m_baseSemiPath.GetIncludedVariants() : lhs.m_calledSemiPath.GetIncludedVariants();
-    const std::vector<COrientedVariant> rhsIncludedVariants = (rhs.m_calledSemiPath.GetIncludedVariants().size() == 0) ? rhs.m_baseSemiPath.GetIncludedVariants() : rhs.m_calledSemiPath.GetIncludedVariants();
+    const std::vector<COrientedVariant*> lhsIncludedVariants = (lhs.m_calledSemiPath.GetIncludedVariants().size() == 0) ? lhs.m_baseSemiPath.GetIncludedVariants() : lhs.m_calledSemiPath.GetIncludedVariants();
+    const std::vector<COrientedVariant*> rhsIncludedVariants = (rhs.m_calledSemiPath.GetIncludedVariants().size() == 0) ? rhs.m_baseSemiPath.GetIncludedVariants() : rhs.m_calledSemiPath.GetIncludedVariants();
     
     const int lhsVariantCount = static_cast<int>(lhs.m_calledSemiPath.GetIncludedVariants().size() + lhs.m_baseSemiPath.GetIncludedVariants().size());
     const int rhsVariantCount = static_cast<int>(rhs.m_calledSemiPath.GetIncludedVariants().size() + rhs.m_baseSemiPath.GetIncludedVariants().size());
@@ -200,7 +202,7 @@ bool CPathReplay::FindBetter(const CPath& lhs, const CPath& rhs)
                 return syncDelta > 0 ? true : false;
             
             // At this point break ties arbitrarily based on allele ordering
-            return (lhsIncludedVariants.back().GetAlleleIndex() < rhsIncludedVariants.back().GetAlleleIndex()) ? true : false;
+            return (lhsIncludedVariants.back()->GetAlleleIndex() < rhsIncludedVariants.back()->GetAlleleIndex()) ? true : false;
         }
     }
     
