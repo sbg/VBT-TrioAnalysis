@@ -20,6 +20,12 @@ enum EVariantType
     eNO_OP
 };
 
+struct SAllele
+{
+    std::string m_sequence;
+    int m_nStartPos = -1;
+    int m_nEndPos = -1;
+};
 
 class CVariant
 {
@@ -60,46 +66,40 @@ class CVariant
     //Return true if the variant filter column is PASS
     bool IsFilterPASS() const;
     
-    //Returns the maximum sequance size
-    int GetMaxLength() const;
-
     //Return the reference sequences
     std::string GetRefSeq() const;
     //Return the allele sequence specified with the id (0 is first allele, 1 is second allele)
-    std::string GetAllele(int a_nAlleleId) const;
-
-    // Detects the type of of each alt with index 
-    void SetType(int a_nAltIndex);
+    SAllele GetAllele(int a_nAlleleId) const;
 
     // Print the variant [For Test Purpose]
     std::string ToString() const;
     
     //ID of which vcf file that the variant belongs to
     int m_nVcfId;
+    //Id of the chromosome that variant belogs to
     int m_nChrId;
-    int m_nPosition;
     //Chromosome name
     std::string m_chrName;
-    //Sequence array. m_aSequences[0] is the ref string
-    std::vector<std::string> m_aSequences;
-    
-    //Genotype Data
-    int gt_arr[2]; //Haplotype array
-    int ngt_arr; //Haplotype count
-    
+    //Unique Id of variant
+    int m_nId;
+ 
     //Filter Data
     bool m_bIsFilterPASS;
     
-    //Type of the variant array for each alt (SNP or INDEL)
-    EVariantType m_aVarTypes[2];
-    //Return true if the variant genotype is phased
+    //True if the variant genotype is phased
     bool m_bIsPhased;
-    //Unique Id of variant
-    int m_nId;
+    bool m_bIsHeterozygous;
+
+    //Allele array of the variant
+    SAllele m_alleles[2];
+    //Allele count of the variant (2 for diploid and 1 for haploid)
+    int m_nAlleleCount;
+    //Reference sequence
+    std::string m_refSequence;
     
-    //Start Position of the variant
+    //Start Position of the variant - min start pos of all alleles
     int m_nStartPos;
-    //End Position of the variant
+    //End Position of the variant - max end pos of all alleles
     int m_nEndPos;
 
 };

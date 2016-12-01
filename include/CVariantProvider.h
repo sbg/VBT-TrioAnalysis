@@ -41,6 +41,10 @@ class CVariantProvider
         std::vector<CVariant> GetVariantList(EVcfName a_uFrom, int a_nChrNo, std::vector<int> a_VariantIndexes);
     
     private:
+    
+        //Checks whether given variant is a structural variant type (A complex type)
+        bool IsStructuralVariant(const CVariant& a_rVariant, int a_nMaxLength) const;
+    
         //VCF Readers
         CVcfReader m_baseVCF;
         CVcfReader m_calledVCF;

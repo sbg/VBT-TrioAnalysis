@@ -48,16 +48,19 @@ CPath CPathReplay::FindBestPath(int a_nChrId)
         currentMaxIterations = max(currentMaxIterations, currentIterations++);
         m_pathList.GetLeastAdvanced(processedPath);
         
-        std::cout << "====" << TestID++ << "====" << std::endl;
+        std::cout << "====" << TestID++ << "====" << "PathID:" << processedPath.m_nPathId << std::endl;
         std::cout << "Size:" << m_pathList.Size() + 1 << " Range:" << lastSyncPos + 1 << "-" << m_nCurrentPosition + 1 << " LocalIterations:" << currentIterations << std::endl;
-        
+       
+        //m_pathList.Print();
+        //processedPath.Print();
+
         if(m_pathList.Size() == 0)
         {
             int currentSyncPos = processedPath.m_calledSemiPath.GetPosition();
             if(currentMax > maxPaths)
             {
                 maxPaths = currentMax;
-                maxPathRegion =  ":" + std::to_string(lastSyncPos + 1) + "-" + std::to_string(currentSyncPos + 1);
+                maxPathRegion =  "chr21:" + std::to_string(lastSyncPos + 1) + "-" + std::to_string(currentSyncPos + 1);
                 std::cout << "Maximum path complexity now " << maxPaths << ", at " << maxPathRegion << " with "  << currentIterations << " iterations" << std::endl;
             }
             currentMax = 0;
@@ -73,6 +76,8 @@ CPath CPathReplay::FindBestPath(int a_nChrId)
             currentIterations = 0;
             // Create new head containing path up until last sync point
             processedPath = *lastSyncPath;
+            //Ignore variants until Current Position
+            SkipVariantsTo(processedPath, a_nChrId, m_nCurrentPosition+1);
         }
 
         if(processedPath.HasFinished())
@@ -98,6 +103,8 @@ CPath CPathReplay::FindBestPath(int a_nChrId)
 
         processedPath.Step();
         
+        //processedPath.Print();
+        
         if(processedPath.InSync())
         {
             SkipToNextVariant(processedPath, a_nChrId);
@@ -122,7 +129,7 @@ CPath CPathReplay::FindBestPath(int a_nChrId)
 
     }
     
-    std::cout << "Best Path Found" << std::endl;
+     std::cout << "Best Path Found" << std::endl;
      return best;
 }
 
@@ -130,7 +137,6 @@ void CPathReplay::AddIfBetter(std::vector<CPath> a_pathsToAdd)
 {
     for(int k=0; k< a_pathsToAdd.size(); k++)
     {
-        a_pathsToAdd[k].Print();
         AddIfBetter(a_pathsToAdd[k]);
     }
 }
@@ -139,6 +145,8 @@ void CPathReplay::AddIfBetter(const CPath& a_path)
 {
     std::set<CPath>::iterator it;
 
+    int cnt = m_pathList.Size();
+    
     it = m_pathList.Find(a_path);
     if(it != m_pathList.End())
     {
@@ -149,12 +157,15 @@ void CPathReplay::AddIfBetter(const CPath& a_path)
         {
             m_pathList.Erase(other);
             m_pathList.Add(best);
+            assert(cnt == m_pathList.Size());
         }
     }
     
     else
     {
+        int cnt = m_pathList.Size();
         m_pathList.Add(a_path);
+        assert(cnt < m_pathList.Size());
     }
 }
 
@@ -277,7 +288,6 @@ int CPathReplay::FutureVariantPosition(const CSemiPath& a_rSemiPath, EVcfName a_
     }
 }
 
-
 int CPathReplay::GetNextVariant(const CSemiPath& a_rSemiPath, int a_nChromosomeId) const
 {
     int nextId = a_rSemiPath.GetVariantIndex() + 1;
@@ -296,3 +306,37 @@ int CPathReplay::GetNextVariant(const CSemiPath& a_rSemiPath, int a_nChromosomeI
     return -1;
 
 }
+
+void CPathReplay::SkipVariantsTo(CPath& a_rPath, int a_nChromosomeId, int a_nMaxPos)
+{
+    //BASE SEMIPATH
+    int varIndex = a_rPath.m_baseSemiPath.GetVariantIndex();
+    
+    while(varIndex < m_variantProvider.GetVariantListSize(eBASE, a_nChromosomeId) && (varIndex == -1  || m_variantProvider.GetVariant(eBASE, a_nChromosomeId, varIndex)->GetStart() < a_nMaxPos))
+    {
+        varIndex++;
+    }
+    varIndex--;
+    a_rPath.m_baseSemiPath.SetVariantIndex(varIndex);
+    a_rPath.m_baseSemiPath.MoveForward(std::min(a_nMaxPos, m_refFASTA.GetRefSeqSize()-1));
+    
+    
+    //CALLED SEMIPATH
+    varIndex = a_rPath.m_calledSemiPath.GetVariantIndex();
+    
+    while(varIndex < m_variantProvider.GetVariantListSize(eCALLED, a_nChromosomeId) && (varIndex == -1  || m_variantProvider.GetVariant(eCALLED, a_nChromosomeId, varIndex)->GetStart() < a_nMaxPos))
+    {
+        varIndex++;
+    }
+    varIndex--;
+    a_rPath.m_calledSemiPath.SetVariantIndex(varIndex);
+    a_rPath.m_calledSemiPath.MoveForward(std::min(a_nMaxPos, m_refFASTA.GetRefSeqSize()-1));
+    
+}
+
+
+
+
+
+
+

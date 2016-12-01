@@ -26,21 +26,22 @@ CHaplotypeSequence::CHaplotypeSequence(const CHaplotypeSequence& a_rObj)
 
 void CHaplotypeSequence::AddVariant(const COrientedVariant& a_rVariant)
 {
-    if(a_rVariant.GetAlleleStartPos() <= m_nTemplatePosition)
-    {
-        std::cout<< "AddVariant Error in CHaplotypeSequence" << std::endl;
-    }
+    assert(a_rVariant.GetStartPos() > m_nTemplatePosition);
+    
+    const SAllele a = a_rVariant.GetAllele();
 
-    std::string altString = a_rVariant.GetAlleleString();
-
-    // Allow null allele to indicate no playback
-    if(true == altString.empty())
+    if (a.m_nStartPos == a.m_nEndPos && a.m_sequence.length() == 0)
     {
-        std::cout << "Alt string is empty" << std::endl;
+        // Adding the opposite side of a pure insert is redundant
+        //std::cout << "Alt string is empty" << std::endl;
         return;
     }
-
-    m_nLastVariantEnd = a_rVariant.GetAlleleEndPos();
+    
+    //Allele is null
+    if(a.m_nStartPos == -1)
+        return;
+    
+    m_nLastVariantEnd = a_rVariant.GetEndPos();
     
     if(true == m_nextVariant.IsNull())
     {
@@ -144,20 +145,15 @@ char CHaplotypeSequence::NextBase() const
     if(m_nPositionInVariant == g_nINVALID)
         return m_nRefSequenceLength > m_nTemplatePosition ? m_aRefSequence[m_nTemplatePosition] : 0;
     else
-        return m_nextVariant.GetAlleleString()[m_nPositionInVariant];
+        return m_nextVariant.GetAllele().m_sequence[m_nPositionInVariant];
 }
 
 void CHaplotypeSequence::Next()
 {
-//    if(!HasNext())
-//    {
-//        std::cout << "Attempt to fetch nucleotide past the end of the template" << std::endl;
-//    }
-
     if(IsOnTemplate())
     {
         m_nTemplatePosition++;
-        if(!m_nextVariant.IsNull() && m_nextVariant.GetAlleleStartPos() == m_nTemplatePosition)
+        if(!m_nextVariant.IsNull() && m_nextVariant.GetAllele().m_nStartPos == m_nTemplatePosition)
         {
             // Position to consume the variant
             m_nPositionInVariant = 0;
@@ -166,15 +162,17 @@ void CHaplotypeSequence::Next()
 
     else
     {
+        assert(m_nPositionInVariant != -1);
         m_nPositionInVariant++;
     }
+    
+    assert(!m_nextVariant.IsNull() || m_nPositionInVariant == -1);
 
     if(!m_nextVariant.IsNull())
     {
         while(1)
         {
-            std::string norm = m_nextVariant.GetAlleleString();
-            if(m_nPositionInVariant != norm.length())
+            if(m_nPositionInVariant != m_nextVariant.GetAllele().m_sequence.length())
             {
                 // Haven't reached the end of the current variant.
                 break;
@@ -182,9 +180,9 @@ void CHaplotypeSequence::Next()
             else
             {
                 // Finished variant, so position for next baseStart consuming next variant from the queue
-                m_nTemplatePosition = m_nextVariant.GetAlleleEndPos();
+                m_nTemplatePosition = m_nextVariant.GetAllele().m_nEndPos;
                 m_nPositionInVariant = g_nINVALID;
-
+               
                 if(!m_aVariants.empty())
                 {
                     m_nextVariant = m_aVariants.front();
@@ -197,14 +195,15 @@ void CHaplotypeSequence::Next()
                     break; 
                 }
 
-                if(m_nTemplatePosition < m_nextVariant.GetAlleleStartPos())
+                if(m_nTemplatePosition < m_nextVariant.GetAllele().m_nStartPos)
                     break;
 
                 m_nPositionInVariant = 0;
                 //std::cout << "templatePosition=" << m_nTemplatePosition << " varStartPosition=" << m_nextVariant.GetVariant().GetStart() << std::endl;
 
-                if(m_nTemplatePosition != m_nextVariant.GetAlleleStartPos())
+                if(m_nTemplatePosition != m_nextVariant.GetAllele().m_nStartPos)
                 {
+                    std::cout << "templatePosition=" << m_nTemplatePosition << " varStartPosition=" << m_nextVariant.GetVariant().GetStart() << std::endl;
                     std::cout << "Out of order variants during replay" << std::endl;
                 }
             }
@@ -213,17 +212,22 @@ void CHaplotypeSequence::Next()
 }
 
 
+bool CHaplotypeSequence::IsNew(const COrientedVariant& a_rVar) const
+{
+    return a_rVar.IsNull() || a_rVar.GetAllele().m_nStartPos > m_nLastVariantEnd;
+}
+
 bool CHaplotypeSequence::WantsFutureVariantBases() const
 {
     if (m_nextVariant.IsNull())
         return true;
     
-    if (m_nPositionInVariant != g_nINVALID && m_nPositionInVariant < m_nextVariant.GetAlleleString().length() - 1)
+    if (m_nPositionInVariant != g_nINVALID && m_nPositionInVariant < m_nextVariant.GetAllele().m_sequence.length() - 1)
         return false;
     
     for(int k= 0; k < static_cast<int>(m_aVariants.size()); k++)
     {
-        if(m_aVariants[k].GetAlleleString().length() > 0)
+        if(m_aVariants[k].GetAllele().m_sequence.length() > 0)
             return false;
     }
     
@@ -232,8 +236,9 @@ bool CHaplotypeSequence::WantsFutureVariantBases() const
 
 void CHaplotypeSequence::Print() const
 {
-    std::cout <<"Template Pos: " << m_nTemplatePosition << " Pos in Variant:" << m_nPositionInVariant << " Last Var end:" << m_nLastVariantEnd << std::endl;
+    std::cout <<"Template Pos:" << m_nTemplatePosition << " Pos in Variant:" << m_nPositionInVariant << " Last Var end:" << m_nLastVariantEnd << std::endl;
     std::cout <<"Variant Cnt:" << m_aVariants.size() << std::endl;
-    std::cout << (m_nextVariant.IsNull() ? "null" : "not null") << std::endl;
+    std::cout <<"Next Variant is " <<(m_nextVariant.IsNull() ? "null" : "not null") << std::endl;
+    std::cout <<"Next Variant start:" << (m_nextVariant.IsNull() ? -1 : m_nextVariant.GetAllele().m_nStartPos) << std::endl;
 }
 

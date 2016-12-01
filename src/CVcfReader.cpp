@@ -77,7 +77,7 @@ bool CVcfReader::Close()
     return true;
 }
 
-bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId)
+bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& a_rConfig)
 {
     a_pVariant->Clear();
     a_pVariant->m_nVcfId = m_nVcfId;
@@ -100,7 +100,6 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId)
     if (ok == 0)
     {
         a_pVariant->m_nId = a_nId;
-        a_pVariant->m_nPosition = m_pRecord->pos;
         a_pVariant->m_chrName = m_pHeader->id[BCF_DT_CTG][m_pRecord->rid].key;
         
         //READ CHROMOSOME ID: (TODO: this should be renewed. there should be sth that reads the chromosome id)
@@ -112,31 +111,61 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId)
             a_pVariant->m_nChrId = atoi(m_pHeader->id[BCF_DT_CTG][m_pRecord->rid].key);
     
         //READ FILTER DATA
-        a_pVariant->m_bIsFilterPASS = (m_pRecord->d.flt[0] != 0);
-        //if(m_pRecord->d.flt[0] != 0)
-        //    std::cout << a_nId << std::endl;
-            
-        //READ GENOTYPE DATA
-        int ngt = bcf_get_genotypes(m_pHeader, m_pRecord, &gt_arr, &ngt_arr);
-        a_pVariant->ngt_arr = ngt_arr;
-        for(int k = 0; k < ngt_arr ; k++)
-            a_pVariant->gt_arr[k] = bcf_gt_allele(gt_arr[k]);
-        a_pVariant->m_bIsPhased = bcf_gt_is_phased(a_pVariant->gt_arr[0]);
-
-        //READ SEQUENCE DATA
-        for (int i = 0; i < m_pRecord->n_allele; ++i)
+        bool isPassed = false;
+        for(int k=0; k< m_pRecord->d.n_flt; k++)
         {
-            (*a_pVariant).m_aSequences.push_back(m_pRecord->d.allele[i]);
-            //a_pVariant->SetType(i);
+            if(0 == strcmp(m_pHeader->id[0][m_pRecord->d.flt[k]].key, a_rConfig.m_pFilterName))
+               isPassed = true;
+        }
+        a_pVariant->m_bIsFilterPASS = isPassed;
+        
+        //READ QUALITY DATA
+        //TODO: read the quality
+        
+        
+        //READ GENOTYPE DATA
+        bcf_get_genotypes(m_pHeader, m_pRecord, &gt_arr, &ngt_arr);
+        
+        a_pVariant->m_nAlleleCount = ngt_arr;
+        
+        
+        a_pVariant->m_bIsPhased = bcf_gt_is_phased(bcf_gt_allele(gt_arr[0]));
+        
+        //READ SEQUENCE DATA AND FILL ALLELES
+        a_pVariant->m_refSequence = std::string(m_pRecord->d.allele[0]);
+        
+        for (int i = 0; i < ngt_arr; ++i)
+        {
+            a_pVariant->m_alleles[i].m_sequence = m_pRecord->d.allele[bcf_gt_allele(gt_arr[i])];
+            a_pVariant->m_alleles[i].m_nStartPos = m_pRecord->pos;
+            a_pVariant->m_alleles[i].m_nEndPos = static_cast<int>(m_pRecord->pos + a_pVariant->m_refSequence.length());
         }
         
-        //SET START AND END POSITIONS
-        int maxEnd = 0;
+        if(a_pVariant->m_alleles[0].m_sequence == a_pVariant->m_alleles[1].m_sequence)
+            a_pVariant->m_nAlleleCount = 1;
+        else
+            a_pVariant->m_nAlleleCount = 2;
+
+        if(HasRedundantFirstNucleotide())
+        {
+            for (int i = 0; i < ngt_arr; ++i)
+            {
+                TrimAllele(a_pVariant->m_alleles[i], a_pVariant->m_refSequence);
+            }
+        }
+        
+        //SET START AND END POSITION OF VARIANT
+        int maxEnd = -1;
+        int minStart = INT_MAX;
         a_pVariant->m_nStartPos = m_pRecord->pos;
         for(int k=0; k < ngt_arr; k++)
-            maxEnd = std::max(maxEnd, (int)a_pVariant->m_aSequences[a_pVariant->gt_arr[k]].length());
-        a_pVariant->m_nEndPos = a_pVariant->m_nStartPos + maxEnd;
-        
+        {
+            maxEnd = std::max(maxEnd, static_cast<int>(a_pVariant->m_alleles[k].m_nEndPos));
+            minStart = std::min(minStart, static_cast<int>(a_pVariant->m_alleles[k].m_nStartPos));
+        }
+        a_pVariant->m_nEndPos = maxEnd;
+        a_pVariant->m_nStartPos = minStart;
+ 
         
         //FREE BUFFERS
         free(gt_arr);
@@ -170,24 +199,32 @@ int CVcfReader::GetContigId(const char* name) const
     return -1;
 }
 
-void CVcfReader::PrintVCF()
+
+void CVcfReader::TrimAllele(SAllele& a_rAllele, const std::string& ref)
+{
+    a_rAllele.m_sequence = a_rAllele.m_sequence.substr(1, a_rAllele.m_sequence.length() - 1);
+    a_rAllele.m_nStartPos += 1;
+}
+
+bool CVcfReader::HasRedundantFirstNucleotide() const
+{
+    for(int k= 0; k < m_pRecord->n_allele; k++)
+    {
+        if(m_pRecord->d.allele[0][0] != m_pRecord->d.allele[k][0])
+            return false;
+    }
+    return true;
+}
+
+void CVcfReader::PrintVCF(const SConfig& a_rConfig)
 {
     CVariant variant;
 
     // READ SAMPLE VCF
-    fprintf(stderr,"#CHR\tPOS\tREF\tALTs\n");
-    while(GetNextRecord(&variant,0))
+    //fprintf(stderr,"#CHR\tPOS\tREF\tALTs\n");
+    int k=0;
+    while(GetNextRecord(&variant,0, a_rConfig))
     {
-        fprintf(stderr,"%s\t%d\t%s", variant.m_chrName.c_str(), variant.m_nPosition, variant.m_aSequences[0].c_str());
-        if (variant.m_aSequences.size() > 1)
-        {
-            fprintf(stderr,"\t");
-            for (unsigned int i = 1; i < variant.m_aSequences.size(); ++i) 
-            {
-                fprintf(stderr,"%s", variant.m_aSequences[i].c_str());
-                if (i != variant.m_aSequences.size() - 1) fprintf(stderr,";");
-                else fprintf(stderr,"\n");
-            }
-        }
+        std::cout << k++ << ": " <<  variant.ToString() << std::endl;
     }
 }

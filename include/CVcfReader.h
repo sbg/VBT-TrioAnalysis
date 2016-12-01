@@ -9,6 +9,7 @@
 #include <vector>
 #include "htslib/vcf.h"
 #include "CVariant.h"
+#include "SConfig.h"
 
 struct SVcfContig
 {
@@ -31,7 +32,7 @@ public:
     bool Close();
     
     // Get next record in the file
-    bool GetNextRecord(CVariant* a_pVariant, int a_nId);
+    bool GetNextRecord(CVariant* a_pVariant, int a_nId, const SConfig& a_rConfig);
     
     // Get the filename
     std::string GetFilename() const {return m_filename;};
@@ -52,11 +53,16 @@ public:
     int GetContigId(const char* name) const;
     
     // Prints the vcf file to the screen (Test Purpose)
-    void PrintVCF();
+    void PrintVCF(const SConfig& a_rConfig);
 
     // Set an ID to the VCF file
     void setID(int a_nVcfId) {m_nVcfId = a_nVcfId;};
 
+    // Trimms the alt string that contains ref allele
+    void TrimAllele(SAllele& a_rAllele,const std::string& a_rRefStr);
+    
+    //Check if the first nucleotide for alleles are redundant (for indels)
+    bool HasRedundantFirstNucleotide() const;
 
 private:
     std::string m_filename;

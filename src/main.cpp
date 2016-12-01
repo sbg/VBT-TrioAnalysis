@@ -19,12 +19,12 @@ int main (int argc, char** argv)
     
     SConfig configurations;
     
-    configurations.m_bIsFilterPASS = true;
     configurations.m_pBaseVcfFileName = argv[1];
     configurations.m_pCalledVcfFileName = argv[2];
     configurations.m_pFastaFileName = argv[3];
     configurations.m_nMaxVariantSize = 1000;
-
+    configurations.m_pFilterName = "PASS";
+    
     CPathReplay pathReplay;
     pathReplay.InitializeReaders(configurations);
 

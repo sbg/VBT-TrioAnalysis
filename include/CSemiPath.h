@@ -47,11 +47,17 @@ class CSemiPath
     //Return the index of last variant added
     int GetVariantIndex() const;
     
+    //Set the index of last variant added
+    void SetVariantIndex(int a_nVariantIndex);
+    
     //Return pointer to included variants
     const std::vector<COrientedVariant*>& GetIncludedVariants() const;
     
     //Check whether this half path is fully on the template (i.e. no haplotypes are within a variant)
     bool IsOnTemplate() const;
+    
+    //Detects overlapping variants
+    bool IsNew(const COrientedVariant& a_rVar) const;
     
     //Compare this half path with the given half path
     int CompareTo(const CSemiPath& a_rObj) const;

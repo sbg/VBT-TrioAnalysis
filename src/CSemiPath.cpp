@@ -59,7 +59,6 @@ void CSemiPath::ExcludeVariant(const CVariant& a_rVariant, int a_nVariantIndex)
 {
     assert(a_nVariantIndex > m_nVariantIndex);
 
-    const CVariant* pVariant = &a_rVariant;
     m_aExcludedVariants.push_back(a_nVariantIndex);
     m_nVariantEndPosition = max(m_nVariantEndPosition, a_rVariant.GetEnd());
     m_nVariantIndex = a_nVariantIndex;
@@ -93,6 +92,12 @@ int CSemiPath::GetVariantIndex() const
 {
     return m_nVariantIndex;
 }
+
+void CSemiPath::SetVariantIndex(int a_nVariantIndex)
+{
+    m_nVariantIndex = a_nVariantIndex;
+}
+
 
 int CSemiPath::GetVariantEndPosition() const
 {
@@ -139,11 +144,24 @@ void CSemiPath::MoveForward(int a_nPosition)
     m_haplotypeB.MoveForward(a_nPosition);
 }
 
+
+bool CSemiPath::IsNew(const COrientedVariant& a_rVar) const
+{
+    if(a_rVar.GetStartPos() >= m_nIncludedVariantEndPosition)
+        return true;
+    else
+        return m_haplotypeA.IsNew(a_rVar) && m_haplotypeB.IsNew(a_rVar.Other());
+}
+
+
 bool CSemiPath::Matches(const CSemiPath& a_rOther)
 {
-    if (!FinishedHaplotypeA() && !a_rOther.FinishedHaplotypeA() && NextHaplotypeABase() != a_rOther.NextHaplotypeABase()) 
+    //std::cout << NextHaplotypeABase() << " " << a_rOther.NextHaplotypeABase() << std::endl;
+    //std::cout << NextHaplotypeBBase() << " " << a_rOther.NextHaplotypeBBase() << std::endl;
+    
+    if (!FinishedHaplotypeA() && !a_rOther.FinishedHaplotypeA() && toupper(NextHaplotypeABase()) != toupper(a_rOther.NextHaplotypeABase()))
         return false;
-    else if (!FinishedHaplotypeB() && !a_rOther.FinishedHaplotypeB() && NextHaplotypeBBase() != a_rOther.NextHaplotypeBBase())
+    else if (!FinishedHaplotypeB() && !a_rOther.FinishedHaplotypeB() && toupper(NextHaplotypeBBase()) != toupper(a_rOther.NextHaplotypeBBase()))
         return false;
     else
         return true;

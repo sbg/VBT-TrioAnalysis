@@ -86,7 +86,7 @@ class CPath
     
     
     //TEST Purpose
-    //std::string m_PathID;
+    int m_nPathId;
     
 };
 

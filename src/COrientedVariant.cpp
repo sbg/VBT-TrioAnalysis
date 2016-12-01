@@ -13,16 +13,26 @@ COrientedVariant::COrientedVariant(const CVariant& a_rObj, bool a_bIsOrder)
     m_variant = &a_rObj;
     m_bIsNull = a_rObj.IsNull();
     
-    if(a_rObj.IsHeterozygous() && false == a_bIsOrder)
+    if(a_rObj.IsHeterozygous())
     {
-        m_nAlleleIndex = a_rObj.gt_arr[1];
-        m_nOtherAlleleIndex = a_rObj.gt_arr[0];
+        if(a_bIsOrder == true)
+        {
+            m_nAlleleIndex = 0;
+            m_nOtherAlleleIndex = 1;
+        }
+    
+        else
+        {
+            m_nAlleleIndex = 1;
+            m_nOtherAlleleIndex = 0;
+        }
     }
     else
     {
-        m_nAlleleIndex = a_rObj.gt_arr[0];
-        m_nOtherAlleleIndex = a_rObj.gt_arr[1];
+        m_nAlleleIndex = 0;
+        m_nOtherAlleleIndex = 0;
     }
+
     m_bIsOrderOfGenotype = a_bIsOrder;
 }
 
@@ -57,19 +67,19 @@ int COrientedVariant::CompareTo(const COrientedVariant& a_rObj) const
     return (m_nOtherAlleleIndex < a_rObj.m_nOtherAlleleIndex) ? -1 : ((m_nOtherAlleleIndex == a_rObj.m_nOtherAlleleIndex) ? 0 : 1);
 }
 
-std::string COrientedVariant::GetAlleleString() const
+const SAllele& COrientedVariant::GetAllele() const
 {
-    return m_variant->m_aSequences[m_nAlleleIndex];
+    return m_variant->m_alleles[m_nAlleleIndex];
 }
 
-int COrientedVariant::GetAlleleStartPos() const
+int COrientedVariant::GetStartPos() const
 {
     return m_variant->GetStart();
 }
 
-int COrientedVariant::GetAlleleEndPos() const
+int COrientedVariant::GetEndPos() const
 {
-    return m_variant->GetStart() + (int)m_variant->m_aSequences[m_nAlleleIndex].length();
+    return m_variant->GetEnd();
 }
 
 int COrientedVariant::GetAlleleIndex() const

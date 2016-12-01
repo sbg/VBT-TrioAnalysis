@@ -49,6 +49,9 @@ class CPathReplay
         //or -1 if there is none to be enqueued at the current position
         int GetNextVariant(const CSemiPath& a_rSemiPath, int a_nChromosomeId) const;
     
+        //Move the path to the specified position, ignoring any intervening variants.
+        void SkipVariantsTo(CPath& a_rPath, int a_nChromosomeId, int a_nMaxPos);
+    
         //Path list to store generated paths
         CThreadSafePathList m_pathList;
     

@@ -37,6 +37,8 @@ class CThreadSafePathList
     bool Contains(const CPath& item) const;
 
     CPath floor(const CPath& a_rObj);
+    
+    void Print() const;
 
   private:
     

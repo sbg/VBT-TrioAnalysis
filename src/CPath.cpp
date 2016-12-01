@@ -11,10 +11,10 @@ CPath::CPath(const char* a_aRefSequence, int a_nRefSize)
   m_nCSinceSync(0),
   m_nBSinceSync(0)
 {
-    //m_PathID = "-";
+    m_nPathId = -1;
 }
 
-CPath::CPath(const CPath& a_rObj) 
+CPath::CPath(const CPath& a_rObj)
 : m_baseSemiPath(a_rObj.m_baseSemiPath),
   m_calledSemiPath(a_rObj.m_calledSemiPath)
 {
@@ -22,7 +22,7 @@ CPath::CPath(const CPath& a_rObj)
     m_nCSinceSync = a_rObj.m_nCSinceSync;
     m_nBSinceSync = a_rObj.m_nBSinceSync;
     
-    //m_PathID = a_rObj.m_PathID;
+    m_nPathId = a_rObj.m_nPathId;
 }
 
 CPath::CPath(const CPath& a_rObj, int  a_nSyncPointToPush)
@@ -34,7 +34,7 @@ CPath::CPath(const CPath& a_rObj, int  a_nSyncPointToPush)
     m_nCSinceSync = a_rObj.m_nCSinceSync;
     m_nBSinceSync = a_rObj.m_nBSinceSync;
     
-    //m_PathID = a_rObj.m_PathID;
+    m_nPathId = a_rObj.m_nPathId;
 }
 
 bool CPath::IsEqual(const CPath& a_rObj) const
@@ -72,12 +72,18 @@ CPath& CPath::Include(EVcfName a_nVCF, COrientedVariant& a_rVariant, int a_nVari
     switch(a_nVCF)
     {
         case eBASE:
-            m_baseSemiPath.IncludeVariant(a_rVariant, a_nVariantIndex);
-            m_nBSinceSync++;
+            if(m_baseSemiPath.IsNew(a_rVariant))
+            {
+                m_baseSemiPath.IncludeVariant(a_rVariant, a_nVariantIndex);
+                m_nBSinceSync++;
+            }
             break;
         case eCALLED:
-            m_calledSemiPath.IncludeVariant(a_rVariant, a_nVariantIndex);
-            m_nCSinceSync++;
+            if(m_calledSemiPath.IsNew(a_rVariant))
+            {
+                m_calledSemiPath.IncludeVariant(a_rVariant, a_nVariantIndex);
+                m_nCSinceSync++;
+            }
             break;
     }
 
@@ -96,7 +102,7 @@ int CPath::AddVariant(CPath* a_pPathList, EVcfName a_nVcfName, const CVariant& a
         // Create a path extension that excludes this variant
         a_pPathList[pathCount] = CPath(*this, m_calledSemiPath.GetPosition());
         a_pPathList[pathCount].Exclude(a_nVcfName, a_rVariant, a_nVariantIndex);
-        //a_pPathList[pathCount].m_PathID += "1";
+        a_pPathList[pathCount].m_nPathId = this->m_nPathId +1;
         pathCount++;
     
         // Create a path extension that includes this variant in the possible phases
@@ -105,7 +111,7 @@ int CPath::AddVariant(CPath* a_pPathList, EVcfName a_nVcfName, const CVariant& a
             a_pPathList[pathCount] =  CPath(*this, m_calledSemiPath.GetPosition());
             COrientedVariant Ovar1(a_rVariant, true);
             a_pPathList[pathCount].Include(a_nVcfName, Ovar1, a_nVariantIndex);
-            //a_pPathList[pathCount].m_PathID += "2";
+            a_pPathList[pathCount].m_nPathId = this->m_nPathId +2;
             pathCount++;
         }
         else
@@ -113,15 +119,16 @@ int CPath::AddVariant(CPath* a_pPathList, EVcfName a_nVcfName, const CVariant& a
             //Include with ordered genotype
             a_pPathList[pathCount] =  CPath(*this, m_calledSemiPath.GetPosition());
             COrientedVariant Ovar1(a_rVariant, true);
+            
             a_pPathList[pathCount].Include(a_nVcfName, Ovar1, a_nVariantIndex);
-            //a_pPathList[pathCount].m_PathID += "2";
+            a_pPathList[pathCount].m_nPathId = this->m_nPathId +2;
             pathCount++;
         
             //Include with unordered genotype
             a_pPathList[pathCount] =  CPath(*this, m_calledSemiPath.GetPosition());
             COrientedVariant Ovar2(a_rVariant, false);
             a_pPathList[pathCount].Include(a_nVcfName, Ovar2, a_nVariantIndex);
-            //a_pPathList[pathCount].m_PathID += "3";
+            a_pPathList[pathCount].m_nPathId = this->m_nPathId +3;
             pathCount++;
         }
         
@@ -132,7 +139,7 @@ int CPath::AddVariant(CPath* a_pPathList, EVcfName a_nVcfName, const CVariant& a
         // Create a path extension that excludes this variant
         a_pPathList[pathCount] = CPath(*this);
         a_pPathList[pathCount].Exclude(a_nVcfName, a_rVariant, a_nVariantIndex);
-        //a_pPathList[pathCount].m_PathID += "1";
+        a_pPathList[pathCount].m_nPathId = this->m_nPathId +1;
         pathCount++;
         
         // Create a path extension that includes this variant in the possible phases
@@ -141,7 +148,7 @@ int CPath::AddVariant(CPath* a_pPathList, EVcfName a_nVcfName, const CVariant& a
             a_pPathList[pathCount] =  CPath(*this);
             COrientedVariant Ovar1(a_rVariant, true);
             a_pPathList[pathCount].Include(a_nVcfName, Ovar1, a_nVariantIndex);
-            //a_pPathList[pathCount].m_PathID += "2";
+            a_pPathList[pathCount].m_nPathId = this->m_nPathId +2;
             pathCount++;
         }
         else
@@ -150,14 +157,14 @@ int CPath::AddVariant(CPath* a_pPathList, EVcfName a_nVcfName, const CVariant& a
             a_pPathList[pathCount] =  CPath(*this);
             COrientedVariant Ovar1(a_rVariant, true);
             a_pPathList[pathCount].Include(a_nVcfName, Ovar1, a_nVariantIndex);
-            //a_pPathList[pathCount].m_PathID += "2";
+            a_pPathList[pathCount].m_nPathId = this->m_nPathId +2;
             pathCount++;
             
             //Include with unordered genotype
             a_pPathList[pathCount] =  CPath(*this);
             COrientedVariant Ovar2(a_rVariant, false);
             a_pPathList[pathCount].Include(a_nVcfName, Ovar2, a_nVariantIndex);
-            //a_pPathList[pathCount].m_PathID += "3";
+            a_pPathList[pathCount].m_nPathId = this->m_nPathId +3;
             pathCount++;
         }
     }
@@ -298,11 +305,11 @@ void CPath::CalculateWeights()
 
 void CPath::Print() const
 {
-    std::cout << "Printing Path:-----------------------------------------------" << std::endl;
-    std::cout << "Sync:" << m_nBSinceSync << " " << m_nCSinceSync << " " << std::endl;
+    std::cout << "-----" << std::endl;
+    std::cout << "Sync:" << m_nBSinceSync << " " << m_nCSinceSync << std::endl;
     std::cout << "Sync Points: ";
-    for (int i : m_aSyncPointList)
-        std::cout << i << " ";
+    for (int i = (int)m_aSyncPointList.size()-1; i>=0; i--)
+        std::cout << m_aSyncPointList[i] << " ";
     std::cout<< std::endl;
     std::cout << "--Base Semipath--" << std::endl;
     m_baseSemiPath.Print();

@@ -10,9 +10,6 @@ struct SConfig
     //Any configuration that will be used send via this config object
     
     
-    //Set true to read only the PASS variants to the variant list
-    bool m_bIsFilterPASS;
-    
     //Maximum size of the variant that will be processed by VCF comparison algorithm (Use it to eliminate SVs)
     int m_nMaxVariantSize;
     
@@ -25,6 +22,11 @@ struct SConfig
     //Fasta file
     const char* m_pFastaFileName;
     
+    //Filter name (Filter variants according to filter column)
+    const char* m_pFilterName;
+    
+    //Threshold value of the variants
+    float m_fQualityThreshold;
 };
 
 

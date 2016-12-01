@@ -2,29 +2,31 @@
 
 CVariant::CVariant(): m_nVcfId(-1),
             m_nChrId(-1), 
-            m_nPosition(-1),
-            m_chrName(), 
-            m_aSequences(),
-            ngt_arr(0),
+            m_nStartPos(-1),
+            m_chrName(),
             m_bIsPhased(false) 
 {
-    gt_arr[0] = -1;
-    gt_arr[1] = -1;
+    m_nId = -1;
+    m_nAlleleCount = 0;
 }
 
 CVariant::CVariant(const CVariant& a_rObj)
-: m_aSequences(a_rObj.m_aSequences)
 {
     m_nVcfId = a_rObj.m_nVcfId;
     m_nChrId = a_rObj.m_nChrId;
     m_chrName = a_rObj.m_chrName;
     m_bIsPhased = a_rObj.m_bIsPhased;
-    m_nPosition = a_rObj.m_nPosition;
-    gt_arr[0] = a_rObj.gt_arr[0];
-    gt_arr[1] = a_rObj.gt_arr[1];
-    ngt_arr = a_rObj.ngt_arr;
-    m_nStartPos = a_rObj.m_nStartPos;
+    m_nAlleleCount = a_rObj.m_nAlleleCount;
+    m_alleles[0].m_nEndPos = a_rObj.m_alleles[0].m_nEndPos;
+    m_alleles[0].m_nStartPos = a_rObj.m_alleles[0].m_nStartPos;
+    m_alleles[0].m_sequence = a_rObj.m_alleles[0].m_sequence;
+    m_alleles[1].m_nEndPos = a_rObj.m_alleles[1].m_nEndPos;
+    m_alleles[1].m_nStartPos = a_rObj.m_alleles[1].m_nStartPos;
+    m_alleles[1].m_sequence = a_rObj.m_alleles[1].m_sequence;m_nStartPos = a_rObj.m_nStartPos;
     m_nEndPos = a_rObj.m_nEndPos;
+    m_nId = a_rObj.m_nId;
+    m_refSequence = a_rObj.m_refSequence;
+    
 }
 
 
@@ -40,36 +42,20 @@ int CVariant::CompareTo(const CVariant& a_rObj) const
 
 bool CVariant::Clear()
 {
-        m_nVcfId = -1;
-        m_nChrId = -1;
-        m_nPosition    = -1;
-        m_chrName.clear();
-        m_aSequences.clear();
-        return true;
+    m_nVcfId = -1;
+    m_nChrId = -1;
+    m_nStartPos = -1;
+    m_chrName.clear();
+    m_nAlleleCount = 0;
+    return true;
 }
 
 bool CVariant::IsHeterozygous() const
 {
-        if(ngt_arr != 2)
-            return false;
+    if(m_nAlleleCount != 2)
+        return false;
     
-        //std::cout << gt_arr[0] << " " << gt_arr[1] << std::endl;
-        return gt_arr[0] != gt_arr[1];
-}
-
-void CVariant::SetType(int a_nAltIndex)
-{
-    EVariantType uType;
-        if(gt_arr[a_nAltIndex -1] == 0)
-        uType = eNO_OP;
-    else if(m_aSequences[a_nAltIndex].length() == m_aSequences[0].length())
-        uType = eSNP;
-    else if(m_aSequences[a_nAltIndex].length() < m_aSequences[0].length())
-        uType = eINDEL_DEL;
-    else
-        uType = eINDEL_ADD; 
-
-    m_aVarTypes[a_nAltIndex -1] = uType;      
+    return m_alleles[0].m_sequence != m_alleles[1].m_sequence;
 }
 
 void CVariant::Print() const
@@ -78,21 +64,11 @@ void CVariant::Print() const
         std::cout << "Belongs to  : Baseline" << std::endl;
     else
         std::cout << "Belongs to  : Called" << std::endl;
-    std::cout <<     "Ref : " << m_aSequences[0] << std::endl;
-    for(int k = 1; k < m_aSequences.size(); k++)
+    std::cout <<     "Ref : " << m_refSequence << std::endl;
+    for(int k = 0; k < m_nAlleleCount; k++)
     {
-        std::cout << "Alt" << k << ": " << m_aSequences[k] << std::endl;
-        if(m_aVarTypes[k] == eSNP)
-            std::cout << "Type: SNP" << std::endl;
-        else if(m_aVarTypes[k] == eINDEL_DEL)
-            std::cout << "Type: DELETION" << std::endl;
-        else if(m_aVarTypes[k] == eINDEL_ADD)
-            std::cout << "Type: ADDITION" << std::endl;
-        else
-            std::cout << "Type: NO OP" << std::endl;
+        std::cout << "Alt" << k << ": " << m_alleles[k].m_sequence << std::endl;
     }
-    std::cout << "GenoType: " << gt_arr[0] << "/" << gt_arr[1] << std::endl;
-
 }
 
 int CVariant::GetId() const
@@ -117,12 +93,12 @@ bool CVariant::IsPhased() const
 
 std::string CVariant::GetRefSeq() const
 {
-    return m_aSequences[0];
+    return m_refSequence;
 }
 
-std::string CVariant::GetAllele(int a_nAlleleId) const
+SAllele CVariant::GetAllele(int a_nAlleleId) const
 {
-    return m_aSequences[a_nAlleleId - 1];
+    return m_alleles[a_nAlleleId];
 }
 
 bool CVariant::IsNull() const
@@ -139,12 +115,12 @@ std::string CVariant::ToString() const
     
     toRet = m_chrName + ":" + std::to_string(GetStart() + 1) + "-" + std::to_string(GetEnd() + 1) + " (";
     
-    for(int k=0; k < ngt_arr; k++)
+    for(int k=0; k < m_nAlleleCount; k++)
     {
         if(k > 0)
             toRet = toRet + ":";
         
-        toRet = toRet + m_aSequences[gt_arr[k]];
+        toRet = toRet + m_alleles[k].m_sequence;
     }
     toRet = toRet + ")";
     
@@ -154,18 +130,6 @@ std::string CVariant::ToString() const
 bool CVariant::IsFilterPASS() const
 {
     return m_bIsFilterPASS;
-}
-
-int CVariant::GetMaxLength() const
-{
-    int max = 0;
-    
-    for(int k= 0; k < m_aSequences.size(); k++)
-    {
-        if(m_aSequences[k].length() > max)
-            max = (int)m_aSequences[k].length();
-    }
-    return max;
 }
 
 

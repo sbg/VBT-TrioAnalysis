@@ -21,19 +21,19 @@ class COrientedVariant
     COrientedVariant(const COrientedVariant& a_rObj);    
     
     //Get the allele alt string
-    std::string GetAlleleString() const;
+    const SAllele& GetAllele() const;
     
     //Compare variants according to start/end position
     int CompareTo(const COrientedVariant& a_rObj) const;
     
-    //Gets the start position of the allele
-    int GetAlleleStartPos() const;
+    //Gets the start position of the variant
+    int GetStartPos() const;
     
     //Gets the index of the allele
     int GetAlleleIndex() const;
     
     //Gets the end position of the allele
-    int GetAlleleEndPos() const;    
+    int GetEndPos() const;
     
     //Get the Allele in the reverse side of chosen orientation
     COrientedVariant Other() const;

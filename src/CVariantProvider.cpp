@@ -15,9 +15,13 @@ void CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
     if(!bIsSuccess)
         std::cout << "Called VCF file is unable to open!: " << a_rConfig.m_pCalledVcfFileName << std::endl;
     m_calledVCF.setID(1);
-    
 
     FillVariantLists();
+//    int k = 0;
+//    for(CVariant variant : m_aBaseVariantList[21])
+//          std::cout << k++ << ": " <<  variant.ToString() << std::endl;
+//    
+    
 }
 
 void CVariantProvider::SetFastaReader(const CFastaReader& a_rFastaReader)
@@ -30,33 +34,35 @@ void CVariantProvider::FillVariantLists()
 {
     CVariant variant;
     int id = 0;
-    while(m_baseVCF.GetNextRecord(&variant, id++))
+    while(m_baseVCF.GetNextRecord(&variant, id++, m_config))
     {
-       //if(id == 15000)
-       //    break;
+        //if(id == 10000)
+        //    break;
         
-       // if(m_bIsFilterPASS == true && !variant.IsFilterPASS())
-       //    continue;
-        if(variant.GetMaxLength() > m_config.m_nMaxVariantSize)
+        if(variant.m_bIsFilterPASS == false)
             continue;
-
-        else if(m_pFastaReader->GetRefSeqSize() < variant.GetStart() || m_pFastaReader->GetRefSeqSize() < variant.GetEnd())
+        
+        if(IsStructuralVariant(variant, m_config.m_nMaxVariantSize))
+            continue;
+        
+        else if(m_pFastaReader->GetRefSeqSize() < variant.GetEnd())
             continue;
         
         m_aBaseVariantList[variant.m_nChrId].push_back(variant);
     }
     
-    while(m_calledVCF.GetNextRecord(&variant, id++))
+    while(m_calledVCF.GetNextRecord(&variant, id++, m_config))
     {
-       //if(id == 30000)
-       //    break;
-        
-      //  if(m_bIsFilterPASS == true && !variant.IsFilterPASS())
-      //     continue;
-        if(variant.GetMaxLength() > m_config.m_nMaxVariantSize)
+        //if(id == 20000)
+        //    break;
+
+        if(variant.m_bIsFilterPASS == false)
             continue;
         
-        else if(m_pFastaReader->GetRefSeqSize() < variant.GetStart() || m_pFastaReader->GetRefSeqSize() < variant.GetEnd())
+        if(IsStructuralVariant(variant, m_config.m_nMaxVariantSize))
+            continue;
+        
+        else if(m_pFastaReader->GetRefSeqSize() < variant.GetEnd())
             continue;
         
         m_aCalledVariantList[variant.m_nChrId].push_back(variant);
@@ -128,6 +134,63 @@ std::vector<CVariant> CVariantProvider::GetVariantList(EVcfName a_uFrom, int a_n
 
     return result;
 }
+
+bool CVariantProvider::IsStructuralVariant(const CVariant& a_rVariant, int a_nMaxLength) const
+{
+    std::size_t found;
+    
+    for(int k = 0; k < a_rVariant.m_nAlleleCount; k++)
+    {
+        std::string allele = a_rVariant.m_alleles[k].m_sequence;
+        
+        if(allele.size() > a_nMaxLength)
+            return true;
+        found = allele.find('[');
+        if(found != std::string::npos)
+            return true;
+        found = allele.find('<');
+        if(found != std::string::npos)
+            return true;
+        found = allele.find('*');
+        if(found != std::string::npos)
+            return true;
+    }
+    return false;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

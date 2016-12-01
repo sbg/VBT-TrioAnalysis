@@ -56,6 +56,9 @@ class CHaplotypeSequence
     //return false indicates that no variants need to be immediately enqueued
     bool WantsFutureVariantBases() const;
  
+    //Detects variant overlaps
+    bool IsNew(const COrientedVariant& a_rVar) const;
+    
     //[TEST Purpose] print the haplotype
     void Print() const;
     

@@ -71,3 +71,15 @@ std::set<CPath>::iterator CThreadSafePathList::End() const
 {
     return m_set.end();
 }
+
+
+void CThreadSafePathList::Print() const
+{
+    std::set<CPath>::iterator it;
+    std::cout << "Paths:";
+    for(it = m_set.begin(); it != m_set.end(); ++it)
+    {
+        std::cout << it->m_nPathId << " ";
+    }
+    std::cout << std::endl;
+}
