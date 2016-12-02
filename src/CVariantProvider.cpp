@@ -17,11 +17,9 @@ void CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
     m_calledVCF.setID(1);
 
     FillVariantLists();
-//    int k = 0;
-//    for(CVariant variant : m_aBaseVariantList[21])
-//          std::cout << k++ << ": " <<  variant.ToString() << std::endl;
-//    
     
+    for(int k = 0; k < m_aCalledVariantList[21].size(); k++)
+       std::cout << k << ": " << m_aCalledVariantList[21][k].ToString() << std::endl;
 }
 
 void CVariantProvider::SetFastaReader(const CFastaReader& a_rFastaReader)
@@ -32,14 +30,12 @@ void CVariantProvider::SetFastaReader(const CFastaReader& a_rFastaReader)
 
 void CVariantProvider::FillVariantLists()
 {
+    
     CVariant variant;
     int id = 0;
     while(m_baseVCF.GetNextRecord(&variant, id++, m_config))
     {
-        //if(id == 10000)
-        //    break;
-        
-        if(variant.m_bIsFilterPASS == false)
+        if(m_config.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
             continue;
         
         if(IsStructuralVariant(variant, m_config.m_nMaxVariantSize))
@@ -48,15 +44,14 @@ void CVariantProvider::FillVariantLists()
         else if(m_pFastaReader->GetRefSeqSize() < variant.GetEnd())
             continue;
         
-        m_aBaseVariantList[variant.m_nChrId].push_back(variant);
+        PushVariant(variant, m_aBaseVariantList[variant.m_nChrId]);
+       // m_aBaseVariantList[variant.m_nChrId].push_back(variant);
     }
     
     while(m_calledVCF.GetNextRecord(&variant, id++, m_config))
     {
-        //if(id == 20000)
-        //    break;
-
-        if(variant.m_bIsFilterPASS == false)
+        
+        if(m_config.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
             continue;
         
         if(IsStructuralVariant(variant, m_config.m_nMaxVariantSize))
@@ -65,7 +60,8 @@ void CVariantProvider::FillVariantLists()
         else if(m_pFastaReader->GetRefSeqSize() < variant.GetEnd())
             continue;
         
-        m_aCalledVariantList[variant.m_nChrId].push_back(variant);
+        PushVariant(variant, m_aCalledVariantList[variant.m_nChrId]);
+        //m_aCalledVariantList[variant.m_nChrId].push_back(variant);
     }
 }
 
@@ -159,40 +155,33 @@ bool CVariantProvider::IsStructuralVariant(const CVariant& a_rVariant, int a_nMa
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+void CVariantProvider::PushVariant(CVariant& a_rVariant, std::vector<CVariant>& a_rVecToPush)
+{
+    int k = 0;
+    int size = static_cast<int>(a_rVecToPush.size())-1;
+    std::vector<CVariant>::iterator it;
+    
+    if(size == -1)
+    {
+        a_rVecToPush.push_back(a_rVariant);
+        return;
+    }
+    
+    while(k <= size && a_rVariant.GetStart() < a_rVecToPush[size-k].GetStart())
+        k++;
+    
+    if(a_rVariant.GetStart() == a_rVecToPush[size-k].GetStart())
+    {
+        if(a_rVariant.GetEnd() < a_rVecToPush[size-k].GetEnd())
+            k++;
+        
+        if(a_rVariant.GetEnd() == a_rVecToPush[size-k].GetEnd())
+            a_rVariant.m_bIsDuplicate = true;
+    }
+    
+    it = a_rVecToPush.begin() + (size - k) + 1;
+    a_rVecToPush.insert(it, a_rVariant);
+}
 
 
 

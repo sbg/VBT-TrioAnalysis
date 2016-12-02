@@ -18,17 +18,16 @@ int main (int argc, char** argv)
     std::cout.rdbuf(out.rdbuf()); //redirect std::cout to out.txt!
     
     SConfig configurations;
-    
     configurations.m_pBaseVcfFileName = argv[1];
     configurations.m_pCalledVcfFileName = argv[2];
     configurations.m_pFastaFileName = argv[3];
     configurations.m_nMaxVariantSize = 1000;
+    configurations.m_bIsFilterEnabled = false;
     configurations.m_pFilterName = "PASS";
     
     CPathReplay pathReplay;
     pathReplay.InitializeReaders(configurations);
 
-    
     std::clock_t start;
     double duration;
     

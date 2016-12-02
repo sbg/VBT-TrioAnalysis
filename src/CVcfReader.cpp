@@ -84,8 +84,7 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
     int* gt_arr = NULL;
     int ngt_arr = 0;
     int* fi_arr = NULL;
-    int nfi_arr = 0;
-
+    
     if (!m_bIsOpen)
     {
         fprintf(stderr, "ERROR The vcf has not been opened.\n");
@@ -139,6 +138,7 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
             a_pVariant->m_alleles[i].m_sequence = m_pRecord->d.allele[bcf_gt_allele(gt_arr[i])];
             a_pVariant->m_alleles[i].m_nStartPos = m_pRecord->pos;
             a_pVariant->m_alleles[i].m_nEndPos = static_cast<int>(m_pRecord->pos + a_pVariant->m_refSequence.length());
+            a_pVariant->m_nMaxLength = std::max(a_pVariant->m_nMaxLength,static_cast<int>(a_pVariant->m_alleles[i].m_sequence.length()));
         }
         
         if(a_pVariant->m_alleles[0].m_sequence == a_pVariant->m_alleles[1].m_sequence)

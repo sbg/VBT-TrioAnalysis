@@ -72,18 +72,12 @@ CPath& CPath::Include(EVcfName a_nVCF, COrientedVariant& a_rVariant, int a_nVari
     switch(a_nVCF)
     {
         case eBASE:
-            if(m_baseSemiPath.IsNew(a_rVariant))
-            {
-                m_baseSemiPath.IncludeVariant(a_rVariant, a_nVariantIndex);
-                m_nBSinceSync++;
-            }
+            m_baseSemiPath.IncludeVariant(a_rVariant, a_nVariantIndex);
+            m_nBSinceSync++;
             break;
         case eCALLED:
-            if(m_calledSemiPath.IsNew(a_rVariant))
-            {
-                m_calledSemiPath.IncludeVariant(a_rVariant, a_nVariantIndex);
-                m_nCSinceSync++;
-            }
+            m_calledSemiPath.IncludeVariant(a_rVariant, a_nVariantIndex);
+            m_nCSinceSync++;
             break;
     }
 
@@ -109,27 +103,41 @@ int CPath::AddVariant(CPath* a_pPathList, EVcfName a_nVcfName, const CVariant& a
         if (!a_rVariant.IsHeterozygous())
         {
             a_pPathList[pathCount] =  CPath(*this, m_calledSemiPath.GetPosition());
+            const CSemiPath* p = a_nVcfName == eBASE ? &a_pPathList[pathCount].m_baseSemiPath : &a_pPathList[pathCount].m_calledSemiPath;
             COrientedVariant Ovar1(a_rVariant, true);
-            a_pPathList[pathCount].Include(a_nVcfName, Ovar1, a_nVariantIndex);
-            a_pPathList[pathCount].m_nPathId = this->m_nPathId +2;
-            pathCount++;
+            //Make sure variant is not overlap with the previous one
+            if(p->IsNew(Ovar1))
+            {
+                a_pPathList[pathCount].Include(a_nVcfName, Ovar1, a_nVariantIndex);
+                a_pPathList[pathCount].m_nPathId = this->m_nPathId +2;
+                pathCount++;
+            }
         }
         else
         {
             //Include with ordered genotype
             a_pPathList[pathCount] =  CPath(*this, m_calledSemiPath.GetPosition());
+            CSemiPath* p = a_nVcfName == eBASE ? &a_pPathList[pathCount].m_baseSemiPath : &a_pPathList[pathCount].m_calledSemiPath;
             COrientedVariant Ovar1(a_rVariant, true);
+            //Make sure variant is not overlap with the previous one
+            if(p->IsNew(Ovar1))
+            {
+                a_pPathList[pathCount].Include(a_nVcfName, Ovar1, a_nVariantIndex);
+                a_pPathList[pathCount].m_nPathId = this->m_nPathId +2;
+                pathCount++;
+            }
             
-            a_pPathList[pathCount].Include(a_nVcfName, Ovar1, a_nVariantIndex);
-            a_pPathList[pathCount].m_nPathId = this->m_nPathId +2;
-            pathCount++;
-        
             //Include with unordered genotype
             a_pPathList[pathCount] =  CPath(*this, m_calledSemiPath.GetPosition());
+            p = a_nVcfName == eBASE ? &a_pPathList[pathCount].m_baseSemiPath : &a_pPathList[pathCount].m_calledSemiPath;
             COrientedVariant Ovar2(a_rVariant, false);
-            a_pPathList[pathCount].Include(a_nVcfName, Ovar2, a_nVariantIndex);
-            a_pPathList[pathCount].m_nPathId = this->m_nPathId +3;
-            pathCount++;
+            //Make sure variant is not overlap with the previous one
+            if(p->IsNew(Ovar2))
+            {
+                a_pPathList[pathCount].Include(a_nVcfName, Ovar2, a_nVariantIndex);
+                a_pPathList[pathCount].m_nPathId = this->m_nPathId +3;
+                pathCount++;
+            }
         }
         
     }
@@ -146,26 +154,39 @@ int CPath::AddVariant(CPath* a_pPathList, EVcfName a_nVcfName, const CVariant& a
         if (!a_rVariant.IsHeterozygous())
         {
             a_pPathList[pathCount] =  CPath(*this);
+            CSemiPath* p = a_nVcfName == eBASE ? &a_pPathList[pathCount].m_baseSemiPath : &a_pPathList[pathCount].m_calledSemiPath;
             COrientedVariant Ovar1(a_rVariant, true);
-            a_pPathList[pathCount].Include(a_nVcfName, Ovar1, a_nVariantIndex);
-            a_pPathList[pathCount].m_nPathId = this->m_nPathId +2;
-            pathCount++;
+            //Make sure variant is not overlap with the previous one
+            if(p->IsNew(Ovar1))
+            {
+                a_pPathList[pathCount].Include(a_nVcfName, Ovar1, a_nVariantIndex);
+                a_pPathList[pathCount].m_nPathId = this->m_nPathId +2;
+                pathCount++;
+            }
         }
         else
         {
             //Include with ordered genotype
             a_pPathList[pathCount] =  CPath(*this);
+            CSemiPath* p = a_nVcfName == eBASE ? &a_pPathList[pathCount].m_baseSemiPath : &a_pPathList[pathCount].m_calledSemiPath;
             COrientedVariant Ovar1(a_rVariant, true);
-            a_pPathList[pathCount].Include(a_nVcfName, Ovar1, a_nVariantIndex);
-            a_pPathList[pathCount].m_nPathId = this->m_nPathId +2;
-            pathCount++;
+            if(p->IsNew(Ovar1))
+            {
+                a_pPathList[pathCount].Include(a_nVcfName, Ovar1, a_nVariantIndex);
+                a_pPathList[pathCount].m_nPathId = this->m_nPathId +2;
+                pathCount++;
+            }
             
             //Include with unordered genotype
             a_pPathList[pathCount] =  CPath(*this);
+            p = a_nVcfName == eBASE ? &a_pPathList[pathCount].m_baseSemiPath : &a_pPathList[pathCount].m_calledSemiPath;
             COrientedVariant Ovar2(a_rVariant, false);
-            a_pPathList[pathCount].Include(a_nVcfName, Ovar2, a_nVariantIndex);
-            a_pPathList[pathCount].m_nPathId = this->m_nPathId +3;
-            pathCount++;
+            if(p->IsNew(Ovar2))
+            {
+                a_pPathList[pathCount].Include(a_nVcfName, Ovar2, a_nVariantIndex);
+                a_pPathList[pathCount].m_nPathId = this->m_nPathId +3;
+                pathCount++;
+            }
         }
     }
     

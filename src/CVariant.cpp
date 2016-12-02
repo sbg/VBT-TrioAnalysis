@@ -8,6 +8,8 @@ CVariant::CVariant(): m_nVcfId(-1),
 {
     m_nId = -1;
     m_nAlleleCount = 0;
+    m_nMaxLength = 0;
+    m_bIsDuplicate = false;
 }
 
 CVariant::CVariant(const CVariant& a_rObj)
@@ -26,7 +28,8 @@ CVariant::CVariant(const CVariant& a_rObj)
     m_nEndPos = a_rObj.m_nEndPos;
     m_nId = a_rObj.m_nId;
     m_refSequence = a_rObj.m_refSequence;
-    
+    m_nMaxLength = a_rObj.m_nMaxLength;
+    m_bIsDuplicate = a_rObj.m_bIsDuplicate;
 }
 
 
@@ -47,6 +50,8 @@ bool CVariant::Clear()
     m_nStartPos = -1;
     m_chrName.clear();
     m_nAlleleCount = 0;
+    m_nMaxLength = 0;
+    m_bIsDuplicate = false;
     return true;
 }
 

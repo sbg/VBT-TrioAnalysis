@@ -49,8 +49,11 @@ void CSemiPath::IncludeVariant(COrientedVariant& a_rVariant, int a_nVariantIndex
     m_aIncludedVariants.push_back(&a_rVariant);
     m_nVariantIndex = a_nVariantIndex;
     m_nVariantEndPosition = max(m_nVariantEndPosition, a_rVariant.GetVariant().GetEnd());
-    m_nIncludedVariantEndPosition = max(m_nIncludedVariantEndPosition, a_rVariant.GetVariant().GetEnd());
+    m_nIncludedVariantEndPosition = std::max(m_nIncludedVariantEndPosition, a_rVariant.GetVariant().GetEnd());
 
+    //std::cout << "New Last included Var End Pos:" << m_nIncludedVariantEndPosition << std::endl;
+    //std::cout << "Template Pos:" << GetPosition() << std::endl;
+    
     m_haplotypeA.AddVariant(a_rVariant);
     m_haplotypeB.AddVariant(a_rVariant.Other());
 }
@@ -147,6 +150,9 @@ void CSemiPath::MoveForward(int a_nPosition)
 
 bool CSemiPath::IsNew(const COrientedVariant& a_rVar) const
 {
+    //std::cout << "Last Var end pos :" << m_nIncludedVariantEndPosition << std::endl;
+    //std::cout << "Variant to add start pos :" << a_rVar.GetStartPos() << std::endl;
+    
     if(a_rVar.GetStartPos() >= m_nIncludedVariantEndPosition)
         return true;
     else

@@ -45,6 +45,9 @@ class CVariantProvider
         //Checks whether given variant is a structural variant type (A complex type)
         bool IsStructuralVariant(const CVariant& a_rVariant, int a_nMaxLength) const;
     
+        //Push the variant to the variantlist in the order of starting point (ascending order)
+        void PushVariant(CVariant& a_rVariant, std::vector<CVariant>& a_rVecToPush);
+    
         //VCF Readers
         CVcfReader m_baseVCF;
         CVcfReader m_calledVCF;

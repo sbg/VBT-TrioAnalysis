@@ -26,14 +26,13 @@ CHaplotypeSequence::CHaplotypeSequence(const CHaplotypeSequence& a_rObj)
 
 void CHaplotypeSequence::AddVariant(const COrientedVariant& a_rVariant)
 {
-    assert(a_rVariant.GetStartPos() > m_nTemplatePosition);
+    //assert(a_rVariant.GetStartPos() > m_nTemplatePosition);
     
     const SAllele a = a_rVariant.GetAllele();
 
     if (a.m_nStartPos == a.m_nEndPos && a.m_sequence.length() == 0)
     {
         // Adding the opposite side of a pure insert is redundant
-        //std::cout << "Alt string is empty" << std::endl;
         return;
     }
     
@@ -214,7 +213,13 @@ void CHaplotypeSequence::Next()
 
 bool CHaplotypeSequence::IsNew(const COrientedVariant& a_rVar) const
 {
-    return a_rVar.IsNull() || a_rVar.GetAllele().m_nStartPos > m_nLastVariantEnd;
+    bool res1 = a_rVar.GetAllele().m_sequence == "";
+    bool res2 = a_rVar.GetAllele().m_nStartPos > m_nLastVariantEnd;
+
+    std::cout << (res1 ? "Allele null" : "Allele is not null") << std::endl;
+    std::cout << (res2 ? "Not Overlap" : "Overlap") << std::endl;
+    
+    return res1 || res2;
 }
 
 bool CHaplotypeSequence::WantsFutureVariantBases() const

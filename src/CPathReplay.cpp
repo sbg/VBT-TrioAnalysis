@@ -103,7 +103,6 @@ CPath CPathReplay::FindBestPath(int a_nChrId)
 
         processedPath.Step();
         
-        //processedPath.Print();
         
         if(processedPath.InSync())
         {
@@ -123,7 +122,7 @@ CPath CPathReplay::FindBestPath(int a_nChrId)
         
         else
         {
-            std::cout << "Head mismatch, discard" << std::endl;
+           std::cout << "Head mismatch, discard" << std::endl;
         }
 
 
@@ -157,6 +156,8 @@ void CPathReplay::AddIfBetter(const CPath& a_path)
         {
             m_pathList.Erase(other);
             m_pathList.Add(best);
+            if(cnt != m_pathList.Size())
+                std::cout << "Enter ASSERT - ADD IF BETTER" << std::endl;
             assert(cnt == m_pathList.Size());
         }
     }
@@ -165,6 +166,8 @@ void CPathReplay::AddIfBetter(const CPath& a_path)
     {
         int cnt = m_pathList.Size();
         m_pathList.Add(a_path);
+        if(cnt >= m_pathList.Size())
+            std::cout << "Enter ASSERT - ADD IF BETTER 2" << std::endl;
         assert(cnt < m_pathList.Size());
     }
 }
@@ -247,7 +250,6 @@ bool CPathReplay::EnqueueVariant(CPath& a_rPathToPlay, EVcfName a_uVcfSide, int 
         
         for(int k=0; k < pathCount; k++)
         {
-            //paths[k].Print();
             AddIfBetter(paths[k]);
         }
         return true;
@@ -264,8 +266,6 @@ void CPathReplay::SkipToNextVariant(CPath& a_rProcessedPath, int a_nChromosomeId
     // -1 because we want to be before the position
     int nextPos = min(min(aNext,bNext), lastTemplatePos) -1;
 
-    std::cout << "Next Position is:" << nextPos << std::endl;
-    
     assert (a_rProcessedPath.m_calledSemiPath.GetPosition() == a_rProcessedPath.m_baseSemiPath.GetPosition());
     
     if(nextPos > a_rProcessedPath.m_calledSemiPath.GetPosition())
