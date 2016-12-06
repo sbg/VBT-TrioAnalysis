@@ -11,6 +11,8 @@
 #include "EReplayChoice.h"
 #include "EVcfName.h"
 
+class CPathContainer;
+
 class CPath
 {
     public:
@@ -38,7 +40,7 @@ class CPath
     CPath& Include(EVcfName a_nVCF, COrientedVariant& a_rVariant, int a_nVariantIndex);
     
     //Add variant to the given side of path and return the path count
-    int AddVariant(CPath* a_pPathList, EVcfName a_nVcfName, const CVariant& a_rVariant, int a_nVariantIndex);
+    int AddVariant(CPathContainer* a_pPathList, EVcfName a_nVcfName, const CVariant& a_rVariant, int a_nVariantIndex);
     
     bool operator<(const CPath& a_rObj) const
     {
@@ -84,11 +86,59 @@ class CPath
     //Added variant count to called since last sync
     int m_nBSinceSync;
     
-    
     //TEST Purpose
     int m_nPathId;
     
 };
 
+class CPathContainer
+{
+public:
+    
+    CPathContainer()
+    {
+        m_pPath = 0;
+    }
+    
+    CPathContainer(const CPathContainer& a_rObj)
+    {
+        m_pPath = a_rObj.m_pPath;
+    }
+    
+    CPathContainer(const char* a_aRefSequence, int a_nRefSize)
+    {
+        m_pPath = std::shared_ptr<CPath>(new CPath(a_aRefSequence,a_nRefSize));
+    }
+    
+    CPathContainer(const CPath& a_rPath, int a_nSyncPointToPush)
+    {
+        m_pPath = std::shared_ptr<CPath>(new CPath(a_rPath, a_nSyncPointToPush));
+    }
+    
+    bool operator<(const CPathContainer& a_rObj) const
+    {
+        return m_pPath->CompareTo(*a_rObj.m_pPath) < 0;
+    }
+    
+    //Pointer to path object
+    std::shared_ptr<CPath> m_pPath;
+    
+};
+
+
+
 
 #endif // _C_PATH_H_
+
+
+
+
+
+
+
+
+
+
+
+
+

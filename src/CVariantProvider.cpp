@@ -17,6 +17,7 @@ void CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
     m_calledVCF.setID(1);
 
     FillVariantLists();
+    FillOrientedVariantLists();
     
     for(int k = 0; k < m_aCalledVariantList[21].size(); k++)
        std::cout << k << ": " << m_aCalledVariantList[21][k].ToString() << std::endl;
@@ -175,8 +176,11 @@ void CVariantProvider::PushVariant(CVariant& a_rVariant, std::vector<CVariant>& 
         if(a_rVariant.GetEnd() < a_rVecToPush[size-k].GetEnd())
             k++;
         
-        if(a_rVariant.GetEnd() == a_rVecToPush[size-k].GetEnd())
-            a_rVariant.m_bIsDuplicate = true;
+//        if(a_rVariant.GetEnd() == a_rVecToPush[size-k].GetEnd())
+//        {
+//            if(a_rVariant.m_alleles[0].m_sequence.length() < a_rVecToPush[size-k].m_alleles[0].m_sequence.length())
+//                k++;
+//        }
     }
     
     it = a_rVecToPush.begin() + (size - k) + 1;

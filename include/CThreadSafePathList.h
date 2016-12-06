@@ -19,30 +19,30 @@ class CThreadSafePathList
     
     int Size() const;
     
-    std::set<CPath>::iterator End() const;
+    std::set<CPathContainer>::iterator End() const;
 
     void Clear();
 
-    void Add(const CPath& item);
+    void Add(const CPathContainer& item);
 
-    void Erase(const CPath& item);
+    void Erase(const CPathContainer& item);
     
-    std::set<CPath>::iterator Find(const CPath& item);
+    std::set<CPathContainer>::iterator Find(const CPathContainer& item);
     
     // Get the least advanced path
-    void GetLeastAdvanced(CPath& items);
+    void GetLeastAdvanced(CPathContainer& items);
 
     bool Empty();
 
-    bool Contains(const CPath& item) const;
+    bool Contains(const CPathContainer& item) const;
 
-    CPath floor(const CPath& a_rObj);
+    CPathContainer floor(const CPathContainer& a_rObj);
     
     void Print() const;
 
   private:
     
-    std::set<CPath> m_set;
+    std::set<CPathContainer> m_set;
 
 };
 

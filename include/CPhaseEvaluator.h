@@ -135,7 +135,7 @@ class CPhaseEvaluator
     
     CPhaseEvaluator(CVariantProvider *a_pVarProvider);
 
-    SPhasingResult CountMisphasings(const CPath& a_rPath, int a_nChrId);
+    SPhasingResult CountMisphasings(CPath& a_rPath, int a_nChrId);
     
     private:
     

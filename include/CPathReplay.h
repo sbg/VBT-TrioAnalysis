@@ -30,8 +30,7 @@ class CPathReplay
     private:
 
         // Add the paths to the sorted path list if there is no better path
-        void AddIfBetter(std::vector<CPath> a_pathList);
-        void AddIfBetter(const CPath& a_pathList);
+        void AddIfBetter(const CPathContainer& a_path);
 
         //Move the path to just before the next variant for either side
         void SkipToNextVariant(CPath& a_rProcessedPath, int a_nChromosomeId);
@@ -40,7 +39,7 @@ class CPathReplay
         int FutureVariantPosition(const CSemiPath& a_rSemiPath, EVcfName a_uVcfName, int a_nChromosomeId) const;
     
         //Compare the two paths and find the one that maximize TP count
-        bool FindBetter(const CPath& lhs, const CPath& rhs);
+        bool FindBetter(const CPathContainer& lhs, const CPathContainer& rhs);
     
         //Process next variant for the input path
         bool EnqueueVariant(CPath& a_rPathToPlay, EVcfName a_uVcfSide, int a_nChromosomeId);

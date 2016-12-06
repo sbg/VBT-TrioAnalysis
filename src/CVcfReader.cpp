@@ -127,7 +127,7 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
         
         a_pVariant->m_nAlleleCount = ngt_arr;
         
-        
+                
         a_pVariant->m_bIsPhased = bcf_gt_is_phased(bcf_gt_allele(gt_arr[0]));
         
         //READ SEQUENCE DATA AND FILL ALLELES
@@ -141,11 +141,16 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
             a_pVariant->m_nMaxLength = std::max(a_pVariant->m_nMaxLength,static_cast<int>(a_pVariant->m_alleles[i].m_sequence.length()));
         }
         
-        if(a_pVariant->m_alleles[0].m_sequence == a_pVariant->m_alleles[1].m_sequence)
-            a_pVariant->m_nAlleleCount = 1;
+        if(ngt_arr == 2)
+        {
+            if(a_pVariant->m_alleles[0].m_sequence == a_pVariant->m_alleles[1].m_sequence)
+                a_pVariant->m_nAlleleCount = 1;
+            else
+                a_pVariant->m_nAlleleCount = 2;
+        }
         else
-            a_pVariant->m_nAlleleCount = 2;
-
+            a_pVariant->m_nAlleleCount = 1;
+        
         if(HasRedundantFirstNucleotide())
         {
             for (int i = 0; i < ngt_arr; ++i)
