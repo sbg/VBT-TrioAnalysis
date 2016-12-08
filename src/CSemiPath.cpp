@@ -1,3 +1,11 @@
+//
+//  CVcfReader.cpp
+//  VCFComparison
+//
+//  Created by Berke.Toptas
+//  Copyright © 2016 Seven Bridges Genomics. All rights reserved.
+//
+
 #include "CSemiPath.h"
 #include <cassert>
 #include <iostream>

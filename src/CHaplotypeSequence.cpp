@@ -1,3 +1,11 @@
+//
+//  CHaplotypeSequence.cpp
+//  VCFComparison
+//
+//  Created by Berke.Toptas
+//  Copyright © 2016 Seven Bridges Genomics. All rights reserved.
+//
+
 #include "CHaplotypeSequence.h"
 #include <iostream>
 

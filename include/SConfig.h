@@ -8,31 +8,6 @@
 //Any configuration that will be used send via this config object
 struct SConfig
 {
-    SConfig(int argc, char** argv)
-    {
-        const char* PARAM_BASE = "-b";
-        const char* PARAM_CALLED = "-c";
-        const char* PARAM_FILTER = "-f";
-
-        int it = 1;
-        
-        while(it <= argc)
-        {
-            if(0 == strcmp(argv[it], PARAM_BASE))
-                m_pBaseVcfFileName = argv[it+1];
-            else if(0 == strcmp(argv[it], PARAM_CALLED))
-                m_pCalledVcfFileName = argv[it+1];
-            else if(0 == strcmp(argv[it], PARAM_FILTER))
-                m_pFilterName = argv[it+1];
-        
-            it += 2;
-        }
-    }
-    
-    SConfig()
-    {}
-    
-    
     //Indicates if enough parameters are received from command line
     bool m_bIsOK;
     

@@ -34,6 +34,9 @@ public:
     // Get next record in the file
     bool GetNextRecord(CVariant* a_pVariant, int a_nId, const SConfig& a_rConfig);
     
+    // Get next record which has multiple samples in the file(Generates list of N variants and name of each sample)
+    bool GetNextRecordMultiSample(CVariant* a_pVariant, std::vector<std::string>& a_PatientList);
+    
     // Get the filename
     std::string GetFilename() const {return m_filename;};
     

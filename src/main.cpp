@@ -10,7 +10,7 @@ int main (int argc, char** argv)
 {
     if (argc < 4)
     {
-        std::cout << "Argument Count is wrong!! include a vcf and fasta file." << std::endl;
+        std::cout << "More argument is expected. Include a vcf and fasta file." << std::endl;
         return 1;       
     }
     
@@ -44,3 +44,39 @@ int main (int argc, char** argv)
     std::cout << "Program Completed in " << duration << " secs" << std::endl;
 
 }
+
+
+//#include <iostream>
+//#include <stdlib.h>
+//#include <iostream>
+//#include "SConfig.h"
+//#include "CVcfReader.h"
+//#include <fstream>
+//
+//int main() {
+//    SConfig configurations;
+//    
+//    configurations.m_pBaseVcfFileName = "/Users/c1ms21p6h3qk/Desktop/SBGProjectClean/VCFcomparison/Inputs/sample1.vcf.gz";
+//    configurations.m_nMaxVariantSize = 1000;
+//    configurations.m_bIsFilterEnabled = false;
+//    configurations.m_pFilterName = "PASS";
+//    
+//    CVcfReader m_baseVCF;
+//    bool bIsSuccess = m_baseVCF.Open(configurations.m_pBaseVcfFileName);
+//    if(!bIsSuccess)
+//        std::cout << "Baseline VCF file is unable to open!: " << configurations.m_pBaseVcfFileName << std::endl;
+//
+//    const int patientCount = m_baseVCF.GetNumberOfSamples();
+//    CVariant* variantList = new CVariant[patientCount];
+//    std::vector<std::string> patientNameList;
+//    
+//    m_baseVCF.GetNextRecordMultiSample(variantList, patientNameList);
+//    
+//    for(int k= 0; k < patientCount; k++)
+//    {
+//        std::cout << patientNameList[k] << " " <<variantList[k].ToString() << std::endl;
+//    }
+//    
+//    return 0;
+//    
+//}

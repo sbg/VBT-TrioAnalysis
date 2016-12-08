@@ -1,3 +1,11 @@
+//
+//  CVariant.cpp
+//  VCFComparison
+//
+//  Created by Berke.Toptas
+//  Copyright © 2016 Seven Bridges Genomics. All rights reserved.
+//
+
 #include "CVariant.h"
 #include <iostream>
 
@@ -11,7 +19,6 @@ CVariant::CVariant(): m_nVcfId(-1),
     m_nId = -1;
     m_nAlleleCount = 0;
     m_nMaxLength = 0;
-    m_bIsDuplicate = false;
 }
 
 CVariant::CVariant(const CVariant& a_rObj)
@@ -26,12 +33,13 @@ CVariant::CVariant(const CVariant& a_rObj)
     m_alleles[0].m_sequence = a_rObj.m_alleles[0].m_sequence;
     m_alleles[1].m_nEndPos = a_rObj.m_alleles[1].m_nEndPos;
     m_alleles[1].m_nStartPos = a_rObj.m_alleles[1].m_nStartPos;
-    m_alleles[1].m_sequence = a_rObj.m_alleles[1].m_sequence;m_nStartPos = a_rObj.m_nStartPos;
+    m_alleles[1].m_sequence = a_rObj.m_alleles[1].m_sequence;
+    m_nStartPos = a_rObj.m_nStartPos;
     m_nEndPos = a_rObj.m_nEndPos;
     m_nId = a_rObj.m_nId;
     m_refSequence = a_rObj.m_refSequence;
     m_nMaxLength = a_rObj.m_nMaxLength;
-    m_bIsDuplicate = a_rObj.m_bIsDuplicate;
+    m_bIsHeterozygous = a_rObj.m_bIsHeterozygous;
 }
 
 
@@ -53,16 +61,12 @@ bool CVariant::Clear()
     m_chrName.clear();
     m_nAlleleCount = 0;
     m_nMaxLength = 0;
-    m_bIsDuplicate = false;
     return true;
 }
 
 bool CVariant::IsHeterozygous() const
 {
-    if(m_nAlleleCount != 2)
-        return false;
-    
-    return m_alleles[0].m_sequence != m_alleles[1].m_sequence;
+    return m_bIsHeterozygous;
 }
 
 void CVariant::Print() const

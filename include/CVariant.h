@@ -101,9 +101,6 @@ class CVariant
     
     //Maximum length of the allele
     int m_nMaxLength;
-    //Indicates if it is a duplicate variant
-    bool m_bIsDuplicate;
-
 };
 
 
