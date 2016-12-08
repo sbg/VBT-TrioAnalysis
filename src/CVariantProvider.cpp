@@ -19,8 +19,8 @@ void CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
     FillVariantLists();
     FillOrientedVariantLists();
     
-    for(int k = 0; k < m_aCalledVariantList[21].size(); k++)
-       std::cout << k << ": " << m_aCalledVariantList[21][k].ToString() << std::endl;
+    //for(int k = 0; k < m_aCalledVariantList[21].size(); k++)
+    //   std::cout << k << ": " << m_aCalledVariantList[21][k].ToString() << std::endl;
 }
 
 void CVariantProvider::SetFastaReader(const CFastaReader& a_rFastaReader)
@@ -94,6 +94,21 @@ const CVariant* CVariantProvider::GetVariant(EVcfName a_uFrom, int a_nChrNo, int
             return &m_aBaseVariantList[a_nChrNo][a_nVariantId];
         case eCALLED:
             return &m_aCalledVariantList[a_nChrNo][a_nVariantId];
+    }
+}
+
+
+COrientedVariant* CVariantProvider::GetOrientedVariant(EVcfName a_uFrom, int a_nChrNo, int a_nVariantId, bool a_bOrientation)
+{
+    int nExtra = a_bOrientation ? 0 : 1;
+    
+    switch (a_uFrom)
+    {
+        case eBASE:
+            return &m_aBaseOrientedVariantList[a_nChrNo][a_nVariantId*2 + nExtra];
+            break;
+        case eCALLED:
+            return &m_aCalledOrientedVariantList[a_nChrNo][a_nVariantId*2 + nExtra];
     }
 }
 

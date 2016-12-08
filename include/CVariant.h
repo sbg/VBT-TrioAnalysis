@@ -7,10 +7,7 @@
 #define _CVariant_H
 
 #include <string>
-#include <vector>
 #include "htslib/vcf.h"
-#include <iostream>
-
 
 enum EVariantType
 {

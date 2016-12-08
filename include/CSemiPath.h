@@ -8,6 +8,7 @@
 
 #include "CHaplotypeSequence.h"
 #include "EVcfName.h"
+#include <vector>
 
 class CSemiPath
 {

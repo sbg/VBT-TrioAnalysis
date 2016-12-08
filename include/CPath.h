@@ -12,6 +12,7 @@
 #include "EVcfName.h"
 
 class CPathContainer;
+class CVariantProvider;
 
 class CPath
 {
@@ -40,7 +41,7 @@ class CPath
     CPath& Include(EVcfName a_nVCF, COrientedVariant& a_rVariant, int a_nVariantIndex);
     
     //Add variant to the given side of path and return the path count
-    int AddVariant(CPathContainer* a_pPathList, EVcfName a_nVcfName, const CVariant& a_rVariant, int a_nVariantIndex);
+    int AddVariant(CPathContainer* a_pPathList, EVcfName a_nVcfName, CVariantProvider* a_pVariantProvider, int a_nVariantIndex, int a_nChromosomeId);
     
     bool operator<(const CPath& a_rObj) const
     {

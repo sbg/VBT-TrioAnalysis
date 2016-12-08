@@ -31,6 +31,9 @@ class CVariantProvider
         //Get the variant with given Chr number and variant id
         const CVariant* GetVariant(EVcfName a_uFrom, int a_nChrNo, int a_nVariantId) const;
     
+        //Get the oriented variant with the given chr variant id and orientation
+        COrientedVariant* GetOrientedVariant(EVcfName a_uFrom, int a_nChrNo, int a_nVariantId, bool a_bOrientation);
+    
         // Returns the size of variant list for that chromosome
         int GetVariantListSize(EVcfName a_uFrom, int a_nChrNo) const;
     

@@ -1,4 +1,6 @@
 #include "CVariant.h"
+#include <iostream>
+
 
 CVariant::CVariant(): m_nVcfId(-1),
             m_nChrId(-1), 

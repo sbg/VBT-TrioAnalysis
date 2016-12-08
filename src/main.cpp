@@ -18,19 +18,20 @@ int main (int argc, char** argv)
     std::cout.rdbuf(out.rdbuf()); //redirect std::cout to out.txt!
     
     SConfig configurations;
-    configurations.m_pBaseVcfFileName = argv[2];
+    configurations.m_pBaseVcfFileName = argv[1];
     configurations.m_pCalledVcfFileName = argv[2];
     configurations.m_pFastaFileName = argv[3];
     configurations.m_nMaxVariantSize = 1000;
     configurations.m_bIsFilterEnabled = false;
     configurations.m_pFilterName = "PASS";
+
+    
+    std::clock_t start;
+    double duration;
     
     CPathReplay pathReplay;
     pathReplay.InitializeReaders(configurations);
 
-    std::clock_t start;
-    double duration;
-    
     start = std::clock();
     CPath bestPath = pathReplay.FindBestPath(21);
     duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
@@ -40,7 +41,6 @@ int main (int argc, char** argv)
     std::cout << "Baseline Included Count: " << bestPath.m_baseSemiPath.GetIncluded().size() << std::endl;
     std::cout << "Baseline Excluded Count: " << bestPath.m_baseSemiPath.GetExcluded().size() << std::endl;
     
-    
-    std::cout << "Program Completed :" << duration << " secs" << std::endl;
+    std::cout << "Program Completed in " << duration << " secs" << std::endl;
 
 }

@@ -26,7 +26,7 @@ CHaplotypeSequence::CHaplotypeSequence(const CHaplotypeSequence& a_rObj)
 
 void CHaplotypeSequence::AddVariant(const COrientedVariant& a_rVariant)
 {
-    assert(a_rVariant.GetStartPos() > m_nTemplatePosition);
+    //assert(a_rVariant.GetStartPos() > m_nTemplatePosition);
     
     const SAllele a = a_rVariant.GetAllele();
 
@@ -131,8 +131,8 @@ void CHaplotypeSequence::MoveForward(int a_nPosition)
 {
     if (!IsOnTemplate()) 
     {
-      std::cout << "Attempt to move forward while still in a variant" << std::endl;
-      return;
+        std::cout << "Attempt to move forward while still in a variant" << std::endl;
+        assert(IsOnTemplate());
     }
 
     m_nTemplatePosition = a_nPosition - 1;
@@ -171,6 +171,7 @@ void CHaplotypeSequence::Next()
     {
         while(1)
         {
+            
             if(m_nPositionInVariant != m_nextVariant.GetAllele().m_sequence.length())
             {
                 // Haven't reached the end of the current variant.
@@ -204,6 +205,7 @@ void CHaplotypeSequence::Next()
                 {
                     std::cout << "templatePosition=" << m_nTemplatePosition << " varStartPosition=" << m_nextVariant.GetVariant().GetStart() << std::endl;
                     std::cout << "Out of order variants during replay" << std::endl;
+                    assert(m_nTemplatePosition == m_nextVariant.GetAllele().m_nStartPos);
                 }
             }
         }
@@ -213,14 +215,11 @@ void CHaplotypeSequence::Next()
 
 bool CHaplotypeSequence::IsNew(const COrientedVariant& a_rVar) const
 {
-    bool res1 = a_rVar.GetAllele().m_sequence == "";
-    bool res2 = a_rVar.GetAllele().m_nStartPos > m_nLastVariantEnd;
-    //bool res3 = a_rVar.GetAllele().m_nStartPos > m_nTemplatePosition;
-
-    //std::cout << (res1 ? "Allele null" : "Allele is not null") << std::endl;
-    //std::cout << (res2 ? "Not Overlap" : "Overlap") << std::endl;
+    return a_rVar.GetAllele().m_nStartPos > m_nLastVariantEnd;
     
-    return (res1 || res2); //&& res3;
+    //bool res1 = a_rVar.GetAllele().m_sequence == "";
+    //bool res2 = a_rVar.GetAllele().m_nStartPos > m_nLastVariantEnd;
+    //return (res1 || res2);
 }
 
 bool CHaplotypeSequence::WantsFutureVariantBases() const

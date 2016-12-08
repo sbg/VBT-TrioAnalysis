@@ -1,5 +1,5 @@
 #include "COrientedVariant.h"
-
+#include <iostream>
 
 COrientedVariant::COrientedVariant()
 {
@@ -116,3 +116,24 @@ const CVariant& COrientedVariant::GetVariant() const
 {
     return *m_variant;
 }
+
+
+void COrientedVariant::Print() const
+{
+    std::cout << m_nAlleleIndex << ":" << m_nOtherAlleleIndex << " " << m_bIsOrderOfGenotype << std::endl;
+    m_variant->Print();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,5 +1,6 @@
 #include "CSemiPath.h"
 #include <cassert>
+#include <iostream>
 
 inline int max(int a, int b)
 {
@@ -218,9 +219,20 @@ void CSemiPath::Print() const
 {
     std::cout<< "Pos:" << GetPosition() << " VarEnd Pos:" << GetVariantEndPosition() << " VarEnd Ind:" << GetVariantIndex() << std::endl;
     std::cout<< "Excluded Var Count:" << m_aExcludedVariants.size() << " Included Var Count:" << m_aIncludedVariants.size() << std::endl;
+    
+    if(m_aIncludedVariants.size() > 0 && !m_aIncludedVariants.back()->IsNull())
+        m_aIncludedVariants.back()->Print();
+        
     std::cout<< "Haplotype A:" << std::endl;
     m_haplotypeA.Print();
     std::cout<< "Haplotype B:" << std::endl;
     m_haplotypeB.Print();
 }
+
+
+
+
+
+
+
 

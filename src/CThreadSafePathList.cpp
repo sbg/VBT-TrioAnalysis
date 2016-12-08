@@ -7,6 +7,7 @@
 //
 
 #include "CThreadSafePathList.h"
+#include <iostream>
 
 CThreadSafePathList::CThreadSafePathList()
 {

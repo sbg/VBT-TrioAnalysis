@@ -52,6 +52,9 @@ class COrientedVariant
     
     //Set the weight(proportion of variant inside 2 consecutive syncpoints) of the variant
     void SetWeight(double a_fWeight) const;
+    
+    //[For Test purpose] print the oriented variant
+    void Print() const;
 
     private:
     //Index of the selected allele of this variant

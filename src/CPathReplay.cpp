@@ -3,16 +3,6 @@
 #include <vector>
 #include <cassert>
 
-inline int max(int a, int b)
-{
-    return a > b ? a : b;
-}
-
-inline int min(int a, int b)
-{
-    return a < b ? a : b;
-}
-
 void CPathReplay::InitializeReaders(const SConfig& a_rConfig)
 {
     //Initialize refseq provider
@@ -37,37 +27,28 @@ CPath CPathReplay::FindBestPath(int a_nChrId)
     int currentMax = 0;
     m_nCurrentPosition = 0;
     int lastSyncPos = 0;
-    int TestID = 0;
-    std::string maxPathRegion;
+    //int TestID = 0;
+    //std::string maxPathRegion;
     
     CPathContainer processedPath;
     
     while(!m_pathList.Empty())
     {
-        currentMax = max(currentMax, m_pathList.Size());
-        currentMaxIterations = max(currentMaxIterations, currentIterations++);
+        currentMax = std::max(currentMax, m_pathList.Size());
+        currentMaxIterations = std::max(currentMaxIterations, currentIterations++);
         m_pathList.GetLeastAdvanced(processedPath);
         
-        if(TestID == 1854)
-        {
-            int x = 0;
-            x = x + 3;
-        }
-        
-        std::cout << "====" << TestID++ << "====" << "PathID:" << processedPath.m_pPath->m_nPathId << std::endl;
-        std::cout << "Size:" << m_pathList.Size() + 1 << " Range:" << lastSyncPos + 1 << "-" << m_nCurrentPosition + 1 << " LocalIterations:" << currentIterations << std::endl;
+        //std::cout << "====" << TestID++ << "====" << "PathID:" << processedPath.m_pPath->m_nPathId << std::endl;
+        //std::cout << "Size:" << m_pathList.Size() + 1 << " Range:" << lastSyncPos + 1 << "-" << m_nCurrentPosition + 1 << " LocalIterations:" << currentIterations << std::endl;
        
-        m_pathList.Print();
-        //processedPath.m_pPath->Print();
-
         if(m_pathList.Size() == 0)
         {
             int currentSyncPos = processedPath.m_pPath->m_calledSemiPath.GetPosition();
             if(currentMax > maxPaths)
             {
                 maxPaths = currentMax;
-                maxPathRegion =  "chr21:" + std::to_string(lastSyncPos + 1) + "-" + std::to_string(currentSyncPos + 1);
-                std::cout << "Maximum path complexity now " << maxPaths << ", at " << maxPathRegion << " with "  << currentIterations << " iterations" << std::endl;
+                //maxPathRegion =  "chr21:" + std::to_string(lastSyncPos + 1) + "-" + std::to_string(currentSyncPos + 1);
+                //std::cout << "Maximum path complexity now " << maxPaths << ", at " << maxPathRegion << " with "  << currentIterations << " iterations" << std::endl;
             }
             currentMax = 0;
             currentIterations = 0;
@@ -88,7 +69,7 @@ CPath CPathReplay::FindBestPath(int a_nChrId)
 
         if(processedPath.m_pPath->HasFinished())
         {
-            std::cout << "processed path is finished" << std::endl;
+            //std::cout << "processed path is finished" << std::endl;
             //Path is done. Update the Best Path if it is better
             CPathContainer processedCopy(*processedPath.m_pPath, processedPath.m_pPath->m_calledSemiPath.GetPosition());
             best = FindBetter(best, processedCopy) ? best : processedCopy;
@@ -97,13 +78,13 @@ CPath CPathReplay::FindBestPath(int a_nChrId)
 
         if(EnqueueVariant(*processedPath.m_pPath, eCALLED, a_nChrId))
         {
-            std::cout << "Called semipath enqueued" << std::endl;
+            //std::cout << "Called semipath enqueued" << std::endl;
             continue;
         }
         
         if(EnqueueVariant(*processedPath.m_pPath, eBASE, a_nChrId))
         {
-            std::cout << "Base semipath enqueued" << std::endl;
+            //std::cout << "Base semipath enqueued" << std::endl;
             continue;
         }
 
@@ -115,28 +96,28 @@ CPath CPathReplay::FindBestPath(int a_nChrId)
         if(processedPath.m_pPath->InSync())
         {
             SkipToNextVariant(*processedPath.m_pPath, a_nChrId);
-            std::cout << "In Sync/ skip to next variant" << std::endl;
+            //std::cout << "In Sync/ skip to next variant" << std::endl;
         }
         else
         {
-            std::cout << "Not in sync" << std::endl;
+            //std::cout << "Not in sync" << std::endl;
         }
 
         if(processedPath.m_pPath->Matches())
         {
-            std::cout << "Head matches, keeping" << std::endl;
+            //std::cout << "Head matches, keeping" << std::endl;
             AddIfBetter(processedPath);
             //m_pathList.Print();
         }
         
         else
         {
-           std::cout << "Head mismatch, discard" << std::endl;
+           //std::cout << "Head mismatch, discard" << std::endl;
         }
         
     }
     
-     std::cout << "Best Path Found" << std::endl;
+     //std::cout << "Best Path Found" << std::endl;
      return *best.m_pPath;
 }
 
@@ -156,8 +137,6 @@ void CPathReplay::AddIfBetter(const CPathContainer& a_path)
         {
             m_pathList.Erase(other);
             m_pathList.Add(best);
-            if(cnt != m_pathList.Size())
-                std::cout << "Enter ASSERT - ADD IF BETTER" << std::endl;
             assert(cnt == m_pathList.Size());
         }
     }
@@ -166,8 +145,6 @@ void CPathReplay::AddIfBetter(const CPathContainer& a_path)
     {
         int cnt = m_pathList.Size();
         m_pathList.Add(a_path);
-        if(cnt >= m_pathList.Size())
-            std::cout << "Enter ASSERT - ADD IF BETTER 2" << std::endl;
         assert(cnt < m_pathList.Size());
     }
 }
@@ -218,7 +195,6 @@ bool CPathReplay::FindBetter(const CPathContainer& lhs, const CPathContainer& rh
                 return syncDelta > 0 ? true : false;
             
             // At this point break ties arbitrarily based on allele ordering
-            //CTODO : lhsIncludedVariants NULL donuyor!!!!
             return (lhsIncludedVariants.back()->GetAlleleIndex() < rhsIncludedVariants.back()->GetAlleleIndex()) ? true : false;
         }
     }
@@ -241,15 +217,15 @@ bool CPathReplay::EnqueueVariant(CPath& a_rPathToPlay, EVcfName a_uVcfSide, int 
     }
 
     int nVariantId = GetNextVariant(*pSemiPath, a_nChromosomeId);
-    const CVariant* pNext = m_variantProvider.GetVariant(a_uVcfSide, a_nChromosomeId, nVariantId);  
+    const CVariant* pNext = m_variantProvider.GetVariant(a_uVcfSide, a_nChromosomeId, nVariantId);
     
     if(nVariantId != -1)
     {
-        std::cout << "Add alternatives to " << ((a_uVcfSide == eBASE) ? "BASE " : "CALLED ") << pNext->ToString() << std::endl;
+        //std::cout << "Add alternatives to " << ((a_uVcfSide == eBASE) ? "BASE " : "CALLED ") << pNext->ToString() << std::endl;
         
-        m_nCurrentPosition = max(m_nCurrentPosition, pNext->GetStart());
+        m_nCurrentPosition = std::max(m_nCurrentPosition, pNext->GetStart());
         CPathContainer paths[3];
-        int pathCount = a_rPathToPlay.AddVariant(paths, a_uVcfSide, *pNext, nVariantId);
+        int pathCount = a_rPathToPlay.AddVariant(paths, a_uVcfSide, &m_variantProvider, nVariantId, a_nChromosomeId);
         
         for(int k=0; k < pathCount; k++)
         {
@@ -267,9 +243,9 @@ void CPathReplay::SkipToNextVariant(CPath& a_rProcessedPath, int a_nChromosomeId
     int bNext = FutureVariantPosition(a_rProcessedPath.m_baseSemiPath, eBASE, a_nChromosomeId);
     int lastTemplatePos = m_refFASTA.GetRefSeqSize() -1;
     // -1 because we want to be before the position
-    int nextPos = min(min(aNext,bNext), lastTemplatePos) -1;
+    int nextPos = std::min(std::min(aNext,bNext), lastTemplatePos) -1;
 
-    std::cout << "Next Position is:" << nextPos << std::endl;
+    //std::cout << "Next Position is:" << nextPos << std::endl;
 
     assert (a_rProcessedPath.m_calledSemiPath.GetPosition() == a_rProcessedPath.m_baseSemiPath.GetPosition());
     
