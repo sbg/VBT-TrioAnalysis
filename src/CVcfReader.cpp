@@ -202,7 +202,7 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
 }
 
 
-bool CVcfReader::GetNextRecordMultiSample(CVariant* a_pVariant, std::vector<std::string>& a_pPatientNameList)
+bool CVcfReader::GetNextRecordMultiSample(CVariant* a_pVariant)
 {
     int* gt_arr = NULL;
     int ngt_arr = 0;
@@ -233,8 +233,6 @@ bool CVcfReader::GetNextRecordMultiSample(CVariant* a_pVariant, std::vector<std:
     int samplenumber = GetNumberOfSamples();
     for(int k = 0; k < samplenumber; k++)
     {
-        a_pPatientNameList.push_back(m_pHeader->id[BCF_DT_SAMPLE][k].key);
-        
         a_pVariant[k].Clear();
         a_pVariant[k].m_chrName = m_pHeader->id[BCF_DT_CTG][m_pRecord->rid].key;
         
@@ -323,6 +321,15 @@ int CVcfReader::GetNumberOfSamples() const
     
     return bcf_hdr_nsamples(m_pHeader);
 }
+
+void CVcfReader::GetSampleNames(std::vector<std::string>& a_pSampleNameList)
+{
+    int samplecount = bcf_hdr_nsamples(m_pHeader);
+    
+    for(int k =0; k < samplecount; k++)
+        a_pSampleNameList.push_back(m_pHeader->id[BCF_DT_SAMPLE][k].key);
+}
+
 
 int CVcfReader::GetContigId(const char* name) const
 {
