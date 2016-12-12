@@ -8,7 +8,7 @@
 
 #include <stdlib.h>
 #include <string>
-
+#include <vector>
 #include <zlib.h>
 #include "htslib/kseq.h"
 
@@ -34,6 +34,9 @@ class CFastaReader
     //Returns the size of ref sequence array of last read Contig //TODO:Should take Chromosome id as input
     int GetRefSeqSize() const;
     
+    //Fills the m_contigList for the provided chromosomes from FASTA file
+    void FillRefSeq(std::vector<std::string> a_chromosomeList);
+    
     private:
 
     std::string m_fileName;
@@ -41,6 +44,8 @@ class CFastaReader
     bool m_bIsOpen;
     gzFile m_fastaFile;
     kseq_t *m_pContig;
+    
+    std::vector<kseq_t*> m_contigList;
     
     int m_LastContigSequenceSize;
     

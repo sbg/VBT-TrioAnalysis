@@ -65,6 +65,7 @@ class CVariant
     
     //Return the reference sequences
     std::string GetRefSeq() const;
+    
     //Return the allele sequence specified with the id (0 is first allele, 1 is second allele)
     SAllele GetAllele(int a_nAlleleId) const;
 

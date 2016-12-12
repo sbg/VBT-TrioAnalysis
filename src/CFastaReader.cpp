@@ -9,7 +9,6 @@
 #include "CFastaReader.h"
 #include <iostream>
 
-
 CFastaReader::CFastaReader()
 {
     m_bIsOpen = false;
@@ -25,7 +24,7 @@ CFastaReader::CFastaReader(const char * a_pFileName)
 
 CFastaReader::~CFastaReader()
 {
-    //Close();
+    Close();
 }
         
 bool CFastaReader::Open(const char *a_pFileName)
@@ -60,6 +59,7 @@ void CFastaReader::PrintContig()
     std::cout << m_pContig->name.s << std::endl;
     //printing seq
     std::cout << m_pContig->seq.s << std::endl;
+
 }
 
 char* CFastaReader::GetRefSeq() const
@@ -72,6 +72,26 @@ int CFastaReader::GetRefSeqSize() const
     return m_LastContigSequenceSize;
 }
 
+void CFastaReader::FillRefSeq(std::vector<std::string> a_chromosomeList)
+{
+    kseq_t* pContig;
+    
+    while(-1 != kseq_read(pContig))
+    {
+        if (std::find(a_chromosomeList.begin(), a_chromosomeList.end(), std::string(pContig->seq.s)) != a_chromosomeList.end())
+        {
+            m_contigList.push_back(pContig);
+            pContig = 0;
+        }
+        else
+        {
+            kseq_destroy(pContig);
+        }
+    }
+}
+
+
+
 bool CFastaReader::Close()
 {
     kseq_destroy(m_pContig);
@@ -79,5 +99,6 @@ bool CFastaReader::Close()
     m_bIsOpen = false;
     return true;
 }
+
 
 

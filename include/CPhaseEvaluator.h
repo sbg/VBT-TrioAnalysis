@@ -1,10 +1,8 @@
-//
-//  CPhaseEvaluator.h
-//  VCFComparison
-//
-//  Created by Berke.Toptas on 11/16/16.
-//  Copyright © 2016 Seven Bridges Genomics. All rights reserved.
-//
+/*
+ * Originated from: https://github.com/RealTimeGenomics/rtg-tools/blob/master/src/com/rtg/vcf/eval
+ *
+ * Author: Berke Cagkan Toptas
+ */
 
 #ifndef _C_PHASE_EVALUATOR_H_
 #define _C_PHASE_EVALUATOR_H_

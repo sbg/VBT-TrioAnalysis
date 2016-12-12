@@ -10,6 +10,7 @@
 		551971FF1DDCB5B000A81167 /* CPhaseEvaluator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 551971FD1DDCB5B000A81167 /* CPhaseEvaluator.cpp */; };
 		551972031DDFA8FD00A81167 /* CSyncPoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 551972021DDFA8FD00A81167 /* CSyncPoint.cpp */; };
 		553F8B001DF9B8CD00BD756E /* CVcfAnalyzer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 553F8AFE1DF9B8CD00BD756E /* CVcfAnalyzer.cpp */; };
+		553F8B041DFEFA8C00BD756E /* CFastaParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 553F8B031DFEFA8C00BD756E /* CFastaParser.cpp */; };
 		556D39941DD3AF2E00551040 /* libhts.1.3.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 556D39811DD3AF2E00551040 /* libhts.1.3.2.dylib */; };
 		556D39951DD3AF2E00551040 /* libhts.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 556D39821DD3AF2E00551040 /* libhts.1.dylib */; };
 		556D39961DD3AF2E00551040 /* libhts.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 556D39831DD3AF2E00551040 /* libhts.a */; };
@@ -47,6 +48,8 @@
 		551972021DDFA8FD00A81167 /* CSyncPoint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSyncPoint.cpp; sourceTree = "<group>"; };
 		553F8AFE1DF9B8CD00BD756E /* CVcfAnalyzer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CVcfAnalyzer.cpp; sourceTree = "<group>"; };
 		553F8B011DF9B9D100BD756E /* CVcfAnalyzer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CVcfAnalyzer.h; sourceTree = "<group>"; };
+		553F8B021DFEFA2900BD756E /* CFastaParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CFastaParser.h; sourceTree = "<group>"; };
+		553F8B031DFEFA8C00BD756E /* CFastaParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CFastaParser.cpp; sourceTree = "<group>"; };
 		556D39761DD3AEA400551040 /* VCFComparison */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = VCFComparison; sourceTree = BUILT_PRODUCTS_DIR; };
 		556D39811DD3AF2E00551040 /* libhts.1.3.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libhts.1.3.2.dylib; sourceTree = "<group>"; };
 		556D39821DD3AF2E00551040 /* libhts.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libhts.1.dylib; sourceTree = "<group>"; };
@@ -74,7 +77,6 @@
 		556D39AD1DD3AF3800551040 /* CVariant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CVariant.h; sourceTree = "<group>"; };
 		556D39AE1DD3AF3800551040 /* CVariantProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CVariantProvider.h; sourceTree = "<group>"; };
 		556D39AF1DD3AF3800551040 /* CVcfReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CVcfReader.h; sourceTree = "<group>"; };
-		556D39B01DD3AF3800551040 /* EReplayChoice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EReplayChoice.h; sourceTree = "<group>"; };
 		556D39B11DD3AF3800551040 /* EVcfName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EVcfName.h; sourceTree = "<group>"; };
 		556D39B31DD3AF3800551040 /* bgzf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bgzf.h; sourceTree = "<group>"; };
 		556D39B41DD3AF3800551040 /* cram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cram.h; sourceTree = "<group>"; };
@@ -185,6 +187,7 @@
 				556D39CD1DD4D75B00551040 /* CThreadSafePathList.cpp */,
 				551972021DDFA8FD00A81167 /* CSyncPoint.cpp */,
 				553F8AFE1DF9B8CD00BD756E /* CVcfAnalyzer.cpp */,
+				553F8B031DFEFA8C00BD756E /* CFastaParser.cpp */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -205,11 +208,11 @@
 				556D39AD1DD3AF3800551040 /* CVariant.h */,
 				556D39AE1DD3AF3800551040 /* CVariantProvider.h */,
 				556D39AF1DD3AF3800551040 /* CVcfReader.h */,
-				556D39B01DD3AF3800551040 /* EReplayChoice.h */,
 				556D39B11DD3AF3800551040 /* EVcfName.h */,
 				556D39CF1DD66E1700551040 /* SConfig.h */,
 				556D39C91DD3AF3800551040 /* SResult.h */,
 				553F8B011DF9B9D100BD756E /* CVcfAnalyzer.h */,
+				553F8B021DFEFA2900BD756E /* CFastaParser.h */,
 			);
 			path = include;
 			sourceTree = SOURCE_ROOT;
@@ -318,6 +321,7 @@
 				556D39CE1DD4D75B00551040 /* CThreadSafePathList.cpp in Sources */,
 				556D399C1DD3AF2E00551040 /* CPath.cpp in Sources */,
 				556D399F1DD3AF2E00551040 /* CSemiPath.cpp in Sources */,
+				553F8B041DFEFA8C00BD756E /* CFastaParser.cpp in Sources */,
 				556D39A11DD3AF2E00551040 /* CVariantProvider.cpp in Sources */,
 				553F8B001DF9B8CD00BD756E /* CVcfAnalyzer.cpp in Sources */,
 				556D399B1DD3AF2E00551040 /* COrientedVariant.cpp in Sources */,

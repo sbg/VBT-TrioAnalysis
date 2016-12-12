@@ -92,6 +92,9 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
     int* gt_arr = NULL;
     int ngt_arr = 0;
     int* fi_arr = NULL;
+
+    int samplenumber = GetNumberOfSamples();
+    int zygotCount;
     
     if (!m_bIsOpen)
     {
@@ -103,6 +106,8 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
     m_pRecord->d.m_allele = 0;
     const int ok = bcf_read(m_pHtsFile, m_pHeader, m_pRecord);
     bcf_unpack(m_pRecord, BCF_UN_ALL);
+    
+
 
     if (ok == 0)
     {
@@ -132,24 +137,24 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
         
         //READ GENOTYPE DATA
         bcf_get_genotypes(m_pHeader, m_pRecord, &gt_arr, &ngt_arr);
-        a_pVariant->m_nAlleleCount = ngt_arr;
+        zygotCount = ngt_arr / samplenumber;
+        a_pVariant->m_nAlleleCount = zygotCount;
         a_pVariant->m_bIsPhased = bcf_gt_is_phased(bcf_gt_allele(gt_arr[0]));
-        
+ 
         
         //READ SEQUENCE DATA AND FILL ALLELES
         a_pVariant->m_refSequence = std::string(m_pRecord->d.allele[0]);
         
-        for (int i = 0; i < ngt_arr; ++i)
+        for (int i = 0; i < zygotCount; ++i)
         {
-            if(bcf_gt_allele(gt_arr[i]) )
-                
-            a_pVariant->m_alleles[i].m_sequence = m_pRecord->d.allele[bcf_gt_allele(gt_arr[i])];
+            int index = bcf_gt_allele(gt_arr[i]) == -1 ? 0 : bcf_gt_allele(gt_arr[i]);
+            a_pVariant->m_alleles[i].m_sequence = m_pRecord->d.allele[index];
             a_pVariant->m_alleles[i].m_nStartPos = m_pRecord->pos;
             a_pVariant->m_alleles[i].m_nEndPos = static_cast<int>(m_pRecord->pos + a_pVariant->m_refSequence.length());
             a_pVariant->m_nMaxLength = std::max(a_pVariant->m_nMaxLength,static_cast<int>(a_pVariant->m_alleles[i].m_sequence.length()));
         }
         
-        if(ngt_arr == 2)
+        if(zygotCount == 2)
         {
             if(a_pVariant->m_alleles[0].m_sequence == a_pVariant->m_alleles[1].m_sequence)
             {
@@ -172,7 +177,7 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
         {
             for (int i = 0; i < ngt_arr; ++i)
             {
-                TrimAllele(a_pVariant->m_alleles[i], a_pVariant->m_refSequence);
+                TrimAllele(a_pVariant->m_alleles[i]);
             }
         }
         
@@ -340,7 +345,24 @@ int CVcfReader::GetContigId(const char* name) const
 }
 
 
-void CVcfReader::TrimAllele(SAllele& a_rAllele, const std::string& ref)
+const char* CVcfReader::getFilterString(int a_nFilterKey)
+{
+    return m_pHeader->id[BCF_DT_ID][a_nFilterKey].key;
+}
+
+int CVcfReader::getFilterKey(const char* a_pFilterValue)
+{
+    for(int k = 0; k < m_pHeader->n[BCF_DT_ID]; k++)
+    {
+        if(0 == strcmp(m_pHeader->id[BCF_DT_ID][k].key, a_pFilterValue))
+            return k;
+    }
+
+    return -1;
+}
+
+
+void CVcfReader::TrimAllele(SAllele& a_rAllele)
 {
     a_rAllele.m_sequence = a_rAllele.m_sequence.substr(1, a_rAllele.m_sequence.length() - 1);
     a_rAllele.m_nStartPos += 1;

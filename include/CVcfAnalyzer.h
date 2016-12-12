@@ -12,6 +12,8 @@
 #include <thread>
 #include "CPathReplay.h"
 #include "Sconfig.h"
+#include "CVariantProvider.h"
+#include "CFastaReader.h"
 
 
 class CVcfAnalyzer
@@ -23,13 +25,15 @@ public:
     void Run(int argc, char** argv);
     
     
-private:
-    
+//private:
+
     //Read Parameters from command line. If the mandatory arguments are given, return true.
     bool ReadParameters(int argc, char** argv);
     
     //Prints the help menu at console
     void PrintHelp() const;
+    
+    //void SetThreads()
     
     
     //Maximum # of thread that program executes
@@ -39,6 +43,12 @@ private:
     
     //Configurations for Vcf comparison
     SConfig m_config;
+    
+    //Variant provider instance
+    CVariantProvider m_provider;
+    
+    //FASTA reader instance
+    CFastaReader m_fastaReader;
     
 };
 

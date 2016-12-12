@@ -6,8 +6,16 @@
 #include <ctime>
 #include <fstream>
 
+#include "CVcfAnalyzer.h"
+
+
 int main (int argc, char** argv)
 {
+    
+    //CVcfAnalyzer analyzer;
+    //analyzer.PrintHelp();
+    //return 0;
+    
     if (argc < 4)
     {
         std::cout << "More argument is expected. Include a vcf and fasta file." << std::endl;
@@ -19,13 +27,12 @@ int main (int argc, char** argv)
     
     SConfig configurations;
     configurations.m_pBaseVcfFileName = argv[1];
-    configurations.m_pCalledVcfFileName = argv[2];
+    configurations.m_pCalledVcfFileName = argv[1];
     configurations.m_pFastaFileName = argv[3];
     configurations.m_nMaxVariantSize = 1000;
-    configurations.m_bIsFilterEnabled = false;
+    configurations.m_bIsFilterEnabled = true;
     configurations.m_pFilterName = "PASS";
 
-    
     std::clock_t start;
     double duration;
     

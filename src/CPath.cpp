@@ -1,3 +1,5 @@
+//  Originated from: https://github.com/RealTimeGenomics/rtg-tools/blob/master/src/com/rtg/vcf/eval
+//  Copyright (c) 2014. Real Time Genomics Limited.
 //
 //  CPath.cpp
 //  VCFComparison

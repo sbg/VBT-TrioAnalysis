@@ -1,4 +1,3 @@
-//
 //  CVcfAnalyzer.cpp
 //  VCFComparison
 //
@@ -12,20 +11,33 @@
 
 void CVcfAnalyzer::Run(int argc, char** argv)
 {
-
-
+    //Read command line parameters
+    bool isSuccess = ReadParameters(argc, argv);
+    
+    if(!isSuccess)
+        return;
+    
+    //Initialize FASTA reader
+    isSuccess = m_fastaReader.Open(m_config.m_pFastaFileName);
+  
+    if(!isSuccess)
+        return;
+    
+    //Initialize Variant providers
+    m_provider.SetFastaReader(m_fastaReader);
+    m_provider.InitializeReaders(m_config);
     
 }
-
 
 
 bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
 {
 
-    const char* PARAM_BASE = "-b";
-    const char* PARAM_CALLED = "-c";
-    const char* PARAM_FILTER = "-f";
-    const char* PARAM_REFERENCE = "-r";
+    const char* PARAM_BASE = "-base";
+    const char* PARAM_CALLED = "-called";
+    const char* PARAM_FILTER = "-filter";
+    const char* PARAM_REFERENCE = "-ref";
+    const char* PARAM_HELP = "-help";
     
     bool bBaselineSet = false;
     bool bCalledSet = false;
@@ -35,7 +47,13 @@ bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
         
     while(it < argc)
     {
-        if(0 == strcmp(argv[it], PARAM_BASE))
+        if(0 == strcmp(argv[it], PARAM_HELP))
+        {
+            PrintHelp();
+            return false;
+        }
+        
+        else if(0 == strcmp(argv[it], PARAM_BASE))
         {
             m_config.m_pBaseVcfFileName = argv[it+1];
             bBaselineSet = true;
@@ -71,23 +89,24 @@ bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
         std::cout << "Baseline vcf file is not set" << std::endl;
     else if(!bCalledSet)
         std::cout << "Called vcf file is not set" << std::endl;
+    else if(!bReferenceSet)
+        std::cout << "Reference fasta file is not set" << std::endl;
     
     
-    
-    return true;
+    return bCalledSet & bBaselineSet & bReferenceSet;
 }
 
 void CVcfAnalyzer::PrintHelp() const
 {
-    std::cout << "==== SBG VCF COMPARISON TOOL ==== " << std::endl;
+    std::cout << "==== SBG VCF COMPARISON TOOL VERSION 1.0 ==== " << std::endl;
+    std::cout << "Based on paper: http://biorxiv.org/content/biorxiv/early/2015/08/02/023754.full.pdf" << std::endl;
     std::cout << "AUTHOR: Berke Cagkan Toptas (berke.toptas@sbgenomics.com)" << std::endl;
-    std::cout << "VERSION: 1.0 " << "DATE: DEC 8 2016" << std::endl;
-    std::cout << "COPYRIGHT 2016 SEVEN BRIDGES GENOMICS. ALL RIGHTS RESERVED." << std::endl;
-    
-    std::cout << std::endl << std::endl;
-    std::cout << "<<< INSTRUCTIONS >>>" << std::endl;
-    std::cout << "-b baseline_vcf_path (required*)" << std::endl;
-    std::cout << "-c called_vcf_path (required*)" << std::endl;
-    std::cout << "-r reference_fasta_path (required*)" << std::endl;
-    std::cout << "-f filter_name (optional. Default is PASS. Use none for unfilter vcf)" << std::endl;
+    std::cout << "COPYRIGHT (C) 2016 SEVEN BRIDGES GENOMICS." << std::endl;
+    std::cout << std::endl;
+    std::cout << " --- PARAMETERS --- " << std::endl;
+    std::cout << "-help                      [Prints the parameter options]" << std::endl;
+    std::cout << "-base baseline_vcf_path    [Required.Add baseline VCF file.]" << std::endl;
+    std::cout << "-called called_vcf_path    [Required.Add called VCF file.]" << std::endl;
+    std::cout << "-ref reference_fasta_path  [Required.Add reference FASTA file]" << std::endl;
+    std::cout << "-filter filter_name        [Optional.Filter variants based on filter column. Default value is PASS. Use 'none' to unfilter]" << std::endl;
 }

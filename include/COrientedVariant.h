@@ -1,6 +1,9 @@
 /*
- * Copyright (c) 2016 Seven Bridges Genomics
- * Author: Berke Cagkan Toptas
+ * Originated from: https://github.com/RealTimeGenomics/rtg-tools/blob/master/src/com/rtg/vcf/eval
+ * Copyright (c) 2014. Real Time Genomics Limited.
+ 
+ *
+ * Moved to C++ by Berke Cagkan Toptas
  */
 
 #ifndef _C_ORIENTED_VARIANT_H_

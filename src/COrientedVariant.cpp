@@ -1,9 +1,10 @@
+//  Originated from: https://github.com/RealTimeGenomics/rtg-tools/blob/master/src/com/rtg/vcf/eval
+//  Copyright (c) 2014. Real Time Genomics Limited.
 //
 //  COrientedVariant.cpp
 //  VCFComparison
 //
-//  Created by Berke.Toptas
-//  Copyright © 2016 Seven Bridges Genomics. All rights reserved.
+//  Created by Berke Toptas
 //
 
 #include "COrientedVariant.h"

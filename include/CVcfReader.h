@@ -31,7 +31,7 @@ public:
     // Close a VCF file
     bool Close();
     
-    // Get next record in the file
+    // Get next record in the file. a_nId sets the id of variant (no need to set)
     bool GetNextRecord(CVariant* a_pVariant, int a_nId, const SConfig& a_rConfig);
     
     // Get next record which has multiple samples in the file(Generates list of N variants and name of each sample)
@@ -64,13 +64,20 @@ public:
     // Set an ID to the VCF file
     void setID(int a_nVcfId) {m_nVcfId = a_nVcfId;};
 
+    // Returns the Filtering string for the given filter key
+    const char* getFilterString(int a_nFilterKey);
+    
+    // Returns the key id of given Filter string
+    int getFilterKey(const char* a_pFilterValue);
+private:
+
     // Trimms the alt string that contains ref allele
-    void TrimAllele(SAllele& a_rAllele,const std::string& a_rRefStr);
+    void TrimAllele(SAllele& a_rAllele);
     
     //Check if the first nucleotide for alleles are redundant (for indels)
     bool HasRedundantFirstNucleotide() const;
-
-private:
+    
+    
     std::string m_filename;
     bool m_bIsOpen;
     htsFile *   m_pHtsFile;
