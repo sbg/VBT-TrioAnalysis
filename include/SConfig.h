@@ -12,7 +12,7 @@ struct SConfig
     bool m_bIsOK;
     
     //Maximum size of the variant that will be processed by VCF comparison algorithm (Use it to eliminate SVs)
-    int m_nMaxVariantSize;
+    int m_nMaxVariantSize = 1000;
     
     //Base Vcf file
     const char* m_pBaseVcfFileName;
@@ -24,9 +24,9 @@ struct SConfig
     const char* m_pFastaFileName;
     
     //If filtering enabled
-    bool m_bIsFilterEnabled;
+    bool m_bIsFilterEnabled = true;
     //Filter name (Filter variants according to filter column)
-    const char* m_pFilterName;
+    const char* m_pFilterName = "PASS";
    
     //If Quality threshold is enabled
     bool m_bIsQualityThresholdEnabled;

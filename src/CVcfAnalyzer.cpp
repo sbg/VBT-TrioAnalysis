@@ -16,16 +16,30 @@ void CVcfAnalyzer::Run(int argc, char** argv)
     
     if(!isSuccess)
         return;
+
+    //Initialize Variant providers
+    isSuccess = m_provider.InitializeReaders(m_config);
     
-    //Initialize FASTA reader
-    isSuccess = m_fastaReader.Open(m_config.m_pFastaFileName);
-  
     if(!isSuccess)
         return;
     
-    //Initialize Variant providers
-    m_provider.SetFastaReader(m_fastaReader);
-    m_provider.InitializeReaders(m_config);
+    std::clock_t start;
+    double duration;
+    
+    start = std::clock();
+    CPathReplay pathReplay;
+    pathReplay.SetVariantProvider(m_provider);
+    SContig ctg;
+    m_provider.GetContig(20, ctg);
+    CPath bestPath = pathReplay.FindBestPath(ctg);
+    duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
+    
+    std::cout << "Called Included Count: " << bestPath.m_calledSemiPath.GetIncludedVariants().size() << std::endl;
+    std::cout << "Called Excluded Count: " << bestPath.m_calledSemiPath.GetExcluded().size() << std::endl;
+    std::cout << "Baseline Included Count: " << bestPath.m_baseSemiPath.GetIncludedVariants().size() << std::endl;
+    std::cout << "Baseline Excluded Count: " << bestPath.m_baseSemiPath.GetExcluded().size() << std::endl;
+    
+    std::cout << "Program Completed in " << duration << " secs" << std::endl;
     
 }
 
@@ -67,7 +81,7 @@ bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
         
         else if(0 == strcmp(argv[it], PARAM_REFERENCE))
         {
-            m_config.m_pCalledVcfFileName = argv[it+1];
+            m_config.m_pFastaFileName = argv[it+1];
             bReferenceSet = true;
         }
         

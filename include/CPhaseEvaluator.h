@@ -86,15 +86,15 @@ struct SVariantSummary
 //Combines included/excluded calls into one stream for purposes of bridging phasing across fp
 class CCallIterator
 {
-    std::vector<COrientedVariant*>::iterator it_Included;
+    std::vector<const COrientedVariant*>::iterator it_Included;
     std::vector<CVariant>::iterator it_Excluded;
     
-    std::vector<COrientedVariant*> m_aIncluded;
+    std::vector<const COrientedVariant*> m_aIncluded;
     std::vector<CVariant> m_aExcluded;
 
     public:
 
-    CCallIterator(std::vector<COrientedVariant*> included, std::vector<CVariant> excluded)
+    CCallIterator(std::vector<const COrientedVariant*> included, std::vector<CVariant> excluded)
     {
         m_aIncluded = included;
         m_aExcluded = excluded;

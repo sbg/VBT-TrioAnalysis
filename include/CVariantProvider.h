@@ -8,9 +8,10 @@
 
 #include "EVcfName.h"
 #include "CVcfReader.h"
-#include "CPath.h"
 #include "SConfig.h"
-#include "CFastaReader.h"
+#include "CFastaParser.h"
+
+class COrientedVariant;
 
 const int CHROMOSOME_COUNT = 23;
 
@@ -18,24 +19,26 @@ const int CHROMOSOME_COUNT = 23;
 class CVariantProvider
 {
     public:
-        
+        //Destructor
+        ~CVariantProvider();
+    
         //Initialize the VCF readers for base and called vcf file
-        void InitializeReaders(const SConfig& a_rConfig);
+        bool InitializeReaders(const SConfig& a_rConfig);
     
         //Get the variant with given Chr number and variant id
         const CVariant* GetVariant(EVcfName a_uFrom, int a_nChrNo, int a_nVariantId) const;
     
         //Get the oriented variant with the given chr variant id and orientation
-        COrientedVariant* GetOrientedVariant(EVcfName a_uFrom, int a_nChrNo, int a_nVariantId, bool a_bOrientation);
+        const COrientedVariant* GetOrientedVariant(EVcfName a_uFrom, int a_nChrNo, int a_nVariantId, bool a_bOrientation) const;
     
         // Returns the size of variant list for that chromosome
         int GetVariantListSize(EVcfName a_uFrom, int a_nChrNo) const;
-    
-        //Sets the fasta reader reference object
-        void SetFastaReader(const CFastaReader& m_rFastaReader);
-    
+        
         //Return the variant list with the given index list
         std::vector<CVariant> GetVariantList(EVcfName a_uFrom, int a_nChrNo, std::vector<int> a_VariantIndexes);
+    
+        //Return contig object given by the chromosome Id
+        void GetContig(int a_nChrId, SContig& a_rContig) const;
     
     private:
     
@@ -65,10 +68,14 @@ class CVariantProvider
         //List that store the called Oriented variant tuples (In the order of genotype)
         std::vector<COrientedVariant> m_aCalledOrientedVariantList[CHROMOSOME_COUNT];
     
+        //Parameters come from command line arguments
         SConfig m_config;
     
         //Reference to the fasta reader object
-        const CFastaReader* m_pFastaReader;
+        CFastaParser m_fastaParser;
+        //Reference contig list
+        SContig m_aContigList[CHROMOSOME_COUNT];
+    
 };
 
 

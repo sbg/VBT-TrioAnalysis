@@ -16,31 +16,36 @@
 #include "faidx.h"
 #include <string>
 
+struct SContig
+{
+    //Chromosome name written on fasta/vcf
+    std::string m_chromosome;
+    //Chromosome index in variant provider
+    int m_nChrId;
+    char* m_pRefSeq = 0;
+    int m_nRefLength;
+};
+
 class CFastaParser
 {
     
 public:
     
-    bool OpenFastaFile(const char *fn, std::string a_chrom);
+    //Destructor
+    ~CFastaParser();
     
-    bool FetchNewChromosome(std::string chrom);
+    //Open Given FASTA file with the given filename and creates FASTA index file if it does not exists
+    bool OpenFastaFile(const char *fn);
     
-    void DeleteReferenceMemory();
+    //Read contig from FASTA file name with the given chromosome name
+    bool FetchNewChromosome(std::string chromosome, SContig& a_rContig);
     
-    char GetRefBase(int a_nPosition);
-    
-    std::string GetRefBase(int a_nRefPos, int a_nLength);
-    
-    int GetRefLength();
-    
+    //Generate FASTA index file from given fasta file if it does not already exists
     bool GenerateFastaIndex(const char *fn);
     
 private:
     
     faidx_t *fai;
-    int ref_len;
-    char *ref;
-    //    std::string ref_sequence;
 };
 
 #endif //_C_FASTA_PARSER_H_

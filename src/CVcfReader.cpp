@@ -108,28 +108,34 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
     bcf_unpack(m_pRecord, BCF_UN_ALL);
     
 
-
     if (ok == 0)
     {
         a_pVariant->m_nId = a_nId;
         a_pVariant->m_chrName = m_pHeader->id[BCF_DT_CTG][m_pRecord->rid].key;
         
         //READ CHROMOSOME ID: (TODO: this should be renewed. there should be sth that reads the chromosome id)
-        if(a_pVariant->m_chrName.length() == 5)
+        if(a_pVariant->m_chrName == "x" || a_pVariant->m_chrName == "X" || a_pVariant->m_chrName == "chrX" || a_pVariant->m_chrName == "chrx")
+            a_pVariant->m_nChrId = 22;
+        else if(a_pVariant->m_chrName == "y" || a_pVariant->m_chrName == "Y" || a_pVariant->m_chrName == "chrY" || a_pVariant->m_chrName == "chry")
+            a_pVariant->m_nChrId = 23;
+        else if(a_pVariant->m_chrName.length() == 5)
             a_pVariant->m_nChrId = atoi(a_pVariant->m_chrName.substr(3,2).c_str());
         else if(a_pVariant->m_chrName.length() == 4)
-            a_pVariant->m_nChrId = atoi(a_pVariant->m_chrName.substr(3,1).c_str());
+            a_pVariant->m_nChrId = atoi(a_pVariant->m_chrName.substr(3,1).c_str()) - 1;
         else
-            a_pVariant->m_nChrId = atoi(m_pHeader->id[BCF_DT_CTG][m_pRecord->rid].key);
+            a_pVariant->m_nChrId = atoi(m_pHeader->id[BCF_DT_CTG][m_pRecord->rid].key) - 1;
     
         //READ FILTER DATA
-        bool isPassed = false;
-        for(int k=0; k< m_pRecord->d.n_flt; k++)
+        if(a_rConfig.m_bIsFilterEnabled)
         {
-            if(0 == strcmp(m_pHeader->id[BCF_DT_ID][m_pRecord->d.flt[k]].key, a_rConfig.m_pFilterName))
-               isPassed = true;
+            bool isPassed = false;
+            for(int k=0; k< m_pRecord->d.n_flt; k++)
+            {
+                if(0 == strcmp(m_pHeader->id[BCF_DT_ID][m_pRecord->d.flt[k]].key, a_rConfig.m_pFilterName))
+                    isPassed = true;
+            }
+            a_pVariant->m_bIsFilterPASS = isPassed;
         }
-        a_pVariant->m_bIsFilterPASS = isPassed;
         
         //READ QUALITY DATA
         //TODO: read the quality

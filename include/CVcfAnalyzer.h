@@ -13,8 +13,6 @@
 #include "CPathReplay.h"
 #include "Sconfig.h"
 #include "CVariantProvider.h"
-#include "CFastaReader.h"
-
 
 class CVcfAnalyzer
 {
@@ -46,9 +44,6 @@ public:
     
     //Variant provider instance
     CVariantProvider m_provider;
-    
-    //FASTA reader instance
-    CFastaReader m_fastaReader;
     
 };
 

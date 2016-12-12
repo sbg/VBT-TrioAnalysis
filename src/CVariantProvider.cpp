@@ -1,4 +1,4 @@
-//
+ //
 //  CVariantProvider.cpp
 //  VCFComparison
 //
@@ -8,8 +8,19 @@
 
 #include "CVariantProvider.h"
 #include <iostream>
+#include "COrientedVariant.h"
 
-void CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
+CVariantProvider::~CVariantProvider()
+{
+    for(int k= 0; k < CHROMOSOME_COUNT; k++)
+    {
+        if(m_aContigList[k].m_nRefLength > 0 && m_aContigList[k].m_pRefSeq != 0)
+            delete m_aContigList[k].m_pRefSeq;
+    }
+}
+
+
+bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
 {
     bool bIsSuccess;
 
@@ -23,17 +34,54 @@ void CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
     if(!bIsSuccess)
         std::cout << "Called VCF file is unable to open!: " << a_rConfig.m_pCalledVcfFileName << std::endl;
     m_calledVCF.setID(1);
-
-    FillVariantLists();
-    FillOrientedVariantLists();
+    
+    bIsSuccess = m_fastaParser.OpenFastaFile(a_rConfig.m_pFastaFileName);
+    if(!bIsSuccess)
+        std::cout << "FASTA file is unable to open!: " << a_rConfig.m_pCalledVcfFileName << std::endl;
+    
+    if(bIsSuccess)
+    {
+        FillVariantLists();
+        FillOrientedVariantLists();
+    }
+    
+    for(int k = 0; k < CHROMOSOME_COUNT; k++)
+    {
+        if(m_aBaseVariantList[k].size() != 0 && m_aCalledVariantList[k].size() == 0)
+        {
+            std::cout << "Called VCF does not contain Chromosome " << k+1 << ".The chromosome will be filtered out from the comparison!" << std::endl;
+            m_aCalledVariantList[k].clear();
+        }
+        else if(m_aBaseVariantList[k].size() == 0 && m_aCalledVariantList[k].size() != 0)
+        {
+            std::cout << "Baseline VCF does not contain Chromosome " << k+1 << ".The chromosome will be filtered out from the comparison!" << std::endl;
+            m_aBaseVariantList[k].clear();
+        }
+        else if(m_aBaseVariantList[k].size() != 0 && m_aCalledVariantList[k].size() != 0)
+        {
+            //Read contig from FASTA file for the given chromosome
+            bool bIsSuccess2 = m_fastaParser.FetchNewChromosome(m_aBaseVariantList[k][0].m_chrName, m_aContigList[k]);
+            if(!bIsSuccess2)
+            {
+                std::cout << "Chromosome " << k+1 << "will be filtered out from the comparison since reference FASTA could not read or it does not contain given chromosome" << std::endl;
+                m_aCalledVariantList[k].clear();
+                m_aBaseVariantList[k].clear();
+            }
+            else
+            {
+                //Trim the variants which are out of bound according to FASTA file
+                while(m_aBaseVariantList[k].back().GetEnd() > m_aContigList[k].m_nRefLength)
+                    m_aBaseVariantList[k].pop_back();
+                while(m_aCalledVariantList[k].back().GetEnd() > m_aContigList[k].m_nRefLength)
+                    m_aCalledVariantList[k].pop_back();
+            }
+        }
+    }
+    
+    return bIsSuccess;
     
     //for(int k = 0; k < m_aCalledVariantList[21].size(); k++)
     //   std::cout << k << ": " << m_aCalledVariantList[21][k].ToString() << std::endl;
-}
-
-void CVariantProvider::SetFastaReader(const CFastaReader& a_rFastaReader)
-{
-    m_pFastaReader = &a_rFastaReader;
 }
 
 
@@ -50,11 +98,7 @@ void CVariantProvider::FillVariantLists()
         if(IsStructuralVariant(variant, m_config.m_nMaxVariantSize))
             continue;
         
-        else if(m_pFastaReader->GetRefSeqSize() < variant.GetEnd())
-            continue;
-        
-        PushVariant(variant, m_aBaseVariantList[variant.m_nChrId]);
-       // m_aBaseVariantList[variant.m_nChrId].push_back(variant);
+        PushVariant(variant, m_aBaseVariantList[variant.m_nChrId-1]);
     }
     
     while(m_calledVCF.GetNextRecord(&variant, id++, m_config))
@@ -66,11 +110,7 @@ void CVariantProvider::FillVariantLists()
         if(IsStructuralVariant(variant, m_config.m_nMaxVariantSize))
             continue;
         
-        else if(m_pFastaReader->GetRefSeqSize() < variant.GetEnd())
-            continue;
-        
-        PushVariant(variant, m_aCalledVariantList[variant.m_nChrId]);
-        //m_aCalledVariantList[variant.m_nChrId].push_back(variant);
+        PushVariant(variant, m_aCalledVariantList[variant.m_nChrId-1]);
     }
 }
 
@@ -92,7 +132,13 @@ void CVariantProvider::FillOrientedVariantLists()
     }
 }
 
-
+void CVariantProvider::GetContig(int a_nChrId, SContig& a_rContig) const
+{
+    a_rContig.m_chromosome = m_aContigList[a_nChrId].m_chromosome;
+    a_rContig.m_nRefLength = m_aContigList[a_nChrId].m_nRefLength;
+    a_rContig.m_nChrId = a_nChrId;
+    a_rContig.m_pRefSeq = m_aContigList[a_nChrId].m_pRefSeq;
+}
 
 const CVariant* CVariantProvider::GetVariant(EVcfName a_uFrom, int a_nChrNo, int a_nVariantId) const
 {
@@ -106,18 +152,23 @@ const CVariant* CVariantProvider::GetVariant(EVcfName a_uFrom, int a_nChrNo, int
 }
 
 
-COrientedVariant* CVariantProvider::GetOrientedVariant(EVcfName a_uFrom, int a_nChrNo, int a_nVariantId, bool a_bOrientation)
+const COrientedVariant* CVariantProvider::GetOrientedVariant(EVcfName a_uFrom, int a_nChrNo, int a_nVariantId, bool a_bOrientation) const
 {
     int nExtra = a_bOrientation ? 0 : 1;
     
-    switch (a_uFrom)
-    {
-        case eBASE:
-            return &m_aBaseOrientedVariantList[a_nChrNo][a_nVariantId*2 + nExtra];
-            break;
-        case eCALLED:
-            return &m_aCalledOrientedVariantList[a_nChrNo][a_nVariantId*2 + nExtra];
-    }
+   if(a_uFrom == eBASE)
+   {
+       const COrientedVariant* o1 = &m_aBaseOrientedVariantList[a_nChrNo][a_nVariantId*2 + nExtra];
+       return o1;
+   }
+   
+   else if(a_uFrom == eCALLED)
+   {
+       const COrientedVariant* o2 = &m_aCalledOrientedVariantList[a_nChrNo][a_nVariantId*2 + nExtra];
+       return o2;
+   }
+    
+    return 0;
 }
 
 int CVariantProvider::GetVariantListSize(EVcfName a_uFrom, int a_nChrNo) const
@@ -172,6 +223,9 @@ bool CVariantProvider::IsStructuralVariant(const CVariant& a_rVariant, int a_nMa
         if(found != std::string::npos)
             return true;
         found = allele.find('*');
+        if(found != std::string::npos)
+            return true;
+        found = allele.find('.');
         if(found != std::string::npos)
             return true;
     }

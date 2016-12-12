@@ -15,7 +15,6 @@
 		556D39951DD3AF2E00551040 /* libhts.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 556D39821DD3AF2E00551040 /* libhts.1.dylib */; };
 		556D39961DD3AF2E00551040 /* libhts.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 556D39831DD3AF2E00551040 /* libhts.a */; };
 		556D39971DD3AF2E00551040 /* libhts.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 556D39841DD3AF2E00551040 /* libhts.dylib */; };
-		556D39991DD3AF2E00551040 /* CFastaReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 556D39891DD3AF2E00551040 /* CFastaReader.cpp */; };
 		556D399A1DD3AF2E00551040 /* CHaplotypeSequence.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 556D398A1DD3AF2E00551040 /* CHaplotypeSequence.cpp */; };
 		556D399B1DD3AF2E00551040 /* COrientedVariant.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 556D398B1DD3AF2E00551040 /* COrientedVariant.cpp */; };
 		556D399C1DD3AF2E00551040 /* CPath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 556D398C1DD3AF2E00551040 /* CPath.cpp */; };
@@ -57,7 +56,6 @@
 		556D39841DD3AF2E00551040 /* libhts.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libhts.dylib; sourceTree = "<group>"; };
 		556D39861DD3AF2E00551040 /* htslib.pc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = htslib.pc; sourceTree = "<group>"; };
 		556D39871DD3AF2E00551040 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = SOURCE_ROOT; };
-		556D39891DD3AF2E00551040 /* CFastaReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CFastaReader.cpp; sourceTree = "<group>"; };
 		556D398A1DD3AF2E00551040 /* CHaplotypeSequence.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CHaplotypeSequence.cpp; sourceTree = "<group>"; };
 		556D398B1DD3AF2E00551040 /* COrientedVariant.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = COrientedVariant.cpp; sourceTree = "<group>"; };
 		556D398C1DD3AF2E00551040 /* CPath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CPath.cpp; sourceTree = "<group>"; };
@@ -67,7 +65,6 @@
 		556D39911DD3AF2E00551040 /* CVariantProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CVariantProvider.cpp; sourceTree = "<group>"; };
 		556D39921DD3AF2E00551040 /* CVcfReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CVcfReader.cpp; sourceTree = "<group>"; };
 		556D39931DD3AF2E00551040 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		556D39A51DD3AF3800551040 /* CFastaReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CFastaReader.h; sourceTree = "<group>"; };
 		556D39A61DD3AF3800551040 /* CHaplotypeSequence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHaplotypeSequence.h; sourceTree = "<group>"; };
 		556D39A71DD3AF3800551040 /* COrientedVariant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = COrientedVariant.h; sourceTree = "<group>"; };
 		556D39A81DD3AF3800551040 /* CPath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CPath.h; sourceTree = "<group>"; };
@@ -173,7 +170,6 @@
 		556D39881DD3AF2E00551040 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				556D39891DD3AF2E00551040 /* CFastaReader.cpp */,
 				556D398A1DD3AF2E00551040 /* CHaplotypeSequence.cpp */,
 				556D398B1DD3AF2E00551040 /* COrientedVariant.cpp */,
 				556D398C1DD3AF2E00551040 /* CPath.cpp */,
@@ -196,7 +192,6 @@
 			isa = PBXGroup;
 			children = (
 				556D39B21DD3AF3800551040 /* htslib */,
-				556D39A51DD3AF3800551040 /* CFastaReader.h */,
 				556D39A61DD3AF3800551040 /* CHaplotypeSequence.h */,
 				556D39A71DD3AF3800551040 /* COrientedVariant.h */,
 				556D39A81DD3AF3800551040 /* CPath.h */,
@@ -312,7 +307,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				556D39A21DD3AF2E00551040 /* CVcfReader.cpp in Sources */,
-				556D39991DD3AF2E00551040 /* CFastaReader.cpp in Sources */,
 				556D39A31DD3AF2E00551040 /* main.cpp in Sources */,
 				551971FF1DDCB5B000A81167 /* CPhaseEvaluator.cpp in Sources */,
 				556D399A1DD3AF2E00551040 /* CHaplotypeSequence.cpp in Sources */,

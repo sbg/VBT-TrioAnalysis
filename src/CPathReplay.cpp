@@ -11,22 +11,18 @@
 #include <iostream>
 #include <vector>
 #include <cassert>
+#include "CPath.h"
 
-void CPathReplay::InitializeReaders(const SConfig& a_rConfig)
+
+void CPathReplay::SetVariantProvider(const CVariantProvider& a_rVariantProvider)
 {
-    //Initialize refseq provider
-    m_refFASTA.Open(a_rConfig.m_pFastaFileName);
-    m_refFASTA.ReadContig();
-    
-    //Initialize variant provider
-    m_variantProvider.SetFastaReader(m_refFASTA);
-    m_variantProvider.InitializeReaders(a_rConfig);
-
+    m_variantProvider = &a_rVariantProvider;
 }
 
-CPath CPathReplay::FindBestPath(int a_nChrId)
+
+CPath CPathReplay::FindBestPath(SContig a_contig)
 {
-    CPathContainer initialPath(m_refFASTA.GetRefSeq(),m_refFASTA.GetRefSeqSize());
+    CPathContainer initialPath(a_contig.m_pRefSeq, a_contig.m_nRefLength);
     m_pathList.Add(initialPath);
     CPathContainer best(initialPath);
     CPathContainer lastSyncPath;
@@ -73,7 +69,7 @@ CPath CPathReplay::FindBestPath(int a_nChrId)
             // Create new head containing path up until last sync point
             processedPath = lastSyncPath;
             //Ignore variants until Current Position
-            SkipVariantsTo(*processedPath.m_pPath, a_nChrId, m_nCurrentPosition+1);
+            SkipVariantsTo(*processedPath.m_pPath, a_contig, m_nCurrentPosition+1);
         }
 
         if(processedPath.m_pPath->HasFinished())
@@ -85,13 +81,13 @@ CPath CPathReplay::FindBestPath(int a_nChrId)
             continue;
         }
 
-        if(EnqueueVariant(*processedPath.m_pPath, eCALLED, a_nChrId))
+        if(EnqueueVariant(*processedPath.m_pPath, eCALLED, a_contig.m_nChrId))
         {
             //std::cout << "Called semipath enqueued" << std::endl;
             continue;
         }
         
-        if(EnqueueVariant(*processedPath.m_pPath, eBASE, a_nChrId))
+        if(EnqueueVariant(*processedPath.m_pPath, eBASE, a_contig.m_nChrId))
         {
             //std::cout << "Base semipath enqueued" << std::endl;
             continue;
@@ -104,7 +100,7 @@ CPath CPathReplay::FindBestPath(int a_nChrId)
         
         if(processedPath.m_pPath->InSync())
         {
-            SkipToNextVariant(*processedPath.m_pPath, a_nChrId);
+            SkipToNextVariant(*processedPath.m_pPath, a_contig);
             //std::cout << "In Sync/ skip to next variant" << std::endl;
         }
         else
@@ -126,7 +122,7 @@ CPath CPathReplay::FindBestPath(int a_nChrId)
         
     }
     
-     //std::cout << "Best Path Found" << std::endl;
+     std::cout << "Best Path Found" << std::endl;
      return *best.m_pPath;
 }
 
@@ -178,9 +174,9 @@ bool CPathReplay::FindBetter(const CPathContainer& lhs, const CPathContainer& rh
     
     // Prefer paths that maximise total number of included variants (baseline + called)
 
-    const std::vector<COrientedVariant*> lhsIncludedVariants = (lhs.m_pPath->m_calledSemiPath.GetIncludedVariants().size() == 0) ? lhs.m_pPath->m_baseSemiPath.GetIncludedVariants() :
+    const std::vector<const COrientedVariant*> lhsIncludedVariants = (lhs.m_pPath->m_calledSemiPath.GetIncludedVariants().size() == 0) ? lhs.m_pPath->m_baseSemiPath.GetIncludedVariants() :
                                                                                                                                    lhs.m_pPath->m_calledSemiPath.GetIncludedVariants();
-    const std::vector<COrientedVariant*> rhsIncludedVariants = (rhs.m_pPath->m_calledSemiPath.GetIncludedVariants().size() == 0) ? rhs.m_pPath->m_baseSemiPath.GetIncludedVariants() :
+    const std::vector<const COrientedVariant*> rhsIncludedVariants = (rhs.m_pPath->m_calledSemiPath.GetIncludedVariants().size() == 0) ? rhs.m_pPath->m_baseSemiPath.GetIncludedVariants() :
                                                                                                                                    rhs.m_pPath->m_calledSemiPath.GetIncludedVariants();
     
     const int lhsVariantCount = static_cast<int>(lhs.m_pPath->m_calledSemiPath.GetIncludedVariants().size() + lhs.m_pPath->m_baseSemiPath.GetIncludedVariants().size());
@@ -226,7 +222,7 @@ bool CPathReplay::EnqueueVariant(CPath& a_rPathToPlay, EVcfName a_uVcfSide, int 
     }
 
     int nVariantId = GetNextVariant(*pSemiPath, a_nChromosomeId);
-    const CVariant* pNext = m_variantProvider.GetVariant(a_uVcfSide, a_nChromosomeId, nVariantId);
+    const CVariant* pNext = m_variantProvider->GetVariant(a_uVcfSide, a_nChromosomeId, nVariantId);
     
     if(nVariantId != -1)
     {
@@ -234,7 +230,7 @@ bool CPathReplay::EnqueueVariant(CPath& a_rPathToPlay, EVcfName a_uVcfSide, int 
         
         m_nCurrentPosition = std::max(m_nCurrentPosition, pNext->GetStart());
         CPathContainer paths[3];
-        int pathCount = a_rPathToPlay.AddVariant(paths, a_uVcfSide, &m_variantProvider, nVariantId, a_nChromosomeId);
+        int pathCount = a_rPathToPlay.AddVariant(paths, a_uVcfSide, m_variantProvider, nVariantId, a_nChromosomeId);
         
         for(int k=0; k < pathCount; k++)
         {
@@ -246,11 +242,11 @@ bool CPathReplay::EnqueueVariant(CPath& a_rPathToPlay, EVcfName a_uVcfSide, int 
     return false;
 }
 
-void CPathReplay::SkipToNextVariant(CPath& a_rProcessedPath, int a_nChromosomeId)
+void CPathReplay::SkipToNextVariant(CPath& a_rProcessedPath, const SContig& a_rContig)
 {
-    int aNext = FutureVariantPosition(a_rProcessedPath.m_calledSemiPath, eCALLED, a_nChromosomeId);
-    int bNext = FutureVariantPosition(a_rProcessedPath.m_baseSemiPath, eBASE, a_nChromosomeId);
-    int lastTemplatePos = m_refFASTA.GetRefSeqSize() -1;
+    int aNext = FutureVariantPosition(a_rProcessedPath.m_calledSemiPath, eCALLED, a_rContig);
+    int bNext = FutureVariantPosition(a_rProcessedPath.m_baseSemiPath, eBASE, a_rContig);
+    int lastTemplatePos = a_rContig.m_nRefLength - 1;
     // -1 because we want to be before the position
     int nextPos = std::min(std::min(aNext,bNext), lastTemplatePos) -1;
 
@@ -263,18 +259,18 @@ void CPathReplay::SkipToNextVariant(CPath& a_rProcessedPath, int a_nChromosomeId
 
 }
 
-int CPathReplay::FutureVariantPosition(const CSemiPath& a_rSemiPath, EVcfName a_uVcfName, int a_nChromosomeId) const
+int CPathReplay::FutureVariantPosition(const CSemiPath& a_rSemiPath, EVcfName a_uVcfName, const SContig& a_rContig) const
 {
     int nextIdx = a_rSemiPath.GetVariantIndex() + 1;
     
-    if (nextIdx >= m_variantProvider.GetVariantListSize(a_uVcfName, a_nChromosomeId)) 
+    if (nextIdx >= m_variantProvider->GetVariantListSize(a_uVcfName, a_rContig.m_nChrId))
     {
-      return m_refFASTA.GetRefSeqSize() -1;
+        return a_rContig.m_nRefLength -1;
     } 
 
     else 
     {
-      return m_variantProvider.GetVariant(a_uVcfName, a_nChromosomeId, nextIdx)->GetStart();
+      return m_variantProvider->GetVariant(a_uVcfName, a_rContig.m_nChrId, nextIdx)->GetStart();
     }
 }
 
@@ -282,10 +278,10 @@ int CPathReplay::GetNextVariant(const CSemiPath& a_rSemiPath, int a_nChromosomeI
 {
     int nextId = a_rSemiPath.GetVariantIndex() + 1;
     
-    if(nextId >= m_variantProvider.GetVariantListSize(a_rSemiPath.GetVcfName(), a_nChromosomeId))
+    if(nextId >= m_variantProvider->GetVariantListSize(a_rSemiPath.GetVcfName(), a_nChromosomeId))
         return -1;
 
-    const CVariant* nextVar = m_variantProvider.GetVariant(a_rSemiPath.GetVcfName(), a_nChromosomeId, nextId);
+    const CVariant* nextVar = m_variantProvider->GetVariant(a_rSemiPath.GetVcfName(), a_nChromosomeId, nextId);
     
     if(nextVar->GetStart() <= (a_rSemiPath.GetPosition() + 1))
         return nextId;
@@ -297,31 +293,30 @@ int CPathReplay::GetNextVariant(const CSemiPath& a_rSemiPath, int a_nChromosomeI
 
 }
 
-void CPathReplay::SkipVariantsTo(CPath& a_rPath, int a_nChromosomeId, int a_nMaxPos)
+void CPathReplay::SkipVariantsTo(CPath& a_rPath, const SContig& a_rContig, int a_nMaxPos)
 {
     //BASE SEMIPATH
     int varIndex = a_rPath.m_baseSemiPath.GetVariantIndex();
     
-    while(varIndex < m_variantProvider.GetVariantListSize(eBASE, a_nChromosomeId) && (varIndex == -1  || m_variantProvider.GetVariant(eBASE, a_nChromosomeId, varIndex)->GetStart() < a_nMaxPos))
+    while(varIndex < m_variantProvider->GetVariantListSize(eBASE, a_rContig.m_nChrId) && (varIndex == -1  || m_variantProvider->GetVariant(eBASE, a_rContig.m_nChrId, varIndex)->GetStart() < a_nMaxPos))
     {
         varIndex++;
     }
     varIndex--;
     a_rPath.m_baseSemiPath.SetVariantIndex(varIndex);
-    a_rPath.m_baseSemiPath.MoveForward(std::min(a_nMaxPos, m_refFASTA.GetRefSeqSize()-1));
+    a_rPath.m_baseSemiPath.MoveForward(std::min(a_nMaxPos, a_rContig.m_nRefLength -1));
     
     
     //CALLED SEMIPATH
     varIndex = a_rPath.m_calledSemiPath.GetVariantIndex();
     
-    while(varIndex < m_variantProvider.GetVariantListSize(eCALLED, a_nChromosomeId) && (varIndex == -1  || m_variantProvider.GetVariant(eCALLED, a_nChromosomeId, varIndex)->GetStart() < a_nMaxPos))
+    while(varIndex < m_variantProvider->GetVariantListSize(eCALLED, a_rContig.m_nChrId) && (varIndex == -1  || m_variantProvider->GetVariant(eCALLED, a_rContig.m_nChrId, varIndex)->GetStart() < a_nMaxPos))
     {
         varIndex++;
     }
     varIndex--;
     a_rPath.m_calledSemiPath.SetVariantIndex(varIndex);
-    a_rPath.m_calledSemiPath.MoveForward(std::min(a_nMaxPos, m_refFASTA.GetRefSeqSize()-1));
-    
+    a_rPath.m_calledSemiPath.MoveForward(std::min(a_nMaxPos, a_rContig.m_nRefLength-1));
 }
 
 

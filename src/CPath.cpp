@@ -78,7 +78,7 @@ CPath& CPath::Exclude(EVcfName a_nVCF, const CVariant& a_rVariant, int a_nVarian
     return *this;
 }
 
-CPath& CPath::Include(EVcfName a_nVCF, COrientedVariant& a_rVariant, int a_nVariantIndex)
+CPath& CPath::Include(EVcfName a_nVCF, const COrientedVariant& a_rVariant, int a_nVariantIndex)
 {
     switch(a_nVCF)
     {
@@ -95,13 +95,13 @@ CPath& CPath::Include(EVcfName a_nVCF, COrientedVariant& a_rVariant, int a_nVari
     return *this;
 }
 
-int CPath::AddVariant(CPathContainer* a_pPathList, EVcfName a_nVcfName, CVariantProvider* a_pVariantProvider, int a_nVariantIndex, int a_nChromosomeId)
+int CPath::AddVariant(CPathContainer* a_pPathList, EVcfName a_nVcfName,const CVariantProvider* a_pVariantProvider, int a_nVariantIndex, int a_nChromosomeId)
 {
     int pathCount = 0;
     
     const CVariant* pNextVariant = a_pVariantProvider->GetVariant(a_nVcfName, a_nChromosomeId, a_nVariantIndex);
-    COrientedVariant* Ovar1 = a_pVariantProvider->GetOrientedVariant(a_nVcfName, a_nChromosomeId, a_nVariantIndex, true);
-    COrientedVariant* Ovar2 = a_pVariantProvider->GetOrientedVariant(a_nVcfName, a_nChromosomeId, a_nVariantIndex, false);
+    const COrientedVariant* Ovar1 = a_pVariantProvider->GetOrientedVariant(a_nVcfName, a_nChromosomeId, a_nVariantIndex, true);
+    const COrientedVariant* Ovar2 = a_pVariantProvider->GetOrientedVariant(a_nVcfName, a_nChromosomeId, a_nVariantIndex, false);
     
     if (true == InSync())
     {
@@ -278,7 +278,7 @@ bool CPath::Matches()
 }
 
 
-std::vector<CSyncPoint> GetSyncPointsList(const std::vector<int>& syncpoints,const std::vector<COrientedVariant*>& baseLine, const std::vector<COrientedVariant*>& called)
+std::vector<CSyncPoint> GetSyncPointsList(const std::vector<int>& syncpoints,const std::vector<const COrientedVariant*>& baseLine, const std::vector<const COrientedVariant*>& called)
 {
     std::vector<CSyncPoint> list;
     int basePos = 0;

@@ -4,7 +4,7 @@
 //  CSemiPath
 //  VCFComparison
 //
-//  Created by Berke.Toptas
+//  Created by Berke Toptas
 //
 
 #include "CSemiPath.h"
@@ -40,7 +40,7 @@ CSemiPath::CSemiPath(const CSemiPath& a_rObj)
     m_nIncludedVariantEndPosition = a_rObj.m_nIncludedVariantEndPosition;  
     m_nVariantEndPosition = a_rObj.m_nVariantEndPosition;
 
-    m_aIncludedVariants = std::vector<COrientedVariant*>(a_rObj.m_aIncludedVariants);
+    m_aIncludedVariants = std::vector<const COrientedVariant*>(a_rObj.m_aIncludedVariants);
     m_aExcludedVariants = std::vector<int>(a_rObj.m_aExcludedVariants);
 
     m_bFinishedHapA = a_rObj.m_bFinishedHapA;
@@ -52,7 +52,7 @@ EVcfName CSemiPath::GetVcfName() const
     return m_uVcfName;
 }
 
-void CSemiPath::IncludeVariant(COrientedVariant& a_rVariant, int a_nVariantIndex)
+void CSemiPath::IncludeVariant(const COrientedVariant& a_rVariant, int a_nVariantIndex)
 {
     assert(a_nVariantIndex > m_nVariantIndex);
 
@@ -86,11 +86,6 @@ int CSemiPath::CompareHaplotypePositions() const
 std::vector<int> CSemiPath::GetExcluded() const
 {
     return m_aExcludedVariants;
-}
-
-std::vector<COrientedVariant*> CSemiPath::GetIncluded() const
-{
-    return m_aIncludedVariants;
 }
 
 int CSemiPath::GetPosition() const
@@ -127,7 +122,7 @@ int CSemiPath::GetIncludedVariantEndPosition() const
     return m_nIncludedVariantEndPosition;
 }
 
-const std::vector<COrientedVariant*>& CSemiPath::GetIncludedVariants() const
+const std::vector<const COrientedVariant*>& CSemiPath::GetIncludedVariants() const
 {
     return m_aIncludedVariants;
 }

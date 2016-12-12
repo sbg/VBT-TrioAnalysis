@@ -14,34 +14,29 @@
 #include "CFastaParser.h"
 #include <iostream>
 #include <fstream>
+#include <string>
 
-bool CFastaParser::OpenFastaFile(const char *fn, std::string chrom)
+bool CFastaParser::OpenFastaFile(const char *fn)
 {
     bool bIsSuccess = true;
     
     bIsSuccess = GenerateFastaIndex(fn);
-    
+
     if(true == bIsSuccess)
-    {
-        char chrom_num[80] = {0};
-        strcpy(chrom_num, chrom.c_str());
         fai = fai_load(fn);
-        ref = faidx_fetch_seq(fai, chrom_num, 0, 0x7fffffff, &ref_len);
-        
-        if(ref_len == -1)
-        {
-            std::cout << "An Error is occured while reading FASTA file" << std::endl;
-            bIsSuccess = false;
-        }
-        else if(ref_len == -2)
-        {
-            std::cout << "Specified chromosome " << chrom << " could not found in FASTA file" << std::endl;
-            bIsSuccess = false;
-        }
-    }
+    
+    if(fai == 0)
+        bIsSuccess = false;
     
     return bIsSuccess;
 }
+
+CFastaParser::~CFastaParser()
+{
+    if(fai != 0)
+        fai_destroy(fai);
+}
+
 
 bool CFastaParser::GenerateFastaIndex(const char *fn)
 {
@@ -50,7 +45,7 @@ bool CFastaParser::GenerateFastaIndex(const char *fn)
     //Generate FASTA index file if it does not exists
     std::string faiName(fn);
     faiName = faiName + ".fai";
-    
+
     //Try to open the file
     std::ifstream f(faiName.c_str());
     if(!f.good())
@@ -70,71 +65,40 @@ bool CFastaParser::GenerateFastaIndex(const char *fn)
     return bIsSuccess;
 }
 
-bool CFastaParser::FetchNewChromosome(std::string chrom)
+bool CFastaParser::FetchNewChromosome(std::string chromosome, SContig& a_rContig)
 {
     bool bIsSuccess = true;
     
     char chrom_num[80] = {0};
-    strcpy( chrom_num, chrom.c_str());
-    delete ref;
-    ref = faidx_fetch_seq(fai, chrom_num, 0, 0x7fffffff, &ref_len);
+    strcpy(chrom_num, chromosome.c_str());
+    a_rContig.m_chromosome = chromosome;
     
-    if(ref_len == -1)
+    a_rContig.m_pRefSeq = faidx_fetch_seq(fai, chrom_num, 0, 0x7fffffff, &a_rContig.m_nRefLength);
+    
+    if(a_rContig.m_nRefLength == -1)
     {
         std::cout << "An Error is occured while reading FASTA file" << std::endl;
         bIsSuccess = false;
     }
-    else if(ref_len == -2)
+    else if(a_rContig.m_nRefLength == -2)
     {
-        std::cout << "Specified chromosome" << chrom  << " could not found in FASTA file" << std::endl;
+        std::cout << "Specified chromosome" << chromosome  << " could not found in FASTA file" << std::endl;
         bIsSuccess = false;
     }
     
     return bIsSuccess;
-    
 }
 
-void CFastaParser::DeleteReferenceMemory()
-{
-    free(ref);
-    fai_destroy(fai);
-}
 
-std::string CFastaParser::GetRefBase(int a_nRefPos, int a_nLength)
-{
-    std::string temp; // = ref_sequence.substr(ref_pos-1, length);
-    for (int i(0); i < a_nLength; ++i)
-    {
-        char tc = ref[a_nRefPos - 1 + i];
-        if (tc > 'T')
-        {
-            tc = ref[a_nRefPos - 1 + i] - ' ';
-            if ((tc != 'A') && (tc != 'C') && (tc != 'G') && (tc != 'T'))
-                tc = 'N';
-            temp += tc;
-        }
-        else
-            temp += tc;
-    }
-    return temp;
-}
 
-char CFastaParser::GetRefBase(int a_nPosition)
-{
-    char tc = ref[a_nPosition - 1];
-    
-    if (tc > 'T')
-        tc -= ' ';
-    else
-        tc = ref[a_nPosition - 1];
-    
-    if ((tc != 'A') && (tc != 'C') && (tc != 'G') && (tc != 'T'))
-        tc = 'N';
-    
-    return tc;
-}
 
-int CFastaParser::GetRefLength()
-{
-    return ref_len;
-}
+
+
+
+
+
+
+
+
+
+

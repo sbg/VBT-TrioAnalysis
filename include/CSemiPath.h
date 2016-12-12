@@ -22,7 +22,7 @@ class CSemiPath
     CSemiPath(const CSemiPath& a_rObj);
 
     //Include the given variant to this semipath
-    void IncludeVariant(COrientedVariant& a_rVariant, int a_nVariantIndex);
+    void IncludeVariant(const COrientedVariant& a_rVariant, int a_nVariantIndex);
     
     //Exclude the given variant to this semipath
     void ExcludeVariant(const CVariant& a_rVariant, int a_nVariantIndex);
@@ -35,9 +35,6 @@ class CSemiPath
     
     //Return the list of excluded variants
     std::vector<int> GetExcluded() const;
-    
-    //Return the list of included variants
-    std::vector<COrientedVariant*> GetIncluded() const;
     
     //Gets the end position the semipath (max of hapA and hapB)
     int GetPosition() const;
@@ -55,7 +52,7 @@ class CSemiPath
     void SetVariantIndex(int a_nVariantIndex);
     
     //Return pointer to included variants
-    const std::vector<COrientedVariant*>& GetIncludedVariants() const;
+    const std::vector<const COrientedVariant*>& GetIncludedVariants() const;
     
     //Check whether this half path is fully on the template (i.e. no haplotypes are within a variant)
     bool IsOnTemplate() const;
@@ -108,7 +105,7 @@ class CSemiPath
     // Last variant included
     int m_nIncludedVariantEndPosition;
 
-    std::vector<COrientedVariant*> m_aIncludedVariants;
+    std::vector<const COrientedVariant*> m_aIncludedVariants;
     std::vector<int> m_aExcludedVariants;
 
     CHaplotypeSequence m_haplotypeA;
