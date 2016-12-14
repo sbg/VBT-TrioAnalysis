@@ -34,7 +34,7 @@ class CSemiPath
     EVcfName GetVcfName() const;
     
     //Return the list of excluded variants
-    std::vector<int> GetExcluded() const;
+    const std::vector<int>& GetExcluded() const;
     
     //Gets the end position the semipath (max of hapA and hapB)
     int GetPosition() const;
@@ -91,6 +91,17 @@ class CSemiPath
     void StepHaplotypeA();
     void StepHaplotypeB();
 
+    //Clear the included variants
+    void ClearIncludedVariants();
+    //Set the included variants
+    void AddIncludedVariants(std::vector<const COrientedVariant*>& a_rIncludedVarList);
+    
+    //Clear the included variants
+    void ClearExcludedVariants();
+    //Set the included variants
+    void AddExcludedVariants(std::vector<int>& a_rExcludedVarList);
+
+    
     //[TEST Purpose]Print semipath
     void Print() const;
     

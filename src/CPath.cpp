@@ -307,6 +307,40 @@ std::vector<CSyncPoint> GetSyncPointsList(const std::vector<int>& syncpoints,con
 }
 
 
+void CPath::ClearIncludedVariants()
+{
+    m_calledSemiPath.ClearIncludedVariants();
+    m_baseSemiPath.ClearIncludedVariants();
+}
+
+void CPath::AddIncludedVariants(std::vector<const COrientedVariant*>& a_rIncludedVarListCalled, std::vector<const COrientedVariant*>& a_rIncludedVarListBase)
+{
+    m_calledSemiPath.AddIncludedVariants(a_rIncludedVarListCalled);
+    m_baseSemiPath.AddIncludedVariants(a_rIncludedVarListBase);
+}
+
+void CPath::ClearExcludedVariants()
+{
+    m_calledSemiPath.ClearExcludedVariants();
+    m_baseSemiPath.ClearExcludedVariants();
+}
+
+void CPath::AddExcludedVariants(std::vector<int>& a_rExcludedVarListCalled, std::vector<int>& a_rExcludedVarListBase)
+{
+    m_baseSemiPath.AddExcludedVariants(a_rExcludedVarListBase);
+    m_calledSemiPath.AddExcludedVariants(a_rExcludedVarListCalled);
+}
+
+void CPath::ClearSyncPointList()
+{
+    m_aSyncPointList.clear();
+}
+
+void CPath::AddSyncPointList(std::vector<int>& a_rSyncPointArray)
+{
+    m_aSyncPointList = a_rSyncPointArray;
+}
+
 void CPath::CalculateWeights()
 {
     assert(m_aSyncPointList.size() >= 1);

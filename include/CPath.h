@@ -75,6 +75,21 @@ class CPath
     //(this can happen when two calls cancel each other out when replayed, although the default path finding now avoids this)
     void CalculateWeights();
     
+    //Delete all Included variants
+    void ClearIncludedVariants();
+    //Add variants to the included variant list
+    void AddIncludedVariants(std::vector<const COrientedVariant*>& a_rIncludedVarListCalled, std::vector<const COrientedVariant*>& a_rIncludedVarListBase);
+    
+    //Delete all excluded variant indexes
+    void ClearExcludedVariants();
+    //Add variant indexes to the excluded variant list
+    void AddExcludedVariants(std::vector<int>& a_rIncludedVarListCalled, std::vector<int>& a_rIncludedVarListBase);
+    
+    //Delete all sync point list
+    void ClearSyncPointList();
+    //Add sync points to the sync point list
+    void AddSyncPointList(std::vector<int>& a_rSyncPointArray);
+    
     //Semi path object for base 
     CSemiPath m_baseSemiPath;
     

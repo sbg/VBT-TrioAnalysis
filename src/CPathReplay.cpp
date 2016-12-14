@@ -33,7 +33,7 @@ CPath CPathReplay::FindBestPath(SContig a_contig)
     m_nCurrentPosition = 0;
     int lastSyncPos = 0;
     //int TestID = 0;
-    //std::string maxPathRegion;
+    std::string maxPathRegion;
     
     CPathContainer processedPath;
     
@@ -43,17 +43,50 @@ CPath CPathReplay::FindBestPath(SContig a_contig)
         currentMaxIterations = std::max(currentMaxIterations, currentIterations++);
         m_pathList.GetLeastAdvanced(processedPath);
         
+        //TestID++;
         //std::cout << "====" << TestID++ << "====" << "PathID:" << processedPath.m_pPath->m_nPathId << std::endl;
         //std::cout << "Size:" << m_pathList.Size() + 1 << " Range:" << lastSyncPos + 1 << "-" << m_nCurrentPosition + 1 << " LocalIterations:" << currentIterations << std::endl;
        
         if(m_pathList.Size() == 0)
         {
+            const std::vector<const COrientedVariant*>* calledIncluded;
+            const std::vector<int>* calledExcluded;
+            calledIncluded = &(processedPath.m_pPath->m_calledSemiPath.GetIncludedVariants());
+            calledExcluded = &(processedPath.m_pPath->m_calledSemiPath.GetExcluded());
+            
+            const std::vector<const COrientedVariant*>* baseIncluded;
+            const std::vector<int>* baseExcluded;
+            baseIncluded = &(processedPath.m_pPath->m_baseSemiPath.GetIncludedVariants());
+            baseExcluded = &(processedPath.m_pPath->m_baseSemiPath.GetExcluded());
+
+            if(calledIncluded->size() > 5 || baseIncluded->size() > 5)
+            {
+                for(int k = 0; k < calledIncluded->size(); k++)
+                    m_IncludedVariantsCalledBest.push_back((*calledIncluded)[k]);
+                for(int k = 0; k < baseIncluded->size(); k++)
+                    m_IncludedVariantsBaselineBest.push_back((*baseIncluded)[k]);
+                
+                for(int k = 0; k < calledExcluded->size(); k++)
+                    m_ExcludedVariantsCalledBest.push_back((*calledExcluded)[k]);
+                for(int k = 0; k < baseExcluded->size(); k++)
+                    m_ExcludedVariantsBaselineBest.push_back((*baseExcluded)[k]);
+                
+                for(int k = 0; k < processedPath.m_pPath->m_aSyncPointList.size(); k++)
+                    m_SyncPointsBest.push_back(processedPath.m_pPath->m_aSyncPointList[k]);
+                
+                processedPath.m_pPath->ClearSyncPointList();
+                processedPath.m_pPath->ClearIncludedVariants();
+                processedPath.m_pPath->ClearExcludedVariants();
+            }
+
+            //std::cout << TestID << "Included Size:" << processedPath.m_pPath->m_baseSemiPath.GetIncludedVariants().size() << " Excluded Size:" << processedPath.m_pPath->m_baseSemiPath.GetExcluded().size() << std::endl;
+            
             int currentSyncPos = processedPath.m_pPath->m_calledSemiPath.GetPosition();
             if(currentMax > maxPaths)
             {
                 maxPaths = currentMax;
-                //maxPathRegion =  "chr21:" + std::to_string(lastSyncPos + 1) + "-" + std::to_string(currentSyncPos + 1);
-                //std::cout << "Maximum path complexity now " << maxPaths << ", at " << maxPathRegion << " with "  << currentIterations << " iterations" << std::endl;
+                maxPathRegion =  "chr21:" + std::to_string(lastSyncPos + 1) + "-" + std::to_string(currentSyncPos + 1);
+                std::cout << "Maximum path complexity now " << maxPaths << ", at " << maxPathRegion << " with "  << currentIterations << " iterations" << std::endl;
             }
             currentMax = 0;
             currentIterations = 0;
@@ -122,8 +155,37 @@ CPath CPathReplay::FindBestPath(SContig a_contig)
         
     }
     
-     std::cout << "Best Path Found" << std::endl;
-     return *best.m_pPath;
+    
+    const std::vector<const COrientedVariant*>* calledIncluded;
+    const std::vector<int>* calledExcluded;
+    calledIncluded = &(best.m_pPath->m_calledSemiPath.GetIncludedVariants());
+    calledExcluded = &(best.m_pPath->m_calledSemiPath.GetExcluded());
+    
+    const std::vector<const COrientedVariant*>* baseIncluded;
+    const std::vector<int>* baseExcluded;
+    baseIncluded = &(best.m_pPath->m_baseSemiPath.GetIncludedVariants());
+    baseExcluded = &(best.m_pPath->m_baseSemiPath.GetExcluded());
+
+    for(int k = 0; k < calledIncluded->size(); k++)
+        m_IncludedVariantsCalledBest.push_back((*calledIncluded)[k]);
+    for(int k = 0; k < baseIncluded->size(); k++)
+        m_IncludedVariantsBaselineBest.push_back((*baseIncluded)[k]);
+    for(int k = 0; k < calledExcluded->size(); k++)
+        m_ExcludedVariantsCalledBest.push_back((*calledExcluded)[k]);
+    for(int k = 0; k < baseExcluded->size(); k++)
+        m_ExcludedVariantsBaselineBest.push_back((*baseExcluded)[k]);
+    for(int k = 0; k < best.m_pPath->m_aSyncPointList.size(); k++)
+        m_SyncPointsBest.push_back(best.m_pPath->m_aSyncPointList[k]);
+    
+    best.m_pPath->ClearSyncPointList();
+    best.m_pPath->AddSyncPointList(m_SyncPointsBest);
+    best.m_pPath->ClearIncludedVariants();
+    best.m_pPath->AddIncludedVariants(m_IncludedVariantsCalledBest, m_IncludedVariantsBaselineBest);
+    best.m_pPath->ClearExcludedVariants();
+    best.m_pPath->AddExcludedVariants(m_ExcludedVariantsCalledBest, m_ExcludedVariantsBaselineBest);
+    
+    std::cout << "Best Path Found" << std::endl;
+    return *best.m_pPath;
 }
 
 void CPathReplay::AddIfBetter(const CPathContainer& a_path)

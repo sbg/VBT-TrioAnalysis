@@ -83,7 +83,7 @@ int CSemiPath::CompareHaplotypePositions() const
 }
 
 
-std::vector<int> CSemiPath::GetExcluded() const
+const std::vector<int>& CSemiPath::GetExcluded() const
 {
     return m_aExcludedVariants;
 }
@@ -217,6 +217,26 @@ void CSemiPath::StepHaplotypeB()
         m_haplotypeB.Next();
     else
         m_bFinishedHapB = true;
+}
+
+void CSemiPath::ClearIncludedVariants()
+{
+    m_aIncludedVariants.clear();
+}
+
+void CSemiPath::AddIncludedVariants(std::vector<const COrientedVariant*>& a_rIncludedVarList)
+{
+    m_aIncludedVariants = a_rIncludedVarList;
+}
+
+void CSemiPath::ClearExcludedVariants()
+{
+    m_aExcludedVariants.clear();
+}
+
+void CSemiPath::AddExcludedVariants(std::vector<int> &a_rExcludedVarList)
+{
+    m_aExcludedVariants = a_rExcludedVarList;
 }
 
 void CSemiPath::Print() const

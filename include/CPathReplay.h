@@ -60,7 +60,14 @@ class CPathReplay
         const CVariantProvider* m_variantProvider;
 
         int m_nCurrentPosition;
-
+    
+        std::vector<const COrientedVariant*> m_IncludedVariantsBaselineBest;
+        std::vector<int> m_ExcludedVariantsBaselineBest;
+    
+        std::vector<const COrientedVariant*> m_IncludedVariantsCalledBest;
+        std::vector<int> m_ExcludedVariantsCalledBest;
+    
+        std::vector<int> m_SyncPointsBest;
 };
 
 
