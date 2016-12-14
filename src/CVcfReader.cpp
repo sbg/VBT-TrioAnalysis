@@ -60,7 +60,7 @@ bool CVcfReader::Open(const char * a_pFilename)
             contigs_.push_back(contig);
         }
     }
-    
+        
     m_pRecord  = bcf_init();
     assert(m_pRecord);
     
@@ -121,9 +121,9 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
         else if(a_pVariant->m_chrName.length() == 5)
             a_pVariant->m_nChrId = atoi(a_pVariant->m_chrName.substr(3,2).c_str());
         else if(a_pVariant->m_chrName.length() == 4)
-            a_pVariant->m_nChrId = atoi(a_pVariant->m_chrName.substr(3,1).c_str()) - 1;
+            a_pVariant->m_nChrId = atoi(a_pVariant->m_chrName.substr(3,1).c_str());
         else
-            a_pVariant->m_nChrId = atoi(m_pHeader->id[BCF_DT_CTG][m_pRecord->rid].key) - 1;
+            a_pVariant->m_nChrId = atoi(m_pHeader->id[BCF_DT_CTG][m_pRecord->rid].key);
     
         //READ FILTER DATA
         if(a_rConfig.m_bIsFilterEnabled)
@@ -319,7 +319,16 @@ bool CVcfReader::GetNextRecordMultiSample(CVariant* a_pVariant)
     return true;
 }
 
-
+bool CVcfReader::SelectSample(std::string a_sampleName)
+{
+    int res = bcf_hdr_set_samples(m_pHeader, a_sampleName.c_str(), 0);
+    
+    if(res == 0)
+        return true;
+    else
+        return false;
+    
+}
 
 int CVcfReader::GetNumberOfSamples() const
 {

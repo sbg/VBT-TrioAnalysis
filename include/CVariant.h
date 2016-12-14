@@ -12,9 +12,8 @@
 enum EVariantType
 {
     eSNP,
-    eINDEL_ADD,
-    eINDEL_DEL,
-    eNO_OP
+    eINDEL,
+    eSV
 };
 
 struct SAllele
@@ -69,6 +68,9 @@ class CVariant
     //Return the allele sequence specified with the id (0 is first allele, 1 is second allele)
     SAllele GetAllele(int a_nAlleleId) const;
 
+    //Return the type of variant
+    EVariantType GetVariantType() const;
+    
     // Print the variant [For Test Purpose]
     std::string ToString() const;
     

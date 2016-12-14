@@ -26,15 +26,38 @@ bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
 
     m_config = a_rConfig;
     
+    //OPEN VCF FILES
     bIsSuccess = m_baseVCF.Open(a_rConfig.m_pBaseVcfFileName);
     if(!bIsSuccess)
         std::cout << "Baseline VCF file is unable to open!: " << a_rConfig.m_pBaseVcfFileName << std::endl;
     m_baseVCF.setID(0);
+
     bIsSuccess = m_calledVCF.Open(a_rConfig.m_pCalledVcfFileName);
     if(!bIsSuccess)
         std::cout << "Called VCF file is unable to open!: " << a_rConfig.m_pCalledVcfFileName << std::endl;
     m_calledVCF.setID(1);
     
+    //SET SAMPLE NAME TO READ ONLY ONE SAMPLE FROM THE VCF
+    if (true == m_config.m_bBaseSampleEnabled)
+        m_baseVCF.SelectSample(m_config.m_pBaseSample);
+    else
+    {
+        std::vector<std::string> sampleNames;
+        m_baseVCF.GetSampleNames(sampleNames);
+        m_baseVCF.SelectSample(sampleNames[0]);
+    }
+    
+    if (true == m_config.m_bCalledSampleEnabled)
+        m_baseVCF.SelectSample(m_config.m_pCalledSample);
+    else
+    {
+        std::vector<std::string> sampleNames;
+        m_calledVCF.GetSampleNames(sampleNames);
+        m_calledVCF.SelectSample(sampleNames[0]);
+    }
+    
+
+    // OPEN FASTA FILE
     bIsSuccess = m_fastaParser.OpenFastaFile(a_rConfig.m_pFastaFileName);
     if(!bIsSuccess)
         std::cout << "FASTA file is unable to open!: " << a_rConfig.m_pCalledVcfFileName << std::endl;
@@ -43,39 +66,44 @@ bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
     {
         FillVariantLists();
         FillOrientedVariantLists();
-    }
     
-    for(int k = 0; k < CHROMOSOME_COUNT; k++)
-    {
-        if(m_aBaseVariantList[k].size() != 0 && m_aCalledVariantList[k].size() == 0)
+        for(int k = 0; k < CHROMOSOME_COUNT; k++)
         {
-            std::cout << "Called VCF does not contain Chromosome " << k+1 << ".The chromosome will be filtered out from the comparison!" << std::endl;
-            m_aCalledVariantList[k].clear();
-        }
-        else if(m_aBaseVariantList[k].size() == 0 && m_aCalledVariantList[k].size() != 0)
-        {
-            std::cout << "Baseline VCF does not contain Chromosome " << k+1 << ".The chromosome will be filtered out from the comparison!" << std::endl;
-            m_aBaseVariantList[k].clear();
-        }
-        else if(m_aBaseVariantList[k].size() != 0 && m_aCalledVariantList[k].size() != 0)
-        {
-            //Read contig from FASTA file for the given chromosome
-            bool bIsSuccess2 = m_fastaParser.FetchNewChromosome(m_aBaseVariantList[k][0].m_chrName, m_aContigList[k]);
-            if(!bIsSuccess2)
+            if(m_aBaseVariantList[k].size() != 0 && m_aCalledVariantList[k].size() == 0)
             {
-                std::cout << "Chromosome " << k+1 << "will be filtered out from the comparison since reference FASTA could not read or it does not contain given chromosome" << std::endl;
+                std::cout << "Called VCF does not contain Chromosome " << k+1 << ".The chromosome will be filtered out from the comparison!" << std::endl;
                 m_aCalledVariantList[k].clear();
-                m_aBaseVariantList[k].clear();
+                m_aCalledOrientedVariantList[k].clear();
             }
-            else
+            else if(m_aBaseVariantList[k].size() == 0 && m_aCalledVariantList[k].size() != 0)
             {
-                //Trim the variants which are out of bound according to FASTA file
-                while(m_aBaseVariantList[k].back().GetEnd() > m_aContigList[k].m_nRefLength)
-                    m_aBaseVariantList[k].pop_back();
-                while(m_aCalledVariantList[k].back().GetEnd() > m_aContigList[k].m_nRefLength)
-                    m_aCalledVariantList[k].pop_back();
+                std::cout << "Baseline VCF does not contain Chromosome " << k+1 << ".The chromosome will be filtered out from the comparison!" << std::endl;
+                m_aBaseVariantList[k].clear();
+                m_aBaseOrientedVariantList[k].clear();
+            }
+            else if(m_aBaseVariantList[k].size() != 0 && m_aCalledVariantList[k].size() != 0)
+            {
+                //Read contig from FASTA file for the given chromosome
+                bool bIsSuccess2 = m_fastaParser.FetchNewChromosome(m_aBaseVariantList[k][0].m_chrName, m_aContigList[k]);
+                if(!bIsSuccess2)
+                {
+                    std::cout << "Chromosome " << k+1 << "will be filtered out from the comparison since reference FASTA could not read or it does not contain given chromosome" << std::endl;
+                    m_aCalledVariantList[k].clear();
+                    m_aBaseVariantList[k].clear();
+                    m_aBaseOrientedVariantList[k].clear();
+                    m_aCalledOrientedVariantList[k].clear();
+                }
+                else
+                {
+                    //Trim the variants which are out of bound according to FASTA file
+                    while(m_aBaseVariantList[k].back().GetEnd() > m_aContigList[k].m_nRefLength)
+                        m_aBaseVariantList[k].pop_back();
+                    while(m_aCalledVariantList[k].back().GetEnd() > m_aContigList[k].m_nRefLength)
+                        m_aCalledVariantList[k].pop_back();
+                }
             }
         }
+        
     }
     
     return bIsSuccess;
@@ -87,12 +115,17 @@ bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
 
 void CVariantProvider::FillVariantLists()
 {
-    
     CVariant variant;
     int id = 0;
     while(m_baseVCF.GetNextRecord(&variant, id++, m_config))
     {
         if(m_config.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
+            continue;
+        
+        if(m_config.m_bSNPOnly && variant.GetVariantType() != eSNP)
+            continue;
+        
+        if(m_config.m_bINDELOnly && variant.GetVariantType() != eINDEL)
             continue;
         
         if(IsStructuralVariant(variant, m_config.m_nMaxVariantSize))
@@ -105,6 +138,12 @@ void CVariantProvider::FillVariantLists()
     {
         
         if(m_config.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
+            continue;
+        
+        if(m_config.m_bSNPOnly && variant.GetVariantType() != eSNP)
+            continue;
+        
+        if(m_config.m_bINDELOnly && variant.GetVariantType() != eINDEL)
             continue;
         
         if(IsStructuralVariant(variant, m_config.m_nMaxVariantSize))
@@ -263,6 +302,27 @@ void CVariantProvider::PushVariant(CVariant& a_rVariant, std::vector<CVariant>& 
     it = a_rVecToPush.begin() + (size - k) + 1;
     a_rVecToPush.insert(it, a_rVariant);
 }
+
+
+void CVariantProvider::GetUniqueChromosomeIds(std::vector<int>& a_rChrIds)
+{
+    for(int k=0; k < CHROMOSOME_COUNT; k++)
+    {
+        if(m_aBaseVariantList[k].size() != 0 && m_aCalledVariantList[k].size() != 0)
+            a_rChrIds.push_back(k);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 

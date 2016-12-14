@@ -23,6 +23,7 @@ CPath::CPath(const char* a_aRefSequence, int a_nRefSize)
   m_nBSinceSync(0)
 {
     m_nPathId = -1;
+
 }
 
 CPath::CPath(const CPath& a_rObj)

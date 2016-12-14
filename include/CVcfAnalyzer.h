@@ -23,7 +23,7 @@ public:
     void Run(int argc, char** argv);
     
     
-//private:
+private:
 
     //Read Parameters from command line. If the mandatory arguments are given, return true.
     bool ReadParameters(int argc, char** argv);
@@ -31,8 +31,11 @@ public:
     //Prints the help menu at console
     void PrintHelp() const;
     
-    //void SetThreads()
+    //Calculate the thread count that will be generated and initialize the threads
+    void SetThreads();
     
+    //Function that will be send to each thread
+    void ThreadFunc(int a_nChromosomeId);
     
     //Maximum # of thread that program executes
     int m_nMaxThreadCount;
@@ -45,6 +48,9 @@ public:
     //Variant provider instance
     CVariantProvider m_provider;
     
+    //Best Paths written by each thread for each unique chromosome exists
+    CPath m_aBestPaths[CHROMOSOME_COUNT];
+
 };
 
 #endif //C_VCF_ANALYZER_H

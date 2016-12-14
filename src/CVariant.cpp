@@ -143,6 +143,36 @@ bool CVariant::IsFilterPASS() const
     return m_bIsFilterPASS;
 }
 
+EVariantType CVariant::GetVariantType() const
+{
+    //SNP CASE
+    if(m_refSequence.length() == 1 && m_alleles[0].m_sequence.length() == 1 && m_alleles[1].m_sequence.length() == 1)
+        return eSNP;
+    
+    //SV CASE
+    std::size_t found;
+    for(int k = 0; k < m_nAlleleCount; k++)
+    {
+        std::string allele = m_alleles[k].m_sequence;
+
+        found = allele.find('[');
+        if(found != std::string::npos)
+            return eSV;
+        found = allele.find('<');
+        if(found != std::string::npos)
+            return eSV;
+        found = allele.find('*');
+        if(found != std::string::npos)
+            return eSV;
+        found = allele.find('.');
+        if(found != std::string::npos)
+            return eSV;
+    }
+    
+    //INDEL OTHERWISE
+    return eINDEL;
+}
+
 
 
 

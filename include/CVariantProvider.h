@@ -40,6 +40,9 @@ class CVariantProvider
         //Return contig object given by the chromosome Id
         void GetContig(int a_nChrId, SContig& a_rContig) const;
     
+        //Return the count of chromosome which both contained by baseline and called VCF
+        void GetUniqueChromosomeIds(std::vector<int>& a_rChrIds);
+    
     private:
     
         //Read through the variant file and fill the variant lists. It assumes that positions are sorted.

@@ -29,9 +29,25 @@ struct SConfig
     const char* m_pFilterName = "PASS";
    
     //If Quality threshold is enabled
-    bool m_bIsQualityThresholdEnabled;
+    bool m_bIsQualityThresholdEnabled = false;
     //Threshold value of the variants
     float m_fQualityThreshold;
+    
+    //If Base sample name choosing is enabled
+    bool m_bBaseSampleEnabled = false;
+    //Name of the base sample to be selected
+    const char* m_pBaseSample;
+    
+    //If Called sample name choosing is enabled
+    bool m_bCalledSampleEnabled = false;
+    //Name of the called sample to be selected
+    const char* m_pCalledSample;
+    
+    //Process only SNPs when true
+    bool m_bSNPOnly = false;
+    
+    //Process only INDELs when true
+    bool m_bINDELOnly = false;
     
 };
 

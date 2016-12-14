@@ -37,6 +37,9 @@ public:
     // Get next record which has multiple samples in the file(Generates list of N variants and name of each sample)
     bool GetNextRecordMultiSample(CVariant* a_pVariant);
     
+    // Selects the sample name from multi sample VCF file and ignore other samples
+    bool SelectSample(std::string a_sampleName);
+    
     //Fills the a_PatientList with sample names
     void GetSampleNames(std::vector<std::string>& a_PatientList);
     
@@ -76,6 +79,8 @@ private:
     
     //Check if the first nucleotide for alleles are redundant (for indels)
     bool HasRedundantFirstNucleotide() const;
+    
+    
     
     
     std::string m_filename;
