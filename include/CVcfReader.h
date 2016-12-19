@@ -52,6 +52,9 @@ public:
     // Get contig size
     inline int GetContigSize() const {return (int)(contigs_.size());};
     
+    //Return the list of chromosome that vcf file contains
+    const std::vector<SVcfContig>& GetContigs() const;
+    
     // Get a contig name
     inline std::string GetContigName(const unsigned int& id) const {if (id < contigs_.size()) return contigs_[id].name; else return "";};
     
@@ -59,7 +62,7 @@ public:
     inline int GetContigLength(const unsigned int& id) const {if (id < contigs_.size()) return contigs_[id].length; else return -1;};
     
     // Get contig id by name. -1 means cannot find the contig
-    int GetContigId(const char* name) const;
+    int GetContigId(std::string a_name) const;
     
     // Prints the vcf file to the screen (Test Purpose)
     void PrintVCF(const SConfig& a_rConfig);

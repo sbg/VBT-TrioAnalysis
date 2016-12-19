@@ -108,8 +108,6 @@ class CPath
     //TEST Purpose
     int m_nPathId;
     
-    int m_nOverlappingVarCount;
-    int m_nSkippedVarCount;
 };
 
 class CPathContainer

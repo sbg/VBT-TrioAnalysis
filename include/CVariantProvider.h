@@ -13,7 +13,7 @@
 
 class COrientedVariant;
 
-const int CHROMOSOME_COUNT = 23;
+const int CHROMOSOME_COUNT = 25;
 
 
 class CVariantProvider
@@ -42,6 +42,9 @@ class CVariantProvider
     
         //Return the count of chromosome which both contained by baseline and called VCF
         void GetUniqueChromosomeIds(std::vector<int>& a_rChrIds);
+    
+        //Intersect base and called VCF files to find common chromosomes
+        std::vector<SVcfContig> GetCommonChromosomes();
     
     private:
     

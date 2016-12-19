@@ -91,23 +91,15 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
     a_pVariant->m_nVcfId = m_nVcfId;
     int* gt_arr = NULL;
     int ngt_arr = 0;
-    int* fi_arr = NULL;
 
     int samplenumber = GetNumberOfSamples();
     int zygotCount;
-    
-    if (!m_bIsOpen)
-    {
-        fprintf(stderr, "ERROR The vcf has not been opened.\n");
-        return false;
-    }
     
     bcf_clear(m_pRecord);
     m_pRecord->d.m_allele = 0;
     const int ok = bcf_read(m_pHtsFile, m_pHeader, m_pRecord);
     bcf_unpack(m_pRecord, BCF_UN_ALL);
     
-
     if (ok == 0)
     {
         a_pVariant->m_nId = a_nId;
@@ -115,9 +107,11 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
         
         //READ CHROMOSOME ID: (TODO: this should be renewed. there should be sth that reads the chromosome id)
         if(a_pVariant->m_chrName == "x" || a_pVariant->m_chrName == "X" || a_pVariant->m_chrName == "chrX" || a_pVariant->m_chrName == "chrx")
-            a_pVariant->m_nChrId = 22;
-        else if(a_pVariant->m_chrName == "y" || a_pVariant->m_chrName == "Y" || a_pVariant->m_chrName == "chrY" || a_pVariant->m_chrName == "chry")
             a_pVariant->m_nChrId = 23;
+        else if(a_pVariant->m_chrName == "y" || a_pVariant->m_chrName == "Y" || a_pVariant->m_chrName == "chrY" || a_pVariant->m_chrName == "chry")
+            a_pVariant->m_nChrId = 24;
+        else if(a_pVariant->m_chrName == "MT" || a_pVariant->m_chrName == "mt" || a_pVariant->m_chrName == "chrMT" || a_pVariant->m_chrName == "chrmt")
+            a_pVariant->m_nChrId = 25;
         else if(a_pVariant->m_chrName.length() == 5)
             a_pVariant->m_nChrId = atoi(a_pVariant->m_chrName.substr(3,2).c_str());
         else if(a_pVariant->m_chrName.length() == 4)
@@ -160,6 +154,7 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
             a_pVariant->m_nMaxLength = std::max(a_pVariant->m_nMaxLength,static_cast<int>(a_pVariant->m_alleles[i].m_sequence.length()));
         }
         
+        //SET ZYGOSITY OF THE VARIANT (HOMOZYGOUS or HETEROZYGOUS)
         if(zygotCount == 2)
         {
             if(a_pVariant->m_alleles[0].m_sequence == a_pVariant->m_alleles[1].m_sequence)
@@ -179,8 +174,10 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
             a_pVariant->m_bIsHeterozygous = false;
         }
         
+        //TRIM FIRST NUCLEOTIDES IF THEY EXIST IN BOTH ALLELE AND IN REFERENCE
         if(HasRedundantFirstNucleotide())
         {
+            a_pVariant->m_bIsFirstNucleotideTrimmed = true;
             for (int i = 0; i < ngt_arr; ++i)
             {
                 TrimAllele(a_pVariant->m_alleles[i]);
@@ -200,9 +197,15 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
         a_pVariant->m_nStartPos = minStart;
  
         
+        //FILL ORIGINAL ALLELE STR AND GENOTYPE FOR LATER ACCESS
+//        for(int k = 0; k < m_pRecord->n_allele; k++)
+//            a_pVariant->m_allelesStr = a_pVariant->m_allelesStr + std::string(m_pRecord->d.allele[k]);
+//        for(int k = 0; k < ngt_arr; k++)
+//            a_pVariant->m_genotypes.push_back(bcf_gt_allele(gt_arr[k]));
+        
+        
         //FREE BUFFERS
         free(gt_arr);
-        free(fi_arr);
         return true;
     }
     else 
@@ -350,15 +353,15 @@ void CVcfReader::GetSampleNames(std::vector<std::string>& a_pSampleNameList)
         a_pSampleNameList.push_back(m_pHeader->id[BCF_DT_SAMPLE][k].key);
 }
 
-
-int CVcfReader::GetContigId(const char* name) const
+int CVcfReader::GetContigId(std::string a_name) const
 {
-    for (unsigned int i = 0; i < contigs_.size(); ++i) {
-        if (strcmp(contigs_[i].name.c_str(), name) == 0) return i;
+    for (unsigned int i = 0; i < contigs_.size(); ++i)
+    {
+        if (contigs_[i].name.compare(a_name) == 0)
+            return i;
     }
     return -1;
 }
-
 
 const char* CVcfReader::getFilterString(int a_nFilterKey)
 {
@@ -376,7 +379,6 @@ int CVcfReader::getFilterKey(const char* a_pFilterValue)
     return -1;
 }
 
-
 void CVcfReader::TrimAllele(SAllele& a_rAllele)
 {
     a_rAllele.m_sequence = a_rAllele.m_sequence.substr(1, a_rAllele.m_sequence.length() - 1);
@@ -391,6 +393,11 @@ bool CVcfReader::HasRedundantFirstNucleotide() const
             return false;
     }
     return true;
+}
+
+const std::vector<SVcfContig>&  CVcfReader::GetContigs() const
+{
+    return contigs_;
 }
 
 void CVcfReader::PrintVCF(const SConfig& a_rConfig)

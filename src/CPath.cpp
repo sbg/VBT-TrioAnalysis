@@ -23,7 +23,6 @@ CPath::CPath(const char* a_aRefSequence, int a_nRefSize)
   m_nBSinceSync(0)
 {
     m_nPathId = -1;
-
 }
 
 CPath::CPath(const CPath& a_rObj)
@@ -142,7 +141,6 @@ int CPath::AddVariant(CPathContainer* a_pPathList, EVcfName a_nVcfName,const CVa
                 //a_pPathList[pathCount].m_pPath->m_nPathId = this->m_nPathId +300;
                 pathCount++;
             }
-            
             //Include with unordered genotype
             a_pPathList[pathCount].m_pPath =  std::shared_ptr<CPath>(new CPath(*this, m_calledSemiPath.GetPosition()));
             p = a_nVcfName == eBASE ? &a_pPathList[pathCount].m_pPath->m_baseSemiPath : &a_pPathList[pathCount].m_pPath->m_calledSemiPath;
@@ -179,6 +177,7 @@ int CPath::AddVariant(CPathContainer* a_pPathList, EVcfName a_nVcfName,const CVa
                 //a_pPathList[pathCount].m_pPath->m_nPathId = this->m_nPathId +300;
                 pathCount++;
             }
+
         }
         else
         {

@@ -7,37 +7,45 @@
 
 #include "CVcfAnalyzer.h"
 #include "iostream"
+#include <math.h>
 
 
 void CVcfAnalyzer::Run(int argc, char** argv)
 {
+    
+    std::clock_t start;
+    double duration;
+    
     //Read command line parameters to m_config object
     bool isSuccess = ReadParameters(argc, argv);
     
     if(!isSuccess)
         return;
 
-    //m_config.m_pBaseVcfFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/HG00171-30x.vcf";
-    //m_config.m_pCalledVcfFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/HG00171-30x.vcf";
-    //m_config.m_pFastaFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/human_g1k_v37_decoy.fasta";
+   // m_config.m_pBaseVcfFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/HG00171-30x.vcf";
+   // m_config.m_pCalledVcfFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/HG00171-30x.vcf";
+    m_config.m_pFastaFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/human_g1k_v37_decoy.fasta";
+    m_config.m_pBaseVcfFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/HG002_GIAB_highconf_IllFB-IllGATKHC-CG-Ion-Solid_CHROM1-22_v3.2.2_highconf.vcf";
+    m_config.m_pCalledVcfFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/gral0.9.sorted.and_more.concat.vcf";
+    
+    start = std::clock();
     
     //Initialize Variant providers which contains VCF and FASTA files
     isSuccess = m_provider.InitializeReaders(m_config);
     
+    duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
+    std::cout << "Vcf and fasta Parser read completed in " << duration << " secs" << std::endl;
+
     if(!isSuccess)
         return;
     
-   
-    std::clock_t start;
-    double duration;
-    
     start = std::clock();
-    SetThreads();
+    SetThreadsCustom(8 * 1024);
     duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
     std::cout << "Program Completed in " << duration << " secs" << std::endl;
 }
 
-void CVcfAnalyzer::SetThreads()
+void CVcfAnalyzer::SetThreadsPlatform()
 {
     std::vector<int> chromosomeIds;
  
@@ -45,20 +53,59 @@ void CVcfAnalyzer::SetThreads()
     
     m_provider.GetUniqueChromosomeIds(chromosomeIds);
 
-    for(int k= 0; k < chromosomeIds.size(); k++)
+    for(int k = 0; k < chromosomeIds.size(); k++)
     {
-        ThreadFunc(chromosomeIds[k]);
+        threadPool[k] = std::thread(&CVcfAnalyzer::ThreadFunc, this, chromosomeIds[k]);
     }
     
-//    for(int k = 0; k < chromosomeIds.size(); k++)
-//    {
-//        threadPool[k] = std::thread(&CVcfAnalyzer::ThreadFunc, this, chromosomeIds[k]);
-//    }
-//    
-//    for(int k = 0; k < chromosomeIds.size(); k++)
-//    {
-//        threadPool[k].join();
-//    }
+    for(int k = 0; k < chromosomeIds.size(); k++)
+    {
+        threadPool[k].join();
+    }
+}
+
+void CVcfAnalyzer::SetThreadsCustom(int a_nMemoryInMB)
+{
+    std::vector<int> chromosomeIds;
+    m_provider.GetUniqueChromosomeIds(chromosomeIds);
+    
+    //IF WE HAVE TOO MUCH MEMORY GO RUN ALL THREADS CONSECUTIVELY
+    if(a_nMemoryInMB > 32 * 1024)
+    {
+        SetThreadsPlatform();
+        return;
+    }
+
+    //IF WE HAVE LESS MEMORY USE SINGLE THREADING
+    if(a_nMemoryInMB < 2 * 1024 || chromosomeIds.size() < 4)
+    {
+        for(int k = 0; k < chromosomeIds.size(); k++)
+            ThreadFunc(chromosomeIds[k]);
+        return;
+    }
+
+    //ELSE ALLOCATE 1 GB MEMORY (ON AVG) FOR EACH THREAD
+    const int maxThreadCount = ceil(a_nMemoryInMB / 1024);
+    std::vector<int>* chrArrs = new std::vector<int>[maxThreadCount];
+
+    for(int k = 0, p = 0; k < chromosomeIds.size(); k++)
+    {
+        chrArrs[p].push_back(chromosomeIds[k]);
+        p++;
+        p = p % maxThreadCount;
+    }
+    
+    std::thread *threadPool = new std::thread[maxThreadCount];
+    
+    for(int k = 0; k < maxThreadCount; k++)
+    {
+        threadPool[k] = std::thread(&CVcfAnalyzer::ThreadFunc2, this, chrArrs[k]);
+    }
+        
+    for(int k = 0; k < maxThreadCount; k++)
+    {
+        threadPool[k].join();
+    }
 }
 
 void CVcfAnalyzer::ThreadFunc(int a_nChromosomeId)
@@ -71,12 +118,33 @@ void CVcfAnalyzer::ThreadFunc(int a_nChromosomeId)
     
     m_aBestPaths[a_nChromosomeId] = pathReplay.FindBestPath(ctg);
     
+    std::cout << "===CHROMOSOME " << a_nChromosomeId + 1 << "===" << std::endl;
     std::cout << "Called Included Count: " << m_aBestPaths[a_nChromosomeId].m_calledSemiPath.GetIncludedVariants().size() << std::endl;
     std::cout << "Called Excluded Count: " << m_aBestPaths[a_nChromosomeId].m_calledSemiPath.GetExcluded().size() << std::endl;
     std::cout << "Baseline Included Count: " << m_aBestPaths[a_nChromosomeId].m_baseSemiPath.GetIncludedVariants().size() << std::endl;
     std::cout << "Baseline Excluded Count: " << m_aBestPaths[a_nChromosomeId].m_baseSemiPath.GetExcluded().size() << std::endl;
     return;
 }
+
+void CVcfAnalyzer::ThreadFunc2(std::vector<int> a_nChrArr)
+{
+    for(int k = 0; k < a_nChrArr.size(); k++)
+    {
+        CPathReplay pathReplay;
+        SContig ctg;
+        
+        pathReplay.SetVariantProvider(m_provider);
+        m_provider.GetContig(a_nChrArr[k], ctg);
+        m_aBestPaths[a_nChrArr[k]] = pathReplay.FindBestPath(ctg);
+        
+        std::cout << "===CHROMOSOME " << a_nChrArr[k] + 1 << "===" << std::endl;
+        std::cout << "Called Included Count: " << m_aBestPaths[a_nChrArr[k]].m_calledSemiPath.GetIncludedVariants().size() << std::endl;
+        std::cout << "Called Excluded Count: " << m_aBestPaths[a_nChrArr[k]].m_calledSemiPath.GetExcluded().size() << std::endl;
+        std::cout << "Baseline Included Count: " << m_aBestPaths[a_nChrArr[k]].m_baseSemiPath.GetIncludedVariants().size() << std::endl;
+        std::cout << "Baseline Excluded Count: " << m_aBestPaths[a_nChrArr[k]].m_baseSemiPath.GetExcluded().size() << std::endl;
+    }
+}
+
 
 bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
 {
@@ -176,7 +244,7 @@ void CVcfAnalyzer::PrintHelp() const
 {
     std::cout << "==== SBG VCF COMPARISON TOOL VERSION 1.0 (Beta) ==== " << std::endl;
     std::cout << "Based on paper: http://biorxiv.org/content/biorxiv/early/2015/08/02/023754.full.pdf" << std::endl;
-    std::cout << "AUTHOR: Berke Cagkan Toptas (berke.toptas@sbgenomics.com)" << std::endl;
+    std::cout << "Author: Berke Cagkan Toptas (berke.toptas@sbgenomics.com)" << std::endl;
     std::cout << "Please notify me if program fails or return unexpected results" << std::endl;
     std::cout << "COPYRIGHT (C) 2016 SEVEN BRIDGES GENOMICS." << std::endl;
     std::cout << std::endl;

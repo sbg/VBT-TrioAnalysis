@@ -20,6 +20,29 @@ CVariantProvider::~CVariantProvider()
 }
 
 
+std::vector<SVcfContig> CVariantProvider::GetCommonChromosomes()
+{
+    std::vector<SVcfContig> commonChromosomes;
+    
+    const std::vector<SVcfContig>& a_rBaseContigList = m_baseVCF.GetContigs();
+    const std::vector<SVcfContig>& a_rCalledContigList = m_calledVCF.GetContigs();
+    
+    for(SVcfContig contig : a_rBaseContigList)
+    {
+        for(int k = 0; k < a_rCalledContigList.size(); k++)
+        {
+            if(a_rBaseContigList[k].name == contig.name)
+            {
+                commonChromosomes.push_back(contig);
+                break;
+            }
+        }
+    }
+    
+    return commonChromosomes;
+}
+
+
 bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
 {
     bool bIsSuccess;
@@ -56,7 +79,6 @@ bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
         m_calledVCF.SelectSample(sampleNames[0]);
     }
     
-
     // OPEN FASTA FILE
     bIsSuccess = m_fastaParser.OpenFastaFile(a_rConfig.m_pFastaFileName);
     if(!bIsSuccess)
@@ -84,6 +106,7 @@ bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
             else if(m_aBaseVariantList[k].size() != 0 && m_aCalledVariantList[k].size() != 0)
             {
                 //Read contig from FASTA file for the given chromosome
+                std::cout << "Reading reference of chromosome " << m_aBaseVariantList[k][0].m_chrName << " from the FASTA file" << std::endl;
                 bool bIsSuccess2 = m_fastaParser.FetchNewChromosome(m_aBaseVariantList[k][0].m_chrName, m_aContigList[k]);
                 if(!bIsSuccess2)
                 {
@@ -117,8 +140,22 @@ void CVariantProvider::FillVariantLists()
 {
     CVariant variant;
     int id = 0;
+    std::string preChrId;
+    
+    std::vector<SVcfContig> commonChromosomes = GetCommonChromosomes();
+
+    
     while(m_baseVCF.GetNextRecord(&variant, id++, m_config))
     {
+        if(m_calledVCF.GetContigId(variant.m_chrName) == -1)
+            continue;
+        
+        if(preChrId != variant.m_chrName)
+        {
+            preChrId = variant.m_chrName;
+            std::cout << "Processing chromosome " << preChrId << " of base vcf" << std::endl;
+        }
+        
         if(m_config.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
             continue;
         
@@ -136,6 +173,14 @@ void CVariantProvider::FillVariantLists()
     
     while(m_calledVCF.GetNextRecord(&variant, id++, m_config))
     {
+        if(m_baseVCF.GetContigId(variant.m_chrName) == -1)
+            continue;
+        
+        if(preChrId != variant.m_chrName)
+        {
+            preChrId = variant.m_chrName;
+            std::cout << "Processing chromosome " << preChrId << " of called vcf" << std::endl;
+        }
         
         if(m_config.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
             continue;

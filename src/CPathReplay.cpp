@@ -33,7 +33,7 @@ CPath CPathReplay::FindBestPath(SContig a_contig)
     m_nCurrentPosition = 0;
     int lastSyncPos = 0;
     //int TestID = 0;
-    std::string maxPathRegion;
+    //std::string maxPathRegion;
     
     CPathContainer processedPath;
     
@@ -85,8 +85,8 @@ CPath CPathReplay::FindBestPath(SContig a_contig)
             if(currentMax > maxPaths)
             {
                 maxPaths = currentMax;
-                maxPathRegion =  "chr21:" + std::to_string(lastSyncPos + 1) + "-" + std::to_string(currentSyncPos + 1);
-                std::cout << "Maximum path complexity now " << maxPaths << ", at " << maxPathRegion << " with "  << currentIterations << " iterations" << std::endl;
+                //maxPathRegion =  "chr21:" + std::to_string(lastSyncPos + 1) + "-" + std::to_string(currentSyncPos + 1);
+                //std::cout << "Maximum path complexity now " << maxPaths << ", at " << maxPathRegion << " with "  << currentIterations << " iterations" << std::endl;
             }
             currentMax = 0;
             currentIterations = 0;
@@ -184,7 +184,9 @@ CPath CPathReplay::FindBestPath(SContig a_contig)
     best.m_pPath->ClearExcludedVariants();
     best.m_pPath->AddExcludedVariants(m_ExcludedVariantsCalledBest, m_ExcludedVariantsBaselineBest);
     
+    
     std::cout << "Best Path Found" << std::endl;
+    std::cout << "Maximum path complexity is " << maxPaths << ", with "  << currentIterations << " iterations " << std::endl;
     return *best.m_pPath;
 }
 

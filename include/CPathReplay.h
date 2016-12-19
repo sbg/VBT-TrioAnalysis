@@ -13,8 +13,8 @@
 #include "CThreadSafePathList.h"
 #include "CVariant.h"
 
-const int MAX_ITERATION = 10000000;
-const int MAX_COMPLEXITY = 50000;
+const int MAX_ITERATION = 30000000;
+const int MAX_COMPLEXITY = 150000;
 
 class CPath;
 class CPathContainer;

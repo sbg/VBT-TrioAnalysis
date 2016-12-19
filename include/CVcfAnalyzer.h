@@ -31,11 +31,17 @@ private:
     //Prints the help menu at console
     void PrintHelp() const;
     
+    //Creates a thread for each chromosome
+    void SetThreadsPlatform();
+    
     //Calculate the thread count that will be generated and initialize the threads
-    void SetThreads();
+    void SetThreadsCustom(int a_nMemoryInMB);
     
     //Function that will be send to each thread
     void ThreadFunc(int a_nChromosomeId);
+    
+    //Function that process chromosome in bulk
+    void ThreadFunc2(std::vector<int> a_nChrArr);
     
     //Maximum # of thread that program executes
     int m_nMaxThreadCount;

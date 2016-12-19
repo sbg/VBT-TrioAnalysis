@@ -7,6 +7,7 @@
 #define _CVariant_H
 
 #include <string>
+#include <vector>
 #include "htslib/vcf.h"
 
 enum EVariantType
@@ -71,6 +72,9 @@ class CVariant
     //Return the type of variant
     EVariantType GetVariantType() const;
     
+    //Fill the Genotype list with the original genotype indexes and the genotype count
+    void GetGenotypeArr(int* a_pGenotypeList, int& a_rGenotypeCount);
+    
     // Print the variant [For Test Purpose]
     std::string ToString() const;
     
@@ -89,6 +93,9 @@ class CVariant
     //True if the variant genotype is phased
     bool m_bIsPhased;
     bool m_bIsHeterozygous;
+    
+    //True if the first nucleotide is trimmed
+    bool m_bIsFirstNucleotideTrimmed;
 
     //Allele array of the variant
     SAllele m_alleles[2];
@@ -104,6 +111,13 @@ class CVariant
     
     //Maximum length of the allele
     int m_nMaxLength;
+    
+    //THIS VARIABLES SHOULD NOT BE ACCESSED BY GENERIC USERS
+    //Original Alleles string read from vcf file
+    std::string m_allelesStr;
+    //Original Genotype list read from vcf file
+    std::vector<int> m_genotypes;
+    
 };
 
 

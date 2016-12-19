@@ -19,6 +19,7 @@ CVariant::CVariant(): m_nVcfId(-1),
     m_nId = -1;
     m_nAlleleCount = 0;
     m_nMaxLength = 0;
+    m_bIsFirstNucleotideTrimmed = false;
 }
 
 CVariant::CVariant(const CVariant& a_rObj)
@@ -40,6 +41,7 @@ CVariant::CVariant(const CVariant& a_rObj)
     m_refSequence = a_rObj.m_refSequence;
     m_nMaxLength = a_rObj.m_nMaxLength;
     m_bIsHeterozygous = a_rObj.m_bIsHeterozygous;
+    m_bIsFirstNucleotideTrimmed = a_rObj.m_bIsFirstNucleotideTrimmed;
 }
 
 
