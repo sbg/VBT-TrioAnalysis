@@ -42,6 +42,13 @@ CVariant::CVariant(const CVariant& a_rObj)
     m_nMaxLength = a_rObj.m_nMaxLength;
     m_bIsHeterozygous = a_rObj.m_bIsHeterozygous;
     m_bIsFirstNucleotideTrimmed = a_rObj.m_bIsFirstNucleotideTrimmed;
+    
+    m_filterString = a_rObj.m_filterString;
+    m_allelesStr = a_rObj.m_allelesStr;
+    m_nZygotCount = a_rObj.m_nZygotCount;
+    m_genotype[0] = a_rObj.m_genotype[0];
+    m_genotype[1] = a_rObj.m_genotype[1];
+    
 }
 
 

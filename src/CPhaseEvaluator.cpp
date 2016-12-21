@@ -8,6 +8,10 @@
 //
 
 #include "CPhaseEvaluator.h"
+#include "SVariantSummary.h"
+#include "CCallIterator.h"
+#include "CPath.h"
+#include "CVariantProvider.h"
 
 
 CPhaseEvaluator::CPhaseEvaluator(CVariantProvider *a_pVarProvider)

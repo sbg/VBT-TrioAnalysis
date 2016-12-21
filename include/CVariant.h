@@ -88,6 +88,7 @@ class CVariant
     int m_nId;
  
     //Filter Data
+    std::string m_filterString;
     bool m_bIsFilterPASS;
     
     //True if the variant genotype is phased
@@ -116,8 +117,8 @@ class CVariant
     //Original Alleles string read from vcf file
     std::string m_allelesStr;
     //Original Genotype list read from vcf file
-    std::vector<int> m_genotypes;
-    
+    int m_genotype[2];
+    int m_nZygotCount;
 };
 
 

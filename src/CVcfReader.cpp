@@ -119,12 +119,17 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
         else
             a_pVariant->m_nChrId = atoi(m_pHeader->id[BCF_DT_CTG][m_pRecord->rid].key);
     
+        
         //READ FILTER DATA
         if(a_rConfig.m_bIsFilterEnabled)
         {
             bool isPassed = false;
             for(int k=0; k< m_pRecord->d.n_flt; k++)
             {
+                if(k != 0)
+                    a_pVariant->m_filterString += ",";
+                a_pVariant->m_filterString += m_pHeader->id[BCF_DT_ID][m_pRecord->d.flt[k]].key;
+                
                 if(0 == strcmp(m_pHeader->id[BCF_DT_ID][m_pRecord->d.flt[k]].key, a_rConfig.m_pFilterName))
                     isPassed = true;
             }
@@ -198,11 +203,15 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
  
         
         //FILL ORIGINAL ALLELE STR AND GENOTYPE FOR LATER ACCESS
-//        for(int k = 0; k < m_pRecord->n_allele; k++)
-//            a_pVariant->m_allelesStr = a_pVariant->m_allelesStr + std::string(m_pRecord->d.allele[k]);
-//        for(int k = 0; k < ngt_arr; k++)
-//            a_pVariant->m_genotypes.push_back(bcf_gt_allele(gt_arr[k]));
-        
+        a_pVariant->m_nZygotCount = zygotCount;
+        for(int k = 0; k < m_pRecord->n_allele; k++)
+        {
+            if(k != 0)
+                a_pVariant->m_allelesStr += ",";
+            a_pVariant->m_allelesStr += std::string(m_pRecord->d.allele[k]);
+        }
+       for(int k = 0; k < ngt_arr; k++)
+           a_pVariant->m_genotype[k] = bcf_gt_allele(gt_arr[k]);
         
         //FREE BUFFERS
         free(gt_arr);
