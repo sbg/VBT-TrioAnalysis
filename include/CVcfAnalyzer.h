@@ -31,7 +31,7 @@ private:
     //Prints the help menu at console
     void PrintHelp() const;
     
-    //Creates a thread for each chromosome
+    //Process all chromosomes in parallel. Called if there is enough memory and core
     void SetThreadsPlatform();
     
     //Calculate the thread count that will be generated and initialize the threads

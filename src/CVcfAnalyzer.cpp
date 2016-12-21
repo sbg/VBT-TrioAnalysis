@@ -40,6 +40,7 @@ void CVcfAnalyzer::Run(int argc, char** argv)
         return;
     
     start = std::clock();
+    //Creates the threads according to given memory and process the data
     SetThreadsCustom(8 * 1024);
     duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
     std::cout << "Program Completed in " << duration << " secs" << std::endl;
@@ -84,8 +85,8 @@ void CVcfAnalyzer::SetThreadsCustom(int a_nMemoryInMB)
         return;
     }
 
-    //ELSE ALLOCATE 1 GB MEMORY (ON AVG) FOR EACH THREAD
-    const int maxThreadCount = ceil(a_nMemoryInMB / 1024);
+    //ELSE CREATE 2 GB MEMORY (ON AVG) FOR EACH THREAD
+    const int maxThreadCount = ceil(a_nMemoryInMB / 2048);
     std::vector<int>* chrArrs = new std::vector<int>[maxThreadCount];
 
     for(int k = 0, p = 0; k < chromosomeIds.size(); k++)
