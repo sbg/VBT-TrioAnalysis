@@ -165,34 +165,3 @@ std::string CVcfWriter::GetTime()
     return std::string(buffer);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
