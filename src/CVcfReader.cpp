@@ -144,7 +144,10 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
         bcf_get_genotypes(m_pHeader, m_pRecord, &gt_arr, &ngt_arr);
         zygotCount = ngt_arr / samplenumber;
         a_pVariant->m_nAlleleCount = zygotCount;
-        a_pVariant->m_bIsPhased = bcf_gt_is_phased(bcf_gt_allele(gt_arr[0]));
+        if(zygotCount == 2)
+            a_pVariant->m_bIsPhased = bcf_gt_is_phased(gt_arr[0]) || bcf_gt_is_phased(gt_arr[1]);
+        else
+            a_pVariant->m_bIsPhased = bcf_gt_is_phased(gt_arr[0]);
  
         
         //READ SEQUENCE DATA AND FILL ALLELES
