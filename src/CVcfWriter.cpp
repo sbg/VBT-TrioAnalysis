@@ -14,6 +14,7 @@
 CVcfWriter::CVcfWriter()
 {
     m_HEADER_GUARD = 0;
+    m_nSampleCount = 0;
 }
 
 void CVcfWriter::CreateVcf(const char* a_pFileName)
@@ -53,7 +54,6 @@ void CVcfWriter::InitHeader()
 
 }
 
-
 void CVcfWriter::WriteHeaderToVcf()
 {
     if(m_HEADER_GUARD == 1)
@@ -69,11 +69,13 @@ void CVcfWriter::WriteHeaderToVcf()
 void CVcfWriter::AddSampleName(const std::string &a_rSampleName)
 {
     if(m_HEADER_GUARD == 1)
+    {
         bcf_hdr_add_sample(m_pHeader, a_rSampleName.c_str());
+        m_nSampleCount++;
+    }
     else
         std::cerr << "Invalid Operation. Cannot add sample name" << std::endl;
 }
-
 
 void CVcfWriter::AddRecord(const SVcfRecord& a_rVcfRecord)
 {
@@ -93,7 +95,8 @@ void CVcfWriter::AddRecord(const SVcfRecord& a_rVcfRecord)
     m_pRecord->pos = a_rVcfRecord.m_nPosition;
     
     //Set Quality
-    m_pRecord->qual = a_rVcfRecord.m_nQuality;
+    if(a_rVcfRecord.m_nQuality != -1)
+        m_pRecord->qual = a_rVcfRecord.m_nQuality;
     
     //Set alleles
     bcf_update_alleles_str(m_pHeader, m_pRecord, a_rVcfRecord.m_alleles.c_str());
@@ -107,33 +110,58 @@ void CVcfWriter::AddRecord(const SVcfRecord& a_rVcfRecord)
         for(int p = 0; p < a_rVcfRecord.m_aSampleData[k].m_nHaplotypeCount; p++)
         {
             if(a_rVcfRecord.m_aSampleData[k].m_bIsPhased)
-                genotypes.push_back(bcf_gt_phased(a_rVcfRecord.m_aSampleData[k].m_aGenotype[0]));
+                genotypes.push_back(bcf_gt_phased(a_rVcfRecord.m_aSampleData[k].m_aGenotype[p]));
+            else if(a_rVcfRecord.m_aSampleData[k].m_aGenotype[p] == -1)
+                genotypes.push_back(bcf_gt_missing);
             else
-                genotypes.push_back(bcf_gt_unphased(a_rVcfRecord.m_aSampleData[k].m_aGenotype[0]));
+                genotypes.push_back(bcf_gt_unphased(a_rVcfRecord.m_aSampleData[k].m_aGenotype[p]));
         }
         
+        if(a_rVcfRecord.m_aSampleData[k].m_nHaplotypeCount == 1)
+            genotypes.push_back(bcf_int32_vector_end);
     }
+    
+    if(m_nSampleCount != a_rVcfRecord.m_aSampleData.size())
+    {
+        genotypes.push_back(bcf_gt_missing);
+        genotypes.push_back(bcf_gt_missing);
+    }
+    
+    
     bcf_update_genotypes(m_pHeader, m_pRecord, static_cast<int*>(&genotypes[0]), static_cast<int>(genotypes.size()));
 
     //2.Decision Set (BD)
-    char* tmpstr[a_rVcfRecord.m_aSampleData.size()];
-    for(int k = 0; k < a_rVcfRecord.m_aSampleData.size(); k++)
+    char* tmpstr[m_nSampleCount];
+    int k;
+    for(k = 0; k < a_rVcfRecord.m_aSampleData.size(); k++)
     {
         tmpstr[k] = new char[a_rVcfRecord.m_aSampleData[k].m_decisionBD.size()];
         strcpy(tmpstr[k], a_rVcfRecord.m_aSampleData[k].m_decisionBD.c_str());
     }
-    bcf_update_format_string(m_pHeader, m_pRecord, "BD", (const char**)tmpstr, static_cast<int>(a_rVcfRecord.m_aSampleData.size()));
+    
+    if(a_rVcfRecord.m_aSampleData.size() != m_nSampleCount)
+    {
+        tmpstr[k] = new char[1];
+        tmpstr[k][0] = bcf_str_missing;
+    }
+    bcf_update_format_string(m_pHeader, m_pRecord, "BD", (const char**)tmpstr, m_nSampleCount);
     
 
     //3.Match Type Set (BK)
-    char* tmpstr2[a_rVcfRecord.m_aSampleData.size()];
-    for(int k = 0; k < a_rVcfRecord.m_aSampleData.size(); k++)
+    char* tmpstr2[m_nSampleCount];
+    for(k = 0; k < a_rVcfRecord.m_aSampleData.size(); k++)
     {
-        tmpstr2[k] = new char[a_rVcfRecord.m_aSampleData[k].m_matchTypeBK.size()+1];
+        tmpstr2[k] = new char[a_rVcfRecord.m_aSampleData[k].m_matchTypeBK.size()];
         strcpy(tmpstr2[k], a_rVcfRecord.m_aSampleData[k].m_matchTypeBK.c_str());
     }
-    bcf_update_format_string(m_pHeader, m_pRecord, "BK", (const char**)tmpstr2, static_cast<int>(a_rVcfRecord.m_aSampleData.size()));
-
+    
+    if(a_rVcfRecord.m_aSampleData.size() != m_nSampleCount)
+    {
+        tmpstr2[k] = new char[1];
+        tmpstr2[k][0] = bcf_str_missing;
+    }
+    bcf_update_format_string(m_pHeader, m_pRecord, "BK", (const char**)tmpstr2, m_nSampleCount);
+    
  
     //Write record to created VCF File
     bcf_write1(m_pHtsFile, m_pHeader, m_pRecord);

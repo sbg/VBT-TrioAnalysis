@@ -47,14 +47,15 @@ bool groupInPhase(std::vector<SVariantSummary> group)
 
 SPhasingResult CPhaseEvaluator::CountMisphasings(CPath& a_rBestPath, int a_nChrId)
 {
-    std::vector<CVariant> excludedVarsBase = m_pVariantProvider->GetVariantList(eBASE, a_nChrId, a_rBestPath.m_baseSemiPath.GetExcluded());
-    std::vector<CVariant> excludedVarsCall = m_pVariantProvider->GetVariantList(eCALLED, a_nChrId, a_rBestPath.m_calledSemiPath.GetExcluded());
+    std::vector<CVariant*> excludedVarsBase = m_pVariantProvider->GetVariantList(eBASE, a_nChrId, a_rBestPath.m_baseSemiPath.GetExcluded());
+    std::vector<CVariant*> excludedVarsCall = m_pVariantProvider->GetVariantList(eCALLED, a_nChrId, a_rBestPath.m_calledSemiPath.GetExcluded());
     
-    //std::vector<COrientedVariant> includedVarsBase = m_pVariantProvider->Get
+    std::vector<const COrientedVariant*> includedVarsBase = a_rBestPath.m_baseSemiPath.GetIncludedVariants();
+    std::vector<const COrientedVariant*> includedVarsCall = a_rBestPath.m_calledSemiPath.GetIncludedVariants();
     
     
-    CCallIterator baseline(a_rBestPath.m_baseSemiPath.GetIncludedVariants(), excludedVarsBase);
-    CCallIterator calls(a_rBestPath.m_calledSemiPath.GetIncludedVariants(), excludedVarsCall);
+    CCallIterator baseline(includedVarsBase, excludedVarsBase);
+    CCallIterator calls(includedVarsCall, excludedVarsCall);
     
     std::vector<int> syncpoints = a_rBestPath.m_aSyncPointList;
     

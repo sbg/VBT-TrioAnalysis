@@ -35,7 +35,7 @@ class CVariantProvider
         int GetVariantListSize(EVcfName a_uFrom, int a_nChrNo) const;
         
         //Return the variant list with the given index list
-        std::vector<CVariant> GetVariantList(EVcfName a_uFrom, int a_nChrNo, std::vector<int> a_VariantIndexes);
+        std::vector<CVariant*> GetVariantList(EVcfName a_uFrom, int a_nChrNo, std::vector<int> a_VariantIndexes);
     
         //Return contig object given by the chromosome Id
         void GetContig(int a_nChrId, SContig& a_rContig) const;

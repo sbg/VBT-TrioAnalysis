@@ -15,10 +15,20 @@
 
 struct SPerSampleData
 {
+    SPerSampleData()
+    {
+        m_decisionBD = bcf_str_missing;
+        m_matchTypeBK = bcf_str_missing;
+        m_fWeight = 0.0f;
+        m_nHaplotypeCount = 2;
+        m_aGenotype[0] = -1;
+        m_aGenotype[1] = -1;
+    }
+    
     //FORMAT :  Decison of variant (TP/FP/FN/N)
-    std::string m_decisionBD = "";
+    std::string m_decisionBD;
     //FORMAT : Match type of variant (gt/allele match)
-    std::string m_matchTypeBK = "";
+    std::string m_matchTypeBK;
     //FORMAT : Weight of the variant
     float m_fWeight;
     //Haplotype count of the variant
@@ -35,7 +45,7 @@ struct SVcfRecord
     //Position of the variant (0 based)
     int m_nPosition;
     //Quality of the variant
-    int m_nQuality;
+    int m_nQuality = -1;
     //Filter string of the variant (eg. "PASS")
     std::string m_filterString;
     //Alleles string separated by comma of the variant (eg. m_alleles = "AT,G")
@@ -89,6 +99,9 @@ private:
     
     //-1 : Close Header / 1: Inside Header / 0: Header Not Opened
     int m_HEADER_GUARD;
+    
+    //Stores sample count added
+    int m_nSampleCount;
 };
 
 

@@ -235,7 +235,6 @@ const CVariant* CVariantProvider::GetVariant(EVcfName a_uFrom, int a_nChrNo, int
     }
 }
 
-
 const COrientedVariant* CVariantProvider::GetOrientedVariant(EVcfName a_uFrom, int a_nChrNo, int a_nVariantId, bool a_bOrientation) const
 {
     int nExtra = a_bOrientation ? 0 : 1;
@@ -266,22 +265,20 @@ int CVariantProvider::GetVariantListSize(EVcfName a_uFrom, int a_nChrNo) const
     }
 }
 
-
-
-std::vector<CVariant> CVariantProvider::GetVariantList(EVcfName a_uFrom, int a_nChrNo, std::vector<int> a_VariantIndexes)
+std::vector<CVariant*> CVariantProvider::GetVariantList(EVcfName a_uFrom, int a_nChrNo, std::vector<int> a_VariantIndexes)
 {
-    std::vector<CVariant> result;
+    std::vector<CVariant*> result;
 
     switch (a_uFrom)
     {
         case eBASE:
             for(int k=0; k< a_VariantIndexes.size(); k++)
-                result.push_back(m_aBaseVariantList[a_nChrNo][a_VariantIndexes[k]]);
+                result.push_back(&(m_aBaseVariantList[a_nChrNo][a_VariantIndexes[k]]));
             break;
             
         case eCALLED:
             for(int k=0; k< a_VariantIndexes.size(); k++)
-                result.push_back(m_aCalledVariantList[a_nChrNo][a_VariantIndexes[k]]);
+                result.push_back(&(m_aCalledVariantList[a_nChrNo][a_VariantIndexes[k]]));
             
         default:
             break;

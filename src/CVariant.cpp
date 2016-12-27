@@ -20,6 +20,10 @@ CVariant::CVariant(): m_nVcfId(-1),
     m_nAlleleCount = 0;
     m_nMaxLength = 0;
     m_bIsFirstNucleotideTrimmed = false;
+    
+    m_allelesStr = "";
+    m_filterString = "";
+    m_nZygotCount = 0;
 }
 
 CVariant::CVariant(const CVariant& a_rObj)
@@ -49,6 +53,7 @@ CVariant::CVariant(const CVariant& a_rObj)
     m_genotype[0] = a_rObj.m_genotype[0];
     m_genotype[1] = a_rObj.m_genotype[1];
     
+    
 }
 
 
@@ -70,6 +75,10 @@ bool CVariant::Clear()
     m_chrName.clear();
     m_nAlleleCount = 0;
     m_nMaxLength = 0;
+    m_nZygotCount = 0;
+    m_allelesStr.clear();
+    m_filterString.clear();
+    m_bIsFirstNucleotideTrimmed = false;
     return true;
 }
 

@@ -8,6 +8,8 @@
 #include "CVcfAnalyzer.h"
 #include "iostream"
 #include <math.h>
+#include "CGa4ghOutputProvider.h"
+
 
 
 void CVcfAnalyzer::Run(int argc, char** argv)
@@ -24,9 +26,9 @@ void CVcfAnalyzer::Run(int argc, char** argv)
 
    // m_config.m_pBaseVcfFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/HG00171-30x.vcf";
    // m_config.m_pCalledVcfFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/HG00171-30x.vcf";
-    m_config.m_pFastaFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/human_g1k_v37_decoy.fasta";
-    m_config.m_pBaseVcfFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/HG002_GIAB_highconf_IllFB-IllGATKHC-CG-Ion-Solid_CHROM1-22_v3.2.2_highconf.vcf";
-    m_config.m_pCalledVcfFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/gral0.9.sorted.and_more.concat.vcf";
+   // m_config.m_pFastaFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/human_g1k_v37_decoy.fasta";
+    //m_config.m_pBaseVcfFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/HG002_GIAB_highconf_IllFB-IllGATKHC-CG-Ion-Solid_CHROM1-22_v3.2.2_highconf.vcf";
+    //m_config.m_pCalledVcfFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/gral0.9.sorted.and_more.concat.vcf";
     
     start = std::clock();
     
@@ -74,39 +76,47 @@ void CVcfAnalyzer::SetThreadsCustom(int a_nMemoryInMB)
     if(a_nMemoryInMB > 32 * 1024)
     {
         SetThreadsPlatform();
-        return;
     }
 
     //IF WE HAVE LESS MEMORY USE SINGLE THREADING
-    if(a_nMemoryInMB < 2 * 1024 || chromosomeIds.size() < 4)
+    else if(a_nMemoryInMB < 2 * 1024 || chromosomeIds.size() < 4)
     {
         for(int k = 0; k < chromosomeIds.size(); k++)
             ThreadFunc(chromosomeIds[k]);
-        return;
     }
 
     //ELSE CREATE 2 GB MEMORY (ON AVG) FOR EACH THREAD
-    const int maxThreadCount = ceil(a_nMemoryInMB / 2048);
-    std::vector<int>* chrArrs = new std::vector<int>[maxThreadCount];
+    else
+    {
+        const int maxThreadCount = ceil(a_nMemoryInMB / 2048);
+        std::vector<int>* chrArrs = new std::vector<int>[maxThreadCount];
 
-    for(int k = 0, p = 0; k < chromosomeIds.size(); k++)
-    {
-        chrArrs[p].push_back(chromosomeIds[k]);
-        p++;
-        p = p % maxThreadCount;
-    }
+        for(int k = 0, p = 0; k < chromosomeIds.size(); k++)
+        {
+            chrArrs[p].push_back(chromosomeIds[k]);
+            p++;
+            p = p % maxThreadCount;
+        }
     
-    std::thread *threadPool = new std::thread[maxThreadCount];
+        std::thread *threadPool = new std::thread[maxThreadCount];
     
-    for(int k = 0; k < maxThreadCount; k++)
-    {
-        threadPool[k] = std::thread(&CVcfAnalyzer::ThreadFunc2, this, chrArrs[k]);
-    }
+        for(int k = 0; k < maxThreadCount; k++)
+        {
+            threadPool[k] = std::thread(&CVcfAnalyzer::ThreadFunc2, this, chrArrs[k]);
+        }
         
-    for(int k = 0; k < maxThreadCount; k++)
-    {
-        threadPool[k].join();
+        for(int k = 0; k < maxThreadCount; k++)
+        {
+            threadPool[k].join();
+        }
     }
+    
+    CGa4ghOutputProvider outputprovider;
+    outputprovider.SetVcfPath("/Users/c1ms21p6h3qk/Desktop/outSample.vcf");
+    outputprovider.SetVariantProvider(&m_provider);
+    outputprovider.SetBestPaths(m_aBestPaths);
+    outputprovider.GenerateGa4ghVcf();
+    
 }
 
 void CVcfAnalyzer::ThreadFunc(int a_nChromosomeId)

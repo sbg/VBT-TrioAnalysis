@@ -27,6 +27,7 @@
 		556D39A31DD3AF2E00551040 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 556D39931DD3AF2E00551040 /* main.cpp */; };
 		556D39CC1DD3AFAC00551040 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 556D39CB1DD3AFAC00551040 /* libz.tbd */; };
 		556D39CE1DD4D75B00551040 /* CThreadSafePathList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 556D39CD1DD4D75B00551040 /* CThreadSafePathList.cpp */; };
+		55D8D33A1E09BEAE00CE2838 /* CGa4ghOutputProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55D8D3391E09BEAE00CE2838 /* CGa4ghOutputProvider.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -104,6 +105,10 @@
 		556D39CB1DD3AFAC00551040 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		556D39CD1DD4D75B00551040 /* CThreadSafePathList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CThreadSafePathList.cpp; sourceTree = "<group>"; };
 		556D39CF1DD66E1700551040 /* SConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SConfig.h; sourceTree = "<group>"; };
+		55D8D3381E09BD7100CE2838 /* CGa4ghOutputProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGa4ghOutputProvider.h; sourceTree = "<group>"; };
+		55D8D3391E09BEAE00CE2838 /* CGa4ghOutputProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CGa4ghOutputProvider.cpp; sourceTree = "<group>"; };
+		55D8D33B1E0B33B000CE2838 /* CCallIterator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCallIterator.h; sourceTree = "<group>"; };
+		55D8D33C1E0B358000CE2838 /* SVariantSummary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVariantSummary.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -173,21 +178,22 @@
 		556D39881DD3AF2E00551040 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				553F8B031DFEFA8C00BD756E /* CFastaParser.cpp */,
+				55D8D3391E09BEAE00CE2838 /* CGa4ghOutputProvider.cpp */,
 				556D398A1DD3AF2E00551040 /* CHaplotypeSequence.cpp */,
 				556D398B1DD3AF2E00551040 /* COrientedVariant.cpp */,
 				556D398C1DD3AF2E00551040 /* CPath.cpp */,
 				556D398D1DD3AF2E00551040 /* CPathReplay.cpp */,
 				551971FD1DDCB5B000A81167 /* CPhaseEvaluator.cpp */,
 				556D398F1DD3AF2E00551040 /* CSemiPath.cpp */,
+				551972021DDFA8FD00A81167 /* CSyncPoint.cpp */,
+				556D39CD1DD4D75B00551040 /* CThreadSafePathList.cpp */,
 				556D39901DD3AF2E00551040 /* CVariant.cpp */,
 				556D39911DD3AF2E00551040 /* CVariantProvider.cpp */,
 				556D39921DD3AF2E00551040 /* CVcfReader.cpp */,
-				556D39931DD3AF2E00551040 /* main.cpp */,
-				556D39CD1DD4D75B00551040 /* CThreadSafePathList.cpp */,
-				551972021DDFA8FD00A81167 /* CSyncPoint.cpp */,
 				553F8AFE1DF9B8CD00BD756E /* CVcfAnalyzer.cpp */,
-				553F8B031DFEFA8C00BD756E /* CFastaParser.cpp */,
 				55242DF41E044BED00C31E3E /* CVcfWriter.cpp */,
+				556D39931DD3AF2E00551040 /* main.cpp */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -196,7 +202,10 @@
 			isa = PBXGroup;
 			children = (
 				556D39B21DD3AF3800551040 /* htslib */,
+				55D8D33B1E0B33B000CE2838 /* CCallIterator.h */,
+				553F8B021DFEFA2900BD756E /* CFastaParser.h */,
 				556D39A61DD3AF3800551040 /* CHaplotypeSequence.h */,
+				55D8D3381E09BD7100CE2838 /* CGa4ghOutputProvider.h */,
 				556D39A71DD3AF3800551040 /* COrientedVariant.h */,
 				556D39A81DD3AF3800551040 /* CPath.h */,
 				556D39A91DD3AF3800551040 /* CPathReplay.h */,
@@ -206,13 +215,13 @@
 				556D39AC1DD3AF3800551040 /* CThreadSafePathList.h */,
 				556D39AD1DD3AF3800551040 /* CVariant.h */,
 				556D39AE1DD3AF3800551040 /* CVariantProvider.h */,
+				553F8B011DF9B9D100BD756E /* CVcfAnalyzer.h */,
 				556D39AF1DD3AF3800551040 /* CVcfReader.h */,
+				55242DF31E044A0100C31E3E /* CVcfWriter.h */,
 				556D39B11DD3AF3800551040 /* EVcfName.h */,
 				556D39CF1DD66E1700551040 /* SConfig.h */,
 				556D39C91DD3AF3800551040 /* SResult.h */,
-				553F8B011DF9B9D100BD756E /* CVcfAnalyzer.h */,
-				553F8B021DFEFA2900BD756E /* CFastaParser.h */,
-				55242DF31E044A0100C31E3E /* CVcfWriter.h */,
+				55D8D33C1E0B358000CE2838 /* SVariantSummary.h */,
 			);
 			path = include;
 			sourceTree = SOURCE_ROOT;
@@ -323,6 +332,7 @@
 				556D399F1DD3AF2E00551040 /* CSemiPath.cpp in Sources */,
 				553F8B041DFEFA8C00BD756E /* CFastaParser.cpp in Sources */,
 				556D39A11DD3AF2E00551040 /* CVariantProvider.cpp in Sources */,
+				55D8D33A1E09BEAE00CE2838 /* CGa4ghOutputProvider.cpp in Sources */,
 				553F8B001DF9B8CD00BD756E /* CVcfAnalyzer.cpp in Sources */,
 				556D399B1DD3AF2E00551040 /* COrientedVariant.cpp in Sources */,
 				556D399D1DD3AF2E00551040 /* CPathReplay.cpp in Sources */,

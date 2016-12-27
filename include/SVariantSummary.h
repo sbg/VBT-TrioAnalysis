@@ -16,7 +16,6 @@ struct SVariantSummary
     const CVariant* m_pVariant;
     bool m_bIncluded;
     bool m_bPhase;
-    
     bool m_bIsNull;
     
     SVariantSummary()
@@ -47,17 +46,19 @@ struct SVariantSummary
     {
         return m_pVariant->IsPhased();
     }
+    
     int startPos()
     {
         return m_pVariant->GetStart();
     }
+    
     bool included()
     {
         return m_bIncluded;
     }
+    
     bool phase()
     {
-        assert(isPhased());
         return m_bPhase;
     }
     
