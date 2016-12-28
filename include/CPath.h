@@ -44,7 +44,12 @@ class CPath
     CPath& Include(EVcfName a_nVCF, const COrientedVariant& a_rVariant, int a_nVariantIndex);
     
     //Add variant to the given side of path and return the path count
-    int AddVariant(CPathContainer* a_pPathList, EVcfName a_nVcfName,const CVariantProvider* a_pVariantProvider, int a_nVariantIndex, int a_nChromosomeId);
+    int AddVariant(CPathContainer* a_pPathList,
+                   EVcfName a_nVcfName,
+                   const CVariantProvider* a_pVariantProvider,
+                   int a_nVariantIndex,
+                   int a_nChromosomeId,
+                   bool a_bIsGenotypeMatch);
     
     bool operator<(const CPath& a_rObj) const
     {

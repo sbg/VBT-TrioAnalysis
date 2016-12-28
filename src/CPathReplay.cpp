@@ -20,7 +20,7 @@ void CPathReplay::SetVariantProvider(const CVariantProvider& a_rVariantProvider)
 }
 
 
-CPath CPathReplay::FindBestPath(SContig a_contig)
+CPath CPathReplay::FindBestPath(SContig a_contig, bool a_bIsGenotypeMatch)
 {
     CPathContainer initialPath(a_contig.m_pRefSeq, a_contig.m_nRefLength);
     m_pathList.Add(initialPath);
@@ -114,13 +114,13 @@ CPath CPathReplay::FindBestPath(SContig a_contig)
             continue;
         }
 
-        if(EnqueueVariant(*processedPath.m_pPath, eCALLED, a_contig.m_nChrId))
+        if(EnqueueVariant(*processedPath.m_pPath, eCALLED, a_contig.m_nChrId, a_bIsGenotypeMatch))
         {
             //std::cout << "Called semipath enqueued" << std::endl;
             continue;
         }
         
-        if(EnqueueVariant(*processedPath.m_pPath, eBASE, a_contig.m_nChrId))
+        if(EnqueueVariant(*processedPath.m_pPath, eBASE, a_contig.m_nChrId, a_bIsGenotypeMatch))
         {
             //std::cout << "Base semipath enqueued" << std::endl;
             continue;
@@ -271,7 +271,7 @@ bool CPathReplay::FindBetter(const CPathContainer& lhs, const CPathContainer& rh
     return lhsVariantCount > rhsVariantCount ? true : false;
 }
 
-bool CPathReplay::EnqueueVariant(CPath& a_rPathToPlay, EVcfName a_uVcfSide, int a_nChromosomeId)
+bool CPathReplay::EnqueueVariant(CPath& a_rPathToPlay, EVcfName a_uVcfSide, int a_nChromosomeId, bool a_bIsGenotypeMatch)
 {
     const CSemiPath* pSemiPath;
 
@@ -294,7 +294,7 @@ bool CPathReplay::EnqueueVariant(CPath& a_rPathToPlay, EVcfName a_uVcfSide, int 
         
         m_nCurrentPosition = std::max(m_nCurrentPosition, pNext->GetStart());
         CPathContainer paths[3];
-        int pathCount = a_rPathToPlay.AddVariant(paths, a_uVcfSide, m_variantProvider, nVariantId, a_nChromosomeId);
+        int pathCount = a_rPathToPlay.AddVariant(paths, a_uVcfSide, m_variantProvider, nVariantId, a_nChromosomeId, a_bIsGenotypeMatch);
         
         for(int k=0; k < pathCount; k++)
         {

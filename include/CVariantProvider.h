@@ -48,6 +48,9 @@ class CVariantProvider
     
         //Read the header of Called vcf and return the filter names and descriptions
         void GetFilterInfo(EVcfName a_vcfType, std::vector<std::string>& a_rFilterNames, std::vector<std::string>& a_rFilterDescriptions);
+
+        //Return the access of not-asessed variants
+        std::vector<CVariant>& GetNotAssessedVariantList(EVcfName a_uFrom, int a_nChrNo);
     
     private:
     
@@ -76,6 +79,11 @@ class CVariantProvider
         std::vector<COrientedVariant> m_aBaseOrientedVariantList[CHROMOSOME_COUNT];
         //List that store the called Oriented variant tuples (In the order of genotype)
         std::vector<COrientedVariant> m_aCalledOrientedVariantList[CHROMOSOME_COUNT];
+    
+        //List that stores baseline variants which are filtered out from comparison
+        std::vector<CVariant> m_aBaseNotAssessedVariantList[CHROMOSOME_COUNT];
+        //List that stores called variants which are filtered out from comparison
+        std::vector<CVariant> m_aCalledNotAssessedVariantList[CHROMOSOME_COUNT];
     
         //Parameters come from command line arguments
         SConfig m_config;

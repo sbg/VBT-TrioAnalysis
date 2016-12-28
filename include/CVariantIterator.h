@@ -15,16 +15,18 @@
 #include "SVariantSummary.h"
 
 
-class CCallIterator
+class CVariantIterator
 {
 public:
     
-    CCallIterator(std::vector<const COrientedVariant*>& included, std::vector<CVariant*>& excluded)
+    CVariantIterator(std::vector<const COrientedVariant*>& included, std::vector<CVariant*>& excluded, std::vector<CVariant>& notAssessed)
     : m_aExcluded(excluded),
-      m_aIncluded(included)
+      m_aIncluded(included),
+      m_aNotAssessed(notAssessed)
     {
         it_Included = m_aIncluded.begin();
         it_Excluded = m_aExcluded.begin();
+        it_NotAssessed = m_aNotAssessed.begin();
     }
     
     bool hasNext()
@@ -51,11 +53,24 @@ public:
     
 private:
     
+    int CompareTrio(int included, int excluded, int notAssessed)
+    {
+        if(included >= excluded && included >= notAssessed)
+            return 0;
+        else if(excluded >= included && excluded >= notAssessed)
+            return 1;
+        else
+            return 2;
+    }
+    
     std::vector<const COrientedVariant*>::iterator it_Included;
     std::vector<CVariant*>::iterator it_Excluded;
+    std::vector<CVariant>::iterator it_NotAssessed;
     
     std::vector<const COrientedVariant*>& m_aIncluded;
     std::vector<CVariant*>& m_aExcluded;
+    
+    std::vector<CVariant>& m_aNotAssessed;
     
 };
 

@@ -127,7 +127,9 @@ void CVcfAnalyzer::ThreadFunc(int a_nChromosomeId)
     pathReplay.SetVariantProvider(m_provider);
     m_provider.GetContig(a_nChromosomeId, ctg);
     
-    m_aBestPaths[a_nChromosomeId] = pathReplay.FindBestPath(ctg);
+    m_aBestPaths[a_nChromosomeId] = pathReplay.FindBestPath(ctg, true);
+    
+    
     
     std::cout << "===CHROMOSOME " << a_nChromosomeId + 1 << "===" << std::endl;
     std::cout << "Called Included Count: " << m_aBestPaths[a_nChromosomeId].m_calledSemiPath.GetIncludedVariants().size() << std::endl;
@@ -146,7 +148,7 @@ void CVcfAnalyzer::ThreadFunc2(std::vector<int> a_nChrArr)
         
         pathReplay.SetVariantProvider(m_provider);
         m_provider.GetContig(a_nChrArr[k], ctg);
-        m_aBestPaths[a_nChrArr[k]] = pathReplay.FindBestPath(ctg);
+        m_aBestPaths[a_nChrArr[k]] = pathReplay.FindBestPath(ctg,true);
         
         std::cout << "===CHROMOSOME " << a_nChrArr[k] + 1 << "===" << std::endl;
         std::cout << "Called Included Count: " << m_aBestPaths[a_nChrArr[k]].m_calledSemiPath.GetIncludedVariants().size() << std::endl;
@@ -255,6 +257,7 @@ void CVcfAnalyzer::PrintHelp() const
 {
     std::cout << "==== SBG VCF COMPARISON TOOL VERSION 1.0 (Beta) ==== " << std::endl;
     std::cout << "Based on paper: http://biorxiv.org/content/biorxiv/early/2015/08/02/023754.full.pdf" << std::endl;
+    std::cout << "Some of the components were originated from RTG Vcfeval (https://github.com/RealTimeGenomics/rtg-tools/blob/master/src/com/rtg/vcf/eval)" << std::endl;
     std::cout << "Author: Berke Cagkan Toptas (berke.toptas@sbgenomics.com)" << std::endl;
     std::cout << "Please notify me if program fails or return unexpected results" << std::endl;
     std::cout << "COPYRIGHT (C) 2016 SEVEN BRIDGES GENOMICS." << std::endl;

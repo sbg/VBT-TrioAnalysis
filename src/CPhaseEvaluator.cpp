@@ -9,7 +9,7 @@
 
 #include "CPhaseEvaluator.h"
 #include "SVariantSummary.h"
-#include "CCallIterator.h"
+#include "CVariantIterator.h"
 #include "CPath.h"
 #include "CVariantProvider.h"
 
@@ -53,9 +53,10 @@ SPhasingResult CPhaseEvaluator::CountMisphasings(CPath& a_rBestPath, int a_nChrI
     std::vector<const COrientedVariant*> includedVarsBase = a_rBestPath.m_baseSemiPath.GetIncludedVariants();
     std::vector<const COrientedVariant*> includedVarsCall = a_rBestPath.m_calledSemiPath.GetIncludedVariants();
     
+    std::vector<CVariant> notAssessed;
     
-    CCallIterator baseline(includedVarsBase, excludedVarsBase);
-    CCallIterator calls(includedVarsCall, excludedVarsCall);
+    CVariantIterator baseline(includedVarsBase, excludedVarsBase, notAssessed);
+    CVariantIterator calls(includedVarsCall, excludedVarsCall, notAssessed);
     
     std::vector<int> syncpoints = a_rBestPath.m_aSyncPointList;
     

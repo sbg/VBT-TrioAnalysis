@@ -157,18 +157,18 @@ void CVariantProvider::FillVariantLists()
         }
         
         if(m_config.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
-            continue;
+            m_aBaseNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
         
-        if(m_config.m_bSNPOnly && variant.GetVariantType() != eSNP)
-            continue;
+        else if(m_config.m_bSNPOnly && variant.GetVariantType() != eSNP)
+            m_aBaseNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
         
-        if(m_config.m_bINDELOnly && variant.GetVariantType() != eINDEL)
-            continue;
+        else if(m_config.m_bINDELOnly && variant.GetVariantType() != eINDEL)
+            m_aBaseNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
         
-        if(IsStructuralVariant(variant, m_config.m_nMaxVariantSize))
-            continue;
-        
-        PushVariant(variant, m_aBaseVariantList[variant.m_nChrId-1]);
+        else if(IsStructuralVariant(variant, m_config.m_nMaxVariantSize))
+            m_aBaseNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
+        else
+            PushVariant(variant, m_aBaseVariantList[variant.m_nChrId-1]);
     }
     
     while(m_calledVCF.GetNextRecord(&variant, id++, m_config))
@@ -183,18 +183,19 @@ void CVariantProvider::FillVariantLists()
         }
         
         if(m_config.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
-            continue;
+            m_aCalledNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
+
         
-        if(m_config.m_bSNPOnly && variant.GetVariantType() != eSNP)
-            continue;
+        else if(m_config.m_bSNPOnly && variant.GetVariantType() != eSNP)
+            m_aCalledNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
         
-        if(m_config.m_bINDELOnly && variant.GetVariantType() != eINDEL)
-            continue;
+        else if(m_config.m_bINDELOnly && variant.GetVariantType() != eINDEL)
+            m_aCalledNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
         
-        if(IsStructuralVariant(variant, m_config.m_nMaxVariantSize))
-            continue;
-        
-        PushVariant(variant, m_aCalledVariantList[variant.m_nChrId-1]);
+        else if(IsStructuralVariant(variant, m_config.m_nMaxVariantSize))
+            m_aCalledNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
+        else
+            PushVariant(variant, m_aCalledVariantList[variant.m_nChrId-1]);
     }
 }
 
@@ -370,6 +371,13 @@ void CVariantProvider::GetFilterInfo(EVcfName a_vcfType, std::vector<std::string
     }
 }
 
+std::vector<CVariant>& CVariantProvider::GetNotAssessedVariantList(EVcfName a_uFrom, int a_nChrNo)
+{
+    if(eBASE == a_uFrom)
+        return m_aBaseNotAssessedVariantList[a_nChrNo];
+    else
+        return m_aCalledNotAssessedVariantList[a_nChrNo];
+}
 
 
 

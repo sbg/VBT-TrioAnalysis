@@ -101,8 +101,13 @@ void CGa4ghOutputProvider::AddRecords(const CPath& a_rBestPath, int a_nChrId)
     std::vector<CVariant*> excludedVarsCall = m_pVariantProvider->GetVariantList(eCALLED, a_nChrId,a_rBestPath.m_calledSemiPath.GetExcluded());
     std::vector<const COrientedVariant*> includedVarsBase = a_rBestPath.m_baseSemiPath.GetIncludedVariants();
     std::vector<const COrientedVariant*> includedVarsCall = a_rBestPath.m_calledSemiPath.GetIncludedVariants();
-    CVariantIterator baseVariants(includedVarsBase, excludedVarsBase);
-    CVariantIterator calledVariants(includedVarsCall, excludedVarsCall);
+    
+    //Not Asessed variants
+    std::vector<CVariant> notAssessedBase = m_pVariantProvider->GetNotAssessedVariantList(eBASE, a_nChrId);
+    std::vector<CVariant> notAssessedCalled = m_pVariantProvider->GetNotAssessedVariantList(eCALLED, a_nChrId);
+    
+    CVariantIterator baseVariants(includedVarsBase, excludedVarsBase, notAssessedBase);
+    CVariantIterator calledVariants(includedVarsCall, excludedVarsCall, notAssessedCalled);
 
     SVariantSummary varBase;
     SVariantSummary varCalled;

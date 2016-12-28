@@ -94,7 +94,7 @@ CPath& CPath::Include(EVcfName a_nVCF, const COrientedVariant& a_rVariant, int a
     return *this;
 }
 
-int CPath::AddVariant(CPathContainer* a_pPathList, EVcfName a_nVcfName,const CVariantProvider* a_pVariantProvider, int a_nVariantIndex, int a_nChromosomeId)
+int CPath::AddVariant(CPathContainer* a_pPathList, EVcfName a_nVcfName,const CVariantProvider* a_pVariantProvider, int a_nVariantIndex, int a_nChromosomeId, bool a_bIsGenotypeMatch)
 {
     int pathCount = 0;
     
@@ -118,7 +118,6 @@ int CPath::AddVariant(CPathContainer* a_pPathList, EVcfName a_nVcfName,const CVa
         {
             a_pPathList[pathCount].m_pPath = std::shared_ptr<CPath>(new CPath(*this, m_calledSemiPath.GetPosition()));
             const CSemiPath* p = a_nVcfName == eBASE ? &a_pPathList[pathCount].m_pPath->m_baseSemiPath : &a_pPathList[pathCount].m_pPath->m_calledSemiPath;
-            //COrientedVariant Ovar1(a_rVariant, true);
             //Make sure variant is not overlap with the previous one
             if(p->IsNew(*Ovar1))
             {
@@ -132,7 +131,6 @@ int CPath::AddVariant(CPathContainer* a_pPathList, EVcfName a_nVcfName,const CVa
             //Include with ordered genotype
             a_pPathList[pathCount].m_pPath =  std::shared_ptr<CPath>(new CPath(*this, m_calledSemiPath.GetPosition()));
             CSemiPath* p = a_nVcfName == eBASE ? &a_pPathList[pathCount].m_pPath->m_baseSemiPath : &a_pPathList[pathCount].m_pPath->m_calledSemiPath;
-            //COrientedVariant Ovar1(a_rVariant, true);
             //Make sure variant is not overlap with the previous one
             if(p->IsNew(*Ovar1))
             {
@@ -143,7 +141,6 @@ int CPath::AddVariant(CPathContainer* a_pPathList, EVcfName a_nVcfName,const CVa
             //Include with unordered genotype
             a_pPathList[pathCount].m_pPath =  std::shared_ptr<CPath>(new CPath(*this, m_calledSemiPath.GetPosition()));
             p = a_nVcfName == eBASE ? &a_pPathList[pathCount].m_pPath->m_baseSemiPath : &a_pPathList[pathCount].m_pPath->m_calledSemiPath;
-            //COrientedVariant Ovar2(a_rVariant, false);
             //Make sure variant is not overlap with the previous one
             if(p->IsNew(*Ovar2))
             {
@@ -168,7 +165,6 @@ int CPath::AddVariant(CPathContainer* a_pPathList, EVcfName a_nVcfName,const CVa
         {
             a_pPathList[pathCount].m_pPath = std::shared_ptr<CPath>(new CPath(*this));
             CSemiPath* p = a_nVcfName == eBASE ? &a_pPathList[pathCount].m_pPath->m_baseSemiPath : &a_pPathList[pathCount].m_pPath->m_calledSemiPath;
-            //COrientedVariant Ovar1(a_rVariant, true);
             //Make sure variant is not overlap with the previous one
             if(p->IsNew(*Ovar1))
             {
