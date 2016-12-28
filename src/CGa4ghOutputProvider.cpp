@@ -9,7 +9,7 @@
 #include "CGa4ghOutputProvider.h"
 #include <sstream>
 #include "CPath.h"
-#include "CCallIterator.h"
+#include "CVariantIterator.h"
 #include "CVariantProvider.h"
 #include <iostream>
 
@@ -50,6 +50,13 @@ void CGa4ghOutputProvider::FillHeader()
     m_vcfWriter.AddHeaderLine("##FORMAT=<ID=BD,Number=1,Type=String,Description=\"Decision for call (TP/FP/FN/N)\">");
     m_vcfWriter.AddHeaderLine("##FORMAT=<ID=BK,Number=1,Type=String,Description=\"Sub-type for decision (match/mismatch type)\">");
     
+    //ADD FILTER COLUMNS FROM CALL FILE
+    std::vector<std::string> filterNames;
+    std::vector<std::string> filterDescriptions;
+    m_pVariantProvider->GetFilterInfo(eCALLED, filterNames, filterDescriptions);
+    for(int k = 1; k < filterNames.size(); k++)
+        m_vcfWriter.AddHeaderLine("##FILTER=<ID=" + filterNames[k] + ",Description=" + filterDescriptions[k] + ">");
+    
     //ADD CONTIG IDs
     m_vcfWriter.AddHeaderLine("##contig=<ID=chr1,length=249250621>");
     m_vcfWriter.AddHeaderLine("##contig=<ID=chr2,length=243199373>");
@@ -88,14 +95,14 @@ void CGa4ghOutputProvider::FillHeader()
 
 void CGa4ghOutputProvider::AddRecords(const CPath& a_rBestPath, int a_nChrId)
 {
+    
+    //Best Path included/excluded variants
     std::vector<CVariant*> excludedVarsBase = m_pVariantProvider->GetVariantList(eBASE, a_nChrId, a_rBestPath.m_baseSemiPath.GetExcluded());
     std::vector<CVariant*> excludedVarsCall = m_pVariantProvider->GetVariantList(eCALLED, a_nChrId,a_rBestPath.m_calledSemiPath.GetExcluded());
-
     std::vector<const COrientedVariant*> includedVarsBase = a_rBestPath.m_baseSemiPath.GetIncludedVariants();
     std::vector<const COrientedVariant*> includedVarsCall = a_rBestPath.m_calledSemiPath.GetIncludedVariants();
-    
-    CCallIterator baseVariants(includedVarsBase, excludedVarsBase);
-    CCallIterator calledVariants(includedVarsCall, excludedVarsCall);
+    CVariantIterator baseVariants(includedVarsBase, excludedVarsBase);
+    CVariantIterator calledVariants(includedVarsCall, excludedVarsCall);
 
     SVariantSummary varBase;
     SVariantSummary varCalled;
@@ -110,15 +117,14 @@ void CGa4ghOutputProvider::AddRecords(const CPath& a_rBestPath, int a_nChrId)
             SVcfRecord record;
             std::string decisionBase = varBase.m_bIncluded ? "TP" : "FN";
             std::string decisionCalled = varCalled.m_bIncluded ? "TP" : "FP";
-            std::string match = "nm";
-            MergeVariants(varBase.m_pVariant, varCalled.m_pVariant, "am", decisionBase, decisionCalled, record);
+            std::string match = "gm";
+            MergeVariants(varBase.m_pVariant, varCalled.m_pVariant, match, decisionBase, decisionCalled, record);
             m_vcfWriter.AddRecord(record);
             
             //We used both variant. Get the next variant from both list
             varBase = baseVariants.hasNext() ? baseVariants.next() : SVariantSummary();
             varCalled = calledVariants.hasNext() ? calledVariants.next() : SVariantSummary();
             continue;
-            
         }
         
         else if(varCalled.isNull() || (!varBase.isNull() && varBase.m_pVariant->GetStart() < varCalled.m_pVariant->GetStart()))
@@ -138,7 +144,7 @@ void CGa4ghOutputProvider::AddRecords(const CPath& a_rBestPath, int a_nChrId)
             record.m_aSampleData.push_back(SPerSampleData());
             std::string decision = varCalled.m_bIncluded ? "TP" : "FP";
             std::string match = "nm";
-            VariantToVcfRecord(varCalled.m_pVariant, record, true, match, decision);
+            VariantToVcfRecord(varCalled.m_pVariant, record, false, match, decision);
             m_vcfWriter.AddRecord(record);
             varCalled = calledVariants.hasNext() ? calledVariants.next() : SVariantSummary();
             continue;
@@ -146,18 +152,14 @@ void CGa4ghOutputProvider::AddRecords(const CPath& a_rBestPath, int a_nChrId)
     }
 }
 
-
 void CGa4ghOutputProvider::VariantToVcfRecord(const CVariant* a_pVariant, SVcfRecord& a_rOutputRec, bool a_bIsBase, const std::string& a_rMatchType, const::std::string& a_rDecision)
 {
     //Fill basic variant data
     a_rOutputRec.m_chrName = a_pVariant->m_chrName;
     a_rOutputRec.m_nPosition = a_pVariant->m_nStartPos;
     a_rOutputRec.m_alleles = a_pVariant->m_allelesStr;
-    a_rOutputRec.m_filterString = a_pVariant->m_filterString;
-    
-    //If this is called variant create an empty sample data for TRUTH column
-    if(a_bIsBase == false)
-        a_rOutputRec.m_aSampleData.push_back(SPerSampleData());
+    if(!a_bIsBase)
+        a_rOutputRec.m_aFilterString = a_pVariant->m_filterString;
     
     //Fill genotype of sample data
     SPerSampleData data;
@@ -169,7 +171,6 @@ void CGa4ghOutputProvider::VariantToVcfRecord(const CVariant* a_pVariant, SVcfRe
     data.m_matchTypeBK = a_rMatchType;
     a_rOutputRec.m_aSampleData.push_back(data);
 }
-
 
 void CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase,
                                          const CVariant* a_pVariantCalled,
@@ -183,7 +184,7 @@ void CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase,
     a_rOutputRec.m_chrName = a_pVariantBase->m_chrName;
     a_rOutputRec.m_nPosition = a_pVariantBase->m_nStartPos;
     a_rOutputRec.m_alleles = a_pVariantBase->m_allelesStr;
-    a_rOutputRec.m_filterString = a_pVariantBase->m_filterString;
+    a_rOutputRec.m_aFilterString = a_pVariantCalled->m_filterString;
     
     //Fill base sample (TRUTH)
     SPerSampleData data;

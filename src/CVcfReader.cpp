@@ -121,23 +121,19 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
     
         
         //READ FILTER DATA
-        if(a_rConfig.m_bIsFilterEnabled)
+        bool isPassed = false;
+        for(int k=0; k< m_pRecord->d.n_flt; k++)
         {
-            bool isPassed = false;
-            for(int k=0; k< m_pRecord->d.n_flt; k++)
-            {
-                if(k != 0)
-                    a_pVariant->m_filterString += ",";
-                a_pVariant->m_filterString += m_pHeader->id[BCF_DT_ID][m_pRecord->d.flt[k]].key;
+            a_pVariant->m_filterString.push_back(std::string(m_pHeader->id[BCF_DT_ID][m_pRecord->d.flt[k]].key));
                 
-                if(0 == strcmp(m_pHeader->id[BCF_DT_ID][m_pRecord->d.flt[k]].key, a_rConfig.m_pFilterName))
-                    isPassed = true;
-            }
-            a_pVariant->m_bIsFilterPASS = isPassed;
+            if(0 == strcmp(m_pHeader->id[BCF_DT_ID][m_pRecord->d.flt[k]].key, a_rConfig.m_pFilterName))
+                isPassed = true;
         }
+        a_pVariant->m_bIsFilterPASS = isPassed;
+        
         
         //READ QUALITY DATA
-        //TODO: read the quality
+        // m_pRecord->qual
         
         
         //READ GENOTYPE DATA
@@ -411,6 +407,22 @@ const std::vector<SVcfContig>&  CVcfReader::GetContigs() const
 {
     return contigs_;
 }
+
+void CVcfReader::GetFilterInfo(std::vector<std::string> &a_rFilterNames, std::vector<std::string> &a_rFilterDescriptions)
+{
+    for(int k = 0; k < m_pHeader->n[BCF_DT_ID]; k++)
+    {
+        if(m_pHeader->id[BCF_DT_ID][k].val->hrec[0] !=0 && 0 == strcmp(m_pHeader->id[BCF_DT_ID][k].val->hrec[0]->key, "FILTER"))
+        {
+            a_rFilterNames.push_back(m_pHeader->id[BCF_DT_ID][k].key);
+            a_rFilterDescriptions.push_back(m_pHeader->id[BCF_DT_ID][k].val->hrec[0]->vals[1]);
+        }
+        else
+            break;
+    }
+}
+
+
 
 void CVcfReader::PrintVCF(const SConfig& a_rConfig)
 {

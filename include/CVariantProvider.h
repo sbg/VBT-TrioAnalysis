@@ -46,6 +46,9 @@ class CVariantProvider
         //Intersect base and called VCF files to find common chromosomes
         std::vector<SVcfContig> GetCommonChromosomes();
     
+        //Read the header of Called vcf and return the filter names and descriptions
+        void GetFilterInfo(EVcfName a_vcfType, std::vector<std::string>& a_rFilterNames, std::vector<std::string>& a_rFilterDescriptions);
+    
     private:
     
         //Read through the variant file and fill the variant lists. It assumes that positions are sorted.

@@ -10,7 +10,7 @@
 #define _C_GA4GH_OUTPUT_PROVIDER_H_
 
 #include "CVcfWriter.h"
-//#include "CVcfReader.h"
+#include "CVcfReader.h"
 
 class CPath;
 class CVariantProvider;
@@ -28,7 +28,7 @@ public:
     
     //Set the output vcf path
     void SetVcfPath(const std::string& a_rVcfPath);
-    
+        
     //Generates the vcf file by merging all chromosomes
     void GenerateGa4ghVcf();
     
@@ -58,11 +58,10 @@ private:
     CVcfWriter m_vcfWriter;
     
     //Vcf reader of baseline
-//    CVcfReader m_baseReader;
+    CVcfReader m_baseReader;
     //Vcf reader of call
-//    CVcfReader m_calledReader;
+    CVcfReader m_calledReader;
     
-
     //Pointer to the variant provider
     CVariantProvider* m_pVariantProvider;
     

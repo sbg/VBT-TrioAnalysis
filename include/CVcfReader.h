@@ -75,6 +75,10 @@ public:
     
     // Returns the key id of given Filter string
     int getFilterKey(const char* a_pFilterValue);
+    
+    //Returns the filter names and descriptions in the vcf file
+    void GetFilterInfo(std::vector<std::string>& a_rFilterNames, std::vector<std::string>& a_rFilterDescriptions);
+    
 private:
 
     // Trimms the alt string that contains ref allele

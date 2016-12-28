@@ -1,4 +1,4 @@
- //
+//
 //  CVariantProvider.cpp
 //  VCFComparison
 //
@@ -129,10 +129,10 @@ bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
         
     }
     
+    //m_baseVCF.Close();
+    //m_calledVCF.Close();
     return bIsSuccess;
     
-    //for(int k = 0; k < m_aCalledVariantList[21].size(); k++)
-    //   std::cout << k << ": " << m_aCalledVariantList[21][k].ToString() << std::endl;
 }
 
 
@@ -355,6 +355,20 @@ void CVariantProvider::GetUniqueChromosomeIds(std::vector<int>& a_rChrIds)
     }
 }
 
+void CVariantProvider::GetFilterInfo(EVcfName a_vcfType, std::vector<std::string>& a_rFilterNames, std::vector<std::string>& a_rFilterDescriptions)
+{
+    switch (a_vcfType)
+    {
+        case eBASE:
+            m_baseVCF.GetFilterInfo(a_rFilterNames, a_rFilterDescriptions);
+            break;
+        case eCALLED:
+            m_calledVCF.GetFilterInfo(a_rFilterNames, a_rFilterDescriptions);
+            break;
+        default:
+            break;
+    }
+}
 
 
 

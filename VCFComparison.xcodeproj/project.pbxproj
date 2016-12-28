@@ -107,7 +107,7 @@
 		556D39CF1DD66E1700551040 /* SConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SConfig.h; sourceTree = "<group>"; };
 		55D8D3381E09BD7100CE2838 /* CGa4ghOutputProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGa4ghOutputProvider.h; sourceTree = "<group>"; };
 		55D8D3391E09BEAE00CE2838 /* CGa4ghOutputProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CGa4ghOutputProvider.cpp; sourceTree = "<group>"; };
-		55D8D33B1E0B33B000CE2838 /* CCallIterator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCallIterator.h; sourceTree = "<group>"; };
+		55D8D33B1E0B33B000CE2838 /* CVariantIterator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CVariantIterator.h; sourceTree = "<group>"; };
 		55D8D33C1E0B358000CE2838 /* SVariantSummary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVariantSummary.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -202,7 +202,7 @@
 			isa = PBXGroup;
 			children = (
 				556D39B21DD3AF3800551040 /* htslib */,
-				55D8D33B1E0B33B000CE2838 /* CCallIterator.h */,
+				55D8D33B1E0B33B000CE2838 /* CVariantIterator.h */,
 				553F8B021DFEFA2900BD756E /* CFastaParser.h */,
 				556D39A61DD3AF3800551040 /* CHaplotypeSequence.h */,
 				55D8D3381E09BD7100CE2838 /* CGa4ghOutputProvider.h */,

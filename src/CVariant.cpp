@@ -22,7 +22,6 @@ CVariant::CVariant(): m_nVcfId(-1),
     m_bIsFirstNucleotideTrimmed = false;
     
     m_allelesStr = "";
-    m_filterString = "";
     m_nZygotCount = 0;
 }
 

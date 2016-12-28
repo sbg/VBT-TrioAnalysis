@@ -101,6 +101,15 @@ void CVcfWriter::AddRecord(const SVcfRecord& a_rVcfRecord)
     //Set alleles
     bcf_update_alleles_str(m_pHeader, m_pRecord, a_rVcfRecord.m_alleles.c_str());
     
+    //Set filter
+    if(a_rVcfRecord.m_aFilterString.size() != 0)
+    {
+        int32_t* tmpi = new int[a_rVcfRecord.m_aFilterString.size()];
+        for(int k = 0; k < a_rVcfRecord.m_aFilterString.size(); k++)
+            tmpi[k] = bcf_hdr_id2int(m_pHeader, BCF_DT_ID, a_rVcfRecord.m_aFilterString[k].c_str());
+        bcf_update_filter(m_pHeader, m_pRecord, tmpi, static_cast<int>(a_rVcfRecord.m_aFilterString.size()));
+    }
+    
     //==Set Per Sample Data==
 
     //1.Genotype Set (GT)

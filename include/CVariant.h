@@ -88,7 +88,7 @@ class CVariant
     int m_nId;
  
     //Filter Data
-    std::string m_filterString;
+    std::vector<std::string> m_filterString;
     bool m_bIsFilterPASS;
     
     //True if the variant genotype is phased

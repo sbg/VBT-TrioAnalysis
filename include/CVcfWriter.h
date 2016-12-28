@@ -47,7 +47,7 @@ struct SVcfRecord
     //Quality of the variant
     int m_nQuality = -1;
     //Filter string of the variant (eg. "PASS")
-    std::string m_filterString;
+    std::vector<std::string> m_aFilterString;
     //Alleles string separated by comma of the variant (eg. m_alleles = "AT,G")
     std::string m_alleles;
     //Chromosome name of the variant
