@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include "htslib/vcf.h"
+#include "EVariantMatch.h"
 
 enum EVariantType
 {
@@ -119,6 +120,8 @@ class CVariant
     //Original Genotype list read from vcf file
     int m_genotype[2];
     int m_nZygotCount;
+    
+    mutable EVariantMatch m_variantStatus;
 };
 
 

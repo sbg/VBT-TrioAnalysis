@@ -23,6 +23,7 @@ CVariant::CVariant(): m_nVcfId(-1),
     
     m_allelesStr = "";
     m_nZygotCount = 0;
+    m_variantStatus = eNOT_ASSESSED;
 }
 
 CVariant::CVariant(const CVariant& a_rObj)
@@ -78,6 +79,7 @@ bool CVariant::Clear()
     m_allelesStr.clear();
     m_filterString.clear();
     m_bIsFirstNucleotideTrimmed = false;
+    m_variantStatus = eNOT_ASSESSED;
     return true;
 }
 
