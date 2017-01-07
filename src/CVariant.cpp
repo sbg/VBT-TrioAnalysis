@@ -52,10 +52,9 @@ CVariant::CVariant(const CVariant& a_rObj)
     m_nZygotCount = a_rObj.m_nZygotCount;
     m_genotype[0] = a_rObj.m_genotype[0];
     m_genotype[1] = a_rObj.m_genotype[1];
-    
+    m_variantStatus = a_rObj.m_variantStatus;
     
 }
-
 
 int CVariant::CompareTo(const CVariant& a_rObj) const
 {

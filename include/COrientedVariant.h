@@ -20,6 +20,9 @@ class COrientedVariant
     //Initialize Oriented with a variant and orientation selection
     COrientedVariant(const CVariant& a_rObj, bool a_bIsOrderOfGenotype);
     
+    //Create homozygous oriented variant from given allele index
+    COrientedVariant(const CVariant& a_rObj, int a_nAlleleIndex);
+    
     //Copy constructor
     COrientedVariant(const COrientedVariant& a_rObj);    
     
@@ -64,14 +67,15 @@ class COrientedVariant
     int m_nAlleleIndex;
     //Index of the other allele of this variant
     int m_nOtherAlleleIndex;
-    //If the selected allele is first number or not (eg.  a/b   a-> true b-> false)
-    bool m_bIsOrderOfGenotype;
     //Weight of the variant
     mutable double m_fWeight;
-    bool m_bIsNull;
-    
+    //Pointer Access to variant
     const CVariant* m_variant;
-    
+    //If the selected allele is first number or not (eg.  a/b   a-> true b-> false)
+    bool m_bIsOrderOfGenotype;
+    //If oriented variant is null
+    bool m_bIsNull;
+
 };
 
 #endif //_C_ORIENTED_VARIANT_H_

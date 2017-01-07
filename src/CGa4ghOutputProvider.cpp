@@ -18,9 +18,10 @@ void CGa4ghOutputProvider::SetVariantProvider(CVariantProvider* a_pProvider)
     m_pVariantProvider = a_pProvider;
 }
 
-void CGa4ghOutputProvider::SetBestPaths(CPath* a_pBestPathList)
+void CGa4ghOutputProvider::SetBestPaths(CPath* a_pBestPathList, CPath* a_pBestAlleleMatchPathList)
 {
     m_pBestPaths = a_pBestPathList;
+    m_pBestAlleleMatchPaths = a_pBestAlleleMatchPathList;
 }
 
 void CGa4ghOutputProvider::SetVcfPath(const std::string& a_rVcfPath)
@@ -34,7 +35,7 @@ void CGa4ghOutputProvider::GenerateGa4ghVcf()
     FillHeader();
     
     for(int k = 0; k < CHROMOSOME_COUNT; k++)
-        AddRecords(m_pBestPaths[k], k);
+        AddRecords(m_pBestPaths[k], m_pBestAlleleMatchPaths[k], k);
     
     m_vcfWriter.CloseVcf();
 }
@@ -93,14 +94,26 @@ void CGa4ghOutputProvider::FillHeader()
 }
 
 
-void CGa4ghOutputProvider::AddRecords(const CPath& a_rBestPath, int a_nChrId)
+void CGa4ghOutputProvider::AddRecords(const CPath& a_rBestPath, const CPath& a_rBestAlleleMatchPath, int a_nChrId)
 {
     
     //Best Path included/excluded variants
-    std::vector<CVariant*> excludedVarsBase = m_pVariantProvider->GetVariantList(eBASE, a_nChrId, a_rBestPath.m_baseSemiPath.GetExcluded());
-    std::vector<CVariant*> excludedVarsCall = m_pVariantProvider->GetVariantList(eCALLED, a_nChrId,a_rBestPath.m_calledSemiPath.GetExcluded());
+    std::vector<const CVariant*> excludedVarsBase = m_pVariantProvider->GetVariantList(eBASE, a_nChrId, a_rBestPath.m_baseSemiPath.GetExcluded());
+    std::vector<const CVariant*> excludedVarsCall = m_pVariantProvider->GetVariantList(eCALLED, a_nChrId,a_rBestPath.m_calledSemiPath.GetExcluded());
+    
     std::vector<const COrientedVariant*> includedVarsBase = a_rBestPath.m_baseSemiPath.GetIncludedVariants();
     std::vector<const COrientedVariant*> includedVarsCall = a_rBestPath.m_calledSemiPath.GetIncludedVariants();
+    
+    int cntGenMatch = 0;
+    int cntNoMatch = 0;
+    
+    for(const COrientedVariant* pOvar : includedVarsBase)
+    {
+        if(pOvar->GetVariant().m_variantStatus == eGENOTYPE_MATCH)
+            cntGenMatch++;
+        else if(pOvar->GetVariant().m_variantStatus == eNO_MATCH)
+            cntNoMatch++;
+    }
     
     //Not Asessed variants
     std::vector<CVariant> notAssessedBase = m_pVariantProvider->GetNotAssessedVariantList(eBASE, a_nChrId);
@@ -120,10 +133,11 @@ void CGa4ghOutputProvider::AddRecords(const CPath& a_rBestPath, int a_nChrId)
         if(CanMerge(varBase.m_pVariant, varCalled.m_pVariant))
         {
             SVcfRecord record;
-            std::string decisionBase = varBase.m_bIncluded ? "TP" : "FN";
-            std::string decisionCalled = varCalled.m_bIncluded ? "TP" : "FP";
-            std::string match = "gm";
-            MergeVariants(varBase.m_pVariant, varCalled.m_pVariant, match, decisionBase, decisionCalled, record);
+            std::string decisionBase = varBase.m_bIncluded ? "TP" : (varBase.m_pVariant->m_variantStatus == eNOT_ASSESSED ? "N" : "FN");
+            std::string decisionCalled = varCalled.m_bIncluded ? "TP" : (varCalled.m_pVariant->m_variantStatus == eNOT_ASSESSED ? "N" : "FP");
+            std::string matchBase = GetMatchStr(varBase.m_pVariant->m_variantStatus);
+            std::string matchCalled = GetMatchStr(varCalled.m_pVariant->m_variantStatus);
+            MergeVariants(varBase.m_pVariant, varCalled.m_pVariant, matchBase, matchCalled, decisionBase, decisionCalled, record);
             m_vcfWriter.AddRecord(record);
             
             //We used both variant. Get the next variant from both list
@@ -135,8 +149,8 @@ void CGa4ghOutputProvider::AddRecords(const CPath& a_rBestPath, int a_nChrId)
         else if(varCalled.isNull() || (!varBase.isNull() && varBase.m_pVariant->GetStart() < varCalled.m_pVariant->GetStart()))
         {
             SVcfRecord record;
-            std::string decision = varBase.m_bIncluded ? "TP" : "FN";
-            std::string match = "nm";
+            std::string decision = varBase.m_bIncluded ? "TP" : (varBase.m_pVariant->m_variantStatus == eNOT_ASSESSED ? "N" : "FN");
+            std::string match = GetMatchStr(varBase.m_pVariant->m_variantStatus);
             VariantToVcfRecord(varBase.m_pVariant, record, true, match, decision);
             m_vcfWriter.AddRecord(record);
             varBase = baseVariants.hasNext() ? baseVariants.next() : SVariantSummary();
@@ -147,8 +161,8 @@ void CGa4ghOutputProvider::AddRecords(const CPath& a_rBestPath, int a_nChrId)
         {
             SVcfRecord record;
             record.m_aSampleData.push_back(SPerSampleData());
-            std::string decision = varCalled.m_bIncluded ? "TP" : "FP";
-            std::string match = "nm";
+            std::string decision = varCalled.m_bIncluded ? "TP" : (varCalled.m_pVariant->m_variantStatus == eNOT_ASSESSED ? "N" : "FP");
+            std::string match = GetMatchStr(varCalled.m_pVariant->m_variantStatus);
             VariantToVcfRecord(varCalled.m_pVariant, record, false, match, decision);
             m_vcfWriter.AddRecord(record);
             varCalled = calledVariants.hasNext() ? calledVariants.next() : SVariantSummary();
@@ -173,13 +187,15 @@ void CGa4ghOutputProvider::VariantToVcfRecord(const CVariant* a_pVariant, SVcfRe
     for(int k = 0; k < data.m_nHaplotypeCount; k++)
         data.m_aGenotype[k] = a_pVariant->m_genotype[k];
     data.m_decisionBD = a_rDecision;
-    data.m_matchTypeBK = a_rMatchType;
+    if(a_rMatchType != "nm")
+        data.m_matchTypeBK = a_rMatchType;
     a_rOutputRec.m_aSampleData.push_back(data);
 }
 
 void CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase,
                                          const CVariant* a_pVariantCalled,
-                                         const std::string& a_rMatchType,
+                                         const std::string& a_rMatchTypeBase,
+                                         const std::string& a_rMatchTypeCalled,
                                          const std::string& a_rDecisionBase,
                                          const std::string& a_rDecisionCalled,
                                          SVcfRecord& a_rOutputRec)
@@ -198,7 +214,8 @@ void CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase,
     for(int k = 0; k < data.m_nHaplotypeCount; k++)
         data.m_aGenotype[k] = a_pVariantBase->m_genotype[k];
     data.m_decisionBD = a_rDecisionBase;
-    data.m_matchTypeBK = a_rMatchType;
+    if(a_rMatchTypeBase != "nm")
+        data.m_matchTypeBK = a_rMatchTypeBase;
     
     a_rOutputRec.m_aSampleData.push_back(data);
     
@@ -230,7 +247,8 @@ void CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase,
 
     
     data2.m_decisionBD = a_rDecisionCalled;
-    data2.m_matchTypeBK = a_rMatchType;
+    if(a_rMatchTypeCalled != "nm")
+        data2.m_matchTypeBK = a_rMatchTypeCalled;
     a_rOutputRec.m_aSampleData.push_back(data2);
     
 }
@@ -278,6 +296,21 @@ bool CGa4ghOutputProvider::CanMerge(const CVariant* a_pVariantBase, const CVaria
         return false;
 }
 
+std::string CGa4ghOutputProvider::GetMatchStr(EVariantMatch a_match)
+{
+    const std::string GENOTYPE_MATCH = "gm";
+    const std::string ALLELE_MATCH = "am";
+    const std::string NO_MATCH = "nm";
+    
+    switch (a_match) {
+        case eALLELE_MATCH:
+            return ALLELE_MATCH;
+        case eGENOTYPE_MATCH:
+            return GENOTYPE_MATCH;
+        default:
+            return NO_MATCH;
+    }
+}
 
 
 

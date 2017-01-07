@@ -13,6 +13,7 @@
 #include "CPathReplay.h"
 #include "Sconfig.h"
 #include "CVariantProvider.h"
+#include "CResultLog.h"
 
 class CVcfAnalyzer
 {
@@ -42,7 +43,7 @@ private:
     
     //Function that process chromosome in bulk
     void ThreadFunc2(std::vector<int> a_nChrArr);
-    
+        
     //Maximum # of thread that program executes
     int m_nMaxThreadCount;
     //Maximum memory will be used by the program
@@ -51,11 +52,17 @@ private:
     //Configurations for Vcf comparison
     SConfig m_config;
     
+    //Object to write variant statistic into a file
+    CResultLog m_resultLogger;
+    
     //Variant provider instance
     CVariantProvider m_provider;
     
     //Best Paths written by each thread for each unique chromosome exists
     CPath m_aBestPaths[CHROMOSOME_COUNT];
+    
+    //Best Paths written by each thread to find Allele matches for each unique chromosome exists
+    CPath m_aBestPathsAllele[CHROMOSOME_COUNT];
 
 };
 

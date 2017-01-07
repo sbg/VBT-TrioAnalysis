@@ -24,7 +24,7 @@ public:
     void SetVariantProvider(CVariantProvider* a_pProvider);
     
     //Set access to best path list
-    void SetBestPaths(CPath* a_pBestPathList);
+    void SetBestPaths(CPath* a_pBestPathList, CPath* a_pBestAlleleMatchPathList);
     
     //Set the output vcf path
     void SetVcfPath(const std::string& a_rVcfPath);
@@ -34,11 +34,14 @@ public:
     
 private:
     
+    //Return the match string
+    std::string GetMatchStr(EVariantMatch a_match);
+    
     //Fill the header of output vcf according to ga4gh standards
     void FillHeader();
     
     //Add records of best path to the vcf file (Contain single chromosome)
-    void AddRecords(const CPath& a_rBestPath, int a_nChrId);
+    void AddRecords(const CPath& a_rBestPath, const CPath& a_rBestAlleleMatchPath, int a_nChrId);
     
     //Return true if base and called variants can be merged
     bool CanMerge(const CVariant* a_pVariantBase, const CVariant* a_pVariantCalled) const;
@@ -46,7 +49,8 @@ private:
     //Merge the two variant and fills the outputRec
     void MergeVariants(const CVariant* a_rVariantBase,
                        const CVariant* a_rVariantCalled,
-                       const std::string& a_rMatchType,
+                       const std::string& a_rMatchTypeBase,
+                       const std::string& a_rMatchTypeCalled,
                        const std::string& a_rDecisionBase,
                        const std::string& a_rDecisionCalled,
                        SVcfRecord& a_rOutputRec);
@@ -67,6 +71,7 @@ private:
     
     //Pointer to the best path list
     CPath* m_pBestPaths;
+    CPath* m_pBestAlleleMatchPaths;
     
     //Path of the vcf file to be generated
     std::string m_vcfPath;

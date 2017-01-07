@@ -23,8 +23,14 @@ class CPathReplay
 {
     public:
 
-        //Sets variant provider object instance
-        void SetVariantProvider(const CVariantProvider& a_rVariantProvider);
+        //Sets variant for comparison
+        CPathReplay(std::vector<const CVariant*>& a_aVarListBase,
+                    std::vector<const CVariant*>& a_aVarListCalled,
+                    std::vector<const COrientedVariant*>& a_aOVarListBase,
+                    std::vector<const COrientedVariant*>& a_aOvarlistCalled);
+    
+        //Clears variants belong to best path
+        void Clear();
     
         // Finds the best path by generating all possible paths for the given chromosome
         CPath FindBestPath(SContig a_contig, bool a_bIsGenotypeMatch);
@@ -48,7 +54,7 @@ class CPathReplay
     
         //Gets the index of the next variant if it should be enqueued to the supplied HalfPath at the current position,
         //or -1 if there is none to be enqueued at the current position
-        int GetNextVariant(const CSemiPath& a_rSemiPath, int a_nChromosomeId) const;
+        int GetNextVariant(const CSemiPath& a_rSemiPath) const;
     
         //Move the path to the specified position, ignoring any intervening variants.
         void SkipVariantsTo(CPath& a_rPath, const SContig& a_rContig, int a_nMaxPos);
@@ -57,17 +63,20 @@ class CPathReplay
         CThreadSafePathList m_pathList;
         
         //Access to Variant Provider
-        const CVariantProvider* m_variantProvider;
+        //const CVariantProvider* m_variantProvider;
 
         int m_nCurrentPosition;
     
         std::vector<const COrientedVariant*> m_IncludedVariantsBaselineBest;
         std::vector<int> m_ExcludedVariantsBaselineBest;
-    
         std::vector<const COrientedVariant*> m_IncludedVariantsCalledBest;
         std::vector<int> m_ExcludedVariantsCalledBest;
-    
         std::vector<int> m_SyncPointsBest;
+    
+        std::vector<const CVariant*>& m_aVariantListBase;
+        std::vector<const CVariant*>& m_aVariantListCalled;
+        std::vector<const COrientedVariant*>& m_aOrientedVariantListBase;
+        std::vector<const COrientedVariant*>& m_aOrientedVariantListCalled;
 };
 
 

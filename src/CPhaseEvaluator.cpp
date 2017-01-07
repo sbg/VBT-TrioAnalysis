@@ -47,8 +47,8 @@ bool groupInPhase(std::vector<SVariantSummary> group)
 
 SPhasingResult CPhaseEvaluator::CountMisphasings(CPath& a_rBestPath, int a_nChrId)
 {
-    std::vector<CVariant*> excludedVarsBase = m_pVariantProvider->GetVariantList(eBASE, a_nChrId, a_rBestPath.m_baseSemiPath.GetExcluded());
-    std::vector<CVariant*> excludedVarsCall = m_pVariantProvider->GetVariantList(eCALLED, a_nChrId, a_rBestPath.m_calledSemiPath.GetExcluded());
+    std::vector<const CVariant*> excludedVarsBase = m_pVariantProvider->GetVariantList(eBASE, a_nChrId, a_rBestPath.m_baseSemiPath.GetExcluded());
+    std::vector<const CVariant*> excludedVarsCall = m_pVariantProvider->GetVariantList(eCALLED, a_nChrId, a_rBestPath.m_calledSemiPath.GetExcluded());
     
     std::vector<const COrientedVariant*> includedVarsBase = a_rBestPath.m_baseSemiPath.GetIncludedVariants();
     std::vector<const COrientedVariant*> includedVarsCall = a_rBestPath.m_calledSemiPath.GetIncludedVariants();

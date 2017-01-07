@@ -46,9 +46,9 @@ class CPath
     //Add variant to the given side of path and return the path count
     int AddVariant(CPathContainer* a_pPathList,
                    EVcfName a_nVcfName,
-                   const CVariantProvider* a_pVariantProvider,
+                   const std::vector<const CVariant*>& a_pVariantList,
+                   const std::vector<const COrientedVariant*>& a_pOVariantList,
                    int a_nVariantIndex,
-                   int a_nChromosomeId,
                    bool a_bIsGenotypeMatch);
     
     bool operator<(const CPath& a_rObj) const

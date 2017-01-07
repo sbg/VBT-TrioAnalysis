@@ -217,6 +217,22 @@ void CVariantProvider::FillOrientedVariantLists()
     }
 }
 
+void CVariantProvider::FillAlleleMatchVariantList(int a_nChrId, std::vector<const CVariant*>& a_rBaseVariants, std::vector<const CVariant*>& a_rCalledVariants)
+{
+    for(int j=0; j < a_rBaseVariants.size(); j++)
+    {
+        m_aBaseHomozygousOrientedVariantList[a_nChrId].push_back(COrientedVariant(*a_rBaseVariants[j], 0));
+        m_aBaseHomozygousOrientedVariantList[a_nChrId].push_back(COrientedVariant(*a_rBaseVariants[j], 1));
+    }
+        
+    for(int j=0; j < a_rCalledVariants.size(); j++)
+    {
+        m_aCalledHomozygousOrientedVariantList[a_nChrId].push_back(COrientedVariant(*a_rCalledVariants[j], 0));
+        m_aCalledHomozygousOrientedVariantList[a_nChrId].push_back(COrientedVariant(*a_rCalledVariants[j], 1));
+    }
+}
+
+
 void CVariantProvider::GetContig(int a_nChrId, SContig& a_rContig) const
 {
     a_rContig.m_chromosome = m_aContigList[a_nChrId].m_chromosome;
@@ -225,50 +241,9 @@ void CVariantProvider::GetContig(int a_nChrId, SContig& a_rContig) const
     a_rContig.m_pRefSeq = m_aContigList[a_nChrId].m_pRefSeq;
 }
 
-const CVariant* CVariantProvider::GetVariant(EVcfName a_uFrom, int a_nChrNo, int a_nVariantId) const
+std::vector<const CVariant*> CVariantProvider::GetVariantList(EVcfName a_uFrom, int a_nChrNo, const std::vector<int>& a_VariantIndexes)
 {
-    switch(a_uFrom)
-    {
-        case eBASE:
-            return &m_aBaseVariantList[a_nChrNo][a_nVariantId];
-        case eCALLED:
-            return &m_aCalledVariantList[a_nChrNo][a_nVariantId];
-    }
-}
-
-const COrientedVariant* CVariantProvider::GetOrientedVariant(EVcfName a_uFrom, int a_nChrNo, int a_nVariantId, bool a_bOrientation) const
-{
-    int nExtra = a_bOrientation ? 0 : 1;
-    
-   if(a_uFrom == eBASE)
-   {
-       const COrientedVariant* o1 = &m_aBaseOrientedVariantList[a_nChrNo][a_nVariantId*2 + nExtra];
-       return o1;
-   }
-   
-   else if(a_uFrom == eCALLED)
-   {
-       const COrientedVariant* o2 = &m_aCalledOrientedVariantList[a_nChrNo][a_nVariantId*2 + nExtra];
-       return o2;
-   }
-    
-    return 0;
-}
-
-int CVariantProvider::GetVariantListSize(EVcfName a_uFrom, int a_nChrNo) const
-{
-    switch(a_uFrom)
-    {
-        case eBASE:
-            return (int)m_aBaseVariantList[a_nChrNo].size();
-        case eCALLED:
-            return (int)m_aCalledVariantList[a_nChrNo].size();
-    }
-}
-
-std::vector<CVariant*> CVariantProvider::GetVariantList(EVcfName a_uFrom, int a_nChrNo, std::vector<int> a_VariantIndexes)
-{
-    std::vector<CVariant*> result;
+    std::vector<const CVariant*> result;
 
     switch (a_uFrom)
     {
@@ -287,6 +262,93 @@ std::vector<CVariant*> CVariantProvider::GetVariantList(EVcfName a_uFrom, int a_
 
     return result;
 }
+
+std::vector<const CVariant*> CVariantProvider::GetVariantList(EVcfName a_uFrom, int a_nChrNo)
+{
+    unsigned long size = a_uFrom == eBASE ? m_aBaseVariantList[a_nChrNo].size() : m_aCalledVariantList[a_nChrNo].size();
+    std::vector<const CVariant*> result(size);
+    
+    switch (a_uFrom)
+    {
+        case eBASE:
+            for(int k=0; k < size; k++)
+                result[k] = &(m_aBaseVariantList[a_nChrNo][k]);
+            break;
+            
+        case eCALLED:
+            for(int k=0; k< size; k++)
+                result[k] = &(m_aCalledVariantList[a_nChrNo][k]);
+            
+        default:
+            break;
+    }
+    
+    return result;
+}
+
+
+std::vector<const CVariant*> CVariantProvider::GetVariantList(std::vector<const CVariant*>& a_varList, const std::vector<int>& a_VariantIndexes)
+{
+    std::vector<const CVariant*> result(a_VariantIndexes.size());
+    
+    for(int k = 0; k < a_VariantIndexes.size(); k++)
+    {
+        result[k] = a_varList[a_VariantIndexes[k]];
+    }
+    return result;
+}
+
+
+std::vector<const COrientedVariant*> CVariantProvider::GetOrientedVariantList(EVcfName a_uFrom, int a_nChrNo, bool a_bIsGenotypeMatch)
+{
+    if(a_bIsGenotypeMatch)
+    {
+        unsigned long size = a_uFrom == eBASE ? m_aBaseOrientedVariantList[a_nChrNo].size() : m_aCalledOrientedVariantList[a_nChrNo].size();
+        std::vector<const COrientedVariant*> result(size);
+        
+        switch (a_uFrom)
+        {
+            case eBASE:
+                for(int k=0; k < size; k++)
+                    result[k] = &(m_aBaseOrientedVariantList[a_nChrNo][k]);
+                break;
+                
+            case eCALLED:
+                for(int k=0; k< size; k++)
+                    result[k] = &(m_aCalledOrientedVariantList[a_nChrNo][k]);
+                
+            default:
+                break;
+        }
+
+        return result;
+    }
+    
+    else
+    {
+        unsigned long size = a_uFrom == eBASE ? m_aBaseHomozygousOrientedVariantList[a_nChrNo].size() : m_aCalledHomozygousOrientedVariantList[a_nChrNo].size();
+        std::vector<const COrientedVariant*> result(size);
+        
+        switch (a_uFrom)
+        {
+            case eBASE:
+                for(int k=0; k < size; k++)
+                    result[k] = &(m_aBaseHomozygousOrientedVariantList[a_nChrNo][k]);
+                break;
+                
+            case eCALLED:
+                for(int k=0; k< size; k++)
+                    result[k] = &(m_aCalledHomozygousOrientedVariantList[a_nChrNo][k]);
+                
+            default:
+                break;
+        }
+
+        return result;
+    }
+    
+}
+
 
 bool CVariantProvider::IsStructuralVariant(const CVariant& a_rVariant, int a_nMaxLength) const
 {
@@ -381,6 +443,18 @@ std::vector<CVariant>& CVariantProvider::GetNotAssessedVariantList(EVcfName a_uF
 
 
 
+void CVariantProvider::SetVariantStatus(std::vector<const CVariant*>& a_rVariantList, EVariantMatch a_status) const
+{
+    for(const CVariant* pVar : a_rVariantList)
+        pVar->m_variantStatus = a_status;
+}
+
+
+void CVariantProvider::SetVariantStatus(std::vector<const COrientedVariant*>& a_rVariantList, EVariantMatch a_status) const
+{
+    for(const COrientedVariant* pOvar : a_rVariantList)
+        pOvar->GetVariant().m_variantStatus = a_status;
+}
 
 
 

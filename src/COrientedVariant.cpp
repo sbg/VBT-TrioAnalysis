@@ -45,6 +45,16 @@ COrientedVariant::COrientedVariant(const CVariant& a_rObj, bool a_bIsOrder)
     m_bIsOrderOfGenotype = a_bIsOrder;
 }
 
+COrientedVariant::COrientedVariant(const CVariant& a_rObj, int a_nAlleleIndex)
+{
+    m_variant = &a_rObj;
+    m_bIsNull = a_rObj.IsNull();
+    
+    m_nAlleleIndex = a_nAlleleIndex;
+    m_nOtherAlleleIndex = a_nAlleleIndex;
+}
+
+
 COrientedVariant::COrientedVariant(const COrientedVariant& a_rObj)
 {
     m_variant = a_rObj.m_variant;
@@ -98,7 +108,12 @@ int COrientedVariant::GetAlleleIndex() const
 
 COrientedVariant COrientedVariant::Other() const
 {
-    return COrientedVariant(*m_variant, !m_bIsOrderOfGenotype);
+    COrientedVariant oVar2(*this);
+    
+    oVar2.m_bIsOrderOfGenotype = !m_bIsOrderOfGenotype;
+    oVar2.m_nAlleleIndex = m_nOtherAlleleIndex;
+    oVar2.m_nOtherAlleleIndex = m_nAlleleIndex;
+    return oVar2;
 }
 
 bool COrientedVariant::IsNull() const
