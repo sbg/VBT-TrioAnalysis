@@ -35,23 +35,6 @@ public:
         return hasNext;
     }
     
-/*    SVariantSummary next()
-    {
-        SVariantSummary result;
-        if(it_Included == m_aIncluded.end() || (it_Excluded != m_aExcluded.end() && (*it_Excluded)->GetStart() < (*it_Included)->GetVariant().GetStart()))
-        {
-            result = SVariantSummary(*(*it_Excluded), false, false);
-            it_Excluded++;
-        }
-        else
-        {
-            result = SVariantSummary((*it_Included)->GetVariant(), true, (*it_Included)->IsOrderOfGenotype());
-            it_Included++;
-        }
-        
-        return result;
-    }
-*/
     SVariantSummary next()
     {
         SVariantSummary result;
@@ -60,6 +43,10 @@ public:
         int excludeStart = it_Excluded != m_aExcluded.end() ? (*it_Excluded)->GetStart() : INT_MAX;
         int notAssessedStart = it_NotAssessed != m_aNotAssessed.end() ? it_NotAssessed->GetStart() : INT_MAX;
         
+        includeStart = it_Included != m_aIncluded.end() ? includeStart - ((*it_Included)->GetVariant().m_bIsFirstNucleotideTrimmed ? 1 : 0) : includeStart;
+        excludeStart = it_Excluded != m_aExcluded.end() ? excludeStart - ((*it_Excluded)->m_bIsFirstNucleotideTrimmed ? 1 : 0) : excludeStart;
+        notAssessedStart = it_NotAssessed != m_aNotAssessed.end() ? notAssessedStart - (it_NotAssessed->m_bIsFirstNucleotideTrimmed ? 1 : 0) : notAssessedStart;
+
         int index = CompareTrio(includeStart, excludeStart, notAssessedStart);
         
         switch(index)

@@ -158,9 +158,6 @@ void CVcfAnalyzer::ThreadFunc(int a_nChromosomeId)
     m_aBestPathsAllele[a_nChromosomeId] = pathReplay.FindBestPath(ctg, false);
     
     //No Match variants
-    //std::vector<const CVariant*> excludedVarsBase2 = m_provider.GetVariantList(eBASE, a_nChromosomeId, m_aBestPathsAllele[a_nChromosomeId].m_baseSemiPath.GetExcluded());
-    //std::vector<const CVariant*> excludedVarsCall2 = m_provider.GetVariantList(eCALLED, a_nChromosomeId, m_aBestPathsAllele[a_nChromosomeId].m_calledSemiPath.GetExcluded());
-
     std::vector<const CVariant*> excludedVarsBase2 = m_provider.GetVariantList(excludedVarsBase,
                                                                                m_aBestPathsAllele[a_nChromosomeId].m_baseSemiPath.GetExcluded());
     std::vector<const CVariant*> excludedVarsCall2 = m_provider.GetVariantList(excludedVarsCall,
@@ -186,27 +183,6 @@ void CVcfAnalyzer::ThreadFunc(int a_nChromosomeId)
     m_provider.SetVariantStatus(includedVarsBase, eGENOTYPE_MATCH);
     m_provider.SetVariantStatus(includedVarsCall2, eALLELE_MATCH);
     m_provider.SetVariantStatus(includedVarsBase2, eALLELE_MATCH);
-    
-    int noMatch = 0;
-    int gtMatch = 0;
-    int alMatch = 0;
-    int na = 0;
-    
-    for(CVariant var : m_provider.m_aBaseVariantList[20])
-    {
-        if(var.m_variantStatus == eGENOTYPE_MATCH)
-            gtMatch++;
-        else if(var.m_variantStatus == eALLELE_MATCH)
-            alMatch++;
-        else if(var.m_variantStatus == eNO_MATCH)
-            noMatch++;
-        else if(var.m_variantStatus == eNOT_ASSESSED)
-            na++;
-    }
-    
-    int x = std::min(3,5);
-    if(x < 3)
-        x++;
     
     return;
 }

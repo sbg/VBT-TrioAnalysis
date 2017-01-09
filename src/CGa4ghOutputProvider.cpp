@@ -106,6 +106,7 @@ void CGa4ghOutputProvider::AddRecords(const CPath& a_rBestPath, const CPath& a_r
     
     int cntGenMatch = 0;
     int cntNoMatch = 0;
+    int cntAlleleMatch = 0;
     
     for(const COrientedVariant* pOvar : includedVarsBase)
     {
@@ -113,6 +114,32 @@ void CGa4ghOutputProvider::AddRecords(const CPath& a_rBestPath, const CPath& a_r
             cntGenMatch++;
         else if(pOvar->GetVariant().m_variantStatus == eNO_MATCH)
             cntNoMatch++;
+        else if(pOvar->GetVariant().m_variantStatus == eALLELE_MATCH)
+            cntAlleleMatch++;
+    }
+    for(const CVariant* pVar : excludedVarsBase)
+    {
+        if(pVar->m_variantStatus == eALLELE_MATCH)
+            cntAlleleMatch++;
+    }
+ 
+    int cntGenMatch2 = 0;
+    int cntNoMatch2 = 0;
+    int cntAlleleMatch2 = 0;
+    
+    for(const COrientedVariant* pOvar : includedVarsCall)
+    {
+        if(pOvar->GetVariant().m_variantStatus == eGENOTYPE_MATCH)
+            cntGenMatch2++;
+        else if(pOvar->GetVariant().m_variantStatus == eNO_MATCH)
+            cntNoMatch2++;
+        else if(pOvar->GetVariant().m_variantStatus == eALLELE_MATCH)
+            cntAlleleMatch2++;
+    }
+    for(const CVariant* pVar : excludedVarsCall)
+    {
+        if(pVar->m_variantStatus == eALLELE_MATCH)
+            cntAlleleMatch2++;
     }
     
     //Not Asessed variants
@@ -128,9 +155,12 @@ void CGa4ghOutputProvider::AddRecords(const CPath& a_rBestPath, const CPath& a_r
     varBase = baseVariants.hasNext() ? baseVariants.next() : SVariantSummary();
     varCalled = calledVariants.hasNext() ? calledVariants.next() : SVariantSummary();
     
-    while(!varBase.isNull() && !varCalled.isNull())
+    while(!varBase.isNull() || !varCalled.isNull())
     {
-        if(CanMerge(varBase.m_pVariant, varCalled.m_pVariant))
+        int baseStart = varBase.isNull() ? 0 : varBase.m_pVariant->m_nStartPos - (varBase.m_pVariant->m_bIsFirstNucleotideTrimmed ? 1 : 0);
+        int callStart = varCalled.isNull() ? 0 : varCalled.m_pVariant->m_nStartPos - (varCalled.m_pVariant->m_bIsFirstNucleotideTrimmed ? 1 : 0);
+        
+        if(!varBase.isNull() && !varCalled.isNull() && CanMerge(varBase.m_pVariant, varCalled.m_pVariant))
         {
             SVcfRecord record;
             std::string decisionBase = varBase.m_bIncluded ? "TP" : (varBase.m_pVariant->m_variantStatus == eNOT_ASSESSED ? "N" : "FN");
@@ -146,7 +176,7 @@ void CGa4ghOutputProvider::AddRecords(const CPath& a_rBestPath, const CPath& a_r
             continue;
         }
         
-        else if(varCalled.isNull() || (!varBase.isNull() && varBase.m_pVariant->GetStart() < varCalled.m_pVariant->GetStart()))
+        else if(varCalled.isNull() || (!varBase.isNull() && baseStart < callStart))
         {
             SVcfRecord record;
             std::string decision = varBase.m_bIncluded ? "TP" : (varBase.m_pVariant->m_variantStatus == eNOT_ASSESSED ? "N" : "FN");
@@ -175,7 +205,7 @@ void CGa4ghOutputProvider::VariantToVcfRecord(const CVariant* a_pVariant, SVcfRe
 {
     //Fill basic variant data
     a_rOutputRec.m_chrName = a_pVariant->m_chrName;
-    a_rOutputRec.m_nPosition = a_pVariant->m_nStartPos;
+    a_rOutputRec.m_nPosition = a_pVariant->m_nStartPos - (a_pVariant->m_bIsFirstNucleotideTrimmed ? 1 : 0);
     a_rOutputRec.m_alleles = a_pVariant->m_allelesStr;
     if(!a_bIsBase)
         a_rOutputRec.m_aFilterString = a_pVariant->m_filterString;
@@ -203,7 +233,7 @@ void CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase,
 
     //Fill basic variant data
     a_rOutputRec.m_chrName = a_pVariantBase->m_chrName;
-    a_rOutputRec.m_nPosition = a_pVariantBase->m_nStartPos;
+    a_rOutputRec.m_nPosition = a_pVariantBase->m_nStartPos - (a_pVariantBase->m_bIsFirstNucleotideTrimmed ? 1 : 0);
     a_rOutputRec.m_alleles = a_pVariantBase->m_allelesStr;
     a_rOutputRec.m_aFilterString = a_pVariantCalled->m_filterString;
     
@@ -256,7 +286,10 @@ void CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase,
 
 bool CGa4ghOutputProvider::CanMerge(const CVariant* a_pVariantBase, const CVariant* a_pVariantCalled) const
 {
-    bool bIsPosEqual = a_pVariantBase->m_nStartPos == a_pVariantCalled->m_nStartPos;
+    int baseStart = a_pVariantBase->m_nStartPos - (a_pVariantBase->m_bIsFirstNucleotideTrimmed ? 1 : 0);
+    int calledStart = a_pVariantCalled->m_nStartPos - (a_pVariantCalled->m_bIsFirstNucleotideTrimmed ? 1 : 0);
+
+    bool bIsPosEqual = baseStart == calledStart;
     bool bIsRefEqual = a_pVariantBase->m_refSequence == a_pVariantCalled->m_refSequence;
     
     if(bIsPosEqual && bIsRefEqual)

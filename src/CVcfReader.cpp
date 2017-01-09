@@ -93,7 +93,7 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
     int ngt_arr = 0;
 
     int samplenumber = GetNumberOfSamples();
-    int zygotCount;
+    int zygotCount = 0;
     
     bcf_clear(m_pRecord);
     m_pRecord->d.m_allele = 0;
@@ -137,14 +137,16 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
         
         
         //READ GENOTYPE DATA
-        bcf_get_genotypes(m_pHeader, m_pRecord, &gt_arr, &ngt_arr);
-        zygotCount = ngt_arr / samplenumber;
-        a_pVariant->m_nAlleleCount = zygotCount;
-        if(zygotCount == 2)
-            a_pVariant->m_bIsPhased = bcf_gt_is_phased(gt_arr[0]) || bcf_gt_is_phased(gt_arr[1]);
-        else
-            a_pVariant->m_bIsPhased = bcf_gt_is_phased(gt_arr[0]);
- 
+        if(samplenumber != 0)
+        {
+            bcf_get_genotypes(m_pHeader, m_pRecord, &gt_arr, &ngt_arr);
+            zygotCount = ngt_arr / samplenumber;
+            a_pVariant->m_nAlleleCount = zygotCount;
+            if(zygotCount == 2)
+                a_pVariant->m_bIsPhased = bcf_gt_is_phased(gt_arr[0]) || bcf_gt_is_phased(gt_arr[1]);
+            else if(zygotCount == 1)
+                a_pVariant->m_bIsPhased = bcf_gt_is_phased(gt_arr[0]);
+        }
         
         //READ SEQUENCE DATA AND FILL ALLELES
         a_pVariant->m_refSequence = std::string(m_pRecord->d.allele[0]);
@@ -172,7 +174,7 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
                 a_pVariant->m_bIsHeterozygous = true;
             }
         }
-        else
+        else if(zygotCount == 1)
         {
             a_pVariant->m_nAlleleCount = 1;
             a_pVariant->m_bIsHeterozygous = false;
@@ -189,17 +191,24 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
         }
         
         //SET START AND END POSITION OF VARIANT
-        int maxEnd = -1;
-        int minStart = INT_MAX;
-        a_pVariant->m_nStartPos = m_pRecord->pos;
-        for(int k=0; k < ngt_arr; k++)
+        if(samplenumber != 0)
         {
-            maxEnd = std::max(maxEnd, static_cast<int>(a_pVariant->m_alleles[k].m_nEndPos));
-            minStart = std::min(minStart, static_cast<int>(a_pVariant->m_alleles[k].m_nStartPos));
+            int maxEnd = -1;
+            int minStart = INT_MAX;
+            a_pVariant->m_nStartPos = m_pRecord->pos;
+            for(int k=0; k < ngt_arr; k++)
+            {
+                maxEnd = std::max(maxEnd, static_cast<int>(a_pVariant->m_alleles[k].m_nEndPos));
+                minStart = std::min(minStart, static_cast<int>(a_pVariant->m_alleles[k].m_nStartPos));
+            }
+            a_pVariant->m_nEndPos = maxEnd;
+            a_pVariant->m_nStartPos = minStart;
         }
-        a_pVariant->m_nEndPos = maxEnd;
-        a_pVariant->m_nStartPos = minStart;
- 
+        else
+        {
+            a_pVariant->m_nStartPos = m_pRecord->pos;
+            a_pVariant->m_nEndPos = m_pRecord->pos + static_cast<int>(a_pVariant->m_refSequence.length());
+        }
         
         //FILL ORIGINAL ALLELE STR AND GENOTYPE FOR LATER ACCESS
         a_pVariant->m_nZygotCount = zygotCount;
