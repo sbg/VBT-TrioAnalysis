@@ -46,7 +46,7 @@ public:
         includeStart = it_Included != m_aIncluded.end() ? includeStart - ((*it_Included)->GetVariant().m_bIsFirstNucleotideTrimmed ? 1 : 0) : includeStart;
         excludeStart = it_Excluded != m_aExcluded.end() ? excludeStart - ((*it_Excluded)->m_bIsFirstNucleotideTrimmed ? 1 : 0) : excludeStart;
         notAssessedStart = it_NotAssessed != m_aNotAssessed.end() ? notAssessedStart - (it_NotAssessed->m_bIsFirstNucleotideTrimmed ? 1 : 0) : notAssessedStart;
-
+        
         int index = CompareTrio(includeStart, excludeStart, notAssessedStart);
         
         switch(index)

@@ -394,8 +394,21 @@ void CVariantProvider::PushVariant(CVariant& a_rVariant, std::vector<CVariant>& 
     
     if(a_rVariant.GetStart() == a_rVecToPush[size-k].GetStart())
     {
-        if(a_rVariant.GetEnd() < a_rVecToPush[size-k].GetEnd())
+        
+        if(a_rVariant.GetStart() == 10775909)
+        {
+            int m = 0;
+            m++;
+        }
+        
+        if(a_rVariant.m_bIsFirstNucleotideTrimmed && !a_rVecToPush[size-k].m_bIsFirstNucleotideTrimmed)
             k++;
+        
+        else if(a_rVariant.m_bIsFirstNucleotideTrimmed == a_rVecToPush[size-k].m_bIsFirstNucleotideTrimmed)
+        {
+            if(a_rVariant.GetEnd() < a_rVecToPush[size-k].GetEnd())
+                k++;
+        }
         
 //        if(a_rVariant.GetEnd() == a_rVecToPush[size-k].GetEnd())
 //        {

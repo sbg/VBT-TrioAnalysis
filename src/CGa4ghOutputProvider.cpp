@@ -232,17 +232,37 @@ void CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase,
 {
 
     //Fill basic variant data
-    a_rOutputRec.m_chrName = a_pVariantBase->m_chrName;
-    a_rOutputRec.m_nPosition = a_pVariantBase->m_nStartPos - (a_pVariantBase->m_bIsFirstNucleotideTrimmed ? 1 : 0);
-    a_rOutputRec.m_alleles = a_pVariantBase->m_allelesStr;
+    a_rOutputRec.m_chrName = a_pVariantCalled->m_chrName;
+    a_rOutputRec.m_nPosition = a_pVariantCalled->m_nStartPos - (a_pVariantCalled->m_bIsFirstNucleotideTrimmed ? 1 : 0);
+    a_rOutputRec.m_alleles = a_pVariantCalled->m_allelesStr;
     a_rOutputRec.m_aFilterString = a_pVariantCalled->m_filterString;
     
     //Fill base sample (TRUTH)
     SPerSampleData data;
     data.m_bIsPhased = a_pVariantBase->m_bIsPhased;
     data.m_nHaplotypeCount = a_pVariantBase->m_nZygotCount;
-    for(int k = 0; k < data.m_nHaplotypeCount; k++)
-        data.m_aGenotype[k] = a_pVariantBase->m_genotype[k];
+    
+    std::stringstream ss(a_pVariantCalled->m_allelesStr);
+    std::vector<std::string> calledVariants;
+    std::string substr;
+    
+    while(getline(ss, substr, ','))
+    {
+        calledVariants.push_back(substr);
+    }
+    for(int k=0; k < a_pVariantBase->m_nZygotCount; k++)
+    {
+        for(int p = 0; p < calledVariants.size(); p++)
+        {
+            std::string allele = a_pVariantBase->m_bIsFirstNucleotideTrimmed ? (a_pVariantBase->GetRefSeq()[0] + a_pVariantBase->m_alleles[k].m_sequence) : a_pVariantBase->m_alleles[k].m_sequence;
+            if(0 == calledVariants[p].compare(allele))
+            {
+                data.m_aGenotype[k] = p;
+                break;
+            }
+        }
+    }
+    
     data.m_decisionBD = a_rDecisionBase;
     if(a_rMatchTypeBase != "nm")
         data.m_matchTypeBK = a_rMatchTypeBase;
@@ -254,27 +274,8 @@ void CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase,
     data2.m_bIsPhased = a_pVariantCalled->m_bIsPhased;
     data2.m_nHaplotypeCount = a_pVariantCalled->m_nZygotCount;
     
-    std::stringstream ss(a_pVariantBase->m_allelesStr);
-    std::vector<std::string> baseVariants;
-    std::string substr;
-    
-    while(getline(ss, substr, ','))
-    {
-        baseVariants.push_back(substr);
-    }
-    for(int k=0; k < a_pVariantCalled->m_nZygotCount; k++)
-    {
-        for(int p = 0; p < baseVariants.size(); p++)
-        {
-            std::string allele = a_pVariantCalled->m_bIsFirstNucleotideTrimmed ? (a_pVariantCalled->GetRefSeq()[0] + a_pVariantCalled->m_alleles[k].m_sequence) : a_pVariantCalled->m_alleles[k].m_sequence;
-            if(0 == baseVariants[p].compare(allele))
-            {
-                data2.m_aGenotype[k] = p;
-                break;
-            }
-        }
-    }
-
+    for(int k = 0; k < data2.m_nHaplotypeCount; k++)
+        data2.m_aGenotype[k] = a_pVariantCalled->m_genotype[k];
     
     data2.m_decisionBD = a_rDecisionCalled;
     if(a_rMatchTypeCalled != "nm")
@@ -295,24 +296,24 @@ bool CGa4ghOutputProvider::CanMerge(const CVariant* a_pVariantBase, const CVaria
     if(bIsPosEqual && bIsRefEqual)
     {
         
-        std::stringstream ss(a_pVariantBase->m_allelesStr);
-        std::vector<std::string> baseVariants;
+        std::stringstream ss(a_pVariantCalled->m_allelesStr);
+        std::vector<std::string> calledVariants;
     
         std::string substr;
         while(getline(ss, substr, ','))
         {
-            baseVariants.push_back(substr);
+            calledVariants.push_back(substr);
         }
     
         bool bIsAlleleExists;
     
-        for(int k=0; k < a_pVariantCalled->m_nAlleleCount; k++)
+        for(int k=0; k < a_pVariantBase->m_nAlleleCount; k++)
         {
             bIsAlleleExists = false;
-            for(int p = 0; p < baseVariants.size(); p++)
+            for(int p = 0; p < calledVariants.size(); p++)
             {
-                std::string allele = a_pVariantCalled->m_bIsFirstNucleotideTrimmed ? (a_pVariantCalled->GetRefSeq()[0] + a_pVariantCalled->m_alleles[k].m_sequence) : a_pVariantCalled->m_alleles[k].m_sequence;
-                if(0 == baseVariants[p].compare(allele))
+                std::string allele = a_pVariantBase->m_bIsFirstNucleotideTrimmed ? (a_pVariantBase->GetRefSeq()[0] + a_pVariantBase->m_alleles[k].m_sequence) : a_pVariantBase->m_alleles[k].m_sequence;
+                if(0 == calledVariants[p].compare(allele))
                 {
                     bIsAlleleExists = true;
                     break;
