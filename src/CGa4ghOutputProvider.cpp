@@ -252,15 +252,27 @@ void CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase,
     }
     for(int k=0; k < a_pVariantBase->m_nZygotCount; k++)
     {
+        int bHasFound = false;
         for(int p = 0; p < calledVariants.size(); p++)
         {
             std::string allele = a_pVariantBase->m_bIsFirstNucleotideTrimmed ? (a_pVariantBase->GetRefSeq()[0] + a_pVariantBase->m_alleles[k].m_sequence) : a_pVariantBase->m_alleles[k].m_sequence;
             if(0 == calledVariants[p].compare(allele))
             {
                 data.m_aGenotype[k] = p;
+                bHasFound = true;
                 break;
             }
         }
+        
+        if(!bHasFound)
+        {
+            std::string allele = a_pVariantBase->m_bIsFirstNucleotideTrimmed ? (a_pVariantBase->GetRefSeq()[0] + a_pVariantBase->m_alleles[k].m_sequence) : a_pVariantBase->m_alleles[k].m_sequence;
+            calledVariants.push_back(allele);
+            a_rOutputRec.m_alleles += ("," + allele);
+            data.m_aGenotype[k] = static_cast<int>(calledVariants.size()) - 1;
+        }
+        
+        
     }
     
     data.m_decisionBD = a_rDecisionBase;
@@ -294,38 +306,7 @@ bool CGa4ghOutputProvider::CanMerge(const CVariant* a_pVariantBase, const CVaria
     bool bIsRefEqual = a_pVariantBase->m_refSequence == a_pVariantCalled->m_refSequence;
     
     if(bIsPosEqual && bIsRefEqual)
-    {
-        
-        std::stringstream ss(a_pVariantCalled->m_allelesStr);
-        std::vector<std::string> calledVariants;
-    
-        std::string substr;
-        while(getline(ss, substr, ','))
-        {
-            calledVariants.push_back(substr);
-        }
-    
-        bool bIsAlleleExists;
-    
-        for(int k=0; k < a_pVariantBase->m_nAlleleCount; k++)
-        {
-            bIsAlleleExists = false;
-            for(int p = 0; p < calledVariants.size(); p++)
-            {
-                std::string allele = a_pVariantBase->m_bIsFirstNucleotideTrimmed ? (a_pVariantBase->GetRefSeq()[0] + a_pVariantBase->m_alleles[k].m_sequence) : a_pVariantBase->m_alleles[k].m_sequence;
-                if(0 == calledVariants[p].compare(allele))
-                {
-                    bIsAlleleExists = true;
-                    break;
-                }
-            }
-        
-            if(false == bIsAlleleExists)
-                 return false;
-        }
-        
         return true;
-    }
     else
         return false;
 }
