@@ -60,7 +60,7 @@ class CVariantProvider
         void SetVariantStatus(std::vector<const COrientedVariant*>& a_rVariantList, EVariantMatch a_status) const;
     
     
-    //private:
+    private:
     
         //Read through the variant file and fill the variant lists. It assumes that positions are sorted.
         void FillVariantLists();

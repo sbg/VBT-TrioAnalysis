@@ -10,6 +10,7 @@
 #include <sstream>
 #include "CPath.h"
 #include "CVariantIterator.h"
+#include "CVariantIteratorV2.h"
 #include "CVariantProvider.h"
 #include <iostream>
 
@@ -93,10 +94,8 @@ void CGa4ghOutputProvider::FillHeader()
     m_vcfWriter.WriteHeaderToVcf();
 }
 
-
 void CGa4ghOutputProvider::AddRecords(const CPath& a_rBestPath, const CPath& a_rBestAlleleMatchPath, int a_nChrId)
 {
-    
     //Best Path included/excluded variants
     std::vector<const CVariant*> excludedVarsBase = m_pVariantProvider->GetVariantList(eBASE, a_nChrId, a_rBestPath.m_baseSemiPath.GetExcluded());
     std::vector<const CVariant*> excludedVarsCall = m_pVariantProvider->GetVariantList(eCALLED, a_nChrId,a_rBestPath.m_calledSemiPath.GetExcluded());
@@ -104,102 +103,120 @@ void CGa4ghOutputProvider::AddRecords(const CPath& a_rBestPath, const CPath& a_r
     std::vector<const COrientedVariant*> includedVarsBase = a_rBestPath.m_baseSemiPath.GetIncludedVariants();
     std::vector<const COrientedVariant*> includedVarsCall = a_rBestPath.m_calledSemiPath.GetIncludedVariants();
     
-    int cntGenMatch = 0;
-    int cntNoMatch = 0;
-    int cntAlleleMatch = 0;
-    
-    for(const COrientedVariant* pOvar : includedVarsBase)
-    {
-        if(pOvar->GetVariant().m_variantStatus == eGENOTYPE_MATCH)
-            cntGenMatch++;
-        else if(pOvar->GetVariant().m_variantStatus == eNO_MATCH)
-            cntNoMatch++;
-        else if(pOvar->GetVariant().m_variantStatus == eALLELE_MATCH)
-            cntAlleleMatch++;
-    }
-    for(const CVariant* pVar : excludedVarsBase)
-    {
-        if(pVar->m_variantStatus == eALLELE_MATCH)
-            cntAlleleMatch++;
-    }
- 
-    int cntGenMatch2 = 0;
-    int cntNoMatch2 = 0;
-    int cntAlleleMatch2 = 0;
-    
-    for(const COrientedVariant* pOvar : includedVarsCall)
-    {
-        if(pOvar->GetVariant().m_variantStatus == eGENOTYPE_MATCH)
-            cntGenMatch2++;
-        else if(pOvar->GetVariant().m_variantStatus == eNO_MATCH)
-            cntNoMatch2++;
-        else if(pOvar->GetVariant().m_variantStatus == eALLELE_MATCH)
-            cntAlleleMatch2++;
-    }
-    for(const CVariant* pVar : excludedVarsCall)
-    {
-        if(pVar->m_variantStatus == eALLELE_MATCH)
-            cntAlleleMatch2++;
-    }
-    
     //Not Asessed variants
-    std::vector<CVariant> notAssessedBase = m_pVariantProvider->GetNotAssessedVariantList(eBASE, a_nChrId);
-    std::vector<CVariant> notAssessedCalled = m_pVariantProvider->GetNotAssessedVariantList(eCALLED, a_nChrId);
-    
-    CVariantIterator baseVariants(includedVarsBase, excludedVarsBase, notAssessedBase);
-    CVariantIterator calledVariants(includedVarsCall, excludedVarsCall, notAssessedCalled);
+    std::vector<CVariant>& notAssessedBase = m_pVariantProvider->GetNotAssessedVariantList(eBASE, a_nChrId);
+    std::vector<CVariant>& notAssessedCalled = m_pVariantProvider->GetNotAssessedVariantList(eCALLED, a_nChrId);
 
-    SVariantSummary varBase;
-    SVariantSummary varCalled;
+    //Variant Iterators
+    CVariantIteratorV2 baseVariants(includedVarsBase, excludedVarsBase, notAssessedBase);
+    CVariantIteratorV2 calledVariants(includedVarsCall, excludedVarsCall, notAssessedCalled);
     
-    varBase = baseVariants.hasNext() ? baseVariants.next() : SVariantSummary();
-    varCalled = calledVariants.hasNext() ? calledVariants.next() : SVariantSummary();
+    std::vector<SVariantSummary> nextVarBaseList;
+    std::vector<SVariantSummary> nextVarCalledList;
+
+    baseVariants.FillNext(nextVarBaseList);
+    calledVariants.FillNext(nextVarCalledList);
     
-    while(!varBase.isNull() || !varCalled.isNull())
+    while(true)
     {
-        int baseStart = varBase.isNull() ? 0 : varBase.m_pVariant->m_nStartPos - (varBase.m_pVariant->m_bIsFirstNucleotideTrimmed ? 1 : 0);
-        int callStart = varCalled.isNull() ? 0 : varCalled.m_pVariant->m_nStartPos - (varCalled.m_pVariant->m_bIsFirstNucleotideTrimmed ? 1 : 0);
+        if(nextVarBaseList.size() == 0 && nextVarCalledList.size() == 0)
+            break;
         
-        if(!varBase.isNull() && !varCalled.isNull() && CanMerge(varBase.m_pVariant, varCalled.m_pVariant))
+        int basePosition = nextVarBaseList.size() > 0 ? nextVarBaseList[0].startPos() - (nextVarBaseList[0].m_pVariant->m_bIsFirstNucleotideTrimmed ? 1 : 0) : INT_MAX;
+        int calledPosition = nextVarCalledList.size() > 0 ? nextVarCalledList[0].startPos() - (nextVarCalledList[0].m_pVariant->m_bIsFirstNucleotideTrimmed ? 1 : 0) : INT_MAX;
+
+        if(basePosition == calledPosition)
         {
-            SVcfRecord record;
-            std::string decisionBase = varBase.m_bIncluded ? "TP" : (varBase.m_pVariant->m_variantStatus == eNOT_ASSESSED ? "N" : "FN");
-            std::string decisionCalled = varCalled.m_bIncluded ? "TP" : (varCalled.m_pVariant->m_variantStatus == eNOT_ASSESSED ? "N" : "FP");
-            std::string matchBase = GetMatchStr(varBase.m_pVariant->m_variantStatus);
-            std::string matchCalled = GetMatchStr(varCalled.m_pVariant->m_variantStatus);
-            MergeVariants(varBase.m_pVariant, varCalled.m_pVariant, matchBase, matchCalled, decisionBase, decisionCalled, record);
-            m_vcfWriter.AddRecord(record);
+            //Look for a match between base and called list
+            for(int i = 0; i < nextVarBaseList.size(); i++)
+            {
+                for(int j = 0; j < nextVarCalledList.size(); j++)
+                {
+                    if(CanMerge(nextVarBaseList[i].m_pVariant, nextVarCalledList[j].m_pVariant))
+                    {
+                        SVcfRecord record;
+                        std::string decisionBase = nextVarBaseList[i].m_bIncluded ? "TP" : (nextVarBaseList[i].m_pVariant->m_variantStatus == eNOT_ASSESSED ? "N" : "FN");
+                        std::string decisionCalled = nextVarCalledList[j].m_bIncluded ? "TP" : (nextVarCalledList[j].m_pVariant->m_variantStatus == eNOT_ASSESSED ? "N" : "FP");
+                        std::string matchBase = GetMatchStr(nextVarBaseList[i].m_pVariant->m_variantStatus);
+                        std::string matchCalled = GetMatchStr(nextVarCalledList[j].m_pVariant->m_variantStatus);
+                        MergeVariants(nextVarBaseList[i].m_pVariant, nextVarCalledList[j].m_pVariant, matchBase, matchCalled, decisionBase, decisionCalled, record);
+                        m_vcfWriter.AddRecord(record);
+                        
+                        nextVarBaseList.erase(nextVarBaseList.begin() + i);
+                        nextVarCalledList.erase(nextVarCalledList.begin() + j);
+                        j--;
+                        i--;
+                        break;
+                    }
+                }
+            }
+
+            //If there are base variants exists which doesnt merge already
+            for (SVariantSummary var : nextVarCalledList)
+            {
+                SVcfRecord record;
+                record.m_aSampleData.push_back(SPerSampleData());
+                std::string decision = var.m_bIncluded ? "TP" : (var.m_pVariant->m_variantStatus == eNOT_ASSESSED ? "N" : "FP");
+                std::string match = GetMatchStr(var.m_pVariant->m_variantStatus);
+                VariantToVcfRecord(var.m_pVariant, record, false, match, decision);
+                m_vcfWriter.AddRecord(record);
+            }
             
-            //We used both variant. Get the next variant from both list
-            varBase = baseVariants.hasNext() ? baseVariants.next() : SVariantSummary();
-            varCalled = calledVariants.hasNext() ? calledVariants.next() : SVariantSummary();
-            continue;
+            nextVarCalledList.clear();
+            calledVariants.FillNext(nextVarCalledList);
+
+
+            //If there are called variants exists which doesnt merge already
+            for(SVariantSummary var : nextVarBaseList)
+            {
+                SVcfRecord record;
+                std::string decision = var.m_bIncluded ? "TP" : (var.m_pVariant->m_variantStatus == eNOT_ASSESSED ? "N" : "FN");
+                std::string match = GetMatchStr(var.m_pVariant->m_variantStatus);
+                VariantToVcfRecord(var.m_pVariant, record, true, match, decision);
+                m_vcfWriter.AddRecord(record);
+            }
+            
+            nextVarBaseList.clear();
+            baseVariants.FillNext(nextVarBaseList);
         }
         
-        else if(varCalled.isNull() || (!varBase.isNull() && baseStart < callStart))
+        else if (basePosition > calledPosition)
         {
-            SVcfRecord record;
-            std::string decision = varBase.m_bIncluded ? "TP" : (varBase.m_pVariant->m_variantStatus == eNOT_ASSESSED ? "N" : "FN");
-            std::string match = GetMatchStr(varBase.m_pVariant->m_variantStatus);
-            VariantToVcfRecord(varBase.m_pVariant, record, true, match, decision);
-            m_vcfWriter.AddRecord(record);
-            varBase = baseVariants.hasNext() ? baseVariants.next() : SVariantSummary();
-            continue;
+            for (SVariantSummary var : nextVarCalledList)
+            {
+                SVcfRecord record;
+                record.m_aSampleData.push_back(SPerSampleData());
+                std::string decision = var.m_bIncluded ? "TP" : (var.m_pVariant->m_variantStatus == eNOT_ASSESSED ? "N" : "FP");
+                std::string match = GetMatchStr(var.m_pVariant->m_variantStatus);
+                VariantToVcfRecord(var.m_pVariant, record, false, match, decision);
+                m_vcfWriter.AddRecord(record);
+            }
+            
+            nextVarCalledList.clear();
+            calledVariants.FillNext(nextVarCalledList);
+
         }
         
         else
         {
-            SVcfRecord record;
-            record.m_aSampleData.push_back(SPerSampleData());
-            std::string decision = varCalled.m_bIncluded ? "TP" : (varCalled.m_pVariant->m_variantStatus == eNOT_ASSESSED ? "N" : "FP");
-            std::string match = GetMatchStr(varCalled.m_pVariant->m_variantStatus);
-            VariantToVcfRecord(varCalled.m_pVariant, record, false, match, decision);
-            m_vcfWriter.AddRecord(record);
-            varCalled = calledVariants.hasNext() ? calledVariants.next() : SVariantSummary();
-            continue;
+            for(SVariantSummary var : nextVarBaseList)
+            {
+                SVcfRecord record;
+                std::string decision = var.m_bIncluded ? "TP" : (var.m_pVariant->m_variantStatus == eNOT_ASSESSED ? "N" : "FN");
+                std::string match = GetMatchStr(var.m_pVariant->m_variantStatus);
+                VariantToVcfRecord(var.m_pVariant, record, true, match, decision);
+                m_vcfWriter.AddRecord(record);
+            }
+            
+            nextVarBaseList.clear();
+            baseVariants.FillNext(nextVarBaseList);
+
         }
     }
+    
 }
+
+
 
 void CGa4ghOutputProvider::VariantToVcfRecord(const CVariant* a_pVariant, SVcfRecord& a_rOutputRec, bool a_bIsBase, const std::string& a_rMatchType, const::std::string& a_rDecision)
 {
@@ -250,6 +267,7 @@ void CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase,
     {
         calledVariants.push_back(substr);
     }
+    
     for(int k=0; k < a_pVariantBase->m_nZygotCount; k++)
     {
         int bHasFound = false;

@@ -115,6 +115,7 @@
 		55E7CBD31E157327002ACA4E /* CResultLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CResultLog.h; sourceTree = "<group>"; };
 		55E7CBD41E157670002ACA4E /* CResultLog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CResultLog.cpp; sourceTree = "<group>"; };
 		55E7CBD61E15A0CB002ACA4E /* EVariantMatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EVariantMatch.h; sourceTree = "<group>"; };
+		55F4384A1E29726200833A9B /* CVariantIteratorV2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CVariantIteratorV2.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -212,8 +213,8 @@
 				556D39B21DD3AF3800551040 /* htslib */,
 				55D8D33B1E0B33B000CE2838 /* CVariantIterator.h */,
 				553F8B021DFEFA2900BD756E /* CFastaParser.h */,
-				556D39A61DD3AF3800551040 /* CHaplotypeSequence.h */,
 				55D8D3381E09BD7100CE2838 /* CGa4ghOutputProvider.h */,
+				556D39A61DD3AF3800551040 /* CHaplotypeSequence.h */,
 				556D39A71DD3AF3800551040 /* COrientedVariant.h */,
 				556D39A81DD3AF3800551040 /* CPath.h */,
 				556D39A91DD3AF3800551040 /* CPathReplay.h */,
@@ -232,6 +233,7 @@
 				556D39C91DD3AF3800551040 /* SResult.h */,
 				55D8D33C1E0B358000CE2838 /* SVariantSummary.h */,
 				55E7CBD31E157327002ACA4E /* CResultLog.h */,
+				55F4384A1E29726200833A9B /* CVariantIteratorV2.h */,
 			);
 			path = include;
 			sourceTree = SOURCE_ROOT;

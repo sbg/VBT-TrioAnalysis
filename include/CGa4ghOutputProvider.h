@@ -42,7 +42,7 @@ private:
     
     //Add records of best path to the vcf file (Contain single chromosome)
     void AddRecords(const CPath& a_rBestPath, const CPath& a_rBestAlleleMatchPath, int a_nChrId);
-    
+
     //Return true if base and called variants can be merged
     bool CanMerge(const CVariant* a_pVariantBase, const CVariant* a_pVariantCalled) const;
     
