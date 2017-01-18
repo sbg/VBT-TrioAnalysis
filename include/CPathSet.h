@@ -3,19 +3,17 @@
  * Author: Berke Cagkan Toptas
  */
 
-//TODO: Read/Write lock for multithread support will be added
-
-#ifndef _C_THREAD_SAFE_PATH_STACK_H_
-#define _C_THREAD_SAFE_PATH_STACK_H_
+#ifndef _C_PATH_SET_H_
+#define _C_PATH_SET_H_
 
 #include "CPath.h"
 #include <set>
 
-class CThreadSafePathList
+class CPathSet
 {
   public:
 
-    CThreadSafePathList();
+    CPathSet();
     
     int Size() const;
     
@@ -46,4 +44,4 @@ class CThreadSafePathList
 
 };
 
-#endif //_C_THREAD_SAFE_PATH_STACK_H_
+#endif //_C_PATH_SET_H_

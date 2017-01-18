@@ -10,7 +10,7 @@
 #define _C_PATH_REPLAY_H_
 
 #include "CVariantProvider.h"
-#include "CThreadSafePathList.h"
+#include "CPathSet.h"
 #include "CVariant.h"
 
 const int MAX_ITERATION = 30000000;
@@ -60,7 +60,7 @@ class CPathReplay
         void SkipVariantsTo(CPath& a_rPath, const SContig& a_rContig, int a_nMaxPos);
     
         //Path list to store generated paths
-        CThreadSafePathList m_pathList;
+        CPathSet m_pathList;
         
         //Access to Variant Provider
         //const CVariantProvider* m_variantProvider;

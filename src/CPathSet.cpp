@@ -1,51 +1,51 @@
 //
-//  CThreadSafePathList.cpp
+//  CPathSet.cpp
 //  VCFComparison
 //
 //  Created by Berke.Toptas on 11/10/16.
 //  Copyright © 2016 Seven Bridges Genomics. All rights reserved.
 //
 
-#include "CThreadSafePathList.h"
+#include "CPathSet.h"
 #include <iostream>
 
-CThreadSafePathList::CThreadSafePathList()
+CPathSet::CPathSet()
 {
 }
 
-int CThreadSafePathList::Size() const
+int CPathSet::Size() const
 {
     return (int)(m_set.size());
 }
 
-void CThreadSafePathList::Clear()
+void CPathSet::Clear()
 {
     m_set.clear();
 }
 
-void CThreadSafePathList::Add(const CPathContainer& item)
+void CPathSet::Add(const CPathContainer& item)
 {
     m_set.insert(item);
 }
 
-void CThreadSafePathList::Erase(const CPathContainer& item)
+void CPathSet::Erase(const CPathContainer& item)
 {
     m_set.erase(item);
 }
 
 // Get the least advanced path
-void CThreadSafePathList::GetLeastAdvanced(CPathContainer& item)
+void CPathSet::GetLeastAdvanced(CPathContainer& item)
 {
     item = *m_set.begin();
     m_set.erase(m_set.begin());
 }
 
-bool CThreadSafePathList::Empty()
+bool CPathSet::Empty()
 {
     return m_set.empty();
 }
 
-bool CThreadSafePathList::Contains(const CPathContainer& item) const
+bool CPathSet::Contains(const CPathContainer& item) const
 {
     std::set<CPathContainer>::iterator it;
     
@@ -58,23 +58,23 @@ bool CThreadSafePathList::Contains(const CPathContainer& item) const
     return false;
 }
 
-CPathContainer CThreadSafePathList::floor(const CPathContainer& a_rObj)
+CPathContainer CPathSet::floor(const CPathContainer& a_rObj)
 {
     return *m_set.lower_bound(a_rObj);
 }
 
-std::set<CPathContainer>::iterator CThreadSafePathList::Find(const CPathContainer& item)
+std::set<CPathContainer>::iterator CPathSet::Find(const CPathContainer& item)
 {
     return m_set.find(item);
 }
 
-std::set<CPathContainer>::iterator CThreadSafePathList::End() const
+std::set<CPathContainer>::iterator CPathSet::End() const
 {
     return m_set.end();
 }
 
 
-void CThreadSafePathList::Print() const
+void CPathSet::Print() const
 {
     std::set<CPathContainer>::iterator it;
     std::cout << "Paths:";
