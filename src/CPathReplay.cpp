@@ -293,10 +293,10 @@ bool CPathReplay::EnqueueVariant(CPath& a_rPathToPlay, EVcfName a_uVcfSide, int 
     }
 
     int nVariantId = GetNextVariant(*pSemiPath);
-    const CVariant* pNext = a_uVcfSide == eBASE ? m_aVariantListBase[nVariantId] : m_aVariantListCalled[nVariantId];
     
     if(nVariantId != -1)
     {
+        const CVariant* pNext = a_uVcfSide == eBASE ? m_aVariantListBase[nVariantId] : m_aVariantListCalled[nVariantId];
         //std::cout << "Add alternatives to " << ((a_uVcfSide == eBASE) ? "BASE " : "CALLED ") << pNext->ToString() << std::endl;
         
         m_nCurrentPosition = std::max(m_nCurrentPosition, pNext->GetStart());
