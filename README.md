@@ -2,12 +2,12 @@
 
 SBG vcf comparison tool is written using the algorithm of [vcfeval](https://github.com/RealTimeGenomics/rtg-tools "vcfeval github page") using [this](http://biorxiv.org/content/early/2015/08/02/023754) paper. Please see the command line parameters below.
 
-####Parameter format:
+#### Parameter format:
 ```
 ./sbgVcfComp -called <called_vcf_file> -baseline <baseline_vcf> -ref <reference_fasta> -outDir <output_directory> [OPTIONAL PARAMETERS]
 ```
 
-####Sample executions:
+#### Sample executions:
 
 ```
 ./sbgVcfComp -called called.vcf -base base.vcf -ref reference.fa -outDir SampleResultDir -filter none
