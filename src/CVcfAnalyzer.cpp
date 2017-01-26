@@ -23,12 +23,6 @@ void CVcfAnalyzer::Run(int argc, char** argv)
     
     if(!isSuccess)
         return;
-
-   // m_config.m_pBaseVcfFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/HG00171-30x.vcf";
-   // m_config.m_pCalledVcfFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/HG00171-30x.vcf";
-   // m_config.m_pFastaFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/human_g1k_v37_decoy.fasta";
-    //m_config.m_pBaseVcfFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/HG002_GIAB_highconf_IllFB-IllGATKHC-CG-Ion-Solid_CHROM1-22_v3.2.2_highconf.vcf";
-    //m_config.m_pCalledVcfFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/gral0.9.sorted.and_more.concat.vcf";
     
     start = std::clock();
     
@@ -72,7 +66,7 @@ void CVcfAnalyzer::SetThreadsCustom(int a_nMemoryInMB)
     std::vector<int> chromosomeIds;
     m_provider.GetUniqueChromosomeIds(chromosomeIds);
     
-    //IF WE HAVE TOO MUCH MEMORY GO RUN ALL THREADS CONSECUTIVELY
+    //IF WE HAVE TOO MUCH MEMORY RUN ALL THREADS IN PARALLEL
     if(a_nMemoryInMB > 32 * 1024)
     {
         SetThreadsPlatform();
@@ -112,10 +106,13 @@ void CVcfAnalyzer::SetThreadsCustom(int a_nMemoryInMB)
     }
     
     CGa4ghOutputProvider outputprovider;
-    outputprovider.SetVcfPath("/Users/c1ms21p6h3qk/Desktop/outSample.vcf");
+    outputprovider.SetVcfPath(m_config.m_pOutputDirectory);
     outputprovider.SetVariantProvider(&m_provider);
     outputprovider.SetBestPaths(m_aBestPaths, m_aBestPathsAllele);
     outputprovider.GenerateGa4ghVcf();
+    
+    m_resultLogger.SetLogPath(m_config.m_pOutputDirectory);
+    m_resultLogger.WriteStatistics();
     
 }
 
@@ -155,15 +152,14 @@ void CVcfAnalyzer::ThreadFunc(int a_nChromosomeId)
     ovarListCalled = m_provider.GetOrientedVariantList(eCALLED, a_nChromosomeId, false);
     
     pathReplay.Clear();
-    m_aBestPathsAllele[a_nChromosomeId] = pathReplay.FindBestPath(ctg, false);
+    //m_aBestPathsAllele[a_nChromosomeId] = pathReplay.FindBestPath(ctg, false);
     
     //No Match variants
     std::vector<const CVariant*> excludedVarsBase2 = m_provider.GetVariantList(excludedVarsBase,
                                                                                m_aBestPathsAllele[a_nChromosomeId].m_baseSemiPath.GetExcluded());
     std::vector<const CVariant*> excludedVarsCall2 = m_provider.GetVariantList(excludedVarsCall,
                                                                                m_aBestPathsAllele[a_nChromosomeId].m_calledSemiPath.GetExcluded());
-    
-
+  
     
     //Allele Match variants
     std::vector<const COrientedVariant*> includedVarsBase2 = m_aBestPathsAllele[a_nChromosomeId].m_baseSemiPath.GetIncludedVariants();
@@ -221,10 +217,13 @@ bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
     const char* PARAM_SAMPLE_CALLED = "-SampleCalled";
     const char* PARAM_SNP_ONLY = "-SNP_ONLY";
     const char* PARAM_INDEL_ONLY = "-INDEL_ONLY";
+    const char* PARAM_OUTPUT_DIR = "-outDir";
+    const char* PARAM_REF_OVERLAP = "-ref-overlap";
     
     bool bBaselineSet = false;
     bool bCalledSet = false;
     bool bReferenceSet = false;
+    bool bOutputDirSet = false;
     
     int it = 1;
         
@@ -252,6 +251,18 @@ bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
         {
             m_config.m_pFastaFileName = argv[it+1];
             bReferenceSet = true;
+        }
+        
+        else if(0 == strcmp(argv[it], PARAM_OUTPUT_DIR))
+        {
+            m_config.m_pOutputDirectory = argv[it+1];
+            bOutputDirSet = true;
+        }
+        
+        else if(0 == strcmp(argv[it], PARAM_REF_OVERLAP))
+        {
+            m_config.m_bIsRefOverlap = true;
+            it--;
         }
         
         else if(0 == strcmp(argv[it], PARAM_FILTER))
@@ -298,9 +309,11 @@ bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
         std::cout << "Called vcf file is not set" << std::endl;
     else if(!bReferenceSet)
         std::cout << "Reference fasta file is not set" << std::endl;
+    else if(!bOutputDirSet)
+        std::cout << "Output Directory is not set" << std::endl;
     
     
-    return bCalledSet & bBaselineSet & bReferenceSet;
+    return bCalledSet & bBaselineSet & bReferenceSet & bOutputDirSet;
 }
 
 void CVcfAnalyzer::PrintHelp() const
@@ -316,13 +329,15 @@ void CVcfAnalyzer::PrintHelp() const
     std::cout << "-base <baseline_vcf_path>    [Required.Add baseline VCF file.]" << std::endl;
     std::cout << "-called <called_vcf_path>    [Required.Add called VCF file.]" << std::endl;
     std::cout << "-ref <reference_fasta_path>  [Required.Add reference FASTA file]" << std::endl;
+    std::cout << "-outDir <output_directory>   [Required.Add output directory]" << std::endl;
     std::cout << "-filter <filter_name>        [Optional.Filter variants based on filter column. Default value is PASS. Use 'none' to unfilter]" << std::endl;
     std::cout << "-SNP_ONLY                    [Optional.Filter INDELs out from both base and called VCF file.]" << std::endl;
     std::cout << "-INDEL_ONLY                  [Optional.Filter SNPs out from both base and called VCF file.]" << std::endl;
     std::cout << "-SampleBase <sample_name>    [Optional.Read only the given sample in base VCF. Default is the first sample.]" << std::endl;
     std::cout << "-SampleCalled <sample_name>  [Optional.Read only the given sample in called VCF. Default is the first sample.]" << std::endl;
+    std::cout << "-ref-overlap                 [Optional.Allow reference overlapping by trimming nucleotides and ignoring 0 genotype.]" << std::endl;
     std::cout << std::endl;
     std::cout << "Example Commands:" << std::endl;
-    std::cout << "./sbgVcfComp -called called.vcf -base base.vcf -ref reference.fa -filter none" << std::endl;
-    std::cout << "./sbgVcfComp -called called.vcf -base base.vcf -ref reference.fa -filter PASS -SNP_ONLY -SampleBase sample0 -SampleCalled sample07" << std::endl;
+    std::cout << "./sbgVcfComp -called called.vcf -base base.vcf -ref reference.fa -outDir SampleResultDir -filter none" << std::endl;
+    std::cout << "./sbgVcfComp -called called2.vcf -base base2.vcf -ref reference.fa -outDir SampleResultDir -filter PASS -SNP_ONLY -SampleBase sample0 -SampleCalled sample01" << std::endl;
 }

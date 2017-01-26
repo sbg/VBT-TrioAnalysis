@@ -24,7 +24,7 @@ public:
     void Run(int argc, char** argv);
     
     
-private:
+//private:
 
     //Read Parameters from command line. If the mandatory arguments are given, return true.
     bool ReadParameters(int argc, char** argv);

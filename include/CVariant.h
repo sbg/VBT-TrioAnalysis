@@ -23,6 +23,7 @@ struct SAllele
     std::string m_sequence;
     int m_nStartPos = -1;
     int m_nEndPos = -1;
+    bool m_bIsIgnored = false;
 };
 
 class CVariant
@@ -48,6 +49,9 @@ class CVariant
     
     //Gets the end position of the ref allele
     int GetEnd() const;
+    
+    //Gets the original position of the variant ignoring trimming and first nucleotide reduction
+    int GetOriginalPos() const;
     
     // Return is the variant is heterozygous
     bool IsHeterozygous() const;
@@ -120,6 +124,7 @@ class CVariant
     //Original Genotype list read from vcf file
     int m_genotype[2];
     int m_nZygotCount;
+    int m_nOriginalPos;
     
     mutable EVariantMatch m_variantStatus;
 };

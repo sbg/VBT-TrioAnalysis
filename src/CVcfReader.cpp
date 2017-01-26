@@ -180,11 +180,32 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
             a_pVariant->m_bIsHeterozygous = false;
         }
         
+        //TRIM ALL REDUNDANT NUCLEOTIDES FROM BEGINNING AND END TO ALLOW MORE REFERENCE OVERLAPING
+        if(a_rConfig.m_bIsRefOverlap)
+        {
+            int alleleCnt;
+            
+            if(a_pVariant->m_bIsHeterozygous)
+                alleleCnt = 2;
+            else
+                alleleCnt = 1;
+            
+            for (int i = 0; i < alleleCnt; ++i)
+            {
+                int curGT = bcf_gt_allele(gt_arr[i]);
+                
+                if(curGT == 0 || curGT == -1)
+                   a_pVariant->m_alleles[i].m_bIsIgnored = true;
+                else
+                    TrimRefOverlap(a_pVariant->m_alleles[i]);
+            }
+        }
+        
         //TRIM FIRST NUCLEOTIDES IF THEY EXIST IN BOTH ALLELE AND IN REFERENCE
-        if(HasRedundantFirstNucleotide())
+        if(!a_rConfig.m_bIsRefOverlap && HasRedundantFirstNucleotide())
         {
             a_pVariant->m_bIsFirstNucleotideTrimmed = true;
-            for (int i = 0; i < ngt_arr; ++i)
+            for (int i = 0; i < zygotCount; ++i)
             {
                 TrimAllele(a_pVariant->m_alleles[i]);
             }
@@ -195,11 +216,13 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
         {
             int maxEnd = -1;
             int minStart = INT_MAX;
-            a_pVariant->m_nStartPos = m_pRecord->pos;
-            for(int k=0; k < ngt_arr; k++)
+            for(int k=0; k < a_pVariant->m_nAlleleCount; k++)
             {
-                maxEnd = std::max(maxEnd, static_cast<int>(a_pVariant->m_alleles[k].m_nEndPos));
-                minStart = std::min(minStart, static_cast<int>(a_pVariant->m_alleles[k].m_nStartPos));
+                if(!a_pVariant->m_alleles[k].m_bIsIgnored)
+                {
+                    maxEnd = std::max(maxEnd, static_cast<int>(a_pVariant->m_alleles[k].m_nEndPos));
+                    minStart = std::min(minStart, static_cast<int>(a_pVariant->m_alleles[k].m_nStartPos));
+                }
             }
             a_pVariant->m_nEndPos = maxEnd;
             a_pVariant->m_nStartPos = minStart;
@@ -218,8 +241,10 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
                 a_pVariant->m_allelesStr += ",";
             a_pVariant->m_allelesStr += std::string(m_pRecord->d.allele[k]);
         }
-       for(int k = 0; k < ngt_arr; k++)
+        for(int k = 0; k < ngt_arr; k++)
            a_pVariant->m_genotype[k] = bcf_gt_allele(gt_arr[k]);
+        
+        a_pVariant->m_nOriginalPos = m_pRecord->pos;
         
         //FREE BUFFERS
         free(gt_arr);
@@ -431,6 +456,61 @@ void CVcfReader::GetFilterInfo(std::vector<std::string> &a_rFilterNames, std::ve
     }
 }
 
+void CVcfReader::TrimRefOverlap(SAllele& a_rAllele)
+{
+    //Ref string
+    std::string refString = m_pRecord->d.allele[0];
+    
+    int trimLengthFromBeginning = 0;
+    int trimLengthFromEnd = 0;
+    
+    //Trim from the beginning
+    int compSize = static_cast<int>(std::min(refString.size(), a_rAllele.m_sequence.size()));
+    for(int k = 0; k < compSize; k++)
+    {
+        if(a_rAllele.m_sequence[k] == refString[k] && k == compSize -1)
+        {
+            trimLengthFromBeginning++;
+            a_rAllele.m_nStartPos += trimLengthFromBeginning;
+            break;
+        }
+        
+        else if(a_rAllele.m_sequence[k] != refString[k])
+        {
+            a_rAllele.m_nStartPos += trimLengthFromBeginning;
+            break;
+        }
+        
+        else
+            trimLengthFromBeginning++;
+    }
+    
+    //Cut the beginning of the string
+    a_rAllele.m_sequence = a_rAllele.m_sequence.substr(trimLengthFromBeginning);
+    
+    //Trim from the end
+    for(int k = static_cast<int>(refString.size() - 1), p = static_cast<int>(a_rAllele.m_sequence.size() - 1); k >= trimLengthFromBeginning && p >= 0;  k--, p--)
+    {
+        if(a_rAllele.m_sequence[p] == refString[k] && a_rAllele.m_sequence.size() == 1)
+        {
+            trimLengthFromEnd = 1;
+            a_rAllele.m_nEndPos -= 1;
+            break;
+        }
+        
+        else if(a_rAllele.m_sequence[p] != refString[k])
+        {
+            a_rAllele.m_nEndPos -= trimLengthFromEnd;
+            break;
+        }
+        else
+            trimLengthFromEnd++;
+    }
+    
+    //Cut the end of the string
+    a_rAllele.m_sequence = a_rAllele.m_sequence.substr(0, a_rAllele.m_sequence.length() - trimLengthFromEnd);
+    
+}
 
 
 void CVcfReader::PrintVCF(const SConfig& a_rConfig)

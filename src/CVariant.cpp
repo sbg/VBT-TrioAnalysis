@@ -36,9 +36,12 @@ CVariant::CVariant(const CVariant& a_rObj)
     m_alleles[0].m_nEndPos = a_rObj.m_alleles[0].m_nEndPos;
     m_alleles[0].m_nStartPos = a_rObj.m_alleles[0].m_nStartPos;
     m_alleles[0].m_sequence = a_rObj.m_alleles[0].m_sequence;
+    m_alleles[0].m_bIsIgnored = a_rObj.m_alleles[0].m_bIsIgnored;
     m_alleles[1].m_nEndPos = a_rObj.m_alleles[1].m_nEndPos;
     m_alleles[1].m_nStartPos = a_rObj.m_alleles[1].m_nStartPos;
     m_alleles[1].m_sequence = a_rObj.m_alleles[1].m_sequence;
+    m_alleles[1].m_bIsIgnored = a_rObj.m_alleles[1].m_bIsIgnored;
+    
     m_nStartPos = a_rObj.m_nStartPos;
     m_nEndPos = a_rObj.m_nEndPos;
     m_nId = a_rObj.m_nId;
@@ -53,6 +56,7 @@ CVariant::CVariant(const CVariant& a_rObj)
     m_genotype[0] = a_rObj.m_genotype[0];
     m_genotype[1] = a_rObj.m_genotype[1];
     m_variantStatus = a_rObj.m_variantStatus;
+    m_nOriginalPos = a_rObj.m_nOriginalPos;
     
 }
 
@@ -79,6 +83,9 @@ bool CVariant::Clear()
     m_filterString.clear();
     m_bIsFirstNucleotideTrimmed = false;
     m_variantStatus = eNOT_ASSESSED;
+    m_nOriginalPos = -1;
+    m_alleles[0].m_bIsIgnored = false;
+    m_alleles[1].m_bIsIgnored = false;
     return true;
 }
 
@@ -115,6 +122,11 @@ int CVariant::GetEnd() const
     return m_nEndPos;
 }
 
+int CVariant:: GetOriginalPos() const
+{
+    return m_nOriginalPos;
+}
+
 bool CVariant::IsPhased() const
 {
     return m_bIsPhased;
@@ -149,7 +161,7 @@ std::string CVariant::ToString() const
         if(k > 0)
             toRet = toRet + ":";
         
-        toRet = toRet + m_alleles[k].m_sequence;
+        toRet = toRet + (m_alleles[k].m_bIsIgnored ? "*" : m_alleles[k].m_sequence);
     }
     toRet = toRet + ")";
     

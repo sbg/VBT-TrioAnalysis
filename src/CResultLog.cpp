@@ -31,11 +31,11 @@ void CResultLog::LogStatistic(int a_nChromosomeId, int a_nTpCalled, int a_nTpBas
 //Write the results in log.txt file
 void CResultLog::WriteStatistics()
 {
-    
     std::ofstream outputLog;
     outputLog.open(m_aLogPath);
     
-    outputLog << "ChromosomeID" << "\t" << "True-Pos-Called" << "\t" << "True-Pos-Baseline" << "\t" << "False-Pos" << "\t" << "False-Neg" << "\t" << "Precision" << "\t" << "Recall";
+    outputLog << "====== GENOTYPE MATCHING MODE ======" << std::endl;
+    outputLog << "ID" << "\t" << "True-Pos-Called" << "\t\t" << "True-Pos-Baseline" << "\t" << "False-Pos" << "\t" << "False-Neg" << "\t" << "Precision" << "\t" << "Recall";
     outputLog << "\t" << "F-measure" << std::endl;
 
     for(int k = 0; k < 25; k++)
@@ -44,19 +44,58 @@ void CResultLog::WriteStatistics()
             continue;
         
         if(k > 22)
-            outputLog << "Chr" << char(120 + k - 22);
+            outputLog << "Chr" << char(120 + (k - 22));
         else
             outputLog << "Chr" << k;
         
-        outputLog << "\t" << m_aResultEntries[k].m_nTpCalled << "\t" << m_aResultEntries[k].m_nTpBase << "\t" << m_aResultEntries[k].m_nFp + m_aResultEntries[k].m_nHalfTpCalled;
-        outputLog << "\t" << m_aResultEntries[k].m_nHalfTpBase + m_aResultEntries[k].m_nFn;
+        int TPbase = m_aResultEntries[k].m_nTpBase;
+        int TPcalled = m_aResultEntries[k].m_nTpCalled;
+        int FP = m_aResultEntries[k].m_nFp + m_aResultEntries[k].m_nHalfTpCalled;
+        int FN = m_aResultEntries[k].m_nFn + m_aResultEntries[k].m_nHalfTpBase;
         
-        double Precision = static_cast<double>(m_aResultEntries[k].m_nTpBase) / static_cast<double>(m_aResultEntries[k].m_nTpBase + m_aResultEntries[k].m_nFp);
-        double Recall = static_cast<double>(m_aResultEntries[k].m_nTpBase) / static_cast<double>(m_aResultEntries[k].m_nTpBase + m_aResultEntries[k].m_nFn);
+        
+        outputLog << "\t" << TPcalled << "\t" << TPbase << "\t" << FP << "\t" << FN;
+        
+        double Precision = static_cast<double>(TPbase) / static_cast<double>(TPbase + FP);
+        double Recall = static_cast<double>(TPbase) / static_cast<double>(TPbase + FN);
         double Fmeasure = Precision + Recall == 0.0 ? 0.0 : (2.0 * Precision * Recall) / (Precision + Recall);
     
         outputLog.precision(4);
-        outputLog << "\t" << Precision << "\t" << Fmeasure << std::endl;
+        outputLog << "\t" << Precision << "\t" << Recall << "\t" << Fmeasure << std::endl;
     }
+    
+    outputLog << std::endl << std::endl;
+    outputLog << "====== ALLELE MATCHING MODE ======" << std::endl;
+    outputLog << "ID" << "\t" << "True-Pos-Called" << "\t\t" << "True-Pos-Baseline" << "\t" << "False-Pos" << "\t" << "False-Neg" << "\t" << "Precision" << "\t" << "Recall";
+    outputLog << "\t" << "F-measure" << std::endl;
+    
+    for(int k = 0; k < 25; k++)
+    {
+        if(m_aResultEntries[k].m_bIsNull)
+            continue;
+        
+        if(k > 22)
+            outputLog << "Chr" << char(120 + (k - 22));
+        else
+            outputLog << "Chr" << k;
+        
+        int TPbase = m_aResultEntries[k].m_nTpBase + m_aResultEntries[k].m_nHalfTpBase;
+        int TPcalled = m_aResultEntries[k].m_nTpCalled + m_aResultEntries[k].m_nHalfTpCalled;
+        int FP = m_aResultEntries[k].m_nFp;
+        int FN = m_aResultEntries[k].m_nFn;
+        
+        outputLog << "\t" << TPcalled << "\t" << TPbase << "\t" << FP << "\t" << FN;
+        
+        double Precision = static_cast<double>(TPbase) / static_cast<double>(TPbase + FP);
+        double Recall = static_cast<double>(TPbase) / static_cast<double>(TPbase + FN);
+        double Fmeasure = Precision + Recall == 0.0 ? 0.0 : (2.0 * Precision * Recall) / (Precision + Recall);
+        
+        outputLog.precision(4);
+        outputLog << "\t" << Precision << "\t" << Recall << "\t" << Fmeasure << std::endl;
+    }
+    
+    
+    
+    outputLog.close();
 }
 

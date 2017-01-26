@@ -9,7 +9,6 @@
 #include "CGa4ghOutputProvider.h"
 #include <sstream>
 #include "CPath.h"
-#include "CVariantIterator.h"
 #include "CVariantIteratorV2.h"
 #include "CVariantProvider.h"
 #include <iostream>
@@ -27,7 +26,7 @@ void CGa4ghOutputProvider::SetBestPaths(CPath* a_pBestPathList, CPath* a_pBestAl
 
 void CGa4ghOutputProvider::SetVcfPath(const std::string& a_rVcfPath)
 {
-    m_vcfPath = a_rVcfPath;
+    m_vcfPath = a_rVcfPath + "/Ga4ghOutput.vcf";
 }
 
 void CGa4ghOutputProvider::GenerateGa4ghVcf()
@@ -122,8 +121,8 @@ void CGa4ghOutputProvider::AddRecords(const CPath& a_rBestPath, const CPath& a_r
         if(nextVarBaseList.size() == 0 && nextVarCalledList.size() == 0)
             break;
         
-        int basePosition = nextVarBaseList.size() > 0 ? nextVarBaseList[0].startPos() - (nextVarBaseList[0].m_pVariant->m_bIsFirstNucleotideTrimmed ? 1 : 0) : INT_MAX;
-        int calledPosition = nextVarCalledList.size() > 0 ? nextVarCalledList[0].startPos() - (nextVarCalledList[0].m_pVariant->m_bIsFirstNucleotideTrimmed ? 1 : 0) : INT_MAX;
+        int basePosition = nextVarBaseList.size() > 0 ? nextVarBaseList[0].originalStartPos() : INT_MAX;
+        int calledPosition = nextVarCalledList.size() > 0 ? nextVarCalledList[0].originalStartPos() : INT_MAX;
 
         if(basePosition == calledPosition)
         {
@@ -222,7 +221,7 @@ void CGa4ghOutputProvider::VariantToVcfRecord(const CVariant* a_pVariant, SVcfRe
 {
     //Fill basic variant data
     a_rOutputRec.m_chrName = a_pVariant->m_chrName;
-    a_rOutputRec.m_nPosition = a_pVariant->m_nStartPos - (a_pVariant->m_bIsFirstNucleotideTrimmed ? 1 : 0);
+    a_rOutputRec.m_nPosition = a_pVariant->m_nOriginalPos;
     a_rOutputRec.m_alleles = a_pVariant->m_allelesStr;
     if(!a_bIsBase)
         a_rOutputRec.m_aFilterString = a_pVariant->m_filterString;
@@ -250,7 +249,7 @@ void CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase,
 
     //Fill basic variant data
     a_rOutputRec.m_chrName = a_pVariantCalled->m_chrName;
-    a_rOutputRec.m_nPosition = a_pVariantCalled->m_nStartPos - (a_pVariantCalled->m_bIsFirstNucleotideTrimmed ? 1 : 0);
+    a_rOutputRec.m_nPosition = a_pVariantCalled->m_nOriginalPos;
     a_rOutputRec.m_alleles = a_pVariantCalled->m_allelesStr;
     a_rOutputRec.m_aFilterString = a_pVariantCalled->m_filterString;
     
@@ -317,10 +316,7 @@ void CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase,
 
 bool CGa4ghOutputProvider::CanMerge(const CVariant* a_pVariantBase, const CVariant* a_pVariantCalled) const
 {
-    int baseStart = a_pVariantBase->m_nStartPos - (a_pVariantBase->m_bIsFirstNucleotideTrimmed ? 1 : 0);
-    int calledStart = a_pVariantCalled->m_nStartPos - (a_pVariantCalled->m_bIsFirstNucleotideTrimmed ? 1 : 0);
-
-    bool bIsPosEqual = baseStart == calledStart;
+    bool bIsPosEqual = a_pVariantBase->m_nOriginalPos == a_pVariantCalled->m_nOriginalPos;
     bool bIsRefEqual = a_pVariantBase->m_refSequence == a_pVariantCalled->m_refSequence;
     
     if(bIsPosEqual && bIsRefEqual)
@@ -344,27 +340,6 @@ std::string CGa4ghOutputProvider::GetMatchStr(EVariantMatch a_match)
             return NO_MATCH;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

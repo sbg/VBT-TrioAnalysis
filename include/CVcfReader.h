@@ -84,11 +84,14 @@ private:
     // Trimms the alt string that contains ref allele
     void TrimAllele(SAllele& a_rAllele);
     
+    // Trimms the alt string that allowing reference overlap
+    void TrimRefOverlap(SAllele& a_rAllele);
+    
     //Check if the first nucleotide for alleles are redundant (for indels)
     bool HasRedundantFirstNucleotide() const;
     
     
-    
+    int refOverlapCount = 0;
     
     std::string m_filename;
     bool m_bIsOpen;

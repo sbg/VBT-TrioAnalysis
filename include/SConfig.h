@@ -23,6 +23,9 @@ struct SConfig
     //Fasta file
     const char* m_pFastaFileName;
     
+    //Output Directory
+    const char* m_pOutputDirectory;
+    
     //If filtering enabled
     bool m_bIsFilterEnabled = true;
     //Filter name (Filter variants according to filter column)
@@ -48,6 +51,9 @@ struct SConfig
     
     //Process only INDELs when true
     bool m_bINDELOnly = false;
+    
+    //Enable REF Overlap mode
+    bool m_bIsRefOverlap = false;
     
 };
 

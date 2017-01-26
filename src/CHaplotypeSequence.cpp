@@ -39,7 +39,7 @@ void CHaplotypeSequence::AddVariant(const COrientedVariant& a_rVariant)
     //assert(a_rVariant.GetStartPos() > m_nTemplatePosition);
     
     const SAllele a = a_rVariant.GetAllele();
-
+    
     if (a.m_nStartPos == a.m_nEndPos && a.m_sequence.length() == 0)
     {
         // Adding the opposite side of a pure insert is redundant
@@ -47,7 +47,7 @@ void CHaplotypeSequence::AddVariant(const COrientedVariant& a_rVariant)
     }
     
     //Allele is null
-    if(a.m_nStartPos == -1)
+    if(a.m_nStartPos == -1 || a.m_bIsIgnored == true)
         return;
     
     m_nLastVariantEnd = a_rVariant.GetEndPos();
@@ -225,7 +225,7 @@ void CHaplotypeSequence::Next()
 
 bool CHaplotypeSequence::IsNew(const COrientedVariant& a_rVar) const
 {
-    return a_rVar.GetAllele().m_nStartPos > m_nLastVariantEnd;
+    return a_rVar.GetAllele().m_bIsIgnored || a_rVar.GetAllele().m_nStartPos > m_nLastVariantEnd;
     
     //bool res1 = a_rVar.GetAllele().m_sequence == "";
     //bool res2 = a_rVar.GetAllele().m_nStartPos > m_nLastVariantEnd;

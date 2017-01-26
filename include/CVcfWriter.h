@@ -19,7 +19,6 @@ struct SPerSampleData
     {
         m_decisionBD = bcf_str_missing;
         m_matchTypeBK = bcf_str_missing;
-        m_fWeight = 0.0f;
         m_nHaplotypeCount = 2;
         m_aGenotype[0] = -1;
         m_aGenotype[1] = -1;
@@ -29,8 +28,6 @@ struct SPerSampleData
     std::string m_decisionBD;
     //FORMAT : Match type of variant (gt/allele match)
     std::string m_matchTypeBK;
-    //FORMAT : Weight of the variant
-    float m_fWeight;
     //Haplotype count of the variant
     int m_nHaplotypeCount;
     //Genotype of the variant

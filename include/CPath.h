@@ -9,7 +9,6 @@
 #ifndef _C_PATH_H_
 #define _C_PATH_H_
 
-#include "SResult.h"
 #include "CSemiPath.h"
 #include "EReplayChoice.h"
 #include "EVcfName.h"
@@ -73,12 +72,6 @@ class CPath
     
     //Check if the path has finished
     bool HasFinished() const;
-
-    //Find a weighting for all the TP calls in a path. this is done by sync points, within each SyncPoint
-    //this will assure that the total number of TP we output will always reflect number of TP in baseline file
-    //if there are any call TP without corresponding baseline TP, these are simply assigned a weight of 0.
-    //(this can happen when two calls cancel each other out when replayed, although the default path finding now avoids this)
-    void CalculateWeights();
     
     //Delete all Included variants
     void ClearIncludedVariants();

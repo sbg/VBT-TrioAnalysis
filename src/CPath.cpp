@@ -9,7 +9,6 @@
 
 #include "CPath.h"
 #include <iostream>
-#include "CSyncPoint.h"
 #include "CVariantProvider.h"
 
 CPath::CPath()
@@ -330,35 +329,6 @@ bool CPath::Matches()
     return m_calledSemiPath.Matches(m_baseSemiPath);
 }
 
-
-std::vector<CSyncPoint> GetSyncPointsList(const std::vector<int>& syncpoints,const std::vector<const COrientedVariant*>& baseLine, const std::vector<const COrientedVariant*>& called)
-{
-    std::vector<CSyncPoint> list;
-    int basePos = 0;
-    int callPos = 0;
-    
-    for (int loc : syncpoints)
-    {
-        int baseLineCount = 0;
-        int calledCount = 0;
-        while (basePos < baseLine.size() && baseLine[basePos]->GetVariant().GetStart() <= loc)
-        {
-            baseLineCount++;
-            basePos++;
-        }
-        
-        while (callPos < called.size() && called[callPos]->GetVariant().GetStart() <= loc)
-        {
-            calledCount++;
-            callPos++;
-        }
-        
-        list.push_back(CSyncPoint(loc, calledCount, baseLineCount));
-    }
-    return list;
-}
-
-
 void CPath::ClearIncludedVariants()
 {
     m_calledSemiPath.ClearIncludedVariants();
@@ -392,39 +362,6 @@ void CPath::AddSyncPointList(std::vector<int>& a_rSyncPointArray)
 {
     m_aSyncPointList = a_rSyncPointArray;
 }
-
-void CPath::CalculateWeights()
-{
-    assert(m_aSyncPointList.size() >= 1);
-    std::vector<CSyncPoint> syncpoints = GetSyncPointsList(m_aSyncPointList,m_baseSemiPath.GetIncludedVariants(), m_calledSemiPath.GetIncludedVariants());
-    assert(syncpoints.size() == m_aSyncPointList.size());
-    
-    std::vector<CSyncPoint>::iterator it = syncpoints.begin();
-    int syncStart = 0;
-    CSyncPoint syncpoint = *it;
-
-    for (const COrientedVariant* v : m_calledSemiPath.GetIncludedVariants())
-    {
-        while (syncpoint.GetPosition() < v->GetVariant().GetStart() && it != syncpoints.end())
-        {
-            // Jump to sync point entry containing this variant
-            syncStart = syncpoint.GetPosition();
-            syncpoint = *it;
-            it++;
-        }
-        if (syncpoint.m_nBaselineTPCount == 0)
-        {
-            //A rare condition where variants cancels out each other
-            v->SetWeight(0);
-        }
-        else
-        {
-            // Inside count could still be 0 if the only TP are outside evaluation regions
-            v->SetWeight( static_cast<double>(syncpoint.m_nBaselineTPCount) / static_cast<double>(syncpoint.m_nCalledTPCount));
-        }
-    }
-}
-
 
 void CPath::Print() const
 {

@@ -52,6 +52,11 @@ struct SVariantSummary
         return m_pVariant->GetStart();
     }
     
+    int originalStartPos()
+    {
+        return m_pVariant->GetOriginalPos();
+    }
+    
     bool included()
     {
         return m_bIncluded;
