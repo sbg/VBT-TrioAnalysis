@@ -152,7 +152,7 @@ void CVcfAnalyzer::ThreadFunc(int a_nChromosomeId)
     ovarListCalled = m_provider.GetOrientedVariantList(eCALLED, a_nChromosomeId, false);
     
     pathReplay.Clear();
-    //m_aBestPathsAllele[a_nChromosomeId] = pathReplay.FindBestPath(ctg, false);
+    m_aBestPathsAllele[a_nChromosomeId] = pathReplay.FindBestPath(ctg, false);
     
     //No Match variants
     std::vector<const CVariant*> excludedVarsBase2 = m_provider.GetVariantList(excludedVarsBase,
@@ -175,8 +175,8 @@ void CVcfAnalyzer::ThreadFunc(int a_nChromosomeId)
     
     m_provider.SetVariantStatus(excludedVarsBase2, eNO_MATCH);
     m_provider.SetVariantStatus(excludedVarsCall2, eNO_MATCH);
-    m_provider.SetVariantStatus(includedVarsCall, eGENOTYPE_MATCH);
-    m_provider.SetVariantStatus(includedVarsBase, eGENOTYPE_MATCH);
+    m_provider.SetVariantStatus(includedVarsCall,  eGENOTYPE_MATCH);
+    m_provider.SetVariantStatus(includedVarsBase,  eGENOTYPE_MATCH);
     m_provider.SetVariantStatus(includedVarsCall2, eALLELE_MATCH);
     m_provider.SetVariantStatus(includedVarsBase2, eALLELE_MATCH);
     

@@ -217,12 +217,12 @@
 				553F8B011DF9B9D100BD756E /* CVcfAnalyzer.h */,
 				556D39AF1DD3AF3800551040 /* CVcfReader.h */,
 				55242DF31E044A0100C31E3E /* CVcfWriter.h */,
+				55E7CBD31E157327002ACA4E /* CResultLog.h */,
+				55F4384A1E29726200833A9B /* CVariantIteratorV2.h */,
 				55E7CBD61E15A0CB002ACA4E /* EVariantMatch.h */,
 				556D39B11DD3AF3800551040 /* EVcfName.h */,
 				556D39CF1DD66E1700551040 /* SConfig.h */,
 				55D8D33C1E0B358000CE2838 /* SVariantSummary.h */,
-				55E7CBD31E157327002ACA4E /* CResultLog.h */,
-				55F4384A1E29726200833A9B /* CVariantIteratorV2.h */,
 			);
 			path = include;
 			sourceTree = SOURCE_ROOT;

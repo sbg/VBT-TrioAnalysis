@@ -39,8 +39,6 @@ CPath CPathReplay::FindBestPath(SContig a_contig, bool a_bIsGenotypeMatch)
     int currentMax = 0;
     m_nCurrentPosition = 0;
     int lastSyncPos = 0;
-    //int TestID = 0;
-    //std::string maxPathRegion;
     
     CPathContainer processedPath;
     
@@ -96,6 +94,7 @@ CPath CPathReplay::FindBestPath(SContig a_contig, bool a_bIsGenotypeMatch)
                 //std::cout << "Maximum path complexity now " << maxPaths << ", at " << maxPathRegion << " with "  << currentIterations << " iterations" << std::endl;
             }
             currentMax = 0;
+            currentMaxIterations = std::max(currentIterations, currentMaxIterations);
             currentIterations = 0;
             lastSyncPos = currentSyncPos;
             lastSyncPath = processedPath;
@@ -193,7 +192,7 @@ CPath CPathReplay::FindBestPath(SContig a_contig, bool a_bIsGenotypeMatch)
     
     
     std::cout << "Best Path Found" << std::endl;
-    std::cout << "Maximum path complexity is " << maxPaths << ", with "  << currentIterations << " iterations " << std::endl;
+    std::cout << "Maximum path complexity is " << maxPaths << ", with "  << currentMaxIterations << " iterations " << std::endl;
     return *best.m_pPath;
 }
 

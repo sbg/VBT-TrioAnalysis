@@ -259,20 +259,31 @@ void CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase,
     data.m_nHaplotypeCount = a_pVariantBase->m_nZygotCount;
     
     std::stringstream ss(a_pVariantCalled->m_allelesStr);
+    std::stringstream ss2(a_pVariantBase->m_allelesStr);
     std::vector<std::string> calledVariants;
+    std::vector<std::string> baseVariants;
     std::string substr;
     
     while(getline(ss, substr, ','))
     {
         calledVariants.push_back(substr);
     }
+
+    while(getline(ss2, substr, ','))
+    {
+        baseVariants.push_back(substr);
+    }
+
     
-    for(int k=0; k < a_pVariantBase->m_nZygotCount; k++)
+    for(int k=0; k < baseVariants.size(); k++)
     {
         int bHasFound = false;
         for(int p = 0; p < calledVariants.size(); p++)
         {
-            std::string allele = a_pVariantBase->m_bIsFirstNucleotideTrimmed ? (a_pVariantBase->GetRefSeq()[0] + a_pVariantBase->m_alleles[k].m_sequence) : a_pVariantBase->m_alleles[k].m_sequence;
+            std::string allele = baseVariants[a_pVariantBase->m_genotype[k]];
+            if(allele == "." || allele == "")
+                std::cout << "EMPTY STRING" << std::endl;
+            //std::string allele = a_pVariantBase->m_bIsFirstNucleotideTrimmed ? (a_pVariantBase->GetRefSeq()[0] + a_pVariantBase->m_alleles[k].m_sequence) : a_pVariantBase->m_alleles[k].m_sequence;
             if(0 == calledVariants[p].compare(allele))
             {
                 data.m_aGenotype[k] = p;
@@ -283,7 +294,8 @@ void CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase,
         
         if(!bHasFound)
         {
-            std::string allele = a_pVariantBase->m_bIsFirstNucleotideTrimmed ? (a_pVariantBase->GetRefSeq()[0] + a_pVariantBase->m_alleles[k].m_sequence) : a_pVariantBase->m_alleles[k].m_sequence;
+            std::string allele = baseVariants[a_pVariantBase->m_genotype[k]];
+            //std::string allele = a_pVariantBase->m_bIsFirstNucleotideTrimmed ? (a_pVariantBase->GetRefSeq()[0] + a_pVariantBase->m_alleles[k].m_sequence) : a_pVariantBase->m_alleles[k].m_sequence;
             calledVariants.push_back(allele);
             a_rOutputRec.m_alleles += ("," + allele);
             data.m_aGenotype[k] = static_cast<int>(calledVariants.size()) - 1;

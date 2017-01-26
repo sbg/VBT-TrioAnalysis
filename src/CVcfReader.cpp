@@ -183,14 +183,7 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
         //TRIM ALL REDUNDANT NUCLEOTIDES FROM BEGINNING AND END TO ALLOW MORE REFERENCE OVERLAPING
         if(a_rConfig.m_bIsRefOverlap)
         {
-            int alleleCnt;
-            
-            if(a_pVariant->m_bIsHeterozygous)
-                alleleCnt = 2;
-            else
-                alleleCnt = 1;
-            
-            for (int i = 0; i < alleleCnt; ++i)
+            for (int i = 0; i < zygotCount; ++i)
             {
                 int curGT = bcf_gt_allele(gt_arr[i]);
                 
@@ -458,6 +451,7 @@ void CVcfReader::GetFilterInfo(std::vector<std::string> &a_rFilterNames, std::ve
 
 void CVcfReader::TrimRefOverlap(SAllele& a_rAllele)
 {
+    
     //Ref string
     std::string refString = m_pRecord->d.allele[0];
     
@@ -491,12 +485,20 @@ void CVcfReader::TrimRefOverlap(SAllele& a_rAllele)
     //Trim from the end
     for(int k = static_cast<int>(refString.size() - 1), p = static_cast<int>(a_rAllele.m_sequence.size() - 1); k >= trimLengthFromBeginning && p >= 0;  k--, p--)
     {
-        if(a_rAllele.m_sequence[p] == refString[k] && a_rAllele.m_sequence.size() == 1)
+        if(a_rAllele.m_sequence[p] == refString[k] && p == 0)
         {
-            trimLengthFromEnd = 1;
-            a_rAllele.m_nEndPos -= 1;
+            trimLengthFromEnd = static_cast<int>(a_rAllele.m_sequence.size());
+            a_rAllele.m_nEndPos -= trimLengthFromEnd;
             break;
         }
+        
+        else if(a_rAllele.m_sequence[p] == refString[k] && k == trimLengthFromBeginning)
+        {
+            trimLengthFromEnd = static_cast<int>(refString.size()) - trimLengthFromBeginning;
+            a_rAllele.m_nEndPos -= trimLengthFromEnd;
+            break;
+        }
+        
         
         else if(a_rAllele.m_sequence[p] != refString[k])
         {

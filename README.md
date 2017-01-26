@@ -69,7 +69,7 @@ An **optional** parameter for sbg tool which is used to eliminate all of INDELs 
 An **optional** parameter for sbg tool which is used to eliminate all of SNPs and SVs from input vcf files.
 
 
-### -ref_overlap [Under Development]
+### -ref_overlap [Almost Finished]
 
 An **optional** parameter for sbg tool which tolerates reference overlaps to include more variants to the truth set.
 

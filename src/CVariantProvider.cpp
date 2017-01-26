@@ -129,11 +129,11 @@ bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
         
     }
     
-    for(int k = 0; k < m_aBaseVariantList[20].size(); k++)
-        std::cout << m_aBaseVariantList[20][k].ToString() << std::endl;
+//    for(int k = 0; k < m_aBaseVariantList[20].size(); k++)
+//        std::cout << m_aBaseVariantList[20][k].ToString() << std::endl;
 
-    for(int k = 0; k < m_aCalledVariantList[20].size(); k++)
-        std::cout << m_aCalledVariantList[20][k].ToString() << std::endl;
+//    for(int k = 0; k < m_aCalledVariantList[20].size(); k++)
+//        std::cout << m_aCalledVariantList[20][k].ToString() << std::endl;
 
     //m_baseVCF.Close();
     //m_calledVCF.Close();
