@@ -8,6 +8,7 @@
 #include "CVcfAnalyzer.h"
 #include "iostream"
 #include <math.h>
+#include <algorithm>
 #include "CGa4ghOutputProvider.h"
 
 
@@ -37,7 +38,10 @@ void CVcfAnalyzer::Run(int argc, char** argv)
     
     start = std::clock();
     //Creates the threads according to given memory and process the data
-    SetThreadsCustom(8 * 1024);
+    if(m_config.m_bIsPlatformMode)
+        SetThreadsCustom(48 * 1024);
+    else
+        SetThreadsCustom(8 * 1024);
     duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
     std::cout << "Program Completed in " << duration << " secs" << std::endl;
 }
@@ -66,14 +70,14 @@ void CVcfAnalyzer::SetThreadsCustom(int a_nMemoryInMB)
     std::vector<int> chromosomeIds;
     m_provider.GetUniqueChromosomeIds(chromosomeIds);
     
-    //IF WE HAVE TOO MUCH MEMORY RUN ALL THREADS IN PARALLEL
+    //IF WE HAVE ENOUGH MEMORY RUN ALL THREADS IN PARALLEL
     if(a_nMemoryInMB > 32 * 1024)
     {
         SetThreadsPlatform();
     }
 
     //IF WE HAVE LESS MEMORY USE SINGLE THREADING
-    else if(a_nMemoryInMB < 2 * 1024 || chromosomeIds.size() < 24)
+    else if(a_nMemoryInMB < 4096)
     {
         for(int k = 0; k < chromosomeIds.size(); k++)
         {
@@ -81,10 +85,10 @@ void CVcfAnalyzer::SetThreadsCustom(int a_nMemoryInMB)
         }
     }
 
-    //ELSE CREATE 2 GB MEMORY (ON AVG) FOR EACH THREAD
+    //ELSE CREATE 4 GB MEMORY (ON AVG) FOR EACH THREAD
     else
     {
-        const int maxThreadCount = ceil(a_nMemoryInMB / 2048);
+        const int maxThreadCount = std::max(static_cast<int>(chromosomeIds.size()), std::min(25, static_cast<int>(ceil(a_nMemoryInMB / 4096))));
         std::vector<int>* chrArrs = new std::vector<int>[maxThreadCount];
 
         for(int k = 0, p = 0; k < chromosomeIds.size(); k++)
@@ -200,13 +204,63 @@ void CVcfAnalyzer::ThreadFunc2(std::vector<int> a_nChrArr)
         CPathReplay pathReplay(varListBase, varListCalled, ovarListBase, ovarListCalled);
         SContig ctg;
         m_provider.GetContig(a_nChrArr[k], ctg);
+        
+        //Find Best Path [GENOTYPE MATCH]
         m_aBestPaths[a_nChrArr[k]] = pathReplay.FindBestPath(ctg,true);
         
-        std::cout << "===CHROMOSOME " << a_nChrArr[k] + 1 << "===" << std::endl;
-        std::cout << "Called Included Count: " << m_aBestPaths[a_nChrArr[k]].m_calledSemiPath.GetIncludedVariants().size() << std::endl;
-        std::cout << "Called Excluded Count: " << m_aBestPaths[a_nChrArr[k]].m_calledSemiPath.GetExcluded().size() << std::endl;
-        std::cout << "Baseline Included Count: " << m_aBestPaths[a_nChrArr[k]].m_baseSemiPath.GetIncludedVariants().size() << std::endl;
-        std::cout << "Baseline Excluded Count: " << m_aBestPaths[a_nChrArr[k]].m_baseSemiPath.GetExcluded().size() << std::endl;
+        //Genotype Match variants
+        const std::vector<const COrientedVariant*>& includedVarsBase = m_aBestPaths[a_nChrArr[k]].m_baseSemiPath.GetIncludedVariants();
+        const std::vector<const COrientedVariant*>& includedVarsCall = m_aBestPaths[a_nChrArr[k]].m_calledSemiPath.GetIncludedVariants();
+        
+        //Variants that will be passed for allele match check
+        std::vector<const CVariant*> excludedVarsBase = m_provider.GetVariantList(eBASE, a_nChrArr[k], m_aBestPaths[a_nChrArr[k]].m_baseSemiPath.GetExcluded());
+        std::vector<const CVariant*> excludedVarsCall = m_provider.GetVariantList(eCALLED, a_nChrArr[k], m_aBestPaths[a_nChrArr[k]].m_calledSemiPath.GetExcluded());
+        
+        //Fill oriented variants for allele match
+        m_provider.FillAlleleMatchVariantList(a_nChrArr[k], excludedVarsBase, excludedVarsCall);
+        
+        //Clear old variant pointers
+        ovarListBase.clear();
+        ovarListCalled.clear();
+        varListBase.clear();
+        varListCalled.clear();
+        
+        //Set new variant pointers for allele match comparison
+        varListBase = excludedVarsBase;
+        varListCalled = excludedVarsCall;
+        ovarListBase = m_provider.GetOrientedVariantList(eBASE, a_nChrArr[k], false);
+        ovarListCalled = m_provider.GetOrientedVariantList(eCALLED, a_nChrArr[k], false);
+        pathReplay.Clear();
+        
+        //Find Best Path [ALLELE MATCH]
+        m_aBestPathsAllele[a_nChrArr[k]] = pathReplay.FindBestPath(ctg, false);
+        
+        //No Match variants
+        std::vector<const CVariant*> excludedVarsBase2 = m_provider.GetVariantList(excludedVarsBase,
+                                                                                   m_aBestPathsAllele[a_nChrArr[k]].m_baseSemiPath.GetExcluded());
+        std::vector<const CVariant*> excludedVarsCall2 = m_provider.GetVariantList(excludedVarsCall,
+                                                                                   m_aBestPathsAllele[a_nChrArr[k]].m_calledSemiPath.GetExcluded());
+        
+        //Allele Match variants
+        const std::vector<const COrientedVariant*>& includedVarsBase2 = m_aBestPathsAllele[a_nChrArr[k]].m_baseSemiPath.GetIncludedVariants();
+        const std::vector<const COrientedVariant*>& includedVarsCall2 = m_aBestPathsAllele[a_nChrArr[k]].m_calledSemiPath.GetIncludedVariants();
+        
+        
+        m_resultLogger.LogStatistic(a_nChrArr[k],
+                                    static_cast<int>(includedVarsCall.size()),
+                                    static_cast<int>(includedVarsBase.size()),
+                                    static_cast<int>(includedVarsCall2.size()),
+                                    static_cast<int>(includedVarsBase2.size()),
+                                    static_cast<int>(excludedVarsCall2.size()),
+                                    static_cast<int>(excludedVarsBase2.size()));
+        
+        m_provider.SetVariantStatus(excludedVarsBase2, eNO_MATCH);
+        m_provider.SetVariantStatus(excludedVarsCall2, eNO_MATCH);
+        m_provider.SetVariantStatus(includedVarsCall,  eGENOTYPE_MATCH);
+        m_provider.SetVariantStatus(includedVarsBase,  eGENOTYPE_MATCH);
+        m_provider.SetVariantStatus(includedVarsCall2, eALLELE_MATCH);
+        m_provider.SetVariantStatus(includedVarsBase2, eALLELE_MATCH);
+        
     }
 }
 
@@ -224,6 +278,7 @@ bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
     const char* PARAM_INDEL_ONLY = "-INDEL_ONLY";
     const char* PARAM_OUTPUT_DIR = "-outDir";
     const char* PARAM_REF_OVERLAP = "-ref-overlap";
+    const char* PARAM_PLATFORM = "-platform-mode";
     
     bool bBaselineSet = false;
     bool bCalledSet = false;
@@ -302,6 +357,12 @@ bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
         else if(0 == strcmp(argv[it], PARAM_INDEL_ONLY))
         {
             m_config.m_bINDELOnly = true;
+            it--;
+        }
+        
+        else if(0 == strcmp(argv[it], PARAM_PLATFORM))
+        {
+            m_config.m_bIsPlatformMode = true;
             it--;
         }
         

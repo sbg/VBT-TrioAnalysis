@@ -55,6 +55,9 @@ struct SConfig
     //Enable REF Overlap mode
     bool m_bIsRefOverlap = false;
     
+    //Run in Platform mode [1 Thread per chromosome]
+    bool m_bIsPlatformMode = false;
+    
 };
 
 
