@@ -34,7 +34,7 @@ void CResultLog::WriteStatistics()
     std::ofstream outputLog;
     outputLog.open(m_aLogPath);
     
-    outputLog << "====== GENOTYPE MATCHING MODE ======" << std::endl;
+    outputLog << "====== GENOTYPE MATCHING MODE (GA4GH Method 3) ======" << std::endl;
     outputLog << "ID" << "\t" << "True-Pos-Called" << "\t\t" << "True-Pos-Baseline" << "\t" << "False-Pos" << "\t" << "False-Neg" << "\t" << "Precision" << "\t" << "Recall";
     outputLog << "\t" << "F-measure" << std::endl;
 
@@ -43,10 +43,14 @@ void CResultLog::WriteStatistics()
         if(m_aResultEntries[k].m_bIsNull)
             continue;
         
-        if(k > 22)
-            outputLog << "Chr" << char(120 + (k - 22));
+        if(k < 22)
+            outputLog << "Chr" << k+1;
+        else if(k == 23)
+            outputLog << "ChrX";
+        else if(k == 24)
+            outputLog << "ChrY";
         else
-            outputLog << "Chr" << k;
+            outputLog << "ChrM";
         
         int TPbase = m_aResultEntries[k].m_nTpBase;
         int TPcalled = m_aResultEntries[k].m_nTpCalled;
@@ -65,7 +69,7 @@ void CResultLog::WriteStatistics()
     }
     
     outputLog << std::endl << std::endl;
-    outputLog << "====== ALLELE MATCHING MODE ======" << std::endl;
+    outputLog << "====== ALLELE MATCHING MODE (GA4GH Method 2) ======" << std::endl;
     outputLog << "ID" << "\t" << "True-Pos-Called" << "\t\t" << "True-Pos-Baseline" << "\t" << "False-Pos" << "\t" << "False-Neg" << "\t" << "Precision" << "\t" << "Recall";
     outputLog << "\t" << "F-measure" << std::endl;
     
@@ -74,10 +78,14 @@ void CResultLog::WriteStatistics()
         if(m_aResultEntries[k].m_bIsNull)
             continue;
         
-        if(k > 22)
-            outputLog << "Chr" << char(120 + (k - 22));
+        if(k < 22)
+            outputLog << "Chr" << k+1;
+        else if(k == 23)
+            outputLog << "ChrX";
+        else if(k == 24)
+            outputLog << "ChrY";
         else
-            outputLog << "Chr" << k;
+            outputLog << "ChrM";
         
         int TPbase = m_aResultEntries[k].m_nTpBase + m_aResultEntries[k].m_nHalfTpBase;
         int TPcalled = m_aResultEntries[k].m_nTpCalled + m_aResultEntries[k].m_nHalfTpCalled;

@@ -47,8 +47,8 @@ struct SVcfRecord
     std::vector<std::string> m_aFilterString;
     //Alleles string separated by comma of the variant (eg. m_alleles = "AT,G")
     std::string m_alleles;
-    //Chromosome name of the variant
-    std::string m_chrName;
+    //Chromosome id of the variant
+    int m_nChrId;
     //Sample Data (Data to store for each sample)
     std::vector<SPerSampleData> m_aSampleData;
 };
@@ -89,6 +89,8 @@ private:
     
     //Return the current time in YYYYMMDD format
     std::string GetTime();
+    //Return chromosome name with given chromosome id
+    std::string GetChrName(int a_nChrId);
     
     htsFile *   m_pHtsFile;
     bcf_hdr_t * m_pHeader;

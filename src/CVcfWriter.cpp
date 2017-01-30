@@ -89,7 +89,7 @@ void CVcfWriter::AddRecord(const SVcfRecord& a_rVcfRecord)
     bcf_clear1(m_pRecord);
     
     //Set chromosome name
-    m_pRecord->rid = bcf_hdr_name2id(m_pHeader, a_rVcfRecord.m_chrName.c_str());
+    m_pRecord->rid = bcf_hdr_name2id(m_pHeader, GetChrName(a_rVcfRecord.m_nChrId).c_str());
     
     //Set start position
     m_pRecord->pos = a_rVcfRecord.m_nPosition;
@@ -184,6 +184,18 @@ void CVcfWriter::AddRecord(const SVcfRecord& a_rVcfRecord)
     }
     
     
+}
+
+std::string CVcfWriter::GetChrName(int a_nChrId)
+{
+    if(a_nChrId < 22)
+        return "chr" + std::to_string(a_nChrId);
+    else if(a_nChrId == 22)
+        return "chrX";
+    else if(a_nChrId == 23)
+        return "chrY";
+    else
+        return "chrMT";
 }
 
 

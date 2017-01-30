@@ -146,7 +146,7 @@ void CVariantProvider::FillVariantLists()
 {
     CVariant variant;
     int id = 0;
-    std::string preChrId;
+    std::string preChrId = "";
     
     std::vector<SVcfContig> commonChromosomes = GetCommonChromosomes();
 
@@ -160,6 +160,8 @@ void CVariantProvider::FillVariantLists()
         {
             preChrId = variant.m_chrName;
             std::cout << "Processing chromosome " << preChrId << " of base vcf" << std::endl;
+            //if(preChrId == "3")
+            //    break;
         }
         
         if(m_config.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
@@ -177,6 +179,8 @@ void CVariantProvider::FillVariantLists()
             PushVariant(variant, m_aBaseVariantList[variant.m_nChrId-1]);
     }
     
+    preChrId = "";
+    
     while(m_calledVCF.GetNextRecord(&variant, id++, m_config))
     {
         if(m_baseVCF.GetContigId(variant.m_chrName) == -1)
@@ -186,6 +190,8 @@ void CVariantProvider::FillVariantLists()
         {
             preChrId = variant.m_chrName;
             std::cout << "Processing chromosome " << preChrId << " of called vcf" << std::endl;
+            //if(preChrId == "3")
+            //    break;
         }
         
         if(m_config.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
@@ -400,13 +406,6 @@ void CVariantProvider::PushVariant(CVariant& a_rVariant, std::vector<CVariant>& 
     
     if(a_rVariant.GetStart() == a_rVecToPush[size-k].GetStart())
     {
-        
-        if(a_rVariant.GetStart() == 10775909)
-        {
-            int m = 0;
-            m++;
-        }
-        
         if(a_rVariant.m_bIsFirstNucleotideTrimmed && !a_rVecToPush[size-k].m_bIsFirstNucleotideTrimmed)
             k++;
         

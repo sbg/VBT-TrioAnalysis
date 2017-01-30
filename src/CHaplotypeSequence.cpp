@@ -175,6 +175,10 @@ void CHaplotypeSequence::Next()
         m_nPositionInVariant++;
     }
     
+    if(!(!m_nextVariant.IsNull() || m_nPositionInVariant == -1))
+    {
+        std::cout << "Next Variant is NULL" << std::endl;
+    }
     assert(!m_nextVariant.IsNull() || m_nPositionInVariant == -1);
 
     if(!m_nextVariant.IsNull())

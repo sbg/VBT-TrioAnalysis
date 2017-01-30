@@ -21,6 +21,10 @@ void CVcfAnalyzer::Run(int argc, char** argv)
     //Read command line parameters to m_config object
     bool isSuccess = ReadParameters(argc, argv);
     
+    m_config.m_pFastaFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/human_g1k_v37_decoy.fasta";
+    m_config.m_pCalledVcfFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/gral0.9.sorted.and_more.concat.vcf.gz";
+    m_config.m_pBaseVcfFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/HG002_GIAB_highconf_IllFB-IllGATKHC-CG-Ion-Solid_CHROM1-22_v3.2.2_highconf.vcf.gz";
+    
     if(!isSuccess)
         return;
     
@@ -73,10 +77,12 @@ void CVcfAnalyzer::SetThreadsCustom(int a_nMemoryInMB)
     }
 
     //IF WE HAVE LESS MEMORY USE SINGLE THREADING
-    else if(a_nMemoryInMB < 2 * 1024 || chromosomeIds.size() < 4)
+    else if(a_nMemoryInMB < 2 * 1024 || chromosomeIds.size() < 24)
     {
         for(int k = 0; k < chromosomeIds.size(); k++)
+        {
             ThreadFunc(chromosomeIds[k]);
+        }
     }
 
     //ELSE CREATE 2 GB MEMORY (ON AVG) FOR EACH THREAD
@@ -126,6 +132,10 @@ void CVcfAnalyzer::ThreadFunc(int a_nChromosomeId)
     CPathReplay pathReplay(varListBase, varListCalled, ovarListBase, ovarListCalled);
     SContig ctg;
     m_provider.GetContig(a_nChromosomeId, ctg);
+    
+    std::cout << "START GENOTYPE MATCH FOR CHR" << a_nChromosomeId + 1 << std::endl;
+
+    
     m_aBestPaths[a_nChromosomeId] = pathReplay.FindBestPath(ctg, true);
 
     //Genotype Match variants
@@ -152,6 +162,9 @@ void CVcfAnalyzer::ThreadFunc(int a_nChromosomeId)
     ovarListCalled = m_provider.GetOrientedVariantList(eCALLED, a_nChromosomeId, false);
     
     pathReplay.Clear();
+    
+    std::cout << "START ALLELE MATCH FOR CHR" << a_nChromosomeId + 1 << std::endl;
+    
     m_aBestPathsAllele[a_nChromosomeId] = pathReplay.FindBestPath(ctg, false);
     
     //No Match variants
@@ -160,7 +173,6 @@ void CVcfAnalyzer::ThreadFunc(int a_nChromosomeId)
     std::vector<const CVariant*> excludedVarsCall2 = m_provider.GetVariantList(excludedVarsCall,
                                                                                m_aBestPathsAllele[a_nChromosomeId].m_calledSemiPath.GetExcluded());
   
-    
     //Allele Match variants
     std::vector<const COrientedVariant*> includedVarsBase2 = m_aBestPathsAllele[a_nChromosomeId].m_baseSemiPath.GetIncludedVariants();
     std::vector<const COrientedVariant*> includedVarsCall2 = m_aBestPathsAllele[a_nChromosomeId].m_calledSemiPath.GetIncludedVariants();

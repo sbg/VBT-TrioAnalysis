@@ -35,7 +35,10 @@ void CGa4ghOutputProvider::GenerateGa4ghVcf()
     FillHeader();
     
     for(int k = 0; k < CHROMOSOME_COUNT; k++)
+    {
+        std::cout << "PROCESS CHROMOSOME " << k+1 << std::endl;
         AddRecords(m_pBestPaths[k], m_pBestAlleleMatchPaths[k], k);
+    }
     
     m_vcfWriter.CloseVcf();
 }
@@ -163,7 +166,7 @@ void CGa4ghOutputProvider::AddRecords(const CPath& a_rBestPath, const CPath& a_r
             
             nextVarCalledList.clear();
             calledVariants.FillNext(nextVarCalledList);
-
+            
 
             //If there are called variants exists which doesnt merge already
             for(SVariantSummary var : nextVarBaseList)
@@ -179,8 +182,13 @@ void CGa4ghOutputProvider::AddRecords(const CPath& a_rBestPath, const CPath& a_r
             baseVariants.FillNext(nextVarBaseList);
         }
         
+        
+        
         else if (basePosition > calledPosition)
         {
+            //std::cout << "GREATER: ENTER" << std::endl;
+
+            
             for (SVariantSummary var : nextVarCalledList)
             {
                 SVcfRecord record;
@@ -209,10 +217,8 @@ void CGa4ghOutputProvider::AddRecords(const CPath& a_rBestPath, const CPath& a_r
             
             nextVarBaseList.clear();
             baseVariants.FillNext(nextVarBaseList);
-
         }
     }
-    
 }
 
 
@@ -220,7 +226,7 @@ void CGa4ghOutputProvider::AddRecords(const CPath& a_rBestPath, const CPath& a_r
 void CGa4ghOutputProvider::VariantToVcfRecord(const CVariant* a_pVariant, SVcfRecord& a_rOutputRec, bool a_bIsBase, const std::string& a_rMatchType, const::std::string& a_rDecision)
 {
     //Fill basic variant data
-    a_rOutputRec.m_chrName = a_pVariant->m_chrName;
+    a_rOutputRec.m_nChrId = a_pVariant->m_nChrId;
     a_rOutputRec.m_nPosition = a_pVariant->m_nOriginalPos;
     a_rOutputRec.m_alleles = a_pVariant->m_allelesStr;
     if(!a_bIsBase)
@@ -248,7 +254,7 @@ void CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase,
 {
 
     //Fill basic variant data
-    a_rOutputRec.m_chrName = a_pVariantCalled->m_chrName;
+    a_rOutputRec.m_nChrId = a_pVariantCalled->m_nChrId;
     a_rOutputRec.m_nPosition = a_pVariantCalled->m_nOriginalPos;
     a_rOutputRec.m_alleles = a_pVariantCalled->m_allelesStr;
     a_rOutputRec.m_aFilterString = a_pVariantCalled->m_filterString;
@@ -281,9 +287,6 @@ void CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase,
         for(int p = 0; p < calledVariants.size(); p++)
         {
             std::string allele = baseVariants[a_pVariantBase->m_genotype[k]];
-            if(allele == "." || allele == "")
-                std::cout << "EMPTY STRING" << std::endl;
-            //std::string allele = a_pVariantBase->m_bIsFirstNucleotideTrimmed ? (a_pVariantBase->GetRefSeq()[0] + a_pVariantBase->m_alleles[k].m_sequence) : a_pVariantBase->m_alleles[k].m_sequence;
             if(0 == calledVariants[p].compare(allele))
             {
                 data.m_aGenotype[k] = p;
@@ -295,7 +298,6 @@ void CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase,
         if(!bHasFound)
         {
             std::string allele = baseVariants[a_pVariantBase->m_genotype[k]];
-            //std::string allele = a_pVariantBase->m_bIsFirstNucleotideTrimmed ? (a_pVariantBase->GetRefSeq()[0] + a_pVariantBase->m_alleles[k].m_sequence) : a_pVariantBase->m_alleles[k].m_sequence;
             calledVariants.push_back(allele);
             a_rOutputRec.m_alleles += ("," + allele);
             data.m_aGenotype[k] = static_cast<int>(calledVariants.size()) - 1;

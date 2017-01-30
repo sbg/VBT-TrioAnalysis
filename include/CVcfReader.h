@@ -90,6 +90,9 @@ private:
     //Check if the first nucleotide for alleles are redundant (for indels)
     bool HasRedundantFirstNucleotide() const;
     
+    //Return the chromosome number [0 to 24]
+    int GetChromosomeNumber(const std::string& a_chrName) const;
+    
     
     int refOverlapCount = 0;
     

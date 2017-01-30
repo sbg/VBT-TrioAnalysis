@@ -104,21 +104,7 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
     {
         a_pVariant->m_nId = a_nId;
         a_pVariant->m_chrName = m_pHeader->id[BCF_DT_CTG][m_pRecord->rid].key;
-        
-        //READ CHROMOSOME ID: (TODO: this should be renewed. there should be sth that reads the chromosome id)
-        if(a_pVariant->m_chrName == "x" || a_pVariant->m_chrName == "X" || a_pVariant->m_chrName == "chrX" || a_pVariant->m_chrName == "chrx")
-            a_pVariant->m_nChrId = 23;
-        else if(a_pVariant->m_chrName == "y" || a_pVariant->m_chrName == "Y" || a_pVariant->m_chrName == "chrY" || a_pVariant->m_chrName == "chry")
-            a_pVariant->m_nChrId = 24;
-        else if(a_pVariant->m_chrName == "MT" || a_pVariant->m_chrName == "mt" || a_pVariant->m_chrName == "chrMT" || a_pVariant->m_chrName == "chrmt")
-            a_pVariant->m_nChrId = 25;
-        else if(a_pVariant->m_chrName.length() == 5)
-            a_pVariant->m_nChrId = atoi(a_pVariant->m_chrName.substr(3,2).c_str());
-        else if(a_pVariant->m_chrName.length() == 4)
-            a_pVariant->m_nChrId = atoi(a_pVariant->m_chrName.substr(3,1).c_str());
-        else
-            a_pVariant->m_nChrId = atoi(m_pHeader->id[BCF_DT_CTG][m_pRecord->rid].key);
-    
+        a_pVariant->m_nChrId = GetChromosomeNumber(a_pVariant->m_chrName);
         
         //READ FILTER DATA
         bool isPassed = false;
@@ -511,6 +497,24 @@ void CVcfReader::TrimRefOverlap(SAllele& a_rAllele)
     
     //Cut the end of the string
     a_rAllele.m_sequence = a_rAllele.m_sequence.substr(0, a_rAllele.m_sequence.length() - trimLengthFromEnd);
+    
+}
+
+int CVcfReader::GetChromosomeNumber(const std::string& a_chrName) const
+{
+    //READ CHROMOSOME ID: (TODO: this should be renewed. there should be sth that reads the chromosome id)
+    if(a_chrName == "x" || a_chrName == "X" || a_chrName == "chrX" || a_chrName == "chrx")
+        return 23;
+    else if(a_chrName == "y" || a_chrName == "Y" || a_chrName == "chrY" || a_chrName == "chry")
+        return 24;
+    else if(a_chrName == "MT" || a_chrName == "mt" || a_chrName == "chrMT" || a_chrName == "chrmt")
+        return 25;
+    else if(a_chrName.length() == 5)
+        return atoi(a_chrName.substr(3,2).c_str());
+    else if(a_chrName.length() == 4)
+        return atoi(a_chrName.substr(3,1).c_str());
+    else
+        return atoi(m_pHeader->id[BCF_DT_CTG][m_pRecord->rid].key);
     
 }
 
