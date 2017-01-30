@@ -56,8 +56,8 @@ class CVariantProvider
         void FillAlleleMatchVariantList(int a_nChrId, std::vector<const CVariant*>& a_rBaseVariants, std::vector<const CVariant*>& a_rCalledVariants);
     
         //Set the status of each variant in the given lust
-        void SetVariantStatus(std::vector<const CVariant*>& a_rVariantList, EVariantMatch a_status) const;
-        void SetVariantStatus(std::vector<const COrientedVariant*>& a_rVariantList, EVariantMatch a_status) const;
+        void SetVariantStatus(const std::vector<const CVariant*>& a_rVariantList, EVariantMatch a_status) const;
+        void SetVariantStatus(const std::vector<const COrientedVariant*>& a_rVariantList, EVariantMatch a_status) const;
     
     
     private:

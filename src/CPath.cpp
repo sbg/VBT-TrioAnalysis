@@ -216,7 +216,7 @@ int CPath::AddVariant(CPathContainer* a_pPathList,
             a_pPathList[pathCount].m_pPath->Exclude(a_nVcfName, *pNextVariant, a_nVariantIndex);
             pathCount++;
             
-            for(int k = 0; k < pNextVariant->m_nZygotCount; k++)
+            for(int k = 0; k < pNextVariant->m_nAlleleCount; k++)
             {
                 if(pNextVariant->m_genotype[k] != 0)
                 {
@@ -240,7 +240,7 @@ int CPath::AddVariant(CPathContainer* a_pPathList,
             a_pPathList[pathCount].m_pPath->Exclude(a_nVcfName, *pNextVariant, a_nVariantIndex);
             pathCount++;
 
-            for(int k = 0; k < pNextVariant->m_nZygotCount; k++)
+            for(int k = 0; k < pNextVariant->m_nAlleleCount; k++)
             {
                 if(pNextVariant->m_genotype[k] != 0)
                 {

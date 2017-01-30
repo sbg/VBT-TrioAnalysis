@@ -49,7 +49,7 @@ COrientedVariant::COrientedVariant(const CVariant& a_rObj, int a_nAlleleIndex)
 {
     m_variant = &a_rObj;
     m_bIsNull = a_rObj.IsNull();
-    
+    m_bIsOrderOfGenotype = true;
     m_nAlleleIndex = a_nAlleleIndex;
     m_nOtherAlleleIndex = a_nAlleleIndex;
 }
@@ -108,11 +108,13 @@ int COrientedVariant::GetAlleleIndex() const
 
 COrientedVariant COrientedVariant::Other() const
 {
-    COrientedVariant oVar2(*this);
+    COrientedVariant oVar2;
     
     oVar2.m_bIsOrderOfGenotype = !m_bIsOrderOfGenotype;
     oVar2.m_nAlleleIndex = m_nOtherAlleleIndex;
     oVar2.m_nOtherAlleleIndex = m_nAlleleIndex;
+    oVar2.m_variant = m_variant;
+    oVar2.m_bIsNull = m_bIsNull;
     return oVar2;
 }
 
@@ -144,8 +146,8 @@ const CVariant& COrientedVariant::GetVariant() const
 
 void COrientedVariant::Print() const
 {
-    std::cout << m_nAlleleIndex << ":" << m_nOtherAlleleIndex << " " << m_bIsOrderOfGenotype << std::endl;
-    m_variant->Print();
+    std::cout << m_nAlleleIndex << ":" << m_nOtherAlleleIndex << " " << (m_bIsOrderOfGenotype ? "true" : "false");
+    std::cout << "    " << m_variant->ToString() << "  GT:" << m_variant->m_genotype[0] << "/" << m_variant->m_genotype[1]  <<std::endl;
 }
 
 

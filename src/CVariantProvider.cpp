@@ -160,7 +160,7 @@ void CVariantProvider::FillVariantLists()
         {
             preChrId = variant.m_chrName;
             std::cout << "Processing chromosome " << preChrId << " of base vcf" << std::endl;
-            //if(preChrId == "3")
+            //if(preChrId == "2")
             //    break;
         }
         
@@ -190,7 +190,7 @@ void CVariantProvider::FillVariantLists()
         {
             preChrId = variant.m_chrName;
             std::cout << "Processing chromosome " << preChrId << " of called vcf" << std::endl;
-            //if(preChrId == "3")
+            //if(preChrId == "2")
             //    break;
         }
         
@@ -461,14 +461,14 @@ std::vector<CVariant>& CVariantProvider::GetNotAssessedVariantList(EVcfName a_uF
 
 
 
-void CVariantProvider::SetVariantStatus(std::vector<const CVariant*>& a_rVariantList, EVariantMatch a_status) const
+void CVariantProvider::SetVariantStatus(const std::vector<const CVariant*>& a_rVariantList, EVariantMatch a_status) const
 {
     for(const CVariant* pVar : a_rVariantList)
         pVar->m_variantStatus = a_status;
 }
 
 
-void CVariantProvider::SetVariantStatus(std::vector<const COrientedVariant*>& a_rVariantList, EVariantMatch a_status) const
+void CVariantProvider::SetVariantStatus(const std::vector<const COrientedVariant*>& a_rVariantList, EVariantMatch a_status) const
 {
     for(const COrientedVariant* pOvar : a_rVariantList)
         pOvar->GetVariant().m_variantStatus = a_status;

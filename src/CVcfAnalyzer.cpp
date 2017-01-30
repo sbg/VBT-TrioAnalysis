@@ -21,10 +21,6 @@ void CVcfAnalyzer::Run(int argc, char** argv)
     //Read command line parameters to m_config object
     bool isSuccess = ReadParameters(argc, argv);
     
-    m_config.m_pFastaFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/human_g1k_v37_decoy.fasta";
-    m_config.m_pCalledVcfFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/gral0.9.sorted.and_more.concat.vcf.gz";
-    m_config.m_pBaseVcfFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/HG002_GIAB_highconf_IllFB-IllGATKHC-CG-Ion-Solid_CHROM1-22_v3.2.2_highconf.vcf.gz";
-    
     if(!isSuccess)
         return;
     
@@ -133,14 +129,12 @@ void CVcfAnalyzer::ThreadFunc(int a_nChromosomeId)
     SContig ctg;
     m_provider.GetContig(a_nChromosomeId, ctg);
     
-    std::cout << "START GENOTYPE MATCH FOR CHR" << a_nChromosomeId + 1 << std::endl;
-
-    
+    //Find Best Path [GENOTYPE MATCH]
     m_aBestPaths[a_nChromosomeId] = pathReplay.FindBestPath(ctg, true);
-
+    
     //Genotype Match variants
-    std::vector<const COrientedVariant*> includedVarsBase = m_aBestPaths[a_nChromosomeId].m_baseSemiPath.GetIncludedVariants();
-    std::vector<const COrientedVariant*> includedVarsCall = m_aBestPaths[a_nChromosomeId].m_calledSemiPath.GetIncludedVariants();
+    const std::vector<const COrientedVariant*>& includedVarsBase = m_aBestPaths[a_nChromosomeId].m_baseSemiPath.GetIncludedVariants();
+    const std::vector<const COrientedVariant*>& includedVarsCall = m_aBestPaths[a_nChromosomeId].m_calledSemiPath.GetIncludedVariants();
     
     //Variants that will be passed for allele match check
     std::vector<const CVariant*> excludedVarsBase = m_provider.GetVariantList(eBASE, a_nChromosomeId, m_aBestPaths[a_nChromosomeId].m_baseSemiPath.GetExcluded());
@@ -160,11 +154,9 @@ void CVcfAnalyzer::ThreadFunc(int a_nChromosomeId)
     varListCalled = excludedVarsCall;
     ovarListBase = m_provider.GetOrientedVariantList(eBASE, a_nChromosomeId, false);
     ovarListCalled = m_provider.GetOrientedVariantList(eCALLED, a_nChromosomeId, false);
-    
     pathReplay.Clear();
     
-    std::cout << "START ALLELE MATCH FOR CHR" << a_nChromosomeId + 1 << std::endl;
-    
+    //Find Best Path [ALLELE MATCH]
     m_aBestPathsAllele[a_nChromosomeId] = pathReplay.FindBestPath(ctg, false);
     
     //No Match variants
@@ -172,10 +164,11 @@ void CVcfAnalyzer::ThreadFunc(int a_nChromosomeId)
                                                                                m_aBestPathsAllele[a_nChromosomeId].m_baseSemiPath.GetExcluded());
     std::vector<const CVariant*> excludedVarsCall2 = m_provider.GetVariantList(excludedVarsCall,
                                                                                m_aBestPathsAllele[a_nChromosomeId].m_calledSemiPath.GetExcluded());
-  
+    
     //Allele Match variants
-    std::vector<const COrientedVariant*> includedVarsBase2 = m_aBestPathsAllele[a_nChromosomeId].m_baseSemiPath.GetIncludedVariants();
-    std::vector<const COrientedVariant*> includedVarsCall2 = m_aBestPathsAllele[a_nChromosomeId].m_calledSemiPath.GetIncludedVariants();
+    const std::vector<const COrientedVariant*>& includedVarsBase2 = m_aBestPathsAllele[a_nChromosomeId].m_baseSemiPath.GetIncludedVariants();
+    const std::vector<const COrientedVariant*>& includedVarsCall2 = m_aBestPathsAllele[a_nChromosomeId].m_calledSemiPath.GetIncludedVariants();
+
     
     m_resultLogger.LogStatistic(a_nChromosomeId,
                                 static_cast<int>(includedVarsCall.size()),
@@ -332,7 +325,6 @@ void CVcfAnalyzer::PrintHelp() const
 {
     std::cout << "==== SBG VCF COMPARISON TOOL VERSION 1.0 (Beta) ==== " << std::endl;
     std::cout << "Based on paper: http://biorxiv.org/content/biorxiv/early/2015/08/02/023754.full.pdf" << std::endl;
-    std::cout << "Some of the components were originated from RTG Vcfeval (https://github.com/RealTimeGenomics/rtg-tools/blob/master/src/com/rtg/vcf/eval)" << std::endl;
     std::cout << "Author: Berke Cagkan Toptas (berke.toptas@sbgenomics.com)" << std::endl;
     std::cout << "Please notify me if program fails or return unexpected results" << std::endl;
     std::cout << "COPYRIGHT (C) 2016 SEVEN BRIDGES GENOMICS." << std::endl;

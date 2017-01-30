@@ -220,7 +220,7 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
                 a_pVariant->m_allelesStr += ",";
             a_pVariant->m_allelesStr += std::string(m_pRecord->d.allele[k]);
         }
-        for(int k = 0; k < ngt_arr; k++)
+        for(int k = 0; k < zygotCount; k++)
            a_pVariant->m_genotype[k] = bcf_gt_allele(gt_arr[k]);
         
         a_pVariant->m_nOriginalPos = m_pRecord->pos;
