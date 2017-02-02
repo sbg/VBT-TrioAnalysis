@@ -62,8 +62,6 @@ class CPathReplay
         //Path list to store generated paths
         CPathSet m_pathList;
         
-        //Access to Variant Provider
-        //const CVariantProvider* m_variantProvider;
 
         int m_nCurrentPosition;
     

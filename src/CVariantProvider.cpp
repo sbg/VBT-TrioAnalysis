@@ -42,7 +42,6 @@ std::vector<SVcfContig> CVariantProvider::GetCommonChromosomes()
     return commonChromosomes;
 }
 
-
 bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
 {
     bool bIsSuccess;
@@ -82,7 +81,7 @@ bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
     // OPEN FASTA FILE
     bIsSuccess = m_fastaParser.OpenFastaFile(a_rConfig.m_pFastaFileName);
     if(!bIsSuccess)
-        std::cout << "FASTA file is unable to open!: " << a_rConfig.m_pCalledVcfFileName << std::endl;
+        std::cout << "FASTA file is unable to open!: " << a_rConfig.m_pFastaFileName << std::endl;
     
     if(bIsSuccess)
     {

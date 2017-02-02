@@ -10,11 +10,9 @@
 #include "CVcfReader.h"
 #include "SConfig.h"
 #include "CFastaParser.h"
+#include "Constants.h"
 
 class COrientedVariant;
-
-const int CHROMOSOME_COUNT = 25;
-
 
 class CVariantProvider
 {
@@ -94,7 +92,6 @@ class CVariantProvider
         std::vector<COrientedVariant> m_aBaseHomozygousOrientedVariantList[CHROMOSOME_COUNT];
         //List that store the called Oriented variant tuples (Allele match homozygous variants)
         std::vector<COrientedVariant> m_aCalledHomozygousOrientedVariantList[CHROMOSOME_COUNT];
-    
     
         //List that stores baseline variants which are filtered out from comparison
         std::vector<CVariant> m_aBaseNotAssessedVariantList[CHROMOSOME_COUNT];

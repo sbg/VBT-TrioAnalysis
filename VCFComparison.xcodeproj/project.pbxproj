@@ -27,6 +27,8 @@
 		556D39CC1DD3AFAC00551040 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 556D39CB1DD3AFAC00551040 /* libz.tbd */; };
 		556D39CE1DD4D75B00551040 /* CPathSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 556D39CD1DD4D75B00551040 /* CPathSet.cpp */; };
 		55AA85261E2369C700BF25E1 /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55AA85251E2369C700BF25E1 /* test.cpp */; };
+		55BD82D61E40ED530023D696 /* CMendelianAnalyzer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55BD82D51E40ED530023D696 /* CMendelianAnalyzer.cpp */; };
+		55BD82D91E411F090023D696 /* CMendelianVariantProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55BD82D81E411F090023D696 /* CMendelianVariantProvider.cpp */; };
 		55D8D33A1E09BEAE00CE2838 /* CGa4ghOutputProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55D8D3391E09BEAE00CE2838 /* CGa4ghOutputProvider.cpp */; };
 		55E7CBD51E157670002ACA4E /* CResultLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55E7CBD41E157670002ACA4E /* CResultLog.cpp */; };
 /* End PBXBuildFile section */
@@ -103,12 +105,18 @@
 		556D39CD1DD4D75B00551040 /* CPathSet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CPathSet.cpp; sourceTree = "<group>"; };
 		556D39CF1DD66E1700551040 /* SConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SConfig.h; sourceTree = "<group>"; };
 		55AA85251E2369C700BF25E1 /* test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test.cpp; sourceTree = "<group>"; };
+		55BD82D41E40DF190023D696 /* CMendelianAnalyzer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMendelianAnalyzer.h; sourceTree = "<group>"; };
+		55BD82D51E40ED530023D696 /* CMendelianAnalyzer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CMendelianAnalyzer.cpp; sourceTree = "<group>"; };
+		55BD82D71E410F200023D696 /* CMendelianVariantProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMendelianVariantProvider.h; sourceTree = "<group>"; };
+		55BD82D81E411F090023D696 /* CMendelianVariantProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CMendelianVariantProvider.cpp; sourceTree = "<group>"; };
+		55BD82DA1E422FDE0023D696 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 		55D8D3381E09BD7100CE2838 /* CGa4ghOutputProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGa4ghOutputProvider.h; sourceTree = "<group>"; };
 		55D8D3391E09BEAE00CE2838 /* CGa4ghOutputProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CGa4ghOutputProvider.cpp; sourceTree = "<group>"; };
 		55D8D33C1E0B358000CE2838 /* SVariantSummary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVariantSummary.h; sourceTree = "<group>"; };
 		55E7CBD31E157327002ACA4E /* CResultLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CResultLog.h; sourceTree = "<group>"; };
 		55E7CBD41E157670002ACA4E /* CResultLog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CResultLog.cpp; sourceTree = "<group>"; };
 		55E7CBD61E15A0CB002ACA4E /* EVariantMatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EVariantMatch.h; sourceTree = "<group>"; };
+		55EBBC311E43C22100559710 /* SMendelianThreadParam.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMendelianThreadParam.h; sourceTree = "<group>"; };
 		55F4384A1E29726200833A9B /* CVariantIteratorV2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CVariantIteratorV2.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -196,6 +204,8 @@
 				556D39931DD3AF2E00551040 /* main.cpp */,
 				55E7CBD41E157670002ACA4E /* CResultLog.cpp */,
 				55AA85251E2369C700BF25E1 /* test.cpp */,
+				55BD82D51E40ED530023D696 /* CMendelianAnalyzer.cpp */,
+				55BD82D81E411F090023D696 /* CMendelianVariantProvider.cpp */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -223,6 +233,10 @@
 				556D39B11DD3AF3800551040 /* EVcfName.h */,
 				556D39CF1DD66E1700551040 /* SConfig.h */,
 				55D8D33C1E0B358000CE2838 /* SVariantSummary.h */,
+				55BD82D41E40DF190023D696 /* CMendelianAnalyzer.h */,
+				55BD82D71E410F200023D696 /* CMendelianVariantProvider.h */,
+				55BD82DA1E422FDE0023D696 /* Constants.h */,
+				55EBBC311E43C22100559710 /* SMendelianThreadParam.h */,
 			);
 			path = include;
 			sourceTree = SOURCE_ROOT;
@@ -328,6 +342,7 @@
 				556D39CE1DD4D75B00551040 /* CPathSet.cpp in Sources */,
 				553B0F861E36A2FE00E7186C /* README.md in Sources */,
 				556D399C1DD3AF2E00551040 /* CPath.cpp in Sources */,
+				55BD82D61E40ED530023D696 /* CMendelianAnalyzer.cpp in Sources */,
 				55242DF51E044BEE00C31E3E /* CVcfWriter.cpp in Sources */,
 				556D399F1DD3AF2E00551040 /* CSemiPath.cpp in Sources */,
 				553F8B041DFEFA8C00BD756E /* CFastaParser.cpp in Sources */,
@@ -335,6 +350,7 @@
 				556D39A11DD3AF2E00551040 /* CVariantProvider.cpp in Sources */,
 				55E7CBD51E157670002ACA4E /* CResultLog.cpp in Sources */,
 				55D8D33A1E09BEAE00CE2838 /* CGa4ghOutputProvider.cpp in Sources */,
+				55BD82D91E411F090023D696 /* CMendelianVariantProvider.cpp in Sources */,
 				553F8B001DF9B8CD00BD756E /* CVcfAnalyzer.cpp in Sources */,
 				556D399B1DD3AF2E00551040 /* COrientedVariant.cpp in Sources */,
 				556D399D1DD3AF2E00551040 /* CPathReplay.cpp in Sources */,
