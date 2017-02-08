@@ -28,8 +28,11 @@ public:
     //Read the parameters if the execution mode is mendelian. If all mandatory parameters are set, return true.
     bool ReadParameters(int argc, char** argv);
     
-    //A thread function to proces best path algorithm in allele match with the given parameters
+    //A thread function to process best path algorithm in allele match with the given parameters
     void ThreadFunc(const std::vector<SMendelianThreadParam>& a_rThreadParameters);
+    
+    //A function that perform merge operations after best path algorith m for mother-child and father-child is called
+    void MergeFunc(int a_nChromosomeId);
     
 private:
     

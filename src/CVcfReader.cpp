@@ -513,8 +513,10 @@ int CVcfReader::GetChromosomeNumber(const std::string& a_chrName) const
         return atoi(a_chrName.substr(3,2).c_str());
     else if(a_chrName.length() == 4)
         return atoi(a_chrName.substr(3,1).c_str());
+    else if(a_chrName.length() <= 2)
+        return atoi(a_chrName.c_str());
     else
-        return atoi(m_pHeader->id[BCF_DT_CTG][m_pRecord->rid].key);
+        return -1;
     
 }
 

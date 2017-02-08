@@ -49,6 +49,10 @@ void CMendelianAnalyzer::run(int argc, char **argv)
             m_pThreadPool[k].join();
     }
     
+    std::vector<int> chrIds = m_provider.GetCommonChromosomes();
+    for(int k = 0; k < chrIds.size(); k++)
+        MergeFunc(chrIds[k]);
+    
     //Write results to log file
     m_resultLog.SetLogPath(m_fatherChildConfig.m_pOutputDirectory);
     m_resultLog.WriteMendelianStatistics();
@@ -278,6 +282,145 @@ void CMendelianAnalyzer::AssignJobsToThreads(int a_nThreadCount)
         m_pThreadPool[k] = std::thread(&CMendelianAnalyzer::ThreadFunc, this, chromosomeLists[k]);
     }
     
+}
+
+void CMendelianAnalyzer::MergeFunc(int a_nChromosomeId)
+{
+    //Included lists of child
+    const std::vector<const COrientedVariant*>& FCchildIncluded = m_aBestPathsFatherChild[a_nChromosomeId].m_calledSemiPath.GetIncludedVariants();
+    const std::vector<const COrientedVariant*>& MCchildIncluded = m_aBestPathsMotherChild[a_nChromosomeId].m_calledSemiPath.GetIncludedVariants();
+    
+    //Excluded list of child (Intersection of the 2 is the unique child set)
+    const std::vector<int>& FCexcludedIndexes = m_aBestPathsFatherChild[a_nChromosomeId].m_calledSemiPath.GetExcluded();
+    const std::vector<int>& MCexcludedIndexes = m_aBestPathsMotherChild[a_nChromosomeId].m_calledSemiPath.GetExcluded();
+    std::vector<int> childUniqueVarIndexList;
+
+    for(int FC = 0, MC = 0; FC < FCexcludedIndexes.size() && MC < MCexcludedIndexes.size();)
+    {
+        if(FCexcludedIndexes[FC] == MCexcludedIndexes[MC])
+        {
+            childUniqueVarIndexList.push_back(FCexcludedIndexes[FC]);
+            FC++;
+            MC++;
+        }
+        else if(FCexcludedIndexes[FC] > MCexcludedIndexes[MC])
+            MC++;
+        else
+            FC++;
+    }
+    
+    //Unique Excluded variant list of child
+    //const std::vector<const COrientedVariant*>& childOnlyExcluded = m_provider.GetOrientedVariantList(eCHILD, a_nChromosomeId, common);
+    
+    
+    std::vector<const COrientedVariant*> childCommonHeterozygous;
+    std::vector<const COrientedVariant*> childFilteredHeterozygous;
+    std::vector<const COrientedVariant*> childCommonHomozygous;
+    std::vector<const COrientedVariant*> motherChildHeterozygous;
+    std::vector<const COrientedVariant*> motherChildHomozygous;
+    std::vector<const COrientedVariant*> fatherChildHeterozygous;
+    std::vector<const COrientedVariant*> fatherChildHomozygous;
+
+    std::vector<const COrientedVariant*> MendelianViolationVars;
+    std::vector<const COrientedVariant*> MendelianCompliantVars;
+    
+    //Assure that given chromosome is processed already;
+    assert(FCchildIncluded.size() > 0);
+    assert(MCchildIncluded.size() > 0);
+    
+    int uniqueHomozygousVariantInFC = 0;
+    int uniqueHomozygousVariantInMC = 0;
+
+    int uniqueHeterozygousVariantInFC = 0;
+    int uniqueHeterozygousVariantInMC = 0;
+
+    
+    //Get the Intersection of the two list
+    int mcIndex, fcIndex;
+    for(mcIndex = 0, fcIndex = 0; mcIndex < MCchildIncluded.size() && fcIndex < FCchildIncluded.size();)
+    {
+        if(MCchildIncluded[mcIndex]->GetVariant().m_nStartPos == FCchildIncluded[fcIndex]->GetVariant().m_nStartPos)
+        {
+            if(MCchildIncluded[mcIndex]->GetVariant().m_bIsHeterozygous)
+            {
+                if(MCchildIncluded[mcIndex]->GetAlleleIndex() == FCchildIncluded[fcIndex]->GetAlleleIndex())
+                    childFilteredHeterozygous.push_back(MCchildIncluded[mcIndex]);
+                else
+                    childCommonHeterozygous.push_back(MCchildIncluded[mcIndex]);
+            }
+            else
+                childCommonHomozygous.push_back(MCchildIncluded[mcIndex]);
+            
+            mcIndex++;
+            fcIndex++;
+        }
+        
+        else if(MCchildIncluded[mcIndex]->GetVariant().m_nStartPos > FCchildIncluded[fcIndex]->GetVariant().m_nStartPos)
+        {
+            if(FCchildIncluded[fcIndex]->GetVariant().m_bIsHeterozygous)
+                uniqueHeterozygousVariantInFC++;
+            else
+                uniqueHomozygousVariantInFC++;
+            
+            fcIndex++;
+        }
+        
+        else if(MCchildIncluded[mcIndex]->GetVariant().m_nStartPos < FCchildIncluded[fcIndex]->GetVariant().m_nStartPos)
+        {
+            if(MCchildIncluded[mcIndex]->GetVariant().m_bIsHeterozygous)
+                uniqueHeterozygousVariantInMC++;
+            else
+                uniqueHomozygousVariantInMC++;
+            
+            mcIndex++;
+        }
+        
+        else
+        {
+            if(MCchildIncluded[mcIndex]->GetVariant().m_bIsHeterozygous)
+                uniqueHeterozygousVariantInMC++;
+            else
+                uniqueHomozygousVariantInMC++;
+            
+            mcIndex++;
+        }
+        
+    }
+    
+    //Add the remaining MC child variants if exists
+    if(mcIndex < MCchildIncluded.size())
+    {
+        for(int k = mcIndex; k < MCchildIncluded.size(); k++)
+        {
+            if(MCchildIncluded[k]->GetVariant().m_bIsHeterozygous)
+                uniqueHeterozygousVariantInMC++;
+            else
+                uniqueHomozygousVariantInMC++;
+        }
+    }
+
+    //Add the remaining FC child variatns if exists
+    if(fcIndex < FCchildIncluded.size())
+    {
+        for(int k = fcIndex; k < FCchildIncluded.size(); k++)
+        {
+            if(FCchildIncluded[k]->GetVariant().m_bIsHeterozygous)
+                uniqueHeterozygousVariantInFC++;
+            else
+                uniqueHomozygousVariantInFC++;
+        }
+    }
+    
+    //Send result to the log file
+    m_resultLog.LogMendelianIntersectionStatistic(a_nChromosomeId,
+                                                  static_cast<int>(childCommonHomozygous.size()),
+                                                  static_cast<int>(childCommonHeterozygous.size()),
+                                                  static_cast<int>(childFilteredHeterozygous.size()),
+                                                  uniqueHomozygousVariantInFC,
+                                                  uniqueHeterozygousVariantInFC,
+                                                  uniqueHomozygousVariantInMC,
+                                                  uniqueHeterozygousVariantInMC,
+                                                  static_cast<int>(childUniqueVarIndexList.size()));
 }
 
 

@@ -162,7 +162,8 @@ void CVariantProvider::FillVariantLists()
             //if(preChrId == "2")
             //    break;
         }
-        
+        if(variant.m_nChrId == -1)
+            continue;
         if(m_config.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
             m_aBaseNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
         

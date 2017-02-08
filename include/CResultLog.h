@@ -32,6 +32,19 @@ struct SMendelianLogEntry
     int m_nFn;
 };
 
+struct SMendelianMergeLogEntry
+{
+    bool m_bIsNull = true;
+    int m_nCommonHomozygous;
+    int m_nCommonHeterozygous;
+    int m_nCommonFilteredHeterozygous;
+    int m_nFCHomozygous;
+    int m_nFCHeterozygous;
+    int m_nMCHomozygous;
+    int m_nMCHeterozygous;
+    int m_nChildUnique;
+};
+
 
 class CResultLog
 {
@@ -47,6 +60,16 @@ public:
     //Records log entry for mendelian comparison
     void LogMendelianStatistic(bool a_bIsFatherChild, int a_nChromosomeId, int a_nTpCalled, int a_nTpBaseline, int a_nFalsePositive, int a_nFalseNegative);
     
+    void LogMendelianIntersectionStatistic(int a_nChromosomeId,
+                                           int a_nCommonHomozygous,
+                                           int a_nCommonHeterozygous,
+                                           int a_nCommonFilteredHeterozygous,
+                                           int a_nFCHomozygous,
+                                           int a_nFCHeterozgous,
+                                           int a_nMCHomozygous,
+                                           int a_nMCHeterozygous,
+                                           int a_nChildUnique);
+    
     //Write the results in log.txt file
     void WriteStatistics();
     
@@ -61,6 +84,7 @@ private:
     //Log entry array for Mendelian Violation mode output
     SMendelianLogEntry m_aFatherChildLogEntries[CHROMOSOME_COUNT];
     SMendelianLogEntry m_aMotherChildLogEntries[CHROMOSOME_COUNT];
+    SMendelianMergeLogEntry m_aChildMergeLogEntries[CHROMOSOME_COUNT];
     
     std::string m_aLogPath;
     

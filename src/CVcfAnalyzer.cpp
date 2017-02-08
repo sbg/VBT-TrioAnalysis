@@ -27,6 +27,9 @@ void CVcfAnalyzer::Run(int argc, char** argv)
     
     start = std::clock();
     
+    m_config.m_pCalledVcfFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/gral0.9.sorted.and_more.concat.vcf.gz";
+    m_config.m_pBaseVcfFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/HG002_GIAB_highconf_IllFB-IllGATKHC-CG-Ion-Solid_CHROM1-22_v3.2.2_highconf.vcf.gz";
+    
     //Initialize Variant providers which contains VCF and FASTA files
     isSuccess = m_provider.InitializeReaders(m_config);
     
@@ -88,7 +91,7 @@ void CVcfAnalyzer::SetThreadsCustom(int a_nMemoryInMB)
     //ELSE CREATE 4 GB MEMORY (ON AVG) FOR EACH THREAD
     else
     {
-        const int maxThreadCount = std::max(static_cast<int>(chromosomeIds.size()), std::min(25, static_cast<int>(ceil(a_nMemoryInMB / 4096))));
+        const int maxThreadCount = std::min(static_cast<int>(chromosomeIds.size()), std::min(CHROMOSOME_COUNT, static_cast<int>(floor(a_nMemoryInMB / 4096))));
         std::vector<int>* chrArrs = new std::vector<int>[maxThreadCount];
 
         for(int k = 0, p = 0; k < chromosomeIds.size(); k++)
@@ -286,7 +289,12 @@ bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
     bool bOutputDirSet = false;
     
     int it = 1;
-        
+    if(argc < 2)
+    {
+        PrintHelp();
+        return false;
+    }
+    
     while(it < argc)
     {
         if(0 == strcmp(argv[it], PARAM_HELP))
@@ -299,30 +307,34 @@ bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
         {
             m_config.m_pBaseVcfFileName = argv[it+1];
             bBaselineSet = true;
+            it += 2;
         }
         
         else if(0 == strcmp(argv[it], PARAM_CALLED))
         {
             m_config.m_pCalledVcfFileName = argv[it+1];
             bCalledSet = true;
+            it += 2;
         }
         
         else if(0 == strcmp(argv[it], PARAM_REFERENCE))
         {
             m_config.m_pFastaFileName = argv[it+1];
             bReferenceSet = true;
+            it += 2;
         }
         
         else if(0 == strcmp(argv[it], PARAM_OUTPUT_DIR))
         {
             m_config.m_pOutputDirectory = argv[it+1];
             bOutputDirSet = true;
+            it += 2;
         }
         
         else if(0 == strcmp(argv[it], PARAM_REF_OVERLAP))
         {
             m_config.m_bIsRefOverlap = true;
-            it--;
+            it++;
         }
         
         else if(0 == strcmp(argv[it], PARAM_FILTER))
@@ -334,39 +346,42 @@ bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
                 m_config.m_bIsFilterEnabled = true;
                 m_config.m_pFilterName = argv[it+1];
             }
+            it += 2;
         }
         
         else if(0 == strcmp(argv[it], PARAM_SAMPLE_BASE))
         {
             m_config.m_bBaseSampleEnabled = true;
             m_config.m_pBaseSample = argv[it+1];
+            it += 2;
         }
         
         else if(0 == strcmp(argv[it], PARAM_SAMPLE_CALLED))
         {
             m_config.m_bCalledSampleEnabled = true;
             m_config.m_pCalledSample = argv[it+1];
+            it += 2;
         }
         
         else if(0 == strcmp(argv[it], PARAM_SNP_ONLY))
         {
             m_config.m_bSNPOnly = true;
-            it--;
+            it++;
         }
         
         else if(0 == strcmp(argv[it], PARAM_INDEL_ONLY))
         {
             m_config.m_bINDELOnly = true;
-            it--;
+            it++;
         }
         
         else if(0 == strcmp(argv[it], PARAM_PLATFORM))
         {
             m_config.m_bIsPlatformMode = true;
-            it--;
+            it++;
         }
-        
-        it += 2;
+        else
+            it++;
     }
     
     if(!bBaselineSet)

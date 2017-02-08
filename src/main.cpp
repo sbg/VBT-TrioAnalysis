@@ -26,14 +26,14 @@ int main (int argc, char** argv)
     
     if(strcmp(argv[1], "-mendelian") == 0)
     {
-        CMendelianAnalyzer mendelianAnalyzer;
-        mendelianAnalyzer.run(argc, argv);
+       CMendelianAnalyzer mendelianAnalyzer;
+       mendelianAnalyzer.run(argc, argv);
     }
     
     else
     {
-        CVcfAnalyzer analyzer;
-        analyzer.Run(argc, argv);
+       CVcfAnalyzer analyzer;
+       analyzer.Run(argc, argv);
     }
     
     //=====TESTS=====

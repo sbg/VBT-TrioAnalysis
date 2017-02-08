@@ -66,13 +66,11 @@ bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildC
         m_ChildVcf.SelectSample(sampleNames[0]);
     }
     
-    
     // OPEN FASTA FILE
     bIsSuccessFasta = m_fastaParser.OpenFastaFile(a_rFatherChildConfig.m_pFastaFileName);
     if(!bIsSuccessFasta)
         std::cout << "FASTA file is unable to open!: " << a_rFatherChildConfig.m_pFastaFileName << std::endl;
     
-
     if(bIsSuccessChild && bIsSuccessMother && bIsSuccessFather && bIsSuccessFasta)
     {
         //Fill the variants of 3 vcf file
@@ -316,7 +314,7 @@ std::vector<int> CMendelianVariantProvider::GetCommonChromosomes(bool a_bIsCalle
     return commonChrIds;
 }
 
-std::vector<const CVariant*> CMendelianVariantProvider::GetVariantList(EMendelianVcfName a_uFrom, int a_nChrNo)
+std::vector<const CVariant*> CMendelianVariantProvider::GetVariantList(EMendelianVcfName a_uFrom, int a_nChrNo) const
 {
     std::vector<const CVariant*> varList;
     
@@ -343,7 +341,7 @@ std::vector<const CVariant*> CMendelianVariantProvider::GetVariantList(EMendelia
 
 
 
-std::vector<const COrientedVariant*> CMendelianVariantProvider::GetOrientedVariantList(EMendelianVcfName a_uFrom, int a_nChrNo)
+std::vector<const COrientedVariant*> CMendelianVariantProvider::GetOrientedVariantList(EMendelianVcfName a_uFrom, int a_nChrNo) const
 {
     std::vector<const COrientedVariant*> ovarList;
     
@@ -369,6 +367,32 @@ std::vector<const COrientedVariant*> CMendelianVariantProvider::GetOrientedVaria
     return ovarList;
 }
 
+std::vector<const COrientedVariant*> CMendelianVariantProvider::GetOrientedVariantList(EMendelianVcfName a_uFrom, int a_nChrNo, const std::vector<int>& a_nIndexList) const
+{
+    std::vector<const COrientedVariant*> ovarList;
+
+    switch (a_uFrom)
+    {
+        case eCHILD:
+            for(int k = 0; k < a_nIndexList.size();k++)
+                ovarList.push_back(&m_aChildOrientedVariantList[a_nChrNo][a_nIndexList[k]]);
+            break;
+        case eFATHER:
+            for(int k = 0; k < a_nIndexList.size();k++)
+                ovarList.push_back(&m_aFatherOrientedVariantList[a_nChrNo][a_nIndexList[k]]);
+            break;
+        case eMOTHER:
+            for(int k = 0; k < a_nIndexList.size();k++)
+                ovarList.push_back(&m_aMotherOrientedVariantList[a_nChrNo][a_nIndexList[k]]);
+            break;
+            
+        default:
+            break;
+    }
+    
+    return ovarList;
+
+}
 
 void CMendelianVariantProvider::GetContig(int a_nChrId, SContig& a_rContig) const
 {
