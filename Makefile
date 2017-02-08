@@ -7,9 +7,9 @@ TARGET := sbg
 SRCEXT := cpp
 SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
 OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
-CFLAGS := -Wall -O2 -g
+CFLAGS := -std=c++11 -Wall -O2 -g
 LIB := -lz -pthread -lhts
-INC := -I include
+INC := -I include -I include/htslib
 
 $(TARGET): $(OBJECTS)
 	@echo " Linking..."
