@@ -2,6 +2,13 @@
 
 SBG vcf comparison tool is written using the algorithm of [vcfeval](https://github.com/RealTimeGenomics/rtg-tools "vcfeval github page") using [this](http://biorxiv.org/content/early/2015/08/02/023754) paper. Please see the command line parameters below.
 
+### Quick Install:
+```
+git clone https://gitlab.sbgdinc.com/Variants/Vcf-Comparison.git
+make
+```
+**Note:** If you are unable to compile program or getting runtime error, it is mostly because the project is still under heavy development. Please shoot me an email(berke.toptas@sbgdinc.com) for any problems, suggestions etc.
+
 #### Parameter format:
 ```
 ./sbgVcfComp -called <called_vcf_file> -baseline <baseline_vcf> -ref <reference_fasta> -outDir <output_directory> [OPTIONAL PARAMETERS]
