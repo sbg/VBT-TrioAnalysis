@@ -16,7 +16,7 @@
 void CVcfAnalyzer::Run(int argc, char** argv)
 {
     
-    std::clock_t start;
+    std::time_t start;
     double duration;
     
     //Read command line parameters to m_config object
@@ -25,28 +25,27 @@ void CVcfAnalyzer::Run(int argc, char** argv)
     if(!isSuccess)
         return;
     
-    start = std::clock();
-    
-    m_config.m_pCalledVcfFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/gral0.9.sorted.and_more.concat.vcf.gz";
-    m_config.m_pBaseVcfFileName = "/Users/c1ms21p6h3qk/Desktop/BigTestData/HG002_GIAB_highconf_IllFB-IllGATKHC-CG-Ion-Solid_CHROM1-22_v3.2.2_highconf.vcf.gz";
-    
+    start = std::time(0);
+        
     //Initialize Variant providers which contains VCF and FASTA files
     isSuccess = m_provider.InitializeReaders(m_config);
     
-    duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
+    duration = std::difftime(std::time(0) ,start);
     std::cout << "Vcf and fasta Parser read completed in " << duration << " secs" << std::endl;
 
     if(!isSuccess)
         return;
     
-    start = std::clock();
+    std::time_t start1 = std::time(0);
     //Creates the threads according to given memory and process the data
     if(m_config.m_bIsPlatformMode)
         SetThreadsCustom(48 * 1024);
     else
         SetThreadsCustom(8 * 1024);
-    duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
-    std::cout << "Program Completed in " << duration << " secs" << std::endl;
+    duration = std::difftime(std::time(0), start1);
+    std::cout << "Processing Chromosomes completed in " << duration << " secs" << std::endl;
+    duration = std::difftime(std::time(0), start);
+    std::cout << "Total execution time is " << duration << " secs" << std::endl;
 }
 
 void CVcfAnalyzer::SetThreadsPlatform()
@@ -416,6 +415,7 @@ void CVcfAnalyzer::PrintHelp() const
     std::cout << "-SampleBase <sample_name>    [Optional.Read only the given sample in base VCF. Default is the first sample.]" << std::endl;
     std::cout << "-SampleCalled <sample_name>  [Optional.Read only the given sample in called VCF. Default is the first sample.]" << std::endl;
     std::cout << "-ref-overlap                 [Optional.Allow reference overlapping by trimming nucleotides and ignoring 0 genotype.]" << std::endl;
+    std::cout << "-platform-mode               [Optional.Allow to run program with the thread number of different chromosome count.]" << std::endl;
     std::cout << std::endl;
     std::cout << "Example Commands:" << std::endl;
     std::cout << "./sbgVcfComp -called called.vcf -base base.vcf -ref reference.fa -outDir SampleResultDir -filter none" << std::endl;
