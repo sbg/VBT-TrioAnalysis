@@ -13,6 +13,8 @@
 //void testGa4ghOutput();
 //void testRefOverlapOutput(int argc, char** argv);
 //void compareTrimmedVariables();
+void testTripletReader2();
+void compare2List();
 
 
 int main (int argc, char** argv)
@@ -23,6 +25,10 @@ int main (int argc, char** argv)
     std::ofstream err("/Users/c1ms21p6h3qk/Desktop/errXCOCD.txt");
     std::cerr.rdbuf(err.rdbuf()); //redirect std::cerr to error.txt!
     
+    //testTripletReader2();
+    
+    //compare2List();
+    //return 0;
     
     if(strcmp(argv[1], "-mendelian") == 0)
     {

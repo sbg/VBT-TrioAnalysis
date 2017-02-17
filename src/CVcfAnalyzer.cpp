@@ -10,6 +10,7 @@
 #include <math.h>
 #include <algorithm>
 #include "CGa4ghOutputProvider.h"
+#include <fstream>
 
 
 
@@ -26,7 +27,7 @@ void CVcfAnalyzer::Run(int argc, char** argv)
         return;
     
     start = std::time(0);
-        
+    
     //Initialize Variant providers which contains VCF and FASTA files
     isSuccess = m_provider.InitializeReaders(m_config);
     
@@ -191,7 +192,14 @@ void CVcfAnalyzer::ThreadFunc(int a_nChromosomeId)
     m_provider.SetVariantStatus(includedVarsCall2, eALLELE_MATCH);
     m_provider.SetVariantStatus(includedVarsBase2, eALLELE_MATCH);
     
+    PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("FP_") + std::to_string(a_nChromosomeId +1) + std::string(".txt")  , excludedVarsCall);
+    PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("TP_BASE_") + std::to_string(a_nChromosomeId + 1) + std::string(".txt")  , includedVarsBase);
+    PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("TP_CALLED_") + std::to_string(a_nChromosomeId + 1) + std::string(".txt") , includedVarsCall);
+    PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("FN_") + std::to_string(a_nChromosomeId + 1) + std::string(".txt")  , excludedVarsBase);
+    
     return;
+    
+    
 }
 
 void CVcfAnalyzer::ThreadFunc2(std::vector<int> a_nChrArr)
@@ -263,8 +271,46 @@ void CVcfAnalyzer::ThreadFunc2(std::vector<int> a_nChrArr)
         m_provider.SetVariantStatus(includedVarsCall2, eALLELE_MATCH);
         m_provider.SetVariantStatus(includedVarsBase2, eALLELE_MATCH);
         
+        PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("FP_") + std::to_string(a_nChrArr[k] + 1) + std::string(".txt")  , excludedVarsCall);
+        PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("TP_BASE_") + std::to_string(a_nChrArr[k] +1) + std::string(".txt")  , includedVarsBase);
+        PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("TP_CALLED_") + std::to_string(a_nChrArr[k] + 1) + std::string(".txt")  , includedVarsCall);
+        PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("FN_") + std::to_string(a_nChrArr[k] + 1) + std::string(".txt")  , excludedVarsBase);
+        
     }
 }
+
+
+void CVcfAnalyzer::PrintVariants(std::string a_outputDirectory, std::string a_FileName, const std::vector<const COrientedVariant*>& a_rOvarList) const
+{
+    std::ofstream outputFile;
+    
+    std::string fileName = a_outputDirectory + std::string("/") + a_FileName;
+    
+    outputFile.open(fileName.c_str());
+    
+    for(int k = (int)a_rOvarList.size()-1; k >= 0; k--)
+        outputFile << a_rOvarList[k]->GetVariant().ToString() << std::endl;
+        
+//    for(const COrientedVariant* pOvar : a_rOvarList)
+//        outputFile << pOvar->GetVariant().ToString() << std::endl;
+    
+    outputFile.close();
+}
+
+void CVcfAnalyzer::PrintVariants(std::string a_outputDirectory, std::string a_FileName, const std::vector<const CVariant*>& a_rVarList) const
+{
+    std::ofstream outputFile;
+    
+    std::string fileName = a_outputDirectory + std::string("/") + a_FileName;
+    
+    outputFile.open(fileName.c_str());
+    
+    for(const CVariant* pVar : a_rVarList)
+        outputFile << pVar->ToString() << std::endl;
+
+    outputFile.close();
+}
+
 
 bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
 {

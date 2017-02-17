@@ -274,6 +274,366 @@ void compareTrimmedVariables()
 }
 
 
+void testTripletReader2()
+{
+    const int TEST_CHR = 1;
+    
+    CVcfReader father;
+    CVcfReader mother;
+    CVcfReader child;
+    
+    
+    father.Open("/Users/c1ms21p6h3qk/Desktop/MendelianInput/Father_HG00096.vcf");
+    mother.Open("/Users/c1ms21p6h3qk/Desktop/MendelianInput/Mother_HG00171.vcf");
+    child.Open("/Users/c1ms21p6h3qk/Desktop/MendelianInput/Child_HG00096xHG00171.vcf");
+
+    std::vector<CVariant> motherVariants;
+    std::vector<CVariant> fatherVariants;
+    std::vector<CVariant> childVariants;
+
+    
+    CVariant variant;
+    
+    int id = 0;
+    SConfig config;
+    
+    while(father.GetNextRecord(&variant, id, config))
+    {
+        if(variant.m_nChrId == TEST_CHR)
+        {
+            fatherVariants.push_back(variant);
+            id++;
+        }
+    }
+
+    id = 0;
+    while(mother.GetNextRecord(&variant, id, config))
+    {
+        if(variant.m_nChrId == TEST_CHR)
+        {
+            motherVariants.push_back(variant);
+            id++;
+        }
+    }
+    
+    id = 0;
+    while(child.GetNextRecord(&variant, id, config))
+    {
+        if(variant.m_nChrId == TEST_CHR)
+        {
+            childVariants.push_back(variant);
+            id++;
+        }
+    }
+    
+    std::cout << "Mother variants Size:" << motherVariants.size() << std::endl;
+    std::cout << "Father variants Size:" << fatherVariants.size() << std::endl;
+    std::cout << "Child variants Size:" << childVariants.size() << std::endl;
+    
+    
+    std::vector<CVariant*> motherChildCommon;
+    std::vector<EVariantMatch> motherChildMatchTypes;
+    std::vector<int> motherChildMatchAllele;
+    std::vector<CVariant*> motherUnique;
+    std::vector<CVariant*> childUniqueMC;
+
+    std::vector<CVariant*> fatherChildCommon;
+    std::vector<EVariantMatch> fatherChildMatchTypes;
+    std::vector<int> fatherChildMatchAllele;
+    std::vector<CVariant*> fatherUnique;
+    std::vector<CVariant*> childUniqueFC;
+
+    //MOTHER-CHILD COMPARISON
+    int k=0, m=0;
+    for(; k < motherVariants.size() && m < childVariants.size();)
+    {
+        if(motherVariants[k].m_nOriginalPos == 5021073)
+        {
+            int aas = 0;
+            aas++;
+        }
+        
+        if(motherVariants[k].m_nOriginalPos == childVariants[m].m_nOriginalPos)
+        {
+            int t1,t2,t3,t4;
+            
+            t1 = motherVariants[k].m_alleles[0].m_sequence == childVariants[m].m_alleles[0].m_sequence ? 1 : 0;
+            t2 = motherVariants[k].m_alleles[1].m_sequence == childVariants[m].m_alleles[1].m_sequence ? 1 : 0;
+            
+            t3 = motherVariants[k].m_alleles[0].m_sequence == childVariants[m].m_alleles[1].m_sequence ? 1 : 0;
+            t4 = motherVariants[k].m_alleles[1].m_sequence == childVariants[m].m_alleles[0].m_sequence ? 1 : 0;
+            
+            
+            if(t1+t2 == 2 || t3+t4 == 2)
+            {
+                motherChildMatchTypes.push_back(eGENOTYPE_MATCH);
+                motherChildMatchAllele.push_back(0);
+            }
+            else if(t1 + t2 == 1 || t3+t4 == 1)
+            {
+                motherChildMatchTypes.push_back(eALLELE_MATCH);
+                motherChildMatchAllele.push_back(t1+t4 > 0 ? 0 : 1);
+            }
+            else
+            {
+                m++;
+                k++;
+                continue;
+            }
+        
+            motherChildCommon.push_back(&motherVariants[k]);
+            m++;
+            k++;
+        
+        }
+        else if(motherVariants[k].m_nOriginalPos > childVariants[m].m_nOriginalPos)
+        {
+            childUniqueMC.push_back(&childVariants[m]);
+            m++;
+        }
+        else
+        {
+            motherUnique.push_back(&motherVariants[k]);
+            k++;
+        }
+    }
+    
+    for(int x = k; x < motherVariants.size(); x++)
+        motherUnique.push_back(&motherVariants[x]);
+    for(int x = m; x < childVariants.size(); x++)
+        childUniqueMC.push_back(&childVariants[x]);
+    
+        
+
+    
+    //FATHER-CHILD COMPARISON
+    for(k=0, m=0; k < fatherVariants.size() && m < childVariants.size();)
+    {
+        if(fatherVariants[k].m_nOriginalPos == 5021073)
+        {
+            int aas = 0;
+            aas++;
+        }
+
+        
+        if(fatherVariants[k].m_nOriginalPos == childVariants[m].m_nOriginalPos)
+        {
+            int t1,t2,t3,t4;
+            
+            t1 = fatherVariants[k].m_alleles[0].m_sequence == childVariants[m].m_alleles[0].m_sequence ? 1 : 0;
+            t2 = fatherVariants[k].m_alleles[1].m_sequence == childVariants[m].m_alleles[1].m_sequence ? 1 : 0;
+
+            t3 = fatherVariants[k].m_alleles[0].m_sequence == childVariants[m].m_alleles[1].m_sequence ? 1 : 0;
+            t4 = fatherVariants[k].m_alleles[1].m_sequence == childVariants[m].m_alleles[0].m_sequence ? 1 : 0;
+ 
+            
+            if(t1+t2 == 2 || t3+t4 == 2)
+            {
+                fatherChildMatchTypes.push_back(eGENOTYPE_MATCH);
+                fatherChildMatchAllele.push_back(0);
+            }
+            else if(t1 + t2 == 1 || t3+t4 == 1)
+            {
+                fatherChildMatchTypes.push_back(eALLELE_MATCH);
+                fatherChildMatchAllele.push_back(t1+t4 > 0 ? 0 : 1);
+            }
+            else
+            {
+                m++;
+                k++;
+                continue;
+            }
+            
+            fatherChildCommon.push_back(&fatherVariants[k]);
+            m++;
+            k++;
+        }
+        
+        
+        else if(fatherVariants[k].m_nOriginalPos > childVariants[m].m_nOriginalPos)
+        {
+            childUniqueFC.push_back(&childVariants[m]);
+            m++;
+        }
+        else
+        {
+            fatherUnique.push_back(&fatherVariants[k]);
+            k++;
+        }
+    }
+
+    for(int x = k; x < fatherVariants.size(); x++)
+        fatherUnique.push_back(&fatherVariants[x]);
+    for(int x = m; x < childVariants.size(); x++)
+        childUniqueFC.push_back(&childVariants[x]);
+    
+    
+    
+    std::vector<int> mendelianViolations;
+    std::vector<int> mendelianCompliants;
+    
+    
+    for(k = 0, m = 0; k < motherChildCommon.size() && m < fatherChildCommon.size();)
+    {
+        if(motherChildCommon[k]->m_nOriginalPos == fatherChildCommon[m]->m_nOriginalPos)
+        {
+            if(motherChildCommon[k]->m_nOriginalPos == 5021073)
+            {
+                int aas = 0;
+                aas++;
+            }
+
+            if(motherChildMatchAllele[k] != fatherChildMatchAllele[m])
+            {
+                mendelianCompliants.push_back(motherChildCommon[k]->m_nOriginalPos);
+                k++;
+                m++;
+            }
+            
+            else if(motherChildMatchTypes[k] == eGENOTYPE_MATCH || fatherChildMatchTypes[m] == eGENOTYPE_MATCH)
+            {
+                mendelianCompliants.push_back(motherChildCommon[k]->m_nOriginalPos);
+                k++;
+                m++;
+            }
+            
+            else
+            {
+                mendelianViolations.push_back(motherChildCommon[k]->m_nOriginalPos);
+                k++;
+                m++;
+            }
+        }
+        else if(motherChildCommon[k]->m_nOriginalPos > fatherChildCommon[m]->m_nOriginalPos)
+        {
+            mendelianViolations.push_back(fatherChildCommon[m]->m_nOriginalPos);
+            m++;
+        }
+        else
+        {
+            mendelianViolations.push_back(motherChildCommon[k]->m_nOriginalPos);
+            k++;
+        }
+    }
+    
+    for(int x = k; x < motherChildCommon.size(); x++)
+        mendelianViolations.push_back(motherChildCommon[x]->m_nOriginalPos);
+    for(int x = m; x < fatherChildCommon.size(); x++)
+        mendelianViolations.push_back(fatherChildCommon[x]->m_nOriginalPos);
+    
+    for(k = 0, m=0; k < childUniqueMC.size() && m <  childUniqueFC.size();)
+    {
+        if(childUniqueMC[k]->m_nOriginalPos == childUniqueFC[m]->m_nOriginalPos)
+        {
+            mendelianViolations.push_back(childUniqueMC[k]->m_nOriginalPos);
+            k++;
+            m++;
+        }
+        else if(childUniqueMC[k]->m_nOriginalPos > childUniqueFC[m]->m_nOriginalPos)
+        {
+            m++;
+        }
+        else
+        {
+            k++;
+        }
+    }
+    
+    std::cout << "Mother-Child Common:" << motherChildCommon.size() << std::endl;
+    std::cout << "Mother Unique : " << motherUnique.size() << std::endl;
+    std::cout << "Child Unique MC: "  << childUniqueMC.size() << std:: endl;
+    
+    std::cout << "Father-Child Common:" << fatherChildCommon.size() << std::endl;
+    std::cout << "Father Unique : " << fatherUnique.size() << std::endl;
+    std::cout << "Child Unique FC: "  << childUniqueFC.size() << std:: endl;
+    
+    std::cout << "Mendelian Compliant Vars:" << mendelianCompliants.size() << std::endl;
+    std::cout << "Mendelian Violation Vars:" << mendelianViolations.size() << std::endl;
+    
+    std::ofstream outputFile;
+    outputFile.open("/Users/c1ms21p6h3qk/Desktop/MendelianOutput/TestChr1MendelCompliants.txt");
+    
+    for(int k : mendelianCompliants)
+        outputFile << k << std::endl;
+    
+    outputFile.close();
+    
+    
+    
+
+}
+
+
+
+void compare2List()
+{
+    std::ifstream testfile;
+    std::ifstream origfile;
+    
+    testfile.open("/Users/c1ms21p6h3qk/Desktop/MendelianOutput/TestChr1MendelCompliants.txt");
+    origfile.open("/Users/c1ms21p6h3qk/Desktop/MendelianOutput/ORIGINALChr1MendelCompliants.txt");
+    
+    std::vector<int> testIndexes;
+    std::vector<int> origIndexes;
+    
+    std::string line;
+    
+    while(std::getline(testfile, line))
+        testIndexes.push_back(atoi(line.c_str()));
+    
+    while(std::getline(origfile, line))
+        origIndexes.push_back(atoi(line.c_str()));
+
+    
+    std::vector<int> commonVariants;
+    std::vector<int> unmatchTest;
+    std::vector<int> unmatchOrig;
+    
+    for(int k = 0, m=0; k < origIndexes.size() && m <  testIndexes.size();)
+    {
+        if(origIndexes[k] == testIndexes[m])
+        {
+            commonVariants.push_back(origIndexes[k]);
+            k++;
+            m++;
+        }
+        else if(origIndexes[k] > testIndexes[m])
+        {
+            unmatchTest.push_back(testIndexes[m]);
+            m++;
+        }
+        else
+        {
+            unmatchOrig.push_back(origIndexes[k]);
+            k++;
+        }
+    }
+    
+    
+    std::cout << "Common Cnt:" << commonVariants.size() << std::endl;
+    std::cout << "Unmatch Test:" << unmatchTest.size() << std::endl;
+    std::cout << "Unmatch Orig:" << unmatchOrig.size() << std::endl;
+    
+    std::cout << std::endl << std::endl;
+    
+    
+    for(int k : unmatchTest)
+        std::cout << k+1 << std::endl;
+    
+    
+    std::cout << std::endl << std::endl;
+    
+    for(int k : unmatchOrig)
+        std::cout << k+1 << std::endl;
+    
+    
+}
+
+
+
+
+
+
 
 
 

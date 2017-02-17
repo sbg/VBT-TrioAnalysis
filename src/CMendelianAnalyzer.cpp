@@ -11,6 +11,9 @@
 #include <string>
 #include "CPathReplay.h"
 #include <iostream>
+#include "CVariantIterator.h"
+
+#include <fstream>
 
 
 void CMendelianAnalyzer::run(int argc, char **argv)
@@ -38,14 +41,14 @@ void CMendelianAnalyzer::run(int argc, char **argv)
     //Decide Thread count and start parent child comparison
     if(m_fatherChildConfig.m_bIsPlatformMode)
     {
-        AssignJobsToThreads(CHROMOSOME_COUNT);
-        for(int k = 0; k < CHROMOSOME_COUNT; k++)
+        int threadCount = AssignJobsToThreads(CHROMOSOME_COUNT);
+        for(int k = 0; k < threadCount; k++)
             m_pThreadPool[k].join();
     }
     else
     {
-        AssignJobsToThreads(MAC_THREAD_COUNT);
-        for(int k = 0; k < MAC_THREAD_COUNT; k++)
+        int threadCount = AssignJobsToThreads(MAC_THREAD_COUNT);
+        for(int k = 0; k < threadCount; k++)
             m_pThreadPool[k].join();
     }
     
@@ -59,62 +62,6 @@ void CMendelianAnalyzer::run(int argc, char **argv)
     
     duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
     std::cout << "Program Completed in " << duration << " secs" << std::endl;
-}
-
-void CMendelianAnalyzer::ThreadFunc(const std::vector<SMendelianThreadParam>& a_rThreadParams)
-{
-    for(int k = 0; k < a_rThreadParams.size(); k++)
-    {
-        int a_nChromosomeId = a_rThreadParams[k].m_nChromosomeIndex;
-        bool a_bIsFatherChild = a_rThreadParams[k].m_bIsFatherChildComparison;
-        
-        //Perform operations on mother or father according to selection
-        EMendelianVcfName baseName = a_bIsFatherChild ? eFATHER : eMOTHER;
-        
-        std::vector<const CVariant*> varListBase = m_provider.GetVariantList(baseName, a_nChromosomeId);
-        std::vector<const CVariant*> varListCalled = m_provider.GetVariantList(eCHILD, a_nChromosomeId);
-
-        std::vector<const COrientedVariant*> ovarListBase = m_provider.GetOrientedVariantList(baseName, a_nChromosomeId);
-        std::vector<const COrientedVariant*> ovarListCalled = m_provider.GetOrientedVariantList(eCHILD, a_nChromosomeId);
-
-        //Values to Log
-        int TPBase, TPCalled, Fp, Fn;
-        
-        //Get the chromosome ref seq
-        SContig ctg;
-        m_provider.GetContig(a_nChromosomeId, ctg);
-        
-        //Create path replay for father child;
-        CPathReplay replay(varListBase, varListCalled, ovarListBase, ovarListCalled);
-        
-        //Find Best Path Parent Child
-        if(true == a_bIsFatherChild)
-        {
-            m_aBestPathsFatherChild[a_nChromosomeId] = replay.FindBestPath(ctg, false);
-            TPBase = static_cast<int>(m_aBestPathsFatherChild[a_nChromosomeId].m_baseSemiPath.GetIncludedVariants().size());
-            TPCalled = static_cast<int>(m_aBestPathsFatherChild[a_nChromosomeId].m_calledSemiPath.GetIncludedVariants().size());
-            Fp = static_cast<int>(m_aBestPathsFatherChild[a_nChromosomeId].m_calledSemiPath.GetExcluded().size());
-            Fn = static_cast<int>(m_aBestPathsFatherChild[a_nChromosomeId].m_baseSemiPath.GetExcluded().size());
-        }
-        else
-        {
-            m_aBestPathsMotherChild[a_nChromosomeId] = replay.FindBestPath(ctg, false);
-            TPBase = static_cast<int>(m_aBestPathsMotherChild[a_nChromosomeId].m_baseSemiPath.GetIncludedVariants().size());
-            TPCalled = static_cast<int>(m_aBestPathsMotherChild[a_nChromosomeId].m_calledSemiPath.GetIncludedVariants().size());
-            Fp = static_cast<int>(m_aBestPathsMotherChild[a_nChromosomeId].m_calledSemiPath.GetExcluded().size());
-            Fn = static_cast<int>(m_aBestPathsMotherChild[a_nChromosomeId].m_baseSemiPath.GetExcluded().size());
-        }
-        
-        //Log statistics of current process
-        m_resultLog.LogMendelianStatistic(a_bIsFatherChild, a_nChromosomeId, TPCalled, TPBase, Fp, Fn);
-        
-//        std::cout << "====CHROMOSOME " << a_nChromosomeId << (a_bIsFatherChild ? "  (father-child)" : "   (mother-child)") << "====" << std::endl;
-//        std::cout << "TP Base:" << TPBase << std::endl;
-//        std::cout << "TP Called:" << TPCalled << std::endl;
-//        std::cout << "FP:" << Fp << std::endl;
-//        std::cout << "FN:" << Fn << std::endl;
-        
-    }
 }
 
 bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
@@ -256,181 +203,364 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
     
 }
 
-void CMendelianAnalyzer::AssignJobsToThreads(int a_nThreadCount)
+int CMendelianAnalyzer::AssignJobsToThreads(int a_nThreadCount)
 {
     //Get the list of chromosomes to be processed
     std::vector<int> chromosomeListToProcess = m_provider.GetCommonChromosomes();
 
+    int exactThreadCount = std::min(a_nThreadCount, (int)chromosomeListToProcess.size());
+    
     //Allocate threads
-    m_pThreadPool = new std::thread[std::min(a_nThreadCount, static_cast<int>(chromosomeListToProcess.size() *2))];
+    m_pThreadPool = new std::thread[exactThreadCount];
     
     int threadPoolIt = 0;
-    std::vector<SMendelianThreadParam> *chromosomeLists = new std::vector<SMendelianThreadParam>[a_nThreadCount];
+    std::vector<int> *chromosomeLists = new std::vector<int>[exactThreadCount];
     
     //Divide tasks into threads
     for(int k = 0; k < chromosomeListToProcess.size(); k++)
     {
-        chromosomeLists[threadPoolIt].push_back(SMendelianThreadParam(chromosomeListToProcess[k], true));
-        threadPoolIt = (threadPoolIt+1) % a_nThreadCount;
-        chromosomeLists[threadPoolIt].push_back(SMendelianThreadParam(chromosomeListToProcess[k], false));
-        threadPoolIt = (threadPoolIt+1) % a_nThreadCount;
+        chromosomeLists[threadPoolIt].push_back(chromosomeListToProcess[k]);
+        threadPoolIt = (threadPoolIt+1) % exactThreadCount;
     }
     
     //Assign divided task to the threads
-    for(int k = 0; k < a_nThreadCount; k++)
+    for(int k = 0; k < exactThreadCount; k++)
     {
-        m_pThreadPool[k] = std::thread(&CMendelianAnalyzer::ThreadFunc, this, chromosomeLists[k]);
+        m_pThreadPool[k] = std::thread(&CMendelianAnalyzer::ProcessChromosome, this, chromosomeLists[k]);
     }
+    
+    return exactThreadCount;
     
 }
 
+void CMendelianAnalyzer::ProcessChromosome(const std::vector<int>& a_nChromosomeIds)
+{    
+    for(int chromosomeId : a_nChromosomeIds)
+    {
+    
+        //Get variant list of parent-child for given chromosome
+        std::vector<const CVariant*> varListFather = m_provider.GetVariantList(eFATHER, chromosomeId);
+        std::vector<const CVariant*> varListMother = m_provider.GetVariantList(eMOTHER, chromosomeId);
+        std::vector<const CVariant*> varListChild = m_provider.GetVariantList(eCHILD, chromosomeId);
+        
+        //Get oriented variant list of parent-child for given chromosome
+        std::vector<const COrientedVariant*> ovarListGTFather = m_provider.GetOrientedVariantList(eFATHER, chromosomeId);
+        std::vector<const COrientedVariant*> ovarListGTMother = m_provider.GetOrientedVariantList(eMOTHER, chromosomeId);
+        std::vector<const COrientedVariant*> ovarListGTChild = m_provider.GetOrientedVariantList(eCHILD, chromosomeId);
+
+        //Get the chromosome ref seq
+        SContig ctg;
+        m_provider.GetContig(chromosomeId, ctg);
+        
+        
+        // === PROCESS FATHER-CHILD ===
+        
+        //Create path replay for parent child;
+        CPathReplay replayFatherChildGT(varListFather, varListChild, ovarListGTFather, ovarListGTChild);
+        
+        //Find Best Path Father-Child GT Match
+        m_aBestPathsFatherChildGT[chromosomeId] = replayFatherChildGT.FindBestPath(ctg, true);
+        
+        //Genotype Match variants
+        const std::vector<const COrientedVariant*>& includedVarsChildGT = m_aBestPathsFatherChildGT[chromosomeId].m_calledSemiPath.GetIncludedVariants();
+        //Variants that will be passed for allele match check
+        std::vector<const CVariant*> excludedVarsFather = m_provider.GetVariantList(eFATHER, chromosomeId, m_aBestPathsFatherChildGT[chromosomeId].m_baseSemiPath.GetExcluded());
+        std::vector<const CVariant*> excludedVarsChild = m_provider.GetVariantList(eCHILD, chromosomeId,m_aBestPathsFatherChildGT[chromosomeId].m_calledSemiPath.GetExcluded());
+        
+        //Allele Match oriented variants
+        std::vector<const COrientedVariant*> ovarListAMFather = m_provider.GetOrientedVariantList(eFATHER, chromosomeId, true, m_aBestPathsFatherChildGT[chromosomeId].m_baseSemiPath.GetExcluded());
+        std::vector<const COrientedVariant*> ovarListAMChildFC = m_provider.GetOrientedVariantList(eCHILD, chromosomeId, true, m_aBestPathsFatherChildGT[chromosomeId].m_calledSemiPath.GetExcluded());
+        
+        //Clear Father child replay object
+        replayFatherChildGT.Clear();
+        
+        //Change the variant list to process
+        CPathReplay replayFatherChildAM(excludedVarsFather, excludedVarsChild, ovarListAMFather, ovarListAMChildFC);
+        
+        //Find Best Path Father-Child AM Match
+        m_aBestPathsFatherChildAM[chromosomeId] = replayFatherChildAM.FindBestPath(ctg, false);
+        const std::vector<const COrientedVariant*>& includedVarsChildAM = m_aBestPathsFatherChildAM[chromosomeId].m_calledSemiPath.GetIncludedVariants();
+
+        //Set Variant status of child variants
+        m_provider.SetVariantStatus(includedVarsChildAM, eALLELE_MATCH);
+        m_provider.SetVariantStatus(includedVarsChildGT, eGENOTYPE_MATCH);
+        
+        //Clear Father child replay object
+        replayFatherChildAM.Clear();
+        
+        
+        // === PROCESS MOTHER-CHILD ===
+     
+        //Create path replay for parent child;
+        CPathReplay replayMotherChildGT(varListMother, varListChild, ovarListGTMother, ovarListGTChild);
+        
+        //Find Best Path Father-Child GT Match
+        m_aBestPathsMotherChildGT[chromosomeId] = replayMotherChildGT.FindBestPath(ctg, true);
+        
+        //Genotype Match variants
+        const std::vector<const COrientedVariant*>& includedVarsChildGTMC = m_aBestPathsMotherChildGT[chromosomeId].m_calledSemiPath.GetIncludedVariants();
+        //Variants that will be passed for allele match check
+        std::vector<const CVariant*> excludedVarsMother = m_provider.GetVariantList(eMOTHER, chromosomeId, m_aBestPathsMotherChildGT[chromosomeId].m_baseSemiPath.GetExcluded());
+        std::vector<const CVariant*> excludedVarsChild2 = m_provider.GetVariantList(eCHILD, chromosomeId,m_aBestPathsMotherChildGT[chromosomeId].m_calledSemiPath.GetExcluded());
+        
+        std::vector<const COrientedVariant*> ovarListAMMother = m_provider.GetOrientedVariantList(eMOTHER, chromosomeId, true, m_aBestPathsMotherChildGT[chromosomeId].m_baseSemiPath.GetExcluded());
+        std::vector<const COrientedVariant*> ovarListAMChildMC = m_provider.GetOrientedVariantList(eCHILD, chromosomeId, true, m_aBestPathsMotherChildGT[chromosomeId].m_calledSemiPath.GetExcluded());
+        
+        //Clear Mother child replay object
+        replayMotherChildGT.Clear();
+        //Change the variant list to process
+        CPathReplay replayMotherChildAM(excludedVarsMother, excludedVarsChild2, ovarListAMMother, ovarListAMChildMC);
+        
+        //Find Best Path Mother-Child AM Match
+        m_aBestPathsMotherChildAM[chromosomeId] = replayMotherChildAM.FindBestPath(ctg, false);
+        const std::vector<const COrientedVariant*>& includedVarsChildAMMC = m_aBestPathsMotherChildAM[chromosomeId].m_calledSemiPath.GetIncludedVariants();
+        
+        //Set Variant status of child variants
+        m_provider.SetVariantStatus(includedVarsChildAMMC, eALLELE_MATCH);
+        m_provider.SetVariantStatus(includedVarsChildGTMC, eGENOTYPE_MATCH);
+        
+        
+        //Clear Father child replay object
+        replayMotherChildAM.Clear();
+        
+    }
+
+}
+
+
 void CMendelianAnalyzer::MergeFunc(int a_nChromosomeId)
 {
-    //Included lists of child
-    const std::vector<const COrientedVariant*>& FCchildIncluded = m_aBestPathsFatherChild[a_nChromosomeId].m_calledSemiPath.GetIncludedVariants();
-    const std::vector<const COrientedVariant*>& MCchildIncluded = m_aBestPathsMotherChild[a_nChromosomeId].m_calledSemiPath.GetIncludedVariants();
+    std::vector<const CVariant*> MendelianViolationVars;
+    std::vector<const CVariant*> MendelianCompliantVars;
     
-    //Excluded list of child (Intersection of the 2 is the unique child set)
-    const std::vector<int>& FCexcludedIndexes = m_aBestPathsFatherChild[a_nChromosomeId].m_calledSemiPath.GetExcluded();
-    const std::vector<int>& MCexcludedIndexes = m_aBestPathsMotherChild[a_nChromosomeId].m_calledSemiPath.GetExcluded();
-    std::vector<int> childUniqueVarIndexList;
-
-    for(int FC = 0, MC = 0; FC < FCexcludedIndexes.size() && MC < MCexcludedIndexes.size();)
-    {
-        if(FCexcludedIndexes[FC] == MCexcludedIndexes[MC])
-        {
-            childUniqueVarIndexList.push_back(FCexcludedIndexes[FC]);
-            FC++;
-            MC++;
-        }
-        else if(FCexcludedIndexes[FC] > MCexcludedIndexes[MC])
-            MC++;
-        else
-            FC++;
-    }
-    
-    //Unique Excluded variant list of child
-    //const std::vector<const COrientedVariant*>& childOnlyExcluded = m_provider.GetOrientedVariantList(eCHILD, a_nChromosomeId, common);
-    
-    
-    std::vector<const COrientedVariant*> childCommonHeterozygous;
-    std::vector<const COrientedVariant*> childFilteredHeterozygous;
-    std::vector<const COrientedVariant*> childCommonHomozygous;
     std::vector<const COrientedVariant*> motherChildHeterozygous;
     std::vector<const COrientedVariant*> motherChildHomozygous;
     std::vector<const COrientedVariant*> fatherChildHeterozygous;
     std::vector<const COrientedVariant*> fatherChildHomozygous;
 
-    std::vector<const COrientedVariant*> MendelianViolationVars;
-    std::vector<const COrientedVariant*> MendelianCompliantVars;
-    
-    //Assure that given chromosome is processed already;
-    assert(FCchildIncluded.size() > 0);
-    assert(MCchildIncluded.size() > 0);
-    
-    int uniqueHomozygousVariantInFC = 0;
-    int uniqueHomozygousVariantInMC = 0;
+    std::vector<int> childUniqueVarIndexList;
 
-    int uniqueHeterozygousVariantInFC = 0;
-    int uniqueHeterozygousVariantInMC = 0;
-
+    //Included lists of child
+    CVariantIterator FatherChildVariants(m_aBestPathsFatherChildGT[a_nChromosomeId].m_calledSemiPath.GetIncludedVariants(),
+                                         m_aBestPathsFatherChildAM[a_nChromosomeId].m_calledSemiPath.GetIncludedVariants());
     
-    //Get the Intersection of the two list
-    int mcIndex, fcIndex;
-    for(mcIndex = 0, fcIndex = 0; mcIndex < MCchildIncluded.size() && fcIndex < FCchildIncluded.size();)
+    CVariantIterator MotherChildVariants(m_aBestPathsMotherChildGT[a_nChromosomeId].m_calledSemiPath.GetIncludedVariants(),
+                                         m_aBestPathsMotherChildAM[a_nChromosomeId].m_calledSemiPath.GetIncludedVariants());
+
+    //Check if the two list have common variants
+    if(FatherChildVariants.hasNext() == false && MotherChildVariants.hasNext() == false)
+        return;
+    
+    const COrientedVariant* varMC = MotherChildVariants.Next();
+    const COrientedVariant* varFC = FatherChildVariants.Next();
+    
+    while(true)
     {
-        if(MCchildIncluded[mcIndex]->GetVariant().m_nStartPos == FCchildIncluded[fcIndex]->GetVariant().m_nStartPos)
+        
+        if(varMC->GetVariant().m_nId == varFC->GetVariant().m_nId)
         {
-            if(MCchildIncluded[mcIndex]->GetVariant().m_bIsHeterozygous)
+            if(varMC->GetVariant().m_bIsHeterozygous)
             {
-                if(MCchildIncluded[mcIndex]->GetAlleleIndex() == FCchildIncluded[fcIndex]->GetAlleleIndex())
-                    childFilteredHeterozygous.push_back(MCchildIncluded[mcIndex]);
+                //ELIMINATE SAME ALLELE MATCHING(EXCEPTION 1)
+                if(varMC->GetAlleleIndex() == varFC->GetAlleleIndex())
+                {
+                    if(varMC->GetVariant().m_variantStatus == eGENOTYPE_MATCH
+                       ||
+                       varFC->GetVariant().m_variantStatus == eGENOTYPE_MATCH)
+                        MendelianCompliantVars.push_back(&varMC->GetVariant());
+                    else
+                        MendelianViolationVars.push_back(&varMC->GetVariant());
+                }
                 else
-                    childCommonHeterozygous.push_back(MCchildIncluded[mcIndex]);
+                    MendelianCompliantVars.push_back(&varMC->GetVariant());
             }
             else
-                childCommonHomozygous.push_back(MCchildIncluded[mcIndex]);
+                MendelianCompliantVars.push_back(&varMC->GetVariant());
             
-            mcIndex++;
-            fcIndex++;
+            if(MotherChildVariants.hasNext() && FatherChildVariants.hasNext())
+            {
+                varMC = MotherChildVariants.Next();
+                varFC = FatherChildVariants.Next();
+            }
+            
+            else
+            {
+                varMC = NULL;
+                varFC = NULL;
+                break;
+            }
         }
         
-        else if(MCchildIncluded[mcIndex]->GetVariant().m_nStartPos > FCchildIncluded[fcIndex]->GetVariant().m_nStartPos)
+        else if(varMC->GetVariant().m_nId > varFC->GetVariant().m_nId)
         {
-            if(FCchildIncluded[fcIndex]->GetVariant().m_bIsHeterozygous)
-                uniqueHeterozygousVariantInFC++;
+            if(varFC->GetVariant().m_bIsHeterozygous)
+                fatherChildHeterozygous.push_back(varFC);
             else
-                uniqueHomozygousVariantInFC++;
+                fatherChildHomozygous.push_back(varFC);
             
-            fcIndex++;
-        }
-        
-        else if(MCchildIncluded[mcIndex]->GetVariant().m_nStartPos < FCchildIncluded[fcIndex]->GetVariant().m_nStartPos)
-        {
-            if(MCchildIncluded[mcIndex]->GetVariant().m_bIsHeterozygous)
-                uniqueHeterozygousVariantInMC++;
+            if(FatherChildVariants.hasNext())
+                varFC = FatherChildVariants.Next();
             else
-                uniqueHomozygousVariantInMC++;
-            
-            mcIndex++;
+            {
+                varFC = NULL;
+                break;
+            }
         }
         
         else
         {
-            if(MCchildIncluded[mcIndex]->GetVariant().m_bIsHeterozygous)
-                uniqueHeterozygousVariantInMC++;
+            if(varMC->GetVariant().m_bIsHeterozygous)
+                motherChildHeterozygous.push_back(varMC);
             else
-                uniqueHomozygousVariantInMC++;
+                motherChildHomozygous.push_back(varMC);
             
-            mcIndex++;
+            if(MotherChildVariants.hasNext())
+                varMC = MotherChildVariants.Next();
+            else
+            {
+                varMC = NULL;
+                break;
+            }
         }
         
     }
     
-    //Add the remaining MC child variants if exists
-    if(mcIndex < MCchildIncluded.size())
+    
+    //Process remaining vars in FatherChild
+    while(true)
     {
-        for(int k = mcIndex; k < MCchildIncluded.size(); k++)
+        if(varFC == NULL)
         {
-            if(MCchildIncluded[k]->GetVariant().m_bIsHeterozygous)
-                uniqueHeterozygousVariantInMC++;
+            if(FatherChildVariants.hasNext())
+                varFC = FatherChildVariants.Next();
             else
-                uniqueHomozygousVariantInMC++;
+                break;
         }
+        
+        if(varFC->GetVariant().m_bIsHeterozygous)
+            fatherChildHeterozygous.push_back(varFC);
+        else
+            fatherChildHomozygous.push_back(varFC);
+        
+        if(!FatherChildVariants.hasNext())
+            break;
     }
-
-    //Add the remaining FC child variatns if exists
-    if(fcIndex < FCchildIncluded.size())
+    
+    //Process remaining vars in MotherChild
+    while(true)
     {
-        for(int k = fcIndex; k < FCchildIncluded.size(); k++)
+        if(varMC == NULL)
         {
-            if(FCchildIncluded[k]->GetVariant().m_bIsHeterozygous)
-                uniqueHeterozygousVariantInFC++;
+            if(MotherChildVariants.hasNext())
+                varMC = MotherChildVariants.Next();
             else
-                uniqueHomozygousVariantInFC++;
+                break;
+        }
+        
+        if(varMC->GetVariant().m_bIsHeterozygous)
+            motherChildHeterozygous.push_back(varMC);
+        else
+            motherChildHomozygous.push_back(varMC);
+        
+        if(!MotherChildVariants.hasNext())
+            break;
+    }
+    
+    
+    std::vector<const CVariant*> childVariants = m_provider.GetVariantList(eCHILD, a_nChromosomeId);
+    
+    std::vector<int>childProcessedArray(childVariants.size());
+    for(int elem : childProcessedArray)
+        elem = 0;
+    
+    for(int k = 0, m = 0; k < childVariants.size() && m < MendelianCompliantVars.size(); k++)
+    {
+        if(childVariants[k]->m_nId == MendelianCompliantVars[m]->m_nId)
+        {
+            childProcessedArray[k]++;
+            m++;
+        }
+        
+    }
+    
+    for(int k = 0, m = 0; k < childVariants.size() && m < MendelianViolationVars.size(); k++)
+    {
+        if(childVariants[k]->m_nId == MendelianViolationVars[m]->m_nId)
+        {
+            childProcessedArray[k]++;
+            m++;
         }
     }
     
-    //Send result to the log file
-    m_resultLog.LogMendelianIntersectionStatistic(a_nChromosomeId,
-                                                  static_cast<int>(childCommonHomozygous.size()),
-                                                  static_cast<int>(childCommonHeterozygous.size()),
-                                                  static_cast<int>(childFilteredHeterozygous.size()),
-                                                  uniqueHomozygousVariantInFC,
-                                                  uniqueHeterozygousVariantInFC,
-                                                  uniqueHomozygousVariantInMC,
-                                                  uniqueHeterozygousVariantInMC,
-                                                  static_cast<int>(childUniqueVarIndexList.size()));
+    for(int k = 0, m = 0; k < childVariants.size() && m < motherChildHeterozygous.size(); k++)
+    {
+        if(childVariants[k]->m_nId == motherChildHeterozygous[m]->GetVariant().m_nId)
+        {
+            childProcessedArray[k]++;
+            m++;
+        }
+    }
+
+    for(int k = 0, m = 0; k < childVariants.size() && m < motherChildHomozygous.size(); k++)
+    {
+        if(childVariants[k]->m_nId == motherChildHomozygous[m]->GetVariant().m_nId)
+        {
+            childProcessedArray[k]++;
+            m++;
+        }
+    }
+    
+    for(int k = 0, m = 0; k < childVariants.size() && m < fatherChildHeterozygous.size(); k++)
+    {
+        if(childVariants[k]->m_nId == fatherChildHeterozygous[m]->GetVariant().m_nId)
+        {
+            childProcessedArray[k]++;
+            m++;
+        }
+    }
+    
+    for(int k = 0, m = 0; k < childVariants.size() && m < fatherChildHomozygous.size(); k++)
+    {
+        if(childVariants[k]->m_nId == fatherChildHomozygous[m]->GetVariant().m_nId)
+        {
+            childProcessedArray[k]++;
+            m++;
+        }
+    }
+    
+    int noMatch = 0;
+    for(int elem : childProcessedArray)
+        if(elem == 0)
+            noMatch++;
+    
+   /*
+    if(a_nChromosomeId == 0)
+    {
+    std::ofstream outputFile;
+    outputFile.open("/Users/c1ms21p6h3qk/Desktop/MendelianOutput/ORIGINALChr1MendelCompliants.txt");
+    
+    for(const CVariant* k : MendelianCompliantVars)
+        outputFile << k->m_nOriginalPos << std::endl;
+    
+    outputFile.close();
+    }
+    */
+    
+    std::cout << "==="  << a_nChromosomeId + 1 << "===" << std::endl;
+    std::cout << "MendelianCompliant:" << MendelianCompliantVars.size() << std::endl;
+    std::cout << "MendelianViolation:" << MendelianViolationVars.size() << std::endl;
+    std::cout << "Heterozygous Mother Side Only:" << motherChildHeterozygous.size() << std::endl;
+    std::cout << "Homozygous Mother Side Only:" << motherChildHomozygous.size() << std::endl;
+    std::cout << "Heterozygous Father Side Only:" << fatherChildHeterozygous.size() << std::endl;
+    std::cout << "Homozygous Father Side Only:" << fatherChildHomozygous.size() << std::endl;
+    std::cout << "ChildUnique:" << noMatch << std::endl;
+    std::cout << "MendelianViolation Total:" << MendelianViolationVars.size() + motherChildHomozygous.size() + motherChildHeterozygous.size() + fatherChildHomozygous.size() + fatherChildHeterozygous.size()
+    + noMatch << std::endl;
+    std::cout << "TOTAL:" << MendelianViolationVars.size() + MendelianCompliantVars.size() + motherChildHomozygous.size() + motherChildHeterozygous.size() + fatherChildHomozygous.size() + fatherChildHeterozygous.size()
+    + noMatch << std::endl;
+    std::cout << "Child Var Original:" << childVariants.size() << std::endl;
+    
 }
-
-
-
-
-
-
-
-
-
 
 
 

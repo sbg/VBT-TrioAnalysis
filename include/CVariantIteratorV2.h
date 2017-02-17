@@ -43,23 +43,13 @@ public:
         
         while(true)
         {
-            //int includeStart = it_Included != m_aIncluded.end() ? (*it_Included)->GetVariant().GetStart() : INT_MAX;
-            //int excludeStart = it_Excluded != m_aExcluded.end() ? (*it_Excluded)->GetStart() : INT_MAX;
-            //int notAssessedStart = it_NotAssessed != m_aNotAssessed.end() ? it_NotAssessed->GetStart() : INT_MAX;
-
             int includeStart = it_Included != m_aIncluded.end() ? (*it_Included)->GetVariant().GetOriginalPos() : INT_MAX;
             int excludeStart = it_Excluded != m_aExcluded.end() ? (*it_Excluded)->GetOriginalPos() : INT_MAX;
             int notAssessedStart = it_NotAssessed != m_aNotAssessed.end() ? it_NotAssessed->GetOriginalPos() : INT_MAX;
 
-            
             //All lists are finished return false
             if(includeStart == INT_MAX && excludeStart == INT_MAX && notAssessedStart == INT_MAX)
                 return false;
-            
-            //First allele trimming correction
-            //includeStart = it_Included != m_aIncluded.end() ? includeStart - ((*it_Included)->GetVariant().m_bIsFirstNucleotideTrimmed ? 1 : 0) : includeStart;
-            //excludeStart = it_Excluded != m_aExcluded.end() ? excludeStart - ((*it_Excluded)->m_bIsFirstNucleotideTrimmed ? 1 : 0) : excludeStart;
-            //notAssessedStart = it_NotAssessed != m_aNotAssessed.end() ? notAssessedStart - (it_NotAssessed->m_bIsFirstNucleotideTrimmed ? 1 : 0) : notAssessedStart;
             
             //All variants are filled with the same position
             if(nLastPosition != -1 && nLastPosition != includeStart && nLastPosition != excludeStart && nLastPosition != notAssessedStart)

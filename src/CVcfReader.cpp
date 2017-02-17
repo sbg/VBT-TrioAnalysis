@@ -334,7 +334,10 @@ bool CVcfReader::GetNextRecordMultiSample(CVariant* a_pVariant)
         a_pVariant[k].m_nEndPos = maxEnd;
         a_pVariant[k].m_nStartPos = minStart;
         
-        
+        //SET ORIGINAL GENOTYPES
+        a_pVariant[k].m_genotype[0] = bcf_gt_allele(gt_arr[2*k]);
+        a_pVariant[k].m_genotype[1] = bcf_gt_allele(gt_arr[2*k+1]);
+
     }
 
     //FREE BUFFERS

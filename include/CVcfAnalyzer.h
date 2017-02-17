@@ -24,7 +24,7 @@ public:
     void Run(int argc, char** argv);
     
     
-//private:
+private:
 
     //Read Parameters from command line. If the mandatory arguments are given, return true.
     bool ReadParameters(int argc, char** argv);
@@ -43,7 +43,11 @@ public:
     
     //Function that process chromosome in bulk
     void ThreadFunc2(std::vector<int> a_nChrArr);
-        
+    
+    void PrintVariants(std::string a_outputDirectory, std::string a_FileName, const std::vector<const COrientedVariant*>& a_rOvarList) const;
+    void PrintVariants(std::string a_outputDirectory, std::string a_FileName, const std::vector<const CVariant*>& a_rVarList) const;
+    
+    
     //Maximum # of thread that program executes
     int m_nMaxThreadCount;
     //Maximum memory will be used by the program

@@ -191,7 +191,7 @@ CPath CPathReplay::FindBestPath(SContig a_contig, bool a_bIsGenotypeMatch)
     best.m_pPath->AddExcludedVariants(m_ExcludedVariantsCalledBest, m_ExcludedVariantsBaselineBest);
     
     
-    std::cout << "Best Path Found" << std::endl;
+    std::cout << "Best Path Found for " << a_contig.m_nChrId + 1 << std::endl;
     std::cout << "Maximum path complexity is " << maxPaths << ", with "  << currentMaxIterations << " iterations " << std::endl;
     return *best.m_pPath;
 }
