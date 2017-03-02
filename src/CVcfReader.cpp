@@ -79,7 +79,7 @@ bool CVcfReader::Close()
     }
     m_pHeader = NULL;
     m_pRecord = NULL;
-    m_pHtsFile      = NULL;
+    m_pHtsFile = NULL;
     
 
     return true;
@@ -221,7 +221,7 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
             a_pVariant->m_allelesStr += std::string(m_pRecord->d.allele[k]);
         }
         for(int k = 0; k < zygotCount; k++)
-           a_pVariant->m_genotype[k] = bcf_gt_allele(gt_arr[k]);
+            a_pVariant->m_genotype[k] = bcf_gt_allele(gt_arr[k]) == -1 ? 0 : bcf_gt_allele(gt_arr[k]);
         
         a_pVariant->m_nOriginalPos = m_pRecord->pos;
         
@@ -294,7 +294,7 @@ bool CVcfReader::GetNextRecordMultiSample(CVariant* a_pVariant)
         
         for (int i = 0; i < a_pVariant[k].m_nAlleleCount; ++i)
         {
-            int index = bcf_gt_allele(gt_arr[2*k + i]) == -1 ? 1 : bcf_gt_allele(gt_arr[2*k + i]);
+            int index = bcf_gt_allele(gt_arr[2*k + i]) == -1 ? 0 : bcf_gt_allele(gt_arr[2*k + i]);
             a_pVariant[k].m_alleles[i].m_sequence = m_pRecord->d.allele[index];
             a_pVariant[k].m_alleles[i].m_nStartPos = m_pRecord->pos;
             a_pVariant[k].m_alleles[i].m_nEndPos = static_cast<int>(m_pRecord->pos + a_pVariant->m_refSequence.length());
@@ -326,7 +326,7 @@ bool CVcfReader::GetNextRecordMultiSample(CVariant* a_pVariant)
         int maxEnd = -1;
         int minStart = INT_MAX;
         a_pVariant[k].m_nStartPos = m_pRecord->pos;
-        for(int p=0; p < ngt_arr/samplenumber; p++)
+        for(int p=0; p < a_pVariant[k].m_nAlleleCount; p++)
         {
             maxEnd = std::max(maxEnd, static_cast<int>(a_pVariant[k].m_alleles[p].m_nEndPos));
             minStart = std::min(minStart, static_cast<int>(a_pVariant[k].m_alleles[p].m_nStartPos));
@@ -336,7 +336,11 @@ bool CVcfReader::GetNextRecordMultiSample(CVariant* a_pVariant)
         
         //SET ORIGINAL GENOTYPES
         a_pVariant[k].m_genotype[0] = bcf_gt_allele(gt_arr[2*k]);
+        if(a_pVariant[k].m_genotype[0] == -1)
+            a_pVariant[k].m_genotype[0] = 0;
         a_pVariant[k].m_genotype[1] = bcf_gt_allele(gt_arr[2*k+1]);
+        if(a_pVariant[k].m_genotype[1] == -1)
+            a_pVariant[k].m_genotype[1] = 0;
 
     }
 
@@ -536,3 +540,34 @@ void CVcfReader::PrintVCF(const SConfig& a_rConfig)
         std::cout << k++ << ": " <<  variant.ToString() << std::endl;
     }
 }
+
+//Returns Header and Record Pointer of htslib
+bcf_hdr_t* CVcfReader::GetHeaderPointer()
+{
+    return m_pHeader;
+}
+
+
+bcf1_t* CVcfReader::GetRecordPointer()
+{
+    return m_pRecord;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

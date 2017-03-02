@@ -79,6 +79,10 @@ public:
     //Returns the filter names and descriptions in the vcf file
     void GetFilterInfo(std::vector<std::string>& a_rFilterNames, std::vector<std::string>& a_rFilterDescriptions);
     
+    //Returns Header and Record Pointer of htslib
+    bcf_hdr_t* GetHeaderPointer();
+    bcf1_t* GetRecordPointer();
+    
 private:
 
     // Trimms the alt string that contains ref allele
