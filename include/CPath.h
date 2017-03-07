@@ -14,7 +14,8 @@
 #include "EVcfName.h"
 
 class CPathContainer;
-class CVariantProvider;
+class CSyncPoint;
+class CMendelianVariantProvider;
 
 class CPath
 {

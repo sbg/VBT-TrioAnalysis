@@ -143,7 +143,6 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
             a_pVariant->m_alleles[i].m_sequence = m_pRecord->d.allele[index];
             a_pVariant->m_alleles[i].m_nStartPos = m_pRecord->pos;
             a_pVariant->m_alleles[i].m_nEndPos = static_cast<int>(m_pRecord->pos + a_pVariant->m_refSequence.length());
-            a_pVariant->m_nMaxLength = std::max(a_pVariant->m_nMaxLength,static_cast<int>(a_pVariant->m_alleles[i].m_sequence.length()));
         }
         
         //SET ZYGOSITY OF THE VARIANT (HOMOZYGOUS or HETEROZYGOUS)
@@ -298,7 +297,6 @@ bool CVcfReader::GetNextRecordMultiSample(CVariant* a_pVariant)
             a_pVariant[k].m_alleles[i].m_sequence = m_pRecord->d.allele[index];
             a_pVariant[k].m_alleles[i].m_nStartPos = m_pRecord->pos;
             a_pVariant[k].m_alleles[i].m_nEndPos = static_cast<int>(m_pRecord->pos + a_pVariant->m_refSequence.length());
-            a_pVariant[k].m_nMaxLength = std::max(a_pVariant->m_nMaxLength,static_cast<int>(a_pVariant->m_alleles[i].m_sequence.length()));
         }
         
         if(a_pVariant[k].m_nAlleleCount == 2)
@@ -444,6 +442,8 @@ void CVcfReader::GetFilterInfo(std::vector<std::string> &a_rFilterNames, std::ve
 
 void CVcfReader::TrimRefOverlap(SAllele& a_rAllele)
 {
+    if(a_rAllele.m_sequence == "*")
+        return;
     
     //Ref string
     std::string refString = m_pRecord->d.allele[0];

@@ -15,7 +15,6 @@
 #include "CPath.h"
 #include <thread>
 #include "CResultLog.h"
-#include "SMendelianThreadParam.h"
 
 class CMendelianAnalyzer
 {
@@ -25,21 +24,41 @@ public:
     //Executes the mendelian violation analyzer
     void run(int argc, char** argv);
     
+private:
+    
     //Read the parameters if the execution mode is mendelian. If all mandatory parameters are set, return true.
     bool ReadParameters(int argc, char** argv);
     
-    //A thread function to process best path algorithm in allele match with the given parameters
-    //void ThreadFunc(const std::vector<SMendelianThreadParam>& a_rThreadParameters);
-    
     //A function that perform merge operations after best path algorith m for mother-child and father-child is called
-    //void MergeFunc(int a_nChromosomeId);
-
     void MergeFunc(int a_nChromosomeId);
-
+    
+    //Return the syncpointlist for given comparison. Writes to the last parameter
+    void GetSyncPointList(int a_nChrId, bool a_bIsFatherChild, std::vector<CSyncPoint>& a_rSyncPointList, bool a_bIsGT = false);
+    
+    //Check sync points which child excluded contains 0 Allele variant. If that 0 allele is playable for the parent, we mark variants as compliant, violation otherwise
+    void CheckFor0Path(int a_nChrId,
+                       bool a_bIsFatherChild,
+                       std::vector<const CVariant*>& a_rOvarList,
+                       std::vector<const CVariant*>& a_rViolationList,
+                       std::vector<const CVariant*>& a_rCompliantList);
+    
+    //Check sync points which child excluded contains 0 Allele variant. If that 0 allele is playable for the parent, we mark variants as compliant, violation otherwise
+    void CheckFor0PathFor00(int a_nChrId,
+                            bool a_bIsFatherChild,
+                            std::vector<const CVariant*>& a_rOvarList,
+                            std::vector<const CVariant*>& a_rViolationList,
+                            std::vector<const CVariant*>& a_rCompliantList);
+    
+    
+    //Check sync points which child excluded variant is 0/0. If that is playable for the both parent, we mark variants as compliant, violation otherwise
+    void CheckFor00Child(int a_nChrId,
+                         std::vector<const CVariant*>& a_rOvarList,
+                         std::vector<const CVariant*>& a_rViolationList,
+                         std::vector<const CVariant*>& a_rCompliantList,
+                         bool a_bIsGTMatch);
+        
     //A Function to process mendelian violation pipeline for given chromosome id
     void ProcessChromosome(const std::vector<int>& a_rChromosomeIds);
-    
-private:
     
     //Divide the jobs between different threads homogeneously for given number of thread count. Return the actual thread count
     int AssignJobsToThreads(int a_nThreadCount);

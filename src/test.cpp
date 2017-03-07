@@ -563,16 +563,20 @@ void testTripletReader2()
 
 }
 
+struct SCompareResult
+{
+    int common;
+    int unMatchOrig;
+};
 
-
-void compare2List()
+SCompareResult compare2List(const std::string& a_pathTest, const std::string& a_pathQuery)
 {
     std::ifstream testfile;
     std::ifstream origfile;
     
-    testfile.open("/Users/c1ms21p6h3qk/Desktop/MendelianOutput/TestChr1MendelCompliants.txt");
-    origfile.open("/Users/c1ms21p6h3qk/Desktop/MendelianOutput/ORIGINALChr1MendelCompliants.txt");
-    
+    testfile.open(a_pathTest.c_str());
+    origfile.open(a_pathQuery.c_str());
+        
     std::vector<int> testIndexes;
     std::vector<int> origIndexes;
     
@@ -589,7 +593,12 @@ void compare2List()
     std::vector<int> unmatchTest;
     std::vector<int> unmatchOrig;
     
-    for(int k = 0, m=0; k < origIndexes.size() && m <  testIndexes.size();)
+    std::cout << "Test File Size: " << testIndexes.size() << std::endl;
+    std::cout << "Orig File Size: " << origIndexes.size() << std::endl;
+    
+    int k,m;
+    
+    for(k = 0, m=0; k < origIndexes.size() && m <  testIndexes.size();)
     {
         if(origIndexes[k] == testIndexes[m])
         {
@@ -609,24 +618,206 @@ void compare2List()
         }
     }
     
+    for(int x = k; x < origIndexes.size(); x++)
+        unmatchOrig.push_back(origIndexes[x]);
+    for(int x = m; x < testIndexes.size(); x++)
+        unmatchTest.push_back(testIndexes[x]);
     
-    std::cout << "Common Cnt:" << commonVariants.size() << std::endl;
-    std::cout << "Unmatch Test:" << unmatchTest.size() << std::endl;
-    std::cout << "Unmatch Orig:" << unmatchOrig.size() << std::endl;
-    
-    std::cout << std::endl << std::endl;
-    
-    
-    for(int k : unmatchTest)
-        std::cout << k+1 << std::endl;
-    
+    std::cout << "Common Cnt:"   << commonVariants.size() << std::endl;
+    std::cout << "Unmatch Test:" << unmatchTest.size()  << std::endl;
+    std::cout << "Unmatch Orig:" << unmatchOrig.size()  << std::endl;
     
     std::cout << std::endl << std::endl;
     
-    for(int k : unmatchOrig)
-        std::cout << k+1 << std::endl;
+    SCompareResult res;
+    res.common = (int)commonVariants.size();
+    res.unMatchOrig = (int)unmatchOrig.size();
+    return res;
+    
+    //for(int k : commonVariants)
+    //    std::cout << k+1 << std::endl;
+    
+    //std::cout << "Unmatch Truth Variants:" << std::endl;
+    //for(int k : unmatchTest)
+    //     std::cout << k+1 << std::endl;
+    
+    //std::cout << std::endl << std::endl;
+    
+    //for(int k : unmatchOrig)
+    //    std::cout << k+1 << std::endl;
+    
+}
+
+
+void UnitTestTrioComparison(int a_nChrNumber, bool a_bIsFilterOverlap, bool a_bIsFilter00)
+{
+    std::string vcfFileName;
+    
+    std::string queryCompliantSetFileName;
+    std::string truthCompliantSetFileName;
+    
+    std::string queryViolationSetFileName;
+    std::string truthViolationSetFileName;
     
     
+    if(a_bIsFilter00 && a_bIsFilterOverlap)
+    {
+        vcfFileName = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/ALL_filteredPedGraph_D1_D2_D3_9.31.cat_Filtered_NoChild00.vcf";
+        truthCompliantSetFileName = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/TruthSETFilteredOverlap00/Chr" + std::to_string(a_nChrNumber) + "_CompliantsTRUTH.txt";
+        truthViolationSetFileName = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/TruthSETFilteredOverlap00/Chr" + std::to_string(a_nChrNumber) + "_ViolationsTRUTH.txt";
+        
+        queryCompliantSetFileName = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/chr" + std::to_string(a_nChrNumber) + "_CompliantsALL.txt";
+        queryViolationSetFileName = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/chr" + std::to_string(a_nChrNumber) + "_ViolationsALL.txt";
+    }
+    
+    else if(a_bIsFilterOverlap)
+    {
+        vcfFileName = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/ALL_filteredPedGraph_D1_D2_D3_9.31.cat_Filtered.vcf";
+        
+        truthCompliantSetFileName = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/TruthSETFilteredOverlap/Chr" + std::to_string(a_nChrNumber) + "_CompliantsTRUTH.txt";
+        truthViolationSetFileName = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/TruthSETFilteredOverlap/Chr" + std::to_string(a_nChrNumber) + "_ViolationsTRUTH.txt";
+        
+        queryCompliantSetFileName = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/chr" + std::to_string(a_nChrNumber) + "_CompliantsALL.txt";
+        queryViolationSetFileName = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/chr" + std::to_string(a_nChrNumber) + "_ViolationsALL.txt";
+        
+    }
+    
+    else
+    {
+        vcfFileName = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/ALL_filteredPedGraph_D1_D2_D3_9.31.cat.vcf";
+        
+        truthCompliantSetFileName = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/TruthSETUnfiltered/Chr" + std::to_string(a_nChrNumber) + "_CompliantsTRUTH.txt";
+        truthViolationSetFileName = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/TruthSETUnfiltered/Chr" + std::to_string(a_nChrNumber) + "_ViolationsTRUTH.txt";
+        
+        queryCompliantSetFileName = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/chr" + std::to_string(a_nChrNumber) + "_CompliantsALL.txt";
+        queryViolationSetFileName = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/chr" + std::to_string(a_nChrNumber) + "_ViolationsALL.txt";
+        
+    }
+
+    std::cout << "##################       CHR " << a_nChrNumber << "        ##################" << std::endl;
+    SCompareResult resCompliant;
+    SCompareResult resViolation;
+    
+    std::cout << "===================COMPLIANT COMPARISON=======================" << std::endl << std::endl;
+    //COMPLIANTS COMPARISON
+    resCompliant = compare2List(truthCompliantSetFileName, queryCompliantSetFileName);
+    std::cout << "===================VIOLATION COMPARISON=======================" << std::endl << std::endl;
+    //VIOLATIONS COMPARISON
+    resViolation = compare2List(truthViolationSetFileName, queryViolationSetFileName);
+    
+    std::cout << "TOTAL COMMON: " << resCompliant.common + resViolation.common << std::endl;
+    std::cout << "TOTAL UNMATCH:" << resViolation.unMatchOrig + resCompliant.unMatchOrig << std::endl;
+    
+}
+
+
+
+void GenerateTruthSetsMaria(std::string& a_rFilename, bool a_bIsFilterOverlap, bool a_bIsFilter00)
+{
+    CVcfReader triplet;
+    
+    std::string modeSubPath = "";
+    if(a_bIsFilterOverlap)
+        modeSubPath = modeSubPath + "Overlap";
+    if(a_bIsFilter00)
+        modeSubPath = modeSubPath + "00";
+    
+    //triplet.Open("/Users/c1ms21p6h3qk/Desktop/MendelianInput/ALL_filteredPedGraph_D1_D2_D3_9.31.cat_Filtered_NoChild00.vcf");
+    triplet.Open(a_rFilename.c_str());
+    
+    int CHR_ITERATOR = 1;
+    
+    std::string commonPath = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/TruthSET" + modeSubPath + "/Chr";
+    std::ofstream outputFileCompliants;
+    std::ofstream outputFileViolations;
+
+    std::vector<CVariant> motherVariants;
+    std::vector<CVariant> fatherVariants;
+    std::vector<CVariant> childVariants;
+    
+    
+    CVariant variants[3];
+    bool isAdd;
+    
+    while(triplet.GetNextRecordMultiSample(variants))
+    {
+        if(variants[0].m_nChrId == -1 || CHR_ITERATOR > 22)
+            break;
+        
+        if(variants[0].m_nChrId != CHR_ITERATOR)
+        {
+            std::vector<int> mendelianViolations;
+            std::vector<int> mendelianCompliants;
+            
+            for(int k = 0; k < motherVariants.size(); k++)
+            {
+                bool c1 = motherVariants[k].m_genotype[0] == childVariants[k].m_genotype[0] || motherVariants[k].m_genotype[1] == childVariants[k].m_genotype[0];
+                bool c2 = motherVariants[k].m_genotype[0] == childVariants[k].m_genotype[1] || motherVariants[k].m_genotype[1] == childVariants[k].m_genotype[1];
+                bool c3 = fatherVariants[k].m_genotype[0] == childVariants[k].m_genotype[0] || fatherVariants[k].m_genotype[1] == childVariants[k].m_genotype[0];
+                bool c4 = fatherVariants[k].m_genotype[0] == childVariants[k].m_genotype[1] || fatherVariants[k].m_genotype[1] == childVariants[k].m_genotype[1];
+                
+                if((c1 == true && c4 == true) || (c2 == true && c3 == true))
+                {
+                    mendelianCompliants.push_back(childVariants[k].m_alleles[0].m_nStartPos);
+                }
+                else
+                    mendelianViolations.push_back(childVariants[k].m_alleles[0].m_nStartPos);
+            }
+            
+            outputFileCompliants.open(commonPath + std::to_string(CHR_ITERATOR) + "_Compliants.txt");
+            for(int k : mendelianCompliants)
+                outputFileCompliants << k << std::endl;
+            outputFileCompliants.close();
+            
+            outputFileViolations.open(commonPath + std::to_string(CHR_ITERATOR) + "_Violations.txt");
+            for(int k : mendelianViolations)
+                outputFileViolations << k << std::endl;
+            outputFileViolations.close();
+            
+            motherVariants.clear();
+            fatherVariants.clear();
+            childVariants.clear();
+            mendelianCompliants.clear();
+            mendelianViolations.clear();
+            CHR_ITERATOR++;
+        }
+        
+        isAdd = true;
+        for(int k = 0; k < variants[0].m_nAlleleCount; k++)
+        {
+            if(variants[0].m_alleles[k].m_sequence == "*")
+            {
+                variants[0].m_genotype[0] = 0;
+                variants[0].m_genotype[1] = 0;
+            }
+            
+        }
+
+        for(int k = 0; k < variants[1].m_nAlleleCount; k++)
+        {
+            if(variants[1].m_alleles[k].m_sequence == "*")
+            {
+                variants[1].m_genotype[0] = 0;
+                variants[1].m_genotype[1] = 0;
+            }
+        }
+
+        bool isSkip = false;
+        
+        for(int k = 0; k < variants[2].m_nAlleleCount; k++)
+        {
+            if(variants[2].m_alleles[k].m_sequence == "*")
+                isSkip = true;
+        }
+
+        if(!isSkip)
+        {
+            motherVariants.push_back(variants[0]);
+            fatherVariants.push_back(variants[1]);
+            childVariants.push_back(variants[2]);
+        }
+
+    }
 }
 
 

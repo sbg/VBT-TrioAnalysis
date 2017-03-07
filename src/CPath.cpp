@@ -1,5 +1,5 @@
 //  Originated from: https://github.com/RealTimeGenomics/rtg-tools/blob/master/src/com/rtg/vcf/eval
-//  Copyright (c) 2014. Real Time Genomics Limited.
+//  Copyright (c) 2016 Seven Bridges Genomics
 //
 //  CPath.cpp
 //  VCFComparison
@@ -9,7 +9,6 @@
 
 #include "CPath.h"
 #include <iostream>
-#include "CVariantProvider.h"
 
 CPath::CPath()
 {}
@@ -93,171 +92,101 @@ CPath& CPath::Include(EVcfName a_nVCF, const COrientedVariant& a_rVariant, int a
     return *this;
 }
 
-int CPath::AddVariant(CPathContainer* a_pPathList,
+
+int CPath::AddVariant(CPathContainer *a_pPathList,
                       EVcfName a_nVcfName,
-                      const std::vector<const CVariant*>& a_pVariantList,
-                      const std::vector<const COrientedVariant*>& a_pOVariantList,
+                      const std::vector<const CVariant *> &a_pVariantList,
+                      const std::vector<const COrientedVariant *> &a_pOVariantList,
                       int a_nVariantIndex,
                       bool a_bIsGenotypeMatch)
 {
     int pathCount = 0;
+    
+    //Check if the path is synchronised
+    const bool isInSync = InSync();
+    
+    if(isInSync)
+    {
+        m_nCSinceSync = 0;
+        m_nBSinceSync = 0;
+    }
 
+    //Process Genotype Match Orientations
     if(a_bIsGenotypeMatch)
     {
         const CVariant* pNextVariant = a_pVariantList[a_nVariantIndex];
         const COrientedVariant* Ovar1 = a_pOVariantList[2* a_nVariantIndex];
         const COrientedVariant* Ovar2 = a_pOVariantList[2* a_nVariantIndex + 1];
         
-        if (true == InSync())
+        // Create a new path that excludes this variant
+        a_pPathList[pathCount].m_pPath = isInSync ? std::shared_ptr<CPath>(new CPath(*this, m_calledSemiPath.GetPosition())) : std::shared_ptr<CPath>(new CPath(*this));
+        a_pPathList[pathCount].m_pPath->Exclude(a_nVcfName, *pNextVariant, a_nVariantIndex);
+        pathCount++;
+        
+        // Create new paths that includes this variant in the possible phases
+        if (!pNextVariant->IsHeterozygous())
         {
-            m_nCSinceSync = 0;
-            m_nBSinceSync = 0;
-            
-            // Create a path extension that excludes this variant
-            a_pPathList[pathCount].m_pPath = std::shared_ptr<CPath>(new CPath(*this, m_calledSemiPath.GetPosition()));
-            a_pPathList[pathCount].m_pPath->Exclude(a_nVcfName, *pNextVariant, a_nVariantIndex);
-            pathCount++;
-            
-            // Create a path extension that includes this variant in the possible phases
-            if (!pNextVariant->IsHeterozygous())
+            a_pPathList[pathCount].m_pPath = isInSync ? std::shared_ptr<CPath>(new CPath(*this, m_calledSemiPath.GetPosition())) : std::shared_ptr<CPath>(new CPath(*this));
+            const CSemiPath* p = a_nVcfName == eBASE ? &a_pPathList[pathCount].m_pPath->m_baseSemiPath : &a_pPathList[pathCount].m_pPath->m_calledSemiPath;
+            //Make sure variant is not overlap with the previous one
+            if(p->IsNew(*Ovar1))
             {
-                a_pPathList[pathCount].m_pPath = std::shared_ptr<CPath>(new CPath(*this, m_calledSemiPath.GetPosition()));
-                const CSemiPath* p = a_nVcfName == eBASE ? &a_pPathList[pathCount].m_pPath->m_baseSemiPath : &a_pPathList[pathCount].m_pPath->m_calledSemiPath;
-                //Make sure variant is not overlap with the previous one
-                if(p->IsNew(*Ovar1))
-                {
-                    a_pPathList[pathCount].m_pPath->Include(a_nVcfName, *Ovar1, a_nVariantIndex);
-                    pathCount++;
-                }
+                a_pPathList[pathCount].m_pPath->Include(a_nVcfName, *Ovar1, a_nVariantIndex);
+                pathCount++;
             }
-            else
-            {
-                //Include with ordered genotype
-                a_pPathList[pathCount].m_pPath =  std::shared_ptr<CPath>(new CPath(*this, m_calledSemiPath.GetPosition()));
-                CSemiPath* p = a_nVcfName == eBASE ? &a_pPathList[pathCount].m_pPath->m_baseSemiPath : &a_pPathList[pathCount].m_pPath->m_calledSemiPath;
-                //Make sure variant is not overlap with the previous one
-                if(p->IsNew(*Ovar1))
-                {
-                    a_pPathList[pathCount].m_pPath->Include(a_nVcfName, *Ovar1, a_nVariantIndex);
-                    pathCount++;
-                }
-                //Include with unordered genotype
-                a_pPathList[pathCount].m_pPath =  std::shared_ptr<CPath>(new CPath(*this, m_calledSemiPath.GetPosition()));
-                p = a_nVcfName == eBASE ? &a_pPathList[pathCount].m_pPath->m_baseSemiPath : &a_pPathList[pathCount].m_pPath->m_calledSemiPath;
-                //Make sure variant is not overlap with the previous one
-                if(p->IsNew(*Ovar2))
-                {
-                    a_pPathList[pathCount].m_pPath->Include(a_nVcfName, *Ovar2, a_nVariantIndex);
-                    pathCount++;
-                }
-            }
-            
         }
         
         else
         {
-            // Create a path extension that excludes this variant
-            a_pPathList[pathCount].m_pPath = std::shared_ptr<CPath>(new CPath(*this));
-            a_pPathList[pathCount].m_pPath->Exclude(a_nVcfName, *pNextVariant, a_nVariantIndex);
-            pathCount++;
-            
-            // Create a path extension that includes this variant in the possible phases
-            if (!pNextVariant->IsHeterozygous())
+            //Include with ordered genotype
+            a_pPathList[pathCount].m_pPath =  isInSync ? std::shared_ptr<CPath>(new CPath(*this, m_calledSemiPath.GetPosition())) : std::shared_ptr<CPath>(new CPath(*this));
+            CSemiPath* p = a_nVcfName == eBASE ? &a_pPathList[pathCount].m_pPath->m_baseSemiPath : &a_pPathList[pathCount].m_pPath->m_calledSemiPath;
+            //Make sure variant is not overlap with the previous one
+            if(p->IsNew(*Ovar1))
             {
-                a_pPathList[pathCount].m_pPath = std::shared_ptr<CPath>(new CPath(*this));
-                CSemiPath* p = a_nVcfName == eBASE ? &a_pPathList[pathCount].m_pPath->m_baseSemiPath : &a_pPathList[pathCount].m_pPath->m_calledSemiPath;
-                //Make sure variant is not overlap with the previous one
-                if(p->IsNew(*Ovar1))
-                {
-                    a_pPathList[pathCount].m_pPath->Include(a_nVcfName, *Ovar1, a_nVariantIndex);
-                    pathCount++;
-                }
-                
+                a_pPathList[pathCount].m_pPath->Include(a_nVcfName, *Ovar1, a_nVariantIndex);
+                pathCount++;
             }
-            else
+            //Include with unordered genotype
+            a_pPathList[pathCount].m_pPath =  isInSync ? std::shared_ptr<CPath>(new CPath(*this, m_calledSemiPath.GetPosition())) : std::shared_ptr<CPath>(new CPath(*this));
+            p = a_nVcfName == eBASE ? &a_pPathList[pathCount].m_pPath->m_baseSemiPath : &a_pPathList[pathCount].m_pPath->m_calledSemiPath;
+            //Make sure variant is not overlap with the previous one
+            if(p->IsNew(*Ovar2))
             {
-                //Include with ordered genotype
-                a_pPathList[pathCount].m_pPath = std::shared_ptr<CPath>(new CPath(*this));
-                CSemiPath* p = a_nVcfName == eBASE ? &a_pPathList[pathCount].m_pPath->m_baseSemiPath : &a_pPathList[pathCount].m_pPath->m_calledSemiPath;
-                //COrientedVariant Ovar1(a_rVariant, true);
-                if(p->IsNew(*Ovar1))
-                {
-                    a_pPathList[pathCount].m_pPath->Include(a_nVcfName, *Ovar1, a_nVariantIndex);
-                    //a_pPathList[pathCount].m_pPath->m_nPathId = this->m_nPathId + 300;
-                    pathCount++;
-                }
-                
-                //Include with unordered genotype
-                a_pPathList[pathCount].m_pPath = std::shared_ptr<CPath>(new CPath(*this));
-                p = a_nVcfName == eBASE ? &a_pPathList[pathCount].m_pPath->m_baseSemiPath : &a_pPathList[pathCount].m_pPath->m_calledSemiPath;
-                //COrientedVariant Ovar2(a_rVariant, false);
-                if(p->IsNew(*Ovar2))
-                {
-                    a_pPathList[pathCount].m_pPath->Include(a_nVcfName, *Ovar2, a_nVariantIndex);
-                    //a_pPathList[pathCount].m_pPath->m_nPathId = this->m_nPathId + 450;
-                    pathCount++;
-                }
+                a_pPathList[pathCount].m_pPath->Include(a_nVcfName, *Ovar2, a_nVariantIndex);
+                pathCount++;
             }
         }
     }
     
+    //Process Allele Match Orientations
     else
     {
         const CVariant* pNextVariant = a_pVariantList[a_nVariantIndex];
         const COrientedVariant* Ovars[] = {a_pOVariantList[2* a_nVariantIndex], a_pOVariantList[2* a_nVariantIndex + 1]};
         
-        if(true == InSync())
-        {
-            m_nCSinceSync = 0;
-            m_nBSinceSync = 0;
-            
-            // Create a path extension that excludes this variant
-            a_pPathList[pathCount].m_pPath = std::shared_ptr<CPath>(new CPath(*this, m_calledSemiPath.GetPosition()));
-            a_pPathList[pathCount].m_pPath->Exclude(a_nVcfName, *pNextVariant, a_nVariantIndex);
-            pathCount++;
-            
-            for(int k = 0; k < pNextVariant->m_nAlleleCount; k++)
-            {
-                if(pNextVariant->m_genotype[k] != 0)
-                {
-                    a_pPathList[pathCount].m_pPath = std::shared_ptr<CPath>(new CPath(*this, m_calledSemiPath.GetPosition()));
-                    const CSemiPath* p = a_nVcfName == eBASE ? &a_pPathList[pathCount].m_pPath->m_baseSemiPath : &a_pPathList[pathCount].m_pPath->m_calledSemiPath;
-                    //Make sure variant is not overlap with the previous one
-                    if(p->IsNew(*Ovars[k]))
-                    {
-                        a_pPathList[pathCount].m_pPath->Include(a_nVcfName, *Ovars[k], a_nVariantIndex);
-                        pathCount++;
-                    }
-                }
-            }
-            
-        }
+        // Create a path extension that excludes this variant
+        a_pPathList[pathCount].m_pPath = std::shared_ptr<CPath>(new CPath(*this, m_calledSemiPath.GetPosition()));
+        a_pPathList[pathCount].m_pPath->Exclude(a_nVcfName, *pNextVariant, a_nVariantIndex);
+        pathCount++;
         
-        else
+        for(int k = 0; k < pNextVariant->m_nAlleleCount; k++)
         {
-            // Create a path extension that excludes this variant
-            a_pPathList[pathCount].m_pPath = std::shared_ptr<CPath>(new CPath(*this));
-            a_pPathList[pathCount].m_pPath->Exclude(a_nVcfName, *pNextVariant, a_nVariantIndex);
-            pathCount++;
-
-            for(int k = 0; k < pNextVariant->m_nAlleleCount; k++)
+            if(pNextVariant->m_genotype[k] != 0)
             {
-                if(pNextVariant->m_genotype[k] != 0)
+                a_pPathList[pathCount].m_pPath = isInSync ? std::shared_ptr<CPath>(new CPath(*this, m_calledSemiPath.GetPosition())) : std::shared_ptr<CPath>(new CPath(*this));
+                const CSemiPath* p = a_nVcfName == eBASE ? &a_pPathList[pathCount].m_pPath->m_baseSemiPath : &a_pPathList[pathCount].m_pPath->m_calledSemiPath;
+                //Make sure variant is not overlap with the previous one
+                if(p->IsNew(*Ovars[k]))
                 {
-                    a_pPathList[pathCount].m_pPath = std::shared_ptr<CPath>(new CPath(*this));
-                    CSemiPath* p = a_nVcfName == eBASE ? &a_pPathList[pathCount].m_pPath->m_baseSemiPath : &a_pPathList[pathCount].m_pPath->m_calledSemiPath;
-                    //Make sure variant is not overlap with the previous one
-                    if(p->IsNew(*Ovars[k]))
-                    {
-                        a_pPathList[pathCount].m_pPath->Include(a_nVcfName, *Ovars[k], a_nVariantIndex);
-                        pathCount++;
-                    }
+                    a_pPathList[pathCount].m_pPath->Include(a_nVcfName, *Ovars[k], a_nVariantIndex);
+                    pathCount++;
                 }
             }
         }
-        
     }
 
+    //Return the pathCount we created
     return pathCount;
 }
 
@@ -281,7 +210,6 @@ bool CPath::InSync() const
       return true;
 }
 
-
 bool CPath::HasFinished() const
 {
     return m_baseSemiPath.HasFinished() && m_calledSemiPath.HasFinished();
@@ -291,7 +219,6 @@ bool CPath::HasNoOperation() const
 {
     return (m_nBSinceSync == 0 && m_nCSinceSync > 0) || (m_nCSinceSync == 0 && m_nBSinceSync > 0);
 }
-
 
 void CPath::Step()
 {

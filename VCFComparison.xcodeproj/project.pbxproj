@@ -27,6 +27,7 @@
 		556D39CC1DD3AFAC00551040 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 556D39CB1DD3AFAC00551040 /* libz.tbd */; };
 		556D39CE1DD4D75B00551040 /* CPathSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 556D39CD1DD4D75B00551040 /* CPathSet.cpp */; };
 		55AA85261E2369C700BF25E1 /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55AA85251E2369C700BF25E1 /* test.cpp */; };
+		55BA66371E686ADF00730AE7 /* COverlappingVariantEliminator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55BA66361E686ADF00730AE7 /* COverlappingVariantEliminator.cpp */; };
 		55BD82D61E40ED530023D696 /* CMendelianAnalyzer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55BD82D51E40ED530023D696 /* CMendelianAnalyzer.cpp */; };
 		55BD82D91E411F090023D696 /* CMendelianVariantProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55BD82D81E411F090023D696 /* CMendelianVariantProvider.cpp */; };
 		55D8D33A1E09BEAE00CE2838 /* CGa4ghOutputProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55D8D3391E09BEAE00CE2838 /* CGa4ghOutputProvider.cpp */; };
@@ -105,6 +106,9 @@
 		556D39CD1DD4D75B00551040 /* CPathSet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CPathSet.cpp; sourceTree = "<group>"; };
 		556D39CF1DD66E1700551040 /* SConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SConfig.h; sourceTree = "<group>"; };
 		55AA85251E2369C700BF25E1 /* test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test.cpp; sourceTree = "<group>"; };
+		55BA66351E5E40F200730AE7 /* CSyncPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSyncPoint.h; sourceTree = "<group>"; };
+		55BA66361E686ADF00730AE7 /* COverlappingVariantEliminator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = COverlappingVariantEliminator.cpp; sourceTree = "<group>"; };
+		55BA66381E686FB200730AE7 /* COverlappingVariantEliminator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = COverlappingVariantEliminator.h; sourceTree = "<group>"; };
 		55BD82D41E40DF190023D696 /* CMendelianAnalyzer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMendelianAnalyzer.h; sourceTree = "<group>"; };
 		55BD82D51E40ED530023D696 /* CMendelianAnalyzer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CMendelianAnalyzer.cpp; sourceTree = "<group>"; };
 		55BD82D71E410F200023D696 /* CMendelianVariantProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMendelianVariantProvider.h; sourceTree = "<group>"; };
@@ -116,7 +120,6 @@
 		55E7CBD31E157327002ACA4E /* CResultLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CResultLog.h; sourceTree = "<group>"; };
 		55E7CBD41E157670002ACA4E /* CResultLog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CResultLog.cpp; sourceTree = "<group>"; };
 		55E7CBD61E15A0CB002ACA4E /* EVariantMatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EVariantMatch.h; sourceTree = "<group>"; };
-		55EBBC311E43C22100559710 /* SMendelianThreadParam.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMendelianThreadParam.h; sourceTree = "<group>"; };
 		55EBBC331E4E69E000559710 /* CVariantIterator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CVariantIterator.h; sourceTree = "<group>"; };
 		55F4384A1E29726200833A9B /* CVariantIteratorV2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CVariantIteratorV2.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -207,6 +210,7 @@
 				55AA85251E2369C700BF25E1 /* test.cpp */,
 				55BD82D51E40ED530023D696 /* CMendelianAnalyzer.cpp */,
 				55BD82D81E411F090023D696 /* CMendelianVariantProvider.cpp */,
+				55BA66361E686ADF00730AE7 /* COverlappingVariantEliminator.cpp */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -238,7 +242,8 @@
 				55BD82D41E40DF190023D696 /* CMendelianAnalyzer.h */,
 				55BD82D71E410F200023D696 /* CMendelianVariantProvider.h */,
 				55BD82DA1E422FDE0023D696 /* Constants.h */,
-				55EBBC311E43C22100559710 /* SMendelianThreadParam.h */,
+				55BA66351E5E40F200730AE7 /* CSyncPoint.h */,
+				55BA66381E686FB200730AE7 /* COverlappingVariantEliminator.h */,
 			);
 			path = include;
 			sourceTree = SOURCE_ROOT;
@@ -353,6 +358,7 @@
 				55E7CBD51E157670002ACA4E /* CResultLog.cpp in Sources */,
 				55D8D33A1E09BEAE00CE2838 /* CGa4ghOutputProvider.cpp in Sources */,
 				55BD82D91E411F090023D696 /* CMendelianVariantProvider.cpp in Sources */,
+				55BA66371E686ADF00730AE7 /* COverlappingVariantEliminator.cpp in Sources */,
 				553F8B001DF9B8CD00BD756E /* CVcfAnalyzer.cpp in Sources */,
 				556D399B1DD3AF2E00551040 /* COrientedVariant.cpp in Sources */,
 				556D399D1DD3AF2E00551040 /* CPathReplay.cpp in Sources */,

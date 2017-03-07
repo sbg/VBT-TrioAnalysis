@@ -136,6 +136,9 @@ void CMendelianVariantProvider::FillVariants()
             //if(preChrId == "2")
             //    break;
         }
+
+        //if(variant.m_nChrId > 4)
+        //    break;
         
         if(variant.m_nChrId == -1)
             continue;
@@ -162,10 +165,13 @@ void CMendelianVariantProvider::FillVariants()
             preChrId = variant.m_chrName;
             std::cout << "Processing chromosome " << preChrId << " of Parent[MOTHER] vcf" << std::endl;
             //if(preChrId == "2")
-            //    break;
+            //      break;
 
         }
 
+        //if(variant.m_nChrId > 4)
+        //    break;
+        
         if(variant.m_nChrId == -1)
             continue;
         else if(variant.m_nChrId > 23) //DISCARD Y and MT chromosome
@@ -194,6 +200,9 @@ void CMendelianVariantProvider::FillVariants()
             //    break;
 
         }
+
+        //if(variant.m_nChrId > 4)
+        //    break;
         
         if(variant.m_nChrId == -1)
             continue;
@@ -335,7 +344,6 @@ void CMendelianVariantProvider::PushVariant(CVariant& a_rVariant, std::vector<CV
     it = a_rVecToPush.begin() + (size - k) + 1;
     a_rVecToPush.insert(it, a_rVariant);
 }
-
 
 std::vector<int> CMendelianVariantProvider::GetCommonChromosomes(bool a_bIsCalledInProviderInitialization)
 {
@@ -573,6 +581,17 @@ void CMendelianVariantProvider::SetVariantStatus(const std::vector<const COrient
             break;
     }
 }
+
+
+std::vector<const CVariant*> CMendelianVariantProvider::GetVariantList(const std::vector<const CVariant*> a_rVariantList, const std::vector<int>& a_nIndexList) const
+{
+    std::vector<const CVariant*> resultList(a_nIndexList.size());
+    for(int k = 0; k < a_nIndexList.size(); k++)
+        resultList[k] = a_rVariantList[a_nIndexList[k]];
+    
+    return resultList;
+}
+
 
 
 

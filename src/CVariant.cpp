@@ -18,12 +18,13 @@ CVariant::CVariant(): m_nVcfId(-1),
 {
     m_nId = -1;
     m_nAlleleCount = 0;
-    m_nMaxLength = 0;
     m_bIsFirstNucleotideTrimmed = false;
     
     m_allelesStr = "";
     m_nZygotCount = 0;
     m_variantStatus = eNOT_ASSESSED;
+    m_genotype[0] = -1;
+    m_genotype[1] = -1;
 }
 
 CVariant::CVariant(const CVariant& a_rObj)
@@ -46,7 +47,6 @@ CVariant::CVariant(const CVariant& a_rObj)
     m_nEndPos = a_rObj.m_nEndPos;
     m_nId = a_rObj.m_nId;
     m_refSequence = a_rObj.m_refSequence;
-    m_nMaxLength = a_rObj.m_nMaxLength;
     m_bIsHeterozygous = a_rObj.m_bIsHeterozygous;
     m_bIsFirstNucleotideTrimmed = a_rObj.m_bIsFirstNucleotideTrimmed;
     
@@ -77,7 +77,6 @@ bool CVariant::Clear()
     m_nStartPos = -1;
     m_chrName.clear();
     m_nAlleleCount = 0;
-    m_nMaxLength = 0;
     m_nZygotCount = 0;
     m_allelesStr.clear();
     m_filterString.clear();
@@ -86,6 +85,8 @@ bool CVariant::Clear()
     m_nOriginalPos = -1;
     m_alleles[0].m_bIsIgnored = false;
     m_alleles[1].m_bIsIgnored = false;
+    m_genotype[0] = -1;
+    m_genotype[1] = -1;
     return true;
 }
 

@@ -114,10 +114,7 @@ class CVariant
     int m_nStartPos;
     //End Position of the variant - max end pos of all alleles
     int m_nEndPos;
-    
-    //Maximum length of the allele
-    int m_nMaxLength;
-    
+        
     //THIS VARIABLES SHOULD NOT BE ACCESSED BY GENERIC USERS
     //Original Alleles string read from vcf file
     std::string m_allelesStr;

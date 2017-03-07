@@ -192,10 +192,10 @@ void CVcfAnalyzer::ThreadFunc(int a_nChromosomeId)
     m_provider.SetVariantStatus(includedVarsCall2, eALLELE_MATCH);
     m_provider.SetVariantStatus(includedVarsBase2, eALLELE_MATCH);
     
-    PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("FP_") + std::to_string(a_nChromosomeId +1) + std::string(".txt")  , excludedVarsCall);
-    PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("TP_BASE_") + std::to_string(a_nChromosomeId + 1) + std::string(".txt")  , includedVarsBase);
-    PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("TP_CALLED_") + std::to_string(a_nChromosomeId + 1) + std::string(".txt") , includedVarsCall);
-    PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("FN_") + std::to_string(a_nChromosomeId + 1) + std::string(".txt")  , excludedVarsBase);
+    //PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("FP_") + std::to_string(a_nChromosomeId +1) + std::string(".txt")  , excludedVarsCall);
+    //PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("TP_BASE_") + std::to_string(a_nChromosomeId + 1) + std::string(".txt")  , includedVarsBase);
+    //PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("TP_CALLED_") + std::to_string(a_nChromosomeId + 1) + std::string(".txt") , includedVarsCall);
+    //PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("FN_") + std::to_string(a_nChromosomeId + 1) + std::string(".txt")  , excludedVarsBase);
     
     return;
     
@@ -271,10 +271,17 @@ void CVcfAnalyzer::ThreadFunc2(std::vector<int> a_nChrArr)
         m_provider.SetVariantStatus(includedVarsCall2, eALLELE_MATCH);
         m_provider.SetVariantStatus(includedVarsBase2, eALLELE_MATCH);
         
-        PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("FP_") + std::to_string(a_nChrArr[k] + 1) + std::string(".txt")  , excludedVarsCall);
-        PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("TP_BASE_") + std::to_string(a_nChrArr[k] +1) + std::string(".txt")  , includedVarsBase);
-        PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("TP_CALLED_") + std::to_string(a_nChrArr[k] + 1) + std::string(".txt")  , includedVarsCall);
-        PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("FN_") + std::to_string(a_nChrArr[k] + 1) + std::string(".txt")  , excludedVarsBase);
+        //PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("FP_") + std::to_string(a_nChrArr[k] + 1) + std::string(".txt")  , excludedVarsCall);
+        //PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("TP_BASE_") + std::to_string(a_nChrArr[k] +1) + std::string(".txt")  , includedVarsBase);
+        //PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("TP_CALLED_") + std::to_string(a_nChrArr[k] + 1) + std::string(".txt")  , includedVarsCall);
+        //PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("FN_") + std::to_string(a_nChrArr[k] + 1) + std::string(".txt")  , excludedVarsBase);
+        
+        //std::ofstream syncpointFile;
+        //std::string fileName = std::string(m_config.m_pOutputDirectory) + std::string("/SyncPoint") + std::to_string(a_nChrArr[k] +1) + std::string(".txt");
+        //syncpointFile.open(fileName.c_str());
+        
+        //for(int x = (int)m_aBestPaths[a_nChrArr[k]].m_aSyncPointList.size()-1; x >=0 ; x--)
+        //    syncpointFile << m_aBestPaths[a_nChrArr[k]].m_aSyncPointList[x] << std::endl;
         
     }
 }
@@ -290,9 +297,6 @@ void CVcfAnalyzer::PrintVariants(std::string a_outputDirectory, std::string a_Fi
     
     for(int k = (int)a_rOvarList.size()-1; k >= 0; k--)
         outputFile << a_rOvarList[k]->GetVariant().ToString() << std::endl;
-        
-//    for(const COrientedVariant* pOvar : a_rOvarList)
-//        outputFile << pOvar->GetVariant().ToString() << std::endl;
     
     outputFile.close();
 }
