@@ -632,12 +632,11 @@ SCompareResult compare2List(const std::string& a_pathTest, const std::string& a_
     SCompareResult res;
     res.common = (int)commonVariants.size();
     res.unMatchOrig = (int)unmatchOrig.size();
-    return res;
     
     //for(int k : commonVariants)
     //    std::cout << k+1 << std::endl;
     
-    //std::cout << "Unmatch Truth Variants:" << std::endl;
+    //std::cout << "Unmatch Query Variants:" << std::endl;
     //for(int k : unmatchTest)
     //     std::cout << k+1 << std::endl;
     
@@ -645,7 +644,9 @@ SCompareResult compare2List(const std::string& a_pathTest, const std::string& a_
     
     //for(int k : unmatchOrig)
     //    std::cout << k+1 << std::endl;
+
     
+    return res;
 }
 
 
@@ -677,8 +678,8 @@ void UnitTestTrioComparison(int a_nChrNumber, bool a_bIsFilterOverlap, bool a_bI
         truthCompliantSetFileName = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/TruthSETFilteredOverlap/Chr" + std::to_string(a_nChrNumber) + "_CompliantsTRUTH.txt";
         truthViolationSetFileName = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/TruthSETFilteredOverlap/Chr" + std::to_string(a_nChrNumber) + "_ViolationsTRUTH.txt";
         
-        queryCompliantSetFileName = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/chr" + std::to_string(a_nChrNumber) + "_CompliantsALL.txt";
-        queryViolationSetFileName = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/chr" + std::to_string(a_nChrNumber) + "_ViolationsALL.txt";
+        queryCompliantSetFileName = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/NoParent00Test/chr" + std::to_string(a_nChrNumber) + "_CompliantsALL.txt";
+        queryViolationSetFileName = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/NoParent00Test/chr" + std::to_string(a_nChrNumber) + "_ViolationsALL.txt";
         
     }
     
@@ -712,7 +713,7 @@ void UnitTestTrioComparison(int a_nChrNumber, bool a_bIsFilterOverlap, bool a_bI
 
 
 
-void GenerateTruthSetsMaria(std::string& a_rFilename, bool a_bIsFilterOverlap, bool a_bIsFilter00)
+void GenerateTruthSetsMaria(std::string a_rFilename, bool a_bIsFilterOverlap, bool a_bIsFilter00)
 {
     CVcfReader triplet;
     
@@ -722,12 +723,11 @@ void GenerateTruthSetsMaria(std::string& a_rFilename, bool a_bIsFilterOverlap, b
     if(a_bIsFilter00)
         modeSubPath = modeSubPath + "00";
     
-    //triplet.Open("/Users/c1ms21p6h3qk/Desktop/MendelianInput/ALL_filteredPedGraph_D1_D2_D3_9.31.cat_Filtered_NoChild00.vcf");
     triplet.Open(a_rFilename.c_str());
     
-    int CHR_ITERATOR = 1;
+    int CHR_ITERATOR = 23;
     
-    std::string commonPath = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/TruthSET" + modeSubPath + "/Chr";
+    std::string commonPath = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/TruthSETFiltered" + modeSubPath + "/Chr";
     std::ofstream outputFileCompliants;
     std::ofstream outputFileViolations;
 
@@ -739,11 +739,16 @@ void GenerateTruthSetsMaria(std::string& a_rFilename, bool a_bIsFilterOverlap, b
     CVariant variants[3];
     bool isAdd;
     
+    bool endLoop = false;
+    
     while(triplet.GetNextRecordMultiSample(variants))
     {
-        if(variants[0].m_nChrId == -1 || CHR_ITERATOR > 22)
-            break;
         
+        if(variants[0].m_nChrId == -1 || CHR_ITERATOR > 23)
+        {
+            endLoop = true;
+        }
+            
         if(variants[0].m_nChrId != CHR_ITERATOR)
         {
             std::vector<int> mendelianViolations;
@@ -764,12 +769,12 @@ void GenerateTruthSetsMaria(std::string& a_rFilename, bool a_bIsFilterOverlap, b
                     mendelianViolations.push_back(childVariants[k].m_alleles[0].m_nStartPos);
             }
             
-            outputFileCompliants.open(commonPath + std::to_string(CHR_ITERATOR) + "_Compliants.txt");
+            outputFileCompliants.open(commonPath + std::to_string(CHR_ITERATOR) + "_CompliantsTRUTH.txt");
             for(int k : mendelianCompliants)
                 outputFileCompliants << k << std::endl;
             outputFileCompliants.close();
             
-            outputFileViolations.open(commonPath + std::to_string(CHR_ITERATOR) + "_Violations.txt");
+            outputFileViolations.open(commonPath + std::to_string(CHR_ITERATOR) + "_ViolationsTRUTH.txt");
             for(int k : mendelianViolations)
                 outputFileViolations << k << std::endl;
             outputFileViolations.close();
@@ -780,6 +785,9 @@ void GenerateTruthSetsMaria(std::string& a_rFilename, bool a_bIsFilterOverlap, b
             mendelianCompliants.clear();
             mendelianViolations.clear();
             CHR_ITERATOR++;
+            
+            if(endLoop == true)
+                break;
         }
         
         isAdd = true;

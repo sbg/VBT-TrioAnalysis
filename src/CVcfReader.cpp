@@ -269,14 +269,7 @@ bool CVcfReader::GetNextRecordMultiSample(CVariant* a_pVariant)
     {
         a_pVariant[k].Clear();
         a_pVariant[k].m_chrName = m_pHeader->id[BCF_DT_CTG][m_pRecord->rid].key;
-        
-        //READ CHROMOSOME ID: (TODO: this should be renewed. there should be sth that reads the chromosome id)
-        if(a_pVariant[k].m_chrName.length() == 5)
-            a_pVariant[k].m_nChrId = atoi(a_pVariant->m_chrName.substr(3,2).c_str());
-        else if(a_pVariant[k].m_chrName.length() == 4)
-            a_pVariant[k].m_nChrId = atoi(a_pVariant->m_chrName.substr(3,1).c_str());
-        else
-            a_pVariant[k].m_nChrId = atoi(m_pHeader->id[BCF_DT_CTG][m_pRecord->rid].key);
+        a_pVariant->m_nChrId = GetChromosomeNumber(a_pVariant->m_chrName);
         
         //READ FILTER DATA
         //TODO: read filter data

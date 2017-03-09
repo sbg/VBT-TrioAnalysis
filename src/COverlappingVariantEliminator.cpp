@@ -10,14 +10,24 @@
 #include <iostream>
 
 
-void COverlappingVariantEliminator::FilterOverlaps(const std::string& a_rFileName, bool a_bIsFilterOverlap, bool a_bIsFilter00)
+void COverlappingVariantEliminator::FilterOverlaps(const std::string& a_rFileName, bool a_bIsFilterOverlap, bool a_bIsFilter00, int a_00filterId)
 {
 
     std::string modeSubPath = "";
     if(a_bIsFilterOverlap)
-        modeSubPath = modeSubPath + "_Overlap";
+        modeSubPath = modeSubPath + "_Filtered";
     if(a_bIsFilter00)
-        modeSubPath = modeSubPath + "_00";
+    {
+        std::string sample = "";
+        if(a_00filterId == 0)
+            sample = "_Mother00";
+        else if(a_00filterId == 1)
+            sample = "_Father00";
+        else if(a_00filterId == 2)
+            sample = "_Child00";
+        
+        modeSubPath = modeSubPath + sample;
+    }
     
     modeSubPath = modeSubPath + ".vcf";
 
@@ -48,8 +58,11 @@ void COverlappingVariantEliminator::FilterOverlaps(const std::string& a_rFileNam
     while(m_vcfReader.GetNextRecordMultiSample(variant))
     {
         //Eliminate 0/0 child variants
-        if(variant[2].m_genotype[0] == 0 && variant[2].m_genotype[1] == 0)
+        if(true == a_bIsFilter00 && variant[a_00filterId].m_genotype[0] == 0 && variant[a_00filterId].m_genotype[1] == 0)
+        {
+            SkippedLineCount++;
             continue;
+        }
         
         //If chromosome changes, reset the last bound
         if(lastProcessedChrId != variant[0].m_nChrId)
@@ -76,7 +89,7 @@ void COverlappingVariantEliminator::FilterOverlaps(const std::string& a_rFileNam
         }
         
         //Write the variant into the new vcf file
-        if(!shouldSkip)
+        if(!a_bIsFilterOverlap || !shouldSkip)
         {
             bcf_write1(m_pHtsFileFiltered, m_vcfReader.GetHeaderPointer(), m_vcfReader.GetRecordPointer());
             lastBound = curLast;

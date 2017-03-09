@@ -389,6 +389,13 @@ void CMendelianAnalyzer::CheckFor0Path(int a_nChrId,
     int varlistItr = 0;
     for(int k = 0; k < a_rSyncPointList.size() && varlistItr < a_pVarList.size(); k++)
     {
+        
+        if(a_pVarList[varlistItr]->m_nOriginalPos == 875641)
+        {
+            int asdas = 0;
+            asdas += 4;
+        }
+        
         //If we check that syncpoint
         bool bDoCheck = false;
         std::vector<const CVariant*> tmpVarList;
@@ -992,7 +999,7 @@ void CMendelianAnalyzer::MergeFunc(int a_nChromosomeId)
     std::cout << "Child Var Size:" << childVariants.size() << std::endl;
     
     std::ofstream compliantsAll;
-    std::string commonPath = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/chr" + std::to_string(a_nChromosomeId + 1);
+    std::string commonPath = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/NoParent00TEST/chr" + std::to_string(a_nChromosomeId + 1);
     
     compliantsAll.open(commonPath + "_CompliantsALL.txt");
     
@@ -1006,6 +1013,7 @@ void CMendelianAnalyzer::MergeFunc(int a_nChromosomeId)
     for(const CVariant* k : violations)
         violationsAll << k->m_nOriginalPos << std::endl;
     violationsAll.close();
+    
     
 /*
         std::ofstream outputFileAlleleMatchVio;
@@ -1033,27 +1041,26 @@ void CMendelianAnalyzer::MergeFunc(int a_nChromosomeId)
         outputFile.close();
 
         std::ofstream outputFileF;
-        outputFileF.open("/Users/c1ms21p6h3qk/Desktop/MendelianOutput/Chr21Father0sCompliant.txt");
+        outputFileF.open(commonPath + "_Father0sCompliant.txt");
         for(const CVariant* k : compliantVarsFrom0CheckFather)
             outputFileF << k->m_nOriginalPos << std::endl;
         outputFileF.close();
 
         std::ofstream outputFileFvio;
-        outputFileFvio.open("/Users/c1ms21p6h3qk/Desktop/MendelianOutput/Chr21Father0sViolation.txt");
+        outputFileFvio.open(commonPath + "_Father0sViolation.txt");
         for(const CVariant* k : violationVarsFrom0CheckFather)
             outputFileFvio << k->m_nOriginalPos << std::endl;
         outputFileFvio.close();
         
 
         std::ofstream outputFileM;
-        outputFileM.open("/Users/c1ms21p6h3qk/Desktop/MendelianOutput/Chr21Mother0sCompliant.txt");
+        outputFileM.open(commonPath + "_Mother0sCompliant.txt");
         for(const CVariant* k : compliantVarsFrom0CheckMother)
             outputFileM << k->m_nOriginalPos << std::endl;
         outputFileM.close();
-        
-        
+    
         std::ofstream outputFileMvio;
-        outputFileMvio.open("/Users/c1ms21p6h3qk/Desktop/MendelianOutput/Chr21Mother0sViolation.txt");
+        outputFileMvio.open(commonPath + "_Mother0sViolation.txt");
         for(const CVariant* k : violationVarsFrom0CheckMother)
             outputFileMvio << k->m_nOriginalPos << std::endl;
         outputFileMvio.close();
@@ -1063,26 +1070,25 @@ void CMendelianAnalyzer::MergeFunc(int a_nChromosomeId)
         for(const CVariant* k : compliantVarsFrom00Check)
             outputFileCC1 << k->m_nOriginalPos << std::endl;
         outputFileCC1.close();
-    
+
+        std::ofstream outputFileCC1v;
+        outputFileCC1v.open(commonPath + "_00Violations.txt");
+        for(const CVariant* k : violationVarsFrom00Check)
+            outputFileCC1v << k->m_nOriginalPos << std::endl;
+        outputFileCC1v.close();
+
         std::ofstream outputFileCC11;
         outputFileCC11.open(commonPath + "_00CompliantsGT.txt");
         for(const CVariant* k : compliantVarsFrom00CheckGT)
             outputFileCC11 << k->m_nOriginalPos << std::endl;
         outputFileCC11.close();
 
-        std::ofstream outputFileCC2;
-        outputFileCC2.open("/Users/c1ms21p6h3qk/Desktop/MendelianOutput/Child00CheckViolations.txt");
-        for(const CVariant* k : violationVarsFrom00Check)
-            outputFileCC2 << k->m_nOriginalPos << std::endl;
-        outputFileCC2.close();
-
- 
-        std::ofstream outputFileChildUnique;
-        outputFileChildUnique.open("/Users/c1ms21p6h3qk/Desktop/MendelianOutput/childUniqueWithout00.txt");
-        for(int k : childUniqueVarIndexList)
-            outputFileChildUnique << childVariants[k]->m_nOriginalPos << std::endl;
-        outputFileChildUnique.close();
-*/
+        std::ofstream outputFileCC11v;
+        outputFileCC11v.open(commonPath + "_00ViolationsGT.txt");
+        for(const CVariant* k : violationVarsFrom00CheckGT)
+            outputFileCC11v << k->m_nOriginalPos << std::endl;
+        outputFileCC11v.close();
+ */
     
 }
 

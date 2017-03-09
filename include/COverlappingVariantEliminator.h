@@ -16,7 +16,7 @@ class COverlappingVariantEliminator
     
 public:
     
-    void FilterOverlaps(const std::string& a_rFileName, bool a_bIsFilterOverlap, bool a_bIsFilter00);
+    void FilterOverlaps(const std::string& a_rFileName, bool a_bIsFilterOverlap, bool a_bIsFilter00, int a_00filterId);
 
 private:
     
