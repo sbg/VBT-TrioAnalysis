@@ -390,12 +390,6 @@ void CMendelianAnalyzer::CheckFor0Path(int a_nChrId,
     for(int k = 0; k < a_rSyncPointList.size() && varlistItr < a_pVarList.size(); k++)
     {
         
-        if(a_pVarList[varlistItr]->m_nOriginalPos == 875641)
-        {
-            int asdas = 0;
-            asdas += 4;
-        }
-        
         //If we check that syncpoint
         bool bDoCheck = false;
         std::vector<const CVariant*> tmpVarList;
@@ -463,8 +457,6 @@ void CMendelianAnalyzer::CheckFor0Path(int a_nChrId,
     }
     
 }
-
-
 
 void CMendelianAnalyzer::CheckFor00Child(int a_nChrId,
                                          std::vector<const CVariant*>& a_rOvarList,
@@ -643,7 +635,11 @@ void CMendelianAnalyzer::ProcessChromosome(const std::vector<int>& a_nChromosome
 
 void CMendelianAnalyzer::MergeFunc(int a_nChromosomeId)
 {
-    std::vector<const CVariant*> MendelianViolationVars;
+    
+    std::vector<const CVariant*> compliants;
+    std::vector<const CVariant*> violations;
+
+    std::vector<const CVariant*> SameAlleleMatchViolationVars;
     std::vector<const CVariant*> MendelianCompliantVars;
     
     std::vector<const CVariant*> motherChildOnly;
@@ -654,7 +650,6 @@ void CMendelianAnalyzer::MergeFunc(int a_nChromosomeId)
     std::vector<const CVariant*> check00Child;
     std::vector<const CVariant*> childUniqueList;
     std::vector<const CVariant*> check00ChildGTMatched;
-
 
     //Included lists of child
     CVariantIterator FatherChildVariants(m_aBestPathsFatherChildGT[a_nChromosomeId].m_calledSemiPath.GetIncludedVariants(),
@@ -672,6 +667,7 @@ void CMendelianAnalyzer::MergeFunc(int a_nChromosomeId)
     
     while(true)
     {
+        //If Mother variant and Father variant is Common check for same allele match condition
         if(varMC->GetVariant().m_nId == varFC->GetVariant().m_nId)
         {
             if(varMC->GetVariant().m_genotype[0] == 0 && varMC->GetVariant().m_genotype[1] == 0)
@@ -687,7 +683,7 @@ void CMendelianAnalyzer::MergeFunc(int a_nChromosomeId)
                        varFC->GetVariant().m_variantStatus == eGENOTYPE_MATCH)
                         MendelianCompliantVars.push_back(&varMC->GetVariant());
                     else
-                        MendelianViolationVars.push_back(&varMC->GetVariant());
+                        SameAlleleMatchViolationVars.push_back(&varMC->GetVariant());
                 }
                 else
                     MendelianCompliantVars.push_back(&varMC->GetVariant());
@@ -709,6 +705,7 @@ void CMendelianAnalyzer::MergeFunc(int a_nChromosomeId)
             }
         }
         
+        //If we have variant match with Father side only, we filter 0/x variants and rest of them are marked as violation
         else if(varMC->GetVariant().m_nId > varFC->GetVariant().m_nId)
         {
             if(varFC->GetVariant().m_bIsHeterozygous)
@@ -735,6 +732,7 @@ void CMendelianAnalyzer::MergeFunc(int a_nChromosomeId)
             }
         }
         
+        //If we have variant match with Mother side only, we filter 0/x variants and rest of them are marked as violation
         else
         {
             if(varMC->GetVariant().m_bIsHeterozygous)
@@ -834,99 +832,61 @@ void CMendelianAnalyzer::MergeFunc(int a_nChromosomeId)
     std::vector<const CVariant*> violationVarsFrom0CheckMother;
     std::vector<const CVariant*> violationVarsFrom0CheckFather;
     
+    //Check for 0/x child variant set at father side
     CheckFor0Path(a_nChromosomeId, true, check0atFatherSide, violationVarsFrom0CheckFather, compliantVarsFrom0CheckFather);
+    //Check for 0/x child variant set at the mother side
     CheckFor0Path(a_nChromosomeId, false, check0atMotherSide, violationVarsFrom0CheckMother, compliantVarsFrom0CheckMother);
     
-    std::vector<const CVariant*> childVariants = m_provider.GetVariantList(eCHILD, a_nChromosomeId);
+    std::vector<const CVariant*> compliantVarsFrom00CheckGT;
+    std::vector<const CVariant*> violationVarsFrom00CheckGT;
     
+    //Check for 0/0 child variant set for both parent
+    CheckFor00Child(a_nChromosomeId, check00ChildGTMatched, violationVarsFrom00CheckGT, compliantVarsFrom00CheckGT, true);
+
+
+    //Gather all compliant variants of child we found so far
+    compliants.insert(std::end(compliants), std::begin(MendelianCompliantVars), std::end(MendelianCompliantVars));
+    compliants.insert(std::end(compliants), std::begin(compliantVarsFrom0CheckFather), std::end(compliantVarsFrom0CheckFather));
+    compliants.insert(std::end(compliants), std::begin(compliantVarsFrom0CheckMother), std::end(compliantVarsFrom0CheckMother));
+    compliants.insert(std::end(compliants), std::begin(compliantVarsFrom00CheckGT), std::end(compliantVarsFrom00CheckGT));
+    std::sort(compliants.begin(), compliants.end(), variantCompare);
+
+    
+    //Gather all violation variants of child we found so far
+    violations.insert(std::end(violations), std::begin(SameAlleleMatchViolationVars), std::end(SameAlleleMatchViolationVars));
+    violations.insert(std::end(violations), std::begin(violationVarsFrom0CheckFather), std::end(violationVarsFrom0CheckFather));
+    violations.insert(std::end(violations), std::begin(violationVarsFrom0CheckMother), std::end(violationVarsFrom0CheckMother));
+    violations.insert(std::end(violations), std::begin(fatherChildOnly), std::end(fatherChildOnly));
+    violations.insert(std::end(violations), std::begin(motherChildOnly), std::end(motherChildOnly));
+    violations.insert(std::end(violations), std::begin(violationVarsFrom00CheckGT), std::end(violationVarsFrom00CheckGT));
+    std::sort(violations.begin(), violations.end(), variantCompare);
+
+    
+    //Find Child Unique variants
+    std::vector<const CVariant*> childVariants = m_provider.GetVariantList(eCHILD, a_nChromosomeId);
     std::vector<int>childProcessedArray(childVariants.size());
     for(int elem : childProcessedArray)
         elem = 0;
     
     //Mark mendelian compliant vars as processed
-    for(int k = 0, m = 0; k < childVariants.size() && m < MendelianCompliantVars.size(); k++)
+    for(int k = 0, m = 0; k < childVariants.size() && m < compliants.size(); k++)
     {
-        if(childVariants[k]->m_nId == MendelianCompliantVars[m]->m_nId)
+        if(childVariants[k]->m_nId == compliants[m]->m_nId)
         {
             childProcessedArray[k]++;
             m++;
         }
-        
     }
-    
     //Mark mendelian violation vars as processed
-    for(int k = 0, m = 0; k < childVariants.size() && m < MendelianViolationVars.size(); k++)
+    for(int k = 0, m = 0; k < childVariants.size() && m < violations.size(); k++)
     {
-        if(childVariants[k]->m_nId == MendelianViolationVars[m]->m_nId)
+        if(childVariants[k]->m_nId == violations[m]->m_nId)
         {
             childProcessedArray[k]++;
             m++;
         }
     }
     
-    //Mark father child only vars as processed
-    for(int k = 0, m = 0; k < childVariants.size() && m < fatherChildOnly.size(); k++)
-    {
-        if(childVariants[k]->m_nId == fatherChildOnly[m]->m_nId)
-        {
-            childProcessedArray[k]++;
-            m++;
-        }
-    }
-    
-    //Mark mother child only vars as processed
-    for(int k = 0, m = 0; k < childVariants.size() && m < motherChildOnly.size(); k++)
-    {
-        if(childVariants[k]->m_nId == motherChildOnly[m]->m_nId)
-        {
-            childProcessedArray[k]++;
-            m++;
-        }
-    }
-
-    //Mark check 0 condition at father side as processed
-    for(int k = 0, m = 0; k < childVariants.size() && m < check0atFatherSide.size(); k++)
-    {
-        if(childVariants[k]->m_nId == check0atFatherSide[m]->m_nId)
-        {
-            childProcessedArray[k]++;
-            m++;
-        }
-    }
-
-    //Mark check 0 condition at mother side as processed
-    for(int k = 0, m = 0; k < childVariants.size() && m < check0atMotherSide.size(); k++)
-    {
-        if(childVariants[k]->m_nId == check0atMotherSide[m]->m_nId)
-        {
-            childProcessedArray[k]++;
-            m++;
-        }
-    }
-    
-    //Mark child 00 vars as processed
-    for(int k = 0, m = 0; k < childVariants.size() && m < check00Child.size(); k++)
-    {
-        if(childVariants[k]->m_nId == check00Child[m]->m_nId)
-        {
-            childProcessedArray[k]++;
-            m++;
-        }
-    }
-
-    //Mark child 00 vars GT matched as processed
-    for(int k = 0, m = 0; k < childVariants.size() && m < check00ChildGTMatched.size(); k++)
-    {
-        if(childVariants[k]->m_nId == check00ChildGTMatched[m]->m_nId)
-        {
-            childProcessedArray[k]++;
-            m++;
-        }
-    }
-
-    
-    
-    int noMatch = 0;
     for(int childItr = 0; childItr < childProcessedArray.size(); childItr++)
     {
         if(childProcessedArray[childItr] == 0)
@@ -939,65 +899,31 @@ void CMendelianAnalyzer::MergeFunc(int a_nChromosomeId)
             {
                 const CVariant* pVar = childVariants[childItr];
                 childUniqueList.push_back(pVar);
-                noMatch++;
             }
         }
     }
     
     std::vector<const CVariant*> compliantVarsFrom00Check;
     std::vector<const CVariant*> violationVarsFrom00Check;
-
-    std::vector<const CVariant*> compliantVarsFrom00CheckGT;
-    std::vector<const CVariant*> violationVarsFrom00CheckGT;
-
+    
+    //Check for 0/0 unique child variants for both parent
     CheckFor00Child(a_nChromosomeId, check00Child, violationVarsFrom00Check, compliantVarsFrom00Check, false);
-    CheckFor00Child(a_nChromosomeId, check00ChildGTMatched, violationVarsFrom00CheckGT, compliantVarsFrom00CheckGT, true);
     
-    std::vector<const CVariant*> compliants;
-    std::vector<const CVariant*> violations;
-    
-    compliants.insert(std::end(compliants), std::begin(MendelianCompliantVars), std::end(MendelianCompliantVars));
-    compliants.insert(std::end(compliants), std::begin(compliantVarsFrom0CheckFather), std::end(compliantVarsFrom0CheckFather));
-    compliants.insert(std::end(compliants), std::begin(compliantVarsFrom0CheckMother), std::end(compliantVarsFrom0CheckMother));
+    //Add the new compliants we found to compliants list
     compliants.insert(std::end(compliants), std::begin(compliantVarsFrom00Check), std::end(compliantVarsFrom00Check));
-    compliants.insert(std::end(compliants), std::begin(compliantVarsFrom00CheckGT), std::end(compliantVarsFrom00CheckGT));
     std::sort(compliants.begin(), compliants.end(), variantCompare);
-    
-    violations.insert(std::end(violations), std::begin(MendelianViolationVars), std::end(MendelianViolationVars));
-    violations.insert(std::end(violations), std::begin(violationVarsFrom0CheckFather), std::end(violationVarsFrom0CheckFather));
-    violations.insert(std::end(violations), std::begin(violationVarsFrom0CheckMother), std::end(violationVarsFrom0CheckMother));
-    violations.insert(std::end(violations), std::begin(fatherChildOnly), std::end(fatherChildOnly));
-    violations.insert(std::end(violations), std::begin(motherChildOnly), std::end(motherChildOnly));
+
+    //Add the new violations we found to violation list
     violations.insert(std::end(violations), std::begin(violationVarsFrom00Check), std::end(violationVarsFrom00Check));
     violations.insert(std::end(violations), std::begin(childUniqueList), std::end(childUniqueList));
-    violations.insert(std::end(violations), std::begin(violationVarsFrom00CheckGT), std::end(violationVarsFrom00CheckGT));
     std::sort(violations.begin(), violations.end(), variantCompare);
-    
+
     std::cout << "===================== STATISTICS " << a_nChromosomeId + 1 << "===================" << std::endl;
-    std::cout << std::endl;
-    std::cout << "Violation Vars Same Allele Match:" << MendelianViolationVars.size() << std::endl;
-    std::cout << "Compliant Variants:" << MendelianCompliantVars.size() << std::endl;
-    std::cout << std::endl;
-    std::cout << "Violation Vars 0 Check Mother:" << violationVarsFrom0CheckMother.size() << std::endl;
-    std::cout << "Compliant Vars 0 Check Mother:" << compliantVarsFrom0CheckMother.size() << std::endl;
-    std::cout << "0 Check Total: " << check0atMotherSide.size() << " Sum of two:" << violationVarsFrom0CheckMother.size() + compliantVarsFrom0CheckMother.size() << std::endl;
-    std::cout << std::endl;
-    std::cout << "Violation Vars 0 Check Father:" << violationVarsFrom0CheckFather.size() << std::endl;
-    std::cout << "Compliant Vars 0 Check Father:" << compliantVarsFrom0CheckFather.size() << std::endl;
-    std::cout << "0 Check Total: " << check0atFatherSide.size() << " Sum of two:" << violationVarsFrom0CheckFather.size() + compliantVarsFrom0CheckFather.size() << std::endl;
-    std::cout << std::endl;
-    std::cout << "Violation Vars Father Only:"  <<  fatherChildOnly.size() << std::endl;
-    std::cout << "Violation Vars Mother Only:"  <<  motherChildOnly.size() << std::endl;
-    std::cout << "Violation Vars Child Unique:" <<  childUniqueList.size() << std::endl;
-    std::cout << std::endl;
-    std::cout << "Violation Vars 00 Check:" << violationVarsFrom00Check.size() << std::endl;
-    std::cout << "Compliant Vars 00 Check :" << compliantVarsFrom00Check.size() << std::endl;
-    std::cout << "00 Check Total:" << check00Child.size() << " Sum of two:" << violationVarsFrom00Check.size() + compliantVarsFrom00Check.size() << std::endl;
-    std::cout << "=====================================" << std::endl;
     std::cout << "Total Compliants:" << compliants.size() << std::endl;
     std::cout << "Total Violations:" << violations.size() << std::endl;
     std::cout << "Child Var Size:" << childVariants.size() << std::endl;
-    
+    std::cout << "=====================================================" << std::endl << std::endl;
+
     std::ofstream compliantsAll;
     std::string commonPath = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/NoParent00TEST/chr" + std::to_string(a_nChromosomeId + 1);
     
