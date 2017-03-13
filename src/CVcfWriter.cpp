@@ -58,6 +58,9 @@ void CVcfWriter::WriteHeaderToVcf()
 {
     if(m_HEADER_GUARD == 1)
     {
+        //to update internal structures
+        bcf_hdr_add_sample(m_pHeader, NULL);
+        
         bcf_hdr_write(m_pHtsFile, m_pHeader);
         m_HEADER_GUARD = -1;
     }
@@ -129,6 +132,7 @@ void CVcfWriter::AddRecord(const SVcfRecord& a_rVcfRecord)
         if(a_rVcfRecord.m_aSampleData[k].m_nHaplotypeCount == 1)
             genotypes.push_back(bcf_int32_vector_end);
     }
+
     
     if(m_nSampleCount != a_rVcfRecord.m_aSampleData.size())
     {
@@ -137,7 +141,7 @@ void CVcfWriter::AddRecord(const SVcfRecord& a_rVcfRecord)
     }
     
     
-    bcf_update_genotypes(m_pHeader, m_pRecord, static_cast<int*>(&genotypes[0]), static_cast<int>(genotypes.size()));
+    bcf_update_genotypes(m_pHeader, m_pRecord, static_cast<int*>(&genotypes[0]), bcf_hdr_nsamples(m_pHeader)*2);
 
     //2.Decision Set (BD)
     char* tmpstr[m_nSampleCount];
@@ -185,6 +189,98 @@ void CVcfWriter::AddRecord(const SVcfRecord& a_rVcfRecord)
     
     
 }
+
+void CVcfWriter::AddMendelianRecord(const SVcfRecord& a_rVcfRecord)
+{
+    int success = 0;
+    
+    
+    if(m_HEADER_GUARD != -1)
+    {
+        std::cerr << "Invalid Operation. Cannot add record before submitting header" << std::endl;
+        return;
+    }
+    
+    //Clear previous record
+    bcf_clear1(m_pRecord);
+    
+    //Set chromosome name
+    m_pRecord->rid = bcf_hdr_name2id(m_pHeader, GetChrName(a_rVcfRecord.m_nChrId).c_str());
+    
+    //Set start position
+    m_pRecord->pos = a_rVcfRecord.m_nPosition;
+    
+    //Set Quality
+    if(a_rVcfRecord.m_nQuality != -1)
+        m_pRecord->qual = a_rVcfRecord.m_nQuality;
+    
+    //Set alleles
+    success = bcf_update_alleles_str(m_pHeader, m_pRecord, a_rVcfRecord.m_alleles.c_str());
+    if(success < 0)
+        std::cerr << "Failed to update Alleles string for Record: " << "Chr" << a_rVcfRecord.m_nChrId << " Position: " << a_rVcfRecord.m_nPosition << std::endl;
+    
+    //Set Decision
+    success = bcf_update_info_string(m_pHeader, m_pRecord, "MD", a_rVcfRecord.m_mendelianDecision.c_str());
+    
+    if(success < 0)
+        std::cerr << "Failed to update MD INFO for Record: " << "Chr" << a_rVcfRecord.m_nChrId << " Position: " << a_rVcfRecord.m_nPosition << std::endl;
+    
+    
+    //Set filter
+    if(a_rVcfRecord.m_aFilterString.size() != 0)
+    {
+        int32_t* tmpi = new int[a_rVcfRecord.m_aFilterString.size()];
+        for(int k = 0; k < a_rVcfRecord.m_aFilterString.size(); k++)
+            tmpi[k] = bcf_hdr_id2int(m_pHeader, BCF_DT_ID, a_rVcfRecord.m_aFilterString[k].c_str());
+        bcf_update_filter(m_pHeader, m_pRecord, tmpi, static_cast<int>(a_rVcfRecord.m_aFilterString.size()));
+    }
+    
+    //==Set Per Sample Data==
+    
+    //1.Genotype Set (GT)
+    int* genotypes = new int[bcf_hdr_nsamples(m_pHeader)*2];
+    int genotypeItr = 0;
+    for(int k = 0; k < a_rVcfRecord.m_aSampleData.size(); k++)
+    {
+        for(int p = 0; p < a_rVcfRecord.m_aSampleData[k].m_nHaplotypeCount; p++)
+        {
+            if(a_rVcfRecord.m_aSampleData[k].m_bIsPhased)
+                genotypes[genotypeItr++] = bcf_gt_phased(a_rVcfRecord.m_aSampleData[k].m_aGenotype[p]);
+            else if(a_rVcfRecord.m_aSampleData[k].m_aGenotype[p] == -1)
+                genotypes[genotypeItr++] = bcf_gt_missing;
+            else
+                genotypes[genotypeItr++] = bcf_gt_unphased(a_rVcfRecord.m_aSampleData[k].m_aGenotype[p]);
+        }
+        
+        if(a_rVcfRecord.m_aSampleData[k].m_nHaplotypeCount == 1)
+            genotypes[genotypeItr++] = bcf_int32_vector_end;
+    }
+
+    if(m_nSampleCount != a_rVcfRecord.m_aSampleData.size())
+    {
+        for(int k = static_cast<int>(a_rVcfRecord.m_aSampleData.size()); k < m_nSampleCount; k++)
+        {
+            genotypes[genotypeItr++] = bcf_gt_missing;
+            genotypes[genotypeItr++] = bcf_gt_missing;
+        }
+    }
+    
+    success = bcf_update_genotypes(m_pHeader, m_pRecord, genotypes, genotypeItr);
+    if(success < 0)
+        std::cerr << "Failed to update Genotypes for Record: " << "Chr" << a_rVcfRecord.m_nChrId << " Position: " << a_rVcfRecord.m_nPosition << std::endl;
+
+    
+    //Write record to created VCF File
+    success = bcf_write1(m_pHtsFile, m_pHeader, m_pRecord);
+    if(success < 0)
+        std::cerr << "Failed to write Record to the file: " << "Chr" << a_rVcfRecord.m_nChrId << " Position: " << a_rVcfRecord.m_nPosition << std::endl;
+    
+    
+    //Garbage Collection
+    delete[] genotypes;
+}
+
+
 
 std::string CVcfWriter::GetChrName(int a_nChrId)
 {

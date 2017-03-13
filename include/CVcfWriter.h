@@ -43,6 +43,8 @@ struct SVcfRecord
     int m_nPosition;
     //Quality of the variant
     int m_nQuality = -1;
+    //Mendelian Decision INFO (Used for mendelian comparison feature)
+    std::string m_mendelianDecision = "";
     //Filter string of the variant (eg. "PASS")
     std::vector<std::string> m_aFilterString;
     //Alleles string separated by comma of the variant (eg. m_alleles = "AT,G")
@@ -69,6 +71,9 @@ public:
     
     //Append the given variant to the opened vcf file
     void AddRecord(const SVcfRecord& a_rVcfRecord);
+    
+    //Append the given variant to the opned vcf file for Mendelian Trio Mode
+    void AddMendelianRecord(const SVcfRecord& a_rVcfRecord);
     
     //Close the VCF file
     void CloseVcf();
