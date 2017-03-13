@@ -17,7 +17,7 @@
 //void compareTrimmedVariables();
 void testTripletReader2();
 void compare2List(const std::string& s1, const std::string& s2);
-void GenerateTruthSetsMaria();
+void GenerateTruthSetsMaria(std::string a_rFilename, bool a_bIsFilterOverlap, bool a_bIsFilter00);
 void UnitTestTrioComparison(int a_nChrNumber, bool a_bIsFilterOverlap, bool a_bIsFilter00);
 
 int main (int argc, char** argv)
@@ -30,32 +30,28 @@ int main (int argc, char** argv)
     
     
     //COverlappingVariantEliminator elim;
-    //elim.FilterOverlaps("/Users/c1ms21p6h3qk/Desktop/MendelianInput/ALL_filteredPedGraph_D1_D2_D3_9.31.cat.vcf");
+    //elim.FilterOverlaps("/Users/c1ms21p6h3qk/Desktop/MendelianInput/ALL_filteredPedGraph_D1_D2_D3_9.31.cat_Filtered.vcf", false, true, 0);
+    //elim.FilterOverlaps("/Users/c1ms21p6h3qk/Desktop/MendelianInput/ALL_filteredPedGraph_D1_D2_D3_9.31.cat_Filtered.vcf", false, true, 1);
     //return 0;
     
     //testTripletReader2();
     
     
-    //std::string fileTest = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/chr1_InitialCompliants.txt";
-    //std::string fileQuery = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/TruthSETFilteredOverlap/Chr1_CompliantsTRUTH.txt";
-    //compare2List(fileTest, fileQuery);
-    
-    
-    //std::string fileTest = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/chr1_00CompliantsGT.txt";
-    //std::string fileQuery = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/TruthSETFilteredOverlap/Chr1_CompliantsTRUTH.txt";
-    //compare2List(fileTest, fileQuery);
+    //std::string fileQuery = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/NoParent00Test/chr1_CompliantsALL.txt";
+    //std::string fileTruth = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/TruthSETFilteredOverlap/Chr1_CompliantsTRUTH.txt";
+    //compare2List(fileTruth, fileQuery);
     //return 0;
     
-    //GenerateTruthSetsMaria();
+    //GenerateTruthSetsMaria("/Users/c1ms21p6h3qk/Desktop/MendelianInput/ALL_filteredPedGraph_D1_D2_D3_9.31.cat_Filtered.vcf", true, false);
     //return 0;
 
     
     //UnitTestTrioComparison(1, true, false);
     //return 0;
     
-    for(int m = 1; m < 24; m++)
-        UnitTestTrioComparison(m, true, false);
-    return 0;
+    //for(int m = 1; m < 23; m++)
+    //    UnitTestTrioComparison(m, true, false);
+    //return 0;
     
     if(strcmp(argv[1], "-mendelian") == 0)
     {

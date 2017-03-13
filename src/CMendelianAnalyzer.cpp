@@ -26,8 +26,6 @@ bool isOverlap(int left1, int right1, int left2, int right2)
     return std::min(right1, right2) - std::max(left1, left2) >= 0;
 }
 
-
-
 void CMendelianAnalyzer::run(int argc, char **argv)
 {
     std::clock_t start;
@@ -67,6 +65,21 @@ void CMendelianAnalyzer::run(int argc, char **argv)
     std::vector<int> chrIds = m_provider.GetCommonChromosomes();
     for(int k = 0; k < chrIds.size(); k++)
         MergeFunc(chrIds[k]);
+    
+    
+    std::string trioPath = std::string(m_fatherChildConfig.m_pOutputDirectory) + "/trio.vcf";
+    m_trioWriter.SetTrioPath(trioPath);
+    
+    for(int k = 0; k < chrIds.size(); k++)
+    {
+        m_trioWriter.SetVariants(chrIds[k], eFATHER, m_provider.GetVariantList(eFATHER, chrIds[k]));
+        m_trioWriter.SetVariants(chrIds[k], eMOTHER, m_provider.GetVariantList(eMOTHER, chrIds[k]));
+        m_trioWriter.SetVariants(chrIds[k], eCHILD, m_provider.GetVariantList (eCHILD,  chrIds[k]));
+        
+        m_trioWriter.SetDecisions(chrIds[k], eCHILD, m_aChildDecisions[chrIds[k]]);
+    }
+    m_trioWriter.GenerateTrioVcf();
+    
     
     //Write results to log file
     m_resultLog.SetLogPath(m_fatherChildConfig.m_pOutputDirectory);
@@ -918,10 +931,38 @@ void CMendelianAnalyzer::MergeFunc(int a_nChromosomeId)
     violations.insert(std::end(violations), std::begin(childUniqueList), std::end(childUniqueList));
     std::sort(violations.begin(), violations.end(), variantCompare);
 
-    std::cout << "===================== STATISTICS " << a_nChromosomeId + 1 << "===================" << std::endl;
+    
+    //Create 0/0 child variants for corresponding mother and father unique variants
+    //TODO: IMPLEMENT!!!!!!!
+    
+    
+    
+    
+    //Fill the child decision array
+    std::vector<const CVariant*>::iterator compliantsIterator = compliants.begin();
+    std::vector<const CVariant*>::iterator violationsIterator = violations.begin();
+    m_aChildDecisions[a_nChromosomeId] = std::vector<EMendelianDecision>(childVariants.size());
+    for(int k = 0; k < childVariants.size(); k++)
+    {
+        if(compliantsIterator != compliants.end() && childVariants[k]->m_nId == (*compliantsIterator)->m_nId)
+        {
+            m_aChildDecisions[a_nChromosomeId][k] = EMendelianDecision::eCompliant;
+            compliantsIterator++;
+        }
+        else if(violationsIterator != violations.end() && childVariants[k]->m_nId == (*violationsIterator)->m_nId)
+        {
+            m_aChildDecisions[a_nChromosomeId][k] = EMendelianDecision::eViolation;
+            violationsIterator++;
+        }
+        else
+            m_aChildDecisions[a_nChromosomeId][k] = EMendelianDecision::eUnknown;
+    }
+    
+    
+    std::cout << "===================== STATISTICS " << a_nChromosomeId + 1 << " ===================" << std::endl;
     std::cout << "Total Compliants:" << compliants.size() << std::endl;
     std::cout << "Total Violations:" << violations.size() << std::endl;
-    std::cout << "Child Var Size:" << childVariants.size() << std::endl;
+    std::cout << "Child Var Size:" << childVariants.size()<< std::endl;
     std::cout << "=====================================================" << std::endl << std::endl;
 
     std::ofstream compliantsAll;

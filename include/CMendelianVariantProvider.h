@@ -13,13 +13,7 @@
 #include "CFastaParser.h"
 #include "COrientedVariant.h"
 #include "Constants.h"
-
-enum EMendelianVcfName
-{
-    eFATHER,
-    eMOTHER,
-    eCHILD
-};
+#include "EMendelianVcfName.h"
 
 
 class CMendelianVariantProvider

@@ -15,6 +15,7 @@
 #include "CPath.h"
 #include <thread>
 #include "CResultLog.h"
+#include "CMendelianTrioMerger.h"
 
 class CMendelianAnalyzer
 {
@@ -72,6 +73,9 @@ private:
     //Variant provider for parent-child comparison
     CMendelianVariantProvider m_provider;
 
+    //Trio merger for outputing
+    CMendelianTrioMerger m_trioWriter;
+    
     //Result log for mendelian comparison
     CResultLog m_resultLog;
     
@@ -84,6 +88,9 @@ private:
     CPath m_aBestPathsMotherChildGT[CHROMOSOME_COUNT];
     CPath m_aBestPathsMotherChildAM[CHROMOSOME_COUNT];
 
+    //Menndelian compliant/violation decision of each child variant
+    std::vector<EMendelianDecision> m_aChildDecisions[CHROMOSOME_COUNT];
+    
     
     //Thread pool we have for multitasking by per chromosome
     std::thread *m_pThreadPool;
