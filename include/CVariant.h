@@ -68,6 +68,9 @@ class CVariant
     //Return true if the variant filter column is PASS
     bool IsFilterPASS() const;
     
+    //Return the original Alt string with the given index (Take back trim operation)
+    std::string GetOriginalAlleleStr(int a_nAlleleIndex) const;
+    
     //Return the reference sequences
     std::string GetRefSeq() const;
     

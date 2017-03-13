@@ -143,6 +143,14 @@ SAllele CVariant::GetAllele(int a_nAlleleId) const
     return m_alleles[a_nAlleleId];
 }
 
+std::string CVariant::GetOriginalAlleleStr(int a_nAlleleIndex) const
+{
+    if(true == m_bIsFirstNucleotideTrimmed)
+        return m_refSequence[0] + m_alleles[a_nAlleleIndex].m_sequence;
+    else
+        return m_alleles[a_nAlleleIndex].m_sequence;
+}
+
 bool CVariant::IsNull() const
 {
     if(m_nVcfId == -1)
