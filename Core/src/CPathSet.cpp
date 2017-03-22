@@ -3,7 +3,7 @@
 //  VCFComparison
 //
 //  Created by Berke.Toptas on 11/10/16.
-//  Copyright © 2016 Seven Bridges Genomics. All rights reserved.
+//  Copyright (c) 2016 Seven Bridges Genomics
 //
 
 #include "CPathSet.h"

@@ -1,5 +1,5 @@
 //  Originated from: https://github.com/RealTimeGenomics/rtg-tools/blob/master/src/com/rtg/vcf/eval
-//  Copyright (c) 2014. Real Time Genomics Limited.
+//  Copyright (c) 2016 Seven Bridges Genomics
 //
 //  CPathReplay.cpp
 //  VCFComparison
