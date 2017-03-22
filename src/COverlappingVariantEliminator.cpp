@@ -29,7 +29,7 @@ void COverlappingVariantEliminator::FilterOverlaps(const std::string& a_rFileNam
         modeSubPath = modeSubPath + sample;
     }
     
-    modeSubPath = modeSubPath + ".vcf";
+    modeSubPath = modeSubPath + "NEWW.vcf";
 
     //Set output filename
     m_fileName =  a_rFileName.substr(0,a_rFileName.size() - 4) + modeSubPath;

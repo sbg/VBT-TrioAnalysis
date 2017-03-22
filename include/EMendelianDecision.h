@@ -11,9 +11,9 @@
 
 enum EMendelianDecision
 {
+    eUnknown,
     eCompliant,
-    eViolation,
-    eUnknown
+    eViolation
 };
 
 #endif // _E_MENDELIAN_DECISION_H_

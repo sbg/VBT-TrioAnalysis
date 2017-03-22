@@ -69,7 +69,7 @@ void CMendelianTrioMerger::FillHeader()
     m_vcfWriter.AddHeaderLine("##source= SBG Mendelian Comparison Tool Ver. 1.0 (Beta), 2017");
     
     //ADD MENDELIAN VIOLATION INFO TYPE
-    m_vcfWriter.AddHeaderLine("##INFO=<ID=MD,Number=1,Type=String,Description=\"Mendelian Violation Decision. no is violation, yes is compliant and unk is unknown\">");
+    m_vcfWriter.AddHeaderLine("##INFO=<ID=MD,Number=1,Type=String,Description=\"Mendelian Violation Decision.\">");
     
     //ADD GT COLUMN
     m_vcfWriter.AddHeaderLine("##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">");
@@ -159,7 +159,7 @@ void CMendelianTrioMerger::AddRecords(int a_nChromosomeId)
         {
             //CHECK IF FATHER IS SMALLER
             if(fatherItr != m_aFatherVariants[a_nChromosomeId].size() && m_aFatherVariants[a_nChromosomeId][fatherItr]->m_nOriginalPos < m_aChildVariants[a_nChromosomeId][childItr]->m_nOriginalPos)
-                DoSingleVar(a_nChromosomeId, fatherItr, eFATHER, eUnknown);
+                DoSingleVar(a_nChromosomeId, fatherItr, eFATHER, m_aFatherDecisions[a_nChromosomeId][fatherItr]);
             //DO MOTHER CHILD MERGE
             else
                 DoDoubleMerge(a_nChromosomeId, motherItr, childItr, eMOTHER, eCHILD, m_aChildDecisions[a_nChromosomeId][childItr]);
@@ -171,7 +171,7 @@ void CMendelianTrioMerger::AddRecords(int a_nChromosomeId)
         {
             //CHECK IF MOTHER IS SMALLER
             if(motherItr != m_aMotherVariants[a_nChromosomeId].size() && m_aMotherVariants[a_nChromosomeId][motherItr]->m_nOriginalPos < m_aChildVariants[a_nChromosomeId][childItr]->m_nOriginalPos)
-                DoSingleVar(a_nChromosomeId, motherItr, eMOTHER, eUnknown);
+                DoSingleVar(a_nChromosomeId, motherItr, eMOTHER, m_aMotherDecisions[a_nChromosomeId][motherItr]);
             //DO MOTHER CHILD MERGE
             else
                 DoDoubleMerge(a_nChromosomeId, fatherItr, childItr, eFATHER, eCHILD, m_aChildDecisions[a_nChromosomeId][childItr]);
@@ -193,8 +193,17 @@ void CMendelianTrioMerger::AddRecords(int a_nChromosomeId)
                 DoSingleVar(a_nChromosomeId, childItr, eCHILD, m_aChildDecisions[a_nChromosomeId][childItr]);
             //DO MOTHER CHILD MERGE
             else
-                DoDoubleMerge(a_nChromosomeId, motherItr, fatherItr, eMOTHER, eFATHER, eUnknown); // TODO: THIS DECISION WILL CHANGE!!!!!!
-            
+            {
+                EMendelianDecision dec;
+                if(m_aMotherDecisions[a_nChromosomeId][motherItr] == eViolation || m_aFatherDecisions[a_nChromosomeId][fatherItr] == eViolation)
+                    dec = eViolation;
+                else if(m_aMotherDecisions[a_nChromosomeId][motherItr] == eCompliant || m_aFatherDecisions[a_nChromosomeId][fatherItr] == eCompliant)
+                    dec = eCompliant;
+                else
+                    dec = eUnknown;
+                
+                DoDoubleMerge(a_nChromosomeId, motherItr, fatherItr, eMOTHER, eFATHER, dec);
+            }
             continue;
         }
         
@@ -206,12 +215,11 @@ void CMendelianTrioMerger::AddRecords(int a_nChromosomeId)
             int childPos  = childItr  != m_aChildVariants[a_nChromosomeId].size()  ? m_aChildVariants[a_nChromosomeId][childItr]->m_nOriginalPos   : INT_MAX;
         
             if(motherPos <= fatherPos && motherPos <= childPos)
-                DoSingleVar(a_nChromosomeId, motherItr, eMOTHER, eUnknown);
+                DoSingleVar(a_nChromosomeId, motherItr, eMOTHER, m_aMotherDecisions[a_nChromosomeId][motherItr]);
             else if(fatherPos <= motherPos && fatherPos <= childPos)
-                DoSingleVar(a_nChromosomeId, fatherItr, eFATHER, eUnknown);
+                DoSingleVar(a_nChromosomeId, fatherItr, eFATHER, m_aFatherDecisions[a_nChromosomeId][fatherItr]);
             else
                 DoSingleVar(a_nChromosomeId, childItr, eCHILD, m_aChildDecisions[a_nChromosomeId][childItr]);
-            
         }
     
     }
@@ -233,7 +241,7 @@ void CMendelianTrioMerger::DoTripleMerge(int a_nChromosomeId, int& a_nChildItr, 
     
     vcfrecord.m_nPosition = m_aChildVariants[a_nChromosomeId][a_nChildItr]->m_nOriginalPos;
     vcfrecord.m_nChrId = m_aChildVariants[a_nChromosomeId][a_nChildItr]->m_nChrId;
-    vcfrecord.m_mendelianDecision = m_aChildDecisions[a_nChromosomeId][a_nChildItr] == eCompliant ? "yes" : (m_aChildDecisions[a_nChromosomeId][a_nChildItr] == eViolation ? "no" : "unk");
+    vcfrecord.m_mendelianDecision = m_aChildDecisions[a_nChromosomeId][a_nChildItr] == eCompliant ? "compliant" : (m_aChildDecisions[a_nChromosomeId][a_nChildItr] == eViolation ? "violation" : "complex");
     
     std::vector<std::string> alleles;
     
@@ -334,7 +342,7 @@ void CMendelianTrioMerger::DoDoubleMerge(int a_nChromosomeId, int& a_nItr1, int&
     
     vcfrecord.m_nPosition = (pVarChild != NULL) ? pVarChild->m_nOriginalPos : pVarMother->m_nOriginalPos;
     vcfrecord.m_nChrId = (pVarChild != NULL) ? pVarChild->m_nChrId : pVarMother->m_nChrId;
-    vcfrecord.m_mendelianDecision = a_decision == eCompliant ? "yes" : (a_decision == eViolation ? "no" : "unk");
+    vcfrecord.m_mendelianDecision = a_decision == eCompliant ? "compliant" : (a_decision == eViolation ? "violation" : "complex");
     
     //Fill the alleles part according to trio
     std::vector<std::string> alleles;
@@ -465,7 +473,7 @@ void CMendelianTrioMerger::DoSingleVar(int a_nChromosomeId, int& a_nItr, EMendel
     
     vcfrecord.m_nPosition = pVariant->m_nOriginalPos;
     vcfrecord.m_nChrId = pVariant->m_nChrId;
-    vcfrecord.m_mendelianDecision = a_decision == eCompliant ? "yes" : (a_decision == eViolation ? "no" : "unk");
+    vcfrecord.m_mendelianDecision = a_decision == eCompliant ? "compliant" : (a_decision == eViolation ? "violation" : "complex");
     vcfrecord.m_alleles = pVariant->m_allelesStr;
     
     SPerSampleData dataMother;

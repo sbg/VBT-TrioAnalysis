@@ -74,9 +74,11 @@ void CMendelianAnalyzer::run(int argc, char **argv)
     {
         m_trioWriter.SetVariants(chrIds[k], eFATHER, m_provider.GetVariantList(eFATHER, chrIds[k]));
         m_trioWriter.SetVariants(chrIds[k], eMOTHER, m_provider.GetVariantList(eMOTHER, chrIds[k]));
-        m_trioWriter.SetVariants(chrIds[k], eCHILD, m_provider.GetVariantList (eCHILD,  chrIds[k]));
+        m_trioWriter.SetVariants(chrIds[k], eCHILD,  m_provider.GetVariantList(eCHILD,  chrIds[k]));
         
-        m_trioWriter.SetDecisions(chrIds[k], eCHILD, m_aChildDecisions[chrIds[k]]);
+        m_trioWriter.SetDecisions(chrIds[k], eCHILD,  m_aChildDecisions[chrIds[k]]);
+        m_trioWriter.SetDecisions(chrIds[k], eMOTHER, m_aMotherDecisions[chrIds[k]]);
+        m_trioWriter.SetDecisions(chrIds[k], eFATHER, m_aFatherDecisions[chrIds[k]]);
     }
     m_trioWriter.GenerateTrioVcf();
     
@@ -303,6 +305,37 @@ void CMendelianAnalyzer::GetSyncPointList(int a_nChrId, bool a_bIsFatherChild, s
         
         a_rSyncPointList.push_back(sPoint);
     }
+    
+    //Add Remaining variants to the last syncPoint
+    CSyncPoint sPoint;
+    sPoint.m_nStartPosition = pPath->m_aSyncPointList[pPath->m_aSyncPointList.size()-1];
+    sPoint.m_nEndPosition = INT_MAX;
+    sPoint.m_nIndex = static_cast<int>(pPath->m_aSyncPointList.size()-1);
+    
+    while(baseIncludedItr < pBaseIncluded.size() && pBaseIncluded[baseIncludedItr]->GetStartPos() <= sPoint.m_nEndPosition)
+    {
+        sPoint.m_baseVariantsIncluded.push_back(pBaseIncluded[baseIncludedItr]);
+        baseIncludedItr++;
+    }
+    while(calledIncludedItr < pCalledIncluded.size() && pCalledIncluded[calledIncludedItr]->GetStartPos() <= sPoint.m_nEndPosition)
+    {
+        sPoint.m_calledVariantsIncluded.push_back(pCalledIncluded[calledIncludedItr]);
+        calledIncludedItr++;
+    }
+    
+    while(baseExcludedItr < pBaseExcluded.size() && pBaseExcluded[baseExcludedItr]->m_nStartPos <= sPoint.m_nEndPosition)
+    {
+        sPoint.m_baseVariantsExcluded.push_back(pBaseExcluded[baseExcludedItr]);
+        baseExcludedItr++;
+    }
+    
+    while(calledExcludedItr < pCalledExcluded.size() && pCalledExcluded[calledExcludedItr]->m_nStartPos <= sPoint.m_nEndPosition)
+    {
+        sPoint.m_calledVariantsExcluded.push_back(pCalledExcluded[calledExcludedItr]);
+        calledExcludedItr++;
+    }
+    a_rSyncPointList.push_back(sPoint);
+    
 }
 
 void CMendelianAnalyzer::CheckFor0PathFor00(int a_nChrId,
@@ -348,8 +381,8 @@ void CMendelianAnalyzer::CheckFor0PathFor00(int a_nChrId,
             {
                 const CVariant* pVar = a_rSyncPointList[k].m_baseVariantsExcluded[m];
                 
-                if(eSNP == pVar->GetVariantType())
-                {
+//              if(eSNP == pVar->GetVariantType())
+//              {
                     if(isOverlap(pVar->GetStart(), pVar->GetEnd(), tmpVarList[0]->GetStart(), tmpVarList[0]->GetEnd()))
                     {
                         if(pVar->m_genotype[0] != 0 && pVar->m_genotype[1] != 0)
@@ -358,16 +391,16 @@ void CMendelianAnalyzer::CheckFor0PathFor00(int a_nChrId,
                             break;
                         }
                     }
-                }
+//              }
                 
-                else if(eINDEL == pVar->GetVariantType())
-                {
-                    if(pVar->m_genotype[0] != 0 && pVar->m_genotype[1] != 0)
-                    {
-                        bIsCompliant = false;
-                        break;
-                    }
-                }
+//                else if(eINDEL == pVar->GetVariantType())
+//                {
+//                    if(pVar->m_genotype[0] != 0 && pVar->m_genotype[1] != 0)
+//                    {
+//                        bIsCompliant = false;
+//                        break;
+//                    }
+//                }
             }
             
             if(bIsCompliant == true)
@@ -433,19 +466,7 @@ void CMendelianAnalyzer::CheckFor0Path(int a_nChrId,
             {
                 const CVariant* pVar = a_rSyncPointList[k].m_baseVariantsExcluded[m];
                 
-                if(eSNP == pVar->GetVariantType())
-                {
-                    if(isOverlap(pVar->GetStart(), pVar->GetEnd(), tmpVarList[0]->GetStart(), tmpVarList[0]->GetEnd()))
-                    {
-                        if(pVar->m_genotype[0] != 0 && pVar->m_genotype[1] != 0)
-                        {
-                            bIsCompliant = false;
-                            break;
-                        }
-                    }
-                }
-                
-                else if(eINDEL == pVar->GetVariantType())
+                if(isOverlap(pVar->GetStart(), pVar->GetEnd(), tmpVarList[0]->GetStart(), tmpVarList[0]->GetEnd()))
                 {
                     if(pVar->m_genotype[0] != 0 && pVar->m_genotype[1] != 0)
                     {
@@ -494,11 +515,6 @@ void CMendelianAnalyzer::CheckFor00Child(int a_nChrId,
         CheckFor0PathFor00(a_nChrId, true,  a_rOvarList, fatherViolants, fatherCompliants);
         CheckFor0PathFor00(a_nChrId, false, a_rOvarList, motherViolants, motherCompliants);
     }
-    
-    std::cout << std::endl;
-    std::cout << "00 Check Father Compliant Found:" << fatherCompliants.size() << std::endl;
-    std::cout << "00 Check Mother Compliant Found:" << motherCompliants.size() << std::endl;
-    std::cout << std::endl;
     
     //Intersect father and mother compliant variants and write to a_rCompliantList
     for (std::vector<const CVariant*>::iterator i = fatherCompliants.begin(); i != fatherCompliants.end(); ++i)
@@ -640,9 +656,84 @@ void CMendelianAnalyzer::ProcessChromosome(const std::vector<int>& a_nChromosome
         
         //Clear Father child replay object
         replayMotherChildAM.Clear();
-        
+
     }
 
+}
+
+void CMendelianAnalyzer::CheckUniqueVars(EMendelianVcfName a_checkSide, int a_nChrId, const std::vector<const CVariant*>& a_rVariantList, std::vector<bool>& a_rSideDecisions)
+{
+    
+    std::vector<const CVariant*> varListToCheckChild = m_provider.GetVariantList(eCHILD, a_nChrId);;
+    std::vector<const CVariant*> varListToCheckParent = a_checkSide == eMOTHER ? m_provider.GetVariantList(eFATHER, a_nChrId) : m_provider.GetVariantList(eMOTHER, a_nChrId);
+    
+    std::vector<bool> decChild(a_rVariantList.size());
+    std::vector<bool> decParent(a_rVariantList.size());
+    
+    //initialize all variants as true at first. We will then eliminate those with overlapping non-0 variants.
+    for(int k = 0; k < a_rVariantList.size(); k++)
+    {
+        decChild[k] = true;
+        decParent[k] = true;
+    }
+    
+    
+    //Check overlaps for child
+    int varItr = 0;
+    for(int k = 0; k < a_rVariantList.size(); k++)
+    {
+        if(a_rVariantList[k]->m_genotype[0] != 0 && a_rVariantList[k]->m_genotype[0] != 0)
+        {
+            decChild[k] = false;
+            continue;
+        }
+        
+        while(varItr <  varListToCheckChild.size() && varListToCheckChild[varItr]->m_nEndPos < a_rVariantList[k]->m_nStartPos)
+            varItr++;
+    
+        if(varItr == varListToCheckChild.size())
+            break;
+        
+        else if(isOverlap(a_rVariantList[k]->m_nStartPos, a_rVariantList[k]->m_nEndPos, varListToCheckChild[varItr]->m_nStartPos, varListToCheckChild[varItr]->m_nEndPos))
+        {
+            if(varListToCheckChild[varItr]->m_genotype[0] != 0 || varListToCheckChild[varItr]->m_genotype[1] != 0)
+            {
+                decChild[k] = false;
+            }
+        }
+    }
+    
+    
+    //Check overlaps for other parent
+    varItr = 0;
+    for(int k = 0; k < a_rVariantList.size(); k++)
+    {
+        if(a_rVariantList[k]->m_genotype[0] != 0 && a_rVariantList[k]->m_genotype[0] != 0)
+        {
+            decParent[k] = false;
+            continue;
+        }
+        
+        while(varItr <  varListToCheckParent.size() && varListToCheckParent[varItr]->m_nEndPos < a_rVariantList[k]->m_nStartPos)
+            varItr++;
+        
+        if(varItr == a_rVariantList.size())
+            break;
+        
+        else if(isOverlap(a_rVariantList[k]->m_nStartPos, a_rVariantList[k]->m_nEndPos, varListToCheckParent[varItr]->m_nStartPos, varListToCheckParent[varItr]->m_nEndPos))
+        {
+            if(varListToCheckParent[varItr]->m_genotype[0] != 0 && varListToCheckParent[varItr]->m_genotype[1] != 0)
+            {
+                decParent[k] = false;
+            }
+        }
+    }
+    
+    //Output the final decision
+    for(int k = 0; k < a_rVariantList.size(); k++)
+    {
+        a_rSideDecisions[k] = decChild[k] && decParent[k];
+    }
 }
 
 
@@ -775,7 +866,7 @@ void CMendelianAnalyzer::MergeFunc(int a_nChromosomeId)
     }
     
     
-    //Process remaining vars in FatherChild
+    //Process remaining vars in FatherChild explained as above
     while(true)
     {
         if(varFC == NULL)
@@ -807,7 +898,7 @@ void CMendelianAnalyzer::MergeFunc(int a_nChromosomeId)
             varFC = FatherChildVariants.Next();
     }
     
-    //Process remaining vars in MotherChild
+    //Process remaining vars in MotherChild explined as above
     while(true)
     {
         if(varMC == NULL)
@@ -932,12 +1023,34 @@ void CMendelianAnalyzer::MergeFunc(int a_nChromosomeId)
     std::sort(violations.begin(), violations.end(), variantCompare);
 
     
-    //Create 0/0 child variants for corresponding mother and father unique variants
-    //TODO: IMPLEMENT!!!!!!!
+    //We looked up all child variants. Now, we will look at parent variants where there is no corresponding child variant exist in the child.vcf (check for hidden 0/0 child variants)
     
+    //Mother Checks
+    std::vector<const CVariant*> uniqueMotherVars = m_provider.GetVariantList(m_provider.GetVariantList(eMOTHER, a_nChromosomeId,  m_aBestPathsMotherChildGT[a_nChromosomeId].m_baseSemiPath.GetExcluded()),
+                                                                              m_aBestPathsMotherChildAM[a_nChromosomeId].m_baseSemiPath.GetExcluded());
+    std::vector<bool> motherDecisions(uniqueMotherVars.size());
+    CheckUniqueVars(eMOTHER, a_nChromosomeId, uniqueMotherVars, motherDecisions);
     
+    //Father Checks
+    std::vector<const CVariant*> uniqueFatherVars = m_provider.GetVariantList(m_provider.GetVariantList(eFATHER, a_nChromosomeId,  m_aBestPathsFatherChildGT[a_nChromosomeId].m_baseSemiPath.GetExcluded()),
+                                                                              m_aBestPathsFatherChildAM[a_nChromosomeId].m_baseSemiPath.GetExcluded());
+    std::vector<bool> fatherDecisions(uniqueFatherVars.size());
+    CheckUniqueVars(eFATHER, a_nChromosomeId, uniqueFatherVars, fatherDecisions);
     
+    //Fill the mother decision array
+    m_aMotherDecisions[a_nChromosomeId] = std::vector<EMendelianDecision>(m_provider.GetVariantCount(eMOTHER, a_nChromosomeId));
+    for(int k = 0; k < motherDecisions.size(); k++)
+    {
+        m_aMotherDecisions[a_nChromosomeId][uniqueMotherVars[k]->m_nId] = (motherDecisions[k] ? eCompliant : eViolation);
+    }
     
+    //Fill the father decision array
+    m_aFatherDecisions[a_nChromosomeId] = std::vector<EMendelianDecision>(m_provider.GetVariantCount(eFATHER, a_nChromosomeId));
+    for(int k = 0; k < fatherDecisions.size(); k++)
+    {
+        m_aFatherDecisions[a_nChromosomeId][uniqueFatherVars[k]->m_nId] = (fatherDecisions[k] ? eCompliant : eViolation);
+    }
+
     //Fill the child decision array
     std::vector<const CVariant*>::iterator compliantsIterator = compliants.begin();
     std::vector<const CVariant*>::iterator violationsIterator = violations.begin();
@@ -966,7 +1079,7 @@ void CMendelianAnalyzer::MergeFunc(int a_nChromosomeId)
     std::cout << "=====================================================" << std::endl << std::endl;
 
     std::ofstream compliantsAll;
-    std::string commonPath = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/NoParent00TEST/chr" + std::to_string(a_nChromosomeId + 1);
+    std::string commonPath = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/CHR1/chr" + std::to_string(a_nChromosomeId + 1);
     
     compliantsAll.open(commonPath + "_CompliantsALL.txt");
     

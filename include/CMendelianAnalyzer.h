@@ -43,6 +43,9 @@ private:
                        std::vector<const CVariant*>& a_rViolationList,
                        std::vector<const CVariant*>& a_rCompliantList);
     
+    //Check each unique vars and seek for 0 path at the requested side and fills the a_rSideDecisionList
+    void CheckUniqueVars(EMendelianVcfName a_checkSide, int a_nChrId, const std::vector<const CVariant*>& a_rVariantList, std::vector<bool>& a_rSideDecisions);
+    
     //Check sync points which child excluded contains 0 Allele variant. If that 0 allele is playable for the parent, we mark variants as compliant, violation otherwise
     void CheckFor0PathFor00(int a_nChrId,
                             bool a_bIsFatherChild,
@@ -83,13 +86,14 @@ private:
     CPath m_aBestPathsFatherChildGT[CHROMOSOME_COUNT];
     CPath m_aBestPathsFatherChildAM[CHROMOSOME_COUNT];
 
-    
     //Best Paths written by each thread for each unique chromosome exists [Between mother and child]
     CPath m_aBestPathsMotherChildGT[CHROMOSOME_COUNT];
     CPath m_aBestPathsMotherChildAM[CHROMOSOME_COUNT];
-
+    
     //Menndelian compliant/violation decision of each child variant
     std::vector<EMendelianDecision> m_aChildDecisions[CHROMOSOME_COUNT];
+    std::vector<EMendelianDecision> m_aFatherDecisions[CHROMOSOME_COUNT];
+    std::vector<EMendelianDecision> m_aMotherDecisions[CHROMOSOME_COUNT];
     
     
     //Thread pool we have for multitasking by per chromosome

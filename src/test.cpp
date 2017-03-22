@@ -636,14 +636,15 @@ SCompareResult compare2List(const std::string& a_pathTest, const std::string& a_
     //for(int k : commonVariants)
     //    std::cout << k+1 << std::endl;
     
-    //std::cout << "Unmatch Query Variants:" << std::endl;
-    //for(int k : unmatchTest)
-    //     std::cout << k+1 << std::endl;
+    std::cout << "Unmatch Test Variants:" << std::endl;
+    for(int k : unmatchTest)
+         std::cout << k+1 << std::endl;
     
     //std::cout << std::endl << std::endl;
     
-    //for(int k : unmatchOrig)
-    //    std::cout << k+1 << std::endl;
+    std::cout << "Unmatch Query Variants" << std::endl;
+    for(int k : unmatchOrig)
+        std::cout << k << std::endl;
 
     
     return res;

@@ -127,7 +127,7 @@ void CMendelianVariantProvider::FillVariants()
     std::string preChrId = "";
 
     //READ VARIANTS OF FATHER
-    while(m_FatherVcf.GetNextRecord(&variant, id++, m_fatherChildConfig))
+    while(m_FatherVcf.GetNextRecord(&variant, id, m_fatherChildConfig))
     {
         if(preChrId != variant.m_chrName)
         {
@@ -150,13 +150,17 @@ void CMendelianVariantProvider::FillVariants()
             PushVariant(variant, m_aFatherNotAssessedVariantList[variant.m_nChrId-1]);
         
         else
+        {
             PushVariant(variant, m_aFatherVariantList[variant.m_nChrId-1]);
+            id++;
+        }
     }
 
     preChrId = "";
+    id = 0;
 
     //READ VARIANTS OF MOTHER
-    while(m_MotherVcf.GetNextRecord(&variant, id++, m_motherChildConfig))
+    while(m_MotherVcf.GetNextRecord(&variant, id, m_motherChildConfig))
     {
         if(preChrId != variant.m_chrName)
         {
@@ -179,13 +183,17 @@ void CMendelianVariantProvider::FillVariants()
             PushVariant(variant, m_aMotherNotAssessedVariantList[variant.m_nChrId-1]);
         
         else
+        {
             PushVariant(variant, m_aMotherVariantList[variant.m_nChrId-1]);
+            id++;
+        }
     }
 
     preChrId = "";
+    id = 0;
     
     //READ VARIANTS OF CHILD
-    while(m_ChildVcf.GetNextRecord(&variant, id++, m_motherChildConfig))
+    while(m_ChildVcf.GetNextRecord(&variant, id, m_motherChildConfig))
     {
         if(preChrId != variant.m_chrName)
         {
@@ -208,10 +216,12 @@ void CMendelianVariantProvider::FillVariants()
             PushVariant(variant, m_aChildNotAssessedVariantList[variant.m_nChrId-1]);
         
         else
+        {
             PushVariant(variant, m_aChildVariantList[variant.m_nChrId-1]);
+            id++;
+        }
     }
 }
-
 
 
 void CMendelianVariantProvider::FillGenotypeMatchOrientedVariants(std::vector<int>& a_aCommonChromosomes)
@@ -586,6 +596,17 @@ std::vector<const CVariant*> CMendelianVariantProvider::GetVariantList(const std
 
 
 
+int CMendelianVariantProvider:: GetVariantCount(EMendelianVcfName a_uFrom, int a_nChrNo) const
+{
+    if(a_uFrom == eMOTHER)
+        return static_cast<int>(m_aMotherVariantList[a_nChrNo].size());
+    else if(a_uFrom == eFATHER)
+        return static_cast<int>(m_aFatherVariantList[a_nChrNo].size());
+    else if(a_uFrom == eCHILD)
+        return static_cast<int>(m_aChildVariantList[a_nChrNo].size());
+    else
+        return -1;
+}
 
 
 

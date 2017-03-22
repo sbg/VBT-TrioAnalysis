@@ -33,6 +33,9 @@ public:
     //Return all the variants belongs to given List according to given index list
     std::vector<const CVariant*> GetVariantList(const std::vector<const CVariant*> a_rVariantList, const std::vector<int>& a_nIndexList) const;
 
+    //Get the total variant count for given chromosome
+    int GetVariantCount(EMendelianVcfName a_uFrom, int a_nChrNo) const;
+    
     //Return all the oriented variants belongs to given chromosome
     std::vector<const COrientedVariant*> GetOrientedVariantList(EMendelianVcfName a_uFrom, int a_nChrNo, bool a_bIsAlleleMatch = false) const;
     
