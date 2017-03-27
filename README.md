@@ -31,7 +31,7 @@ Variant Comparison tool is written using the algorithm of [vcfeval](https://gith
 ## Command line parameters:
 
 
-### -help
+### --help
 A **single** parameter mode which prints all parameter options to the console. (./vbt varComp -help)
 
 
@@ -69,21 +69,21 @@ An **optional** parameter which is used to select sample name from called vcf fi
 An **optional** parameter which is used to filter variants with given filter name. Filter name should be same in baseline and called variants. By default, **PASS filtering** is applied to the variants. In order to disable filtering, **'-filter none'** should be used.
 
 
-### -snp_only
+### --snp_only
 
 An **optional** parameter which is used to eliminate all of INDELs and SVs from input vcf files.
 
 
-### -indel_only
+### --indel_only
 
 An **optional** parameter which is used to eliminate all of SNPs and SVs from input vcf files.
 
 
-### -ref_overlap [Almost Finished]
+### --ref_overlap [Almost Finished]
 
 An **optional** parameter which tolerates reference overlaps to include more variants to the truth set.
 
-### -platform-mode
+### --platform-mode
 
 An **optional** parameter which maximizes the thread count (to 25) assuming that there is no memory and processor limit. The default execution uses up to 4 threads and requires +4 GB memory to perform whole genome vcf file.
 
