@@ -16,6 +16,8 @@
 #include <thread>
 #include "CResultLog.h"
 #include "CMendelianTrioMerger.h"
+#include "EMendelianDecision.h"
+#include "ENoCallMode.h"
 
 class CMendelianAnalyzer
 {
@@ -41,7 +43,8 @@ private:
                        bool a_bIsFatherChild,
                        std::vector<const CVariant*>& a_rOvarList,
                        std::vector<const CVariant*>& a_rViolationList,
-                       std::vector<const CVariant*>& a_rCompliantList);
+                       std::vector<const CVariant*>& a_rCompliantList,
+                       bool a_bIsUpdateDecisionList = true);
     
     //Check each unique vars and seek for 0 path at the requested side and fills the a_rSideDecisionList
     void CheckUniqueVars(EMendelianVcfName a_checkSide, int a_nChrId, const std::vector<const CVariant*>& a_rVariantList, std::vector<bool>& a_rSideDecisions);
@@ -72,6 +75,9 @@ private:
     
     //Config file for mother-child comparison which is passed to m_motherChildProvider
     SConfig m_motherChildConfig;
+    
+    //No call mode of the variant
+    ENoCallMode m_noCallMode;
     
     //Variant provider for parent-child comparison
     CMendelianVariantProvider m_provider;

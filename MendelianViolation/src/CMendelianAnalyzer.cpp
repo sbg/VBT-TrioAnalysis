@@ -108,6 +108,7 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
     const char* PARAM_OUTPUT_DIR = "-outDir";
     const char* PARAM_REF_OVERLAP = "-ref-overlap";
     const char* PARAM_PLATFORM = "-platform-mode";
+    const char* PARAM_NO_CALL = "-no-call";
     
     bool bFatherSet = false;
     bool bMotherSet = false;
@@ -181,6 +182,15 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
                 m_motherChildConfig.m_pFilterName = argv[it+1];
                 m_fatherChildConfig.m_pFilterName = argv[it+1];
             }
+        }
+        
+        else if(0 == strcmp(argv[it], PARAM_NO_CALL))
+        {
+            if(0 == strcmp("none", argv[it+1]))
+            {
+            
+            }
+        
         }
         
         else if(0 == strcmp(argv[it], PARAM_SAMPLE_FATHER))
@@ -381,26 +391,14 @@ void CMendelianAnalyzer::CheckFor0PathFor00(int a_nChrId,
             {
                 const CVariant* pVar = a_rSyncPointList[k].m_baseVariantsExcluded[m];
                 
-//              if(eSNP == pVar->GetVariantType())
-//              {
-                    if(isOverlap(pVar->GetStart(), pVar->GetEnd(), tmpVarList[0]->GetStart(), tmpVarList[0]->GetEnd()))
+                if(isOverlap(pVar->GetStart(), pVar->GetEnd(), tmpVarList[0]->GetStart(), tmpVarList[0]->GetEnd()))
+                {
+                    if(pVar->m_genotype[0] != 0 && pVar->m_genotype[1] != 0)
                     {
-                        if(pVar->m_genotype[0] != 0 && pVar->m_genotype[1] != 0)
-                        {
-                            bIsCompliant = false;
-                            break;
-                        }
+                        bIsCompliant = false;
+                        break;
                     }
-//              }
-                
-//                else if(eINDEL == pVar->GetVariantType())
-//                {
-//                    if(pVar->m_genotype[0] != 0 && pVar->m_genotype[1] != 0)
-//                    {
-//                        bIsCompliant = false;
-//                        break;
-//                    }
-//                }
+                }
             }
             
             if(bIsCompliant == true)
@@ -424,7 +422,8 @@ void CMendelianAnalyzer::CheckFor0Path(int a_nChrId,
                                        bool a_bIsFatherChild,
                                        std::vector<const CVariant *> &a_pVarList,
                                        std::vector<const CVariant *> &a_pViolantList,
-                                       std::vector<const CVariant *> &a_pCompliantList)
+                                       std::vector<const CVariant *> &a_pCompliantList,
+                                       bool a_bIsUpdateDecisionList)
 {
     
     //Get sync point list
@@ -470,8 +469,28 @@ void CMendelianAnalyzer::CheckFor0Path(int a_nChrId,
                 {
                     if(pVar->m_genotype[0] != 0 && pVar->m_genotype[1] != 0)
                     {
+                        if(a_bIsUpdateDecisionList)
+                        {
+                            //We are marking decision of mother/father variant as violation
+                            if(true == a_bIsFatherChild)
+                                m_aFatherDecisions[a_nChrId][pVar->m_nId] = eViolation;
+                            else
+                                m_aMotherDecisions[a_nChrId][pVar->m_nId] = eViolation;
+                        }
+                        
                         bIsCompliant = false;
                         break;
+                    }
+                    else
+                    {
+                        if(a_bIsUpdateDecisionList)
+                        {
+                            //We are marking decision of mother/father variant as compliant
+                            if(true == a_bIsFatherChild)
+                                m_aFatherDecisions[a_nChrId][pVar->m_nId] = eCompliant;
+                            else
+                                m_aMotherDecisions[a_nChrId][pVar->m_nId] = eCompliant;
+                        }
                     }
                 }
             }
@@ -507,8 +526,8 @@ void CMendelianAnalyzer::CheckFor00Child(int a_nChrId,
     
     if(false == a_bIsGTMatch)
     {
-        CheckFor0Path(a_nChrId, true,  a_rOvarList, fatherViolants, fatherCompliants);
-        CheckFor0Path(a_nChrId, false, a_rOvarList, motherViolants, motherCompliants);
+        CheckFor0Path(a_nChrId, true,  a_rOvarList, fatherViolants, fatherCompliants, false);
+        CheckFor0Path(a_nChrId, false, a_rOvarList, motherViolants, motherCompliants, false);
     }
     else
     {
@@ -656,6 +675,11 @@ void CMendelianAnalyzer::ProcessChromosome(const std::vector<int>& a_nChromosome
         
         //Clear Father child replay object
         replayMotherChildAM.Clear();
+        
+        //Initialize the decision arrays
+        m_aMotherDecisions[chromosomeId] = std::vector<EMendelianDecision>(m_provider.GetVariantCount(eMOTHER, chromosomeId));
+        m_aFatherDecisions[chromosomeId] = std::vector<EMendelianDecision>(m_provider.GetVariantCount(eFATHER, chromosomeId));
+        m_aChildDecisions[chromosomeId] = std::vector<EMendelianDecision>(m_provider.GetVariantCount(eCHILD, chromosomeId));
 
     }
 
@@ -682,7 +706,21 @@ void CMendelianAnalyzer::CheckUniqueVars(EMendelianVcfName a_checkSide, int a_nC
     int varItr = 0;
     for(int k = 0; k < a_rVariantList.size(); k++)
     {
-        if(a_rVariantList[k]->m_genotype[0] != 0 && a_rVariantList[k]->m_genotype[0] != 0)
+        //Check if the variant is already marked
+        if(a_checkSide == eMOTHER && m_aMotherDecisions[a_nChrId][a_rVariantList[k]->m_nId] != eUnknown)
+        {
+            decChild[k] = m_aMotherDecisions[a_nChrId][a_rVariantList[k]->m_nId] == eCompliant ? true : false;
+            continue;
+        }
+        //Check if the variant is already marked
+        else if(a_checkSide == eFATHER && m_aFatherDecisions[a_nChrId][a_rVariantList[k]->m_nId] != eUnknown)
+        {
+            decChild[k] = m_aFatherDecisions[a_nChrId][a_rVariantList[k]->m_nId] == eCompliant ? true : false;
+            continue;
+        }
+
+        
+        if(a_rVariantList[k]->m_genotype[0] != 0 && a_rVariantList[k]->m_genotype[1] != 0)
         {
             decChild[k] = false;
             continue;
@@ -696,10 +734,15 @@ void CMendelianAnalyzer::CheckUniqueVars(EMendelianVcfName a_checkSide, int a_nC
         
         else if(isOverlap(a_rVariantList[k]->m_nStartPos, a_rVariantList[k]->m_nEndPos, varListToCheckChild[varItr]->m_nStartPos, varListToCheckChild[varItr]->m_nEndPos))
         {
-            if(varListToCheckChild[varItr]->m_genotype[0] != 0 || varListToCheckChild[varItr]->m_genotype[1] != 0)
-            {
+            if(m_aChildDecisions[a_nChrId][varItr] == eCompliant)
+                decChild[k] = true;
+            
+            else if(m_aChildDecisions[a_nChrId][varItr] == eViolation)
                 decChild[k] = false;
-            }
+            
+            else if(varListToCheckChild[varItr]->m_genotype[0] != 0 && varListToCheckChild[varItr]->m_genotype[1] != 0)
+                decChild[k] = false;
+            
         }
     }
     
@@ -708,7 +751,21 @@ void CMendelianAnalyzer::CheckUniqueVars(EMendelianVcfName a_checkSide, int a_nC
     varItr = 0;
     for(int k = 0; k < a_rVariantList.size(); k++)
     {
-        if(a_rVariantList[k]->m_genotype[0] != 0 && a_rVariantList[k]->m_genotype[0] != 0)
+        //Check if the variant is already marked
+        if(a_checkSide == eMOTHER && m_aMotherDecisions[a_nChrId][a_rVariantList[k]->m_nId] != eUnknown)
+        {
+            decParent[k] = m_aMotherDecisions[a_nChrId][a_rVariantList[k]->m_nId] == eCompliant ? true : false;
+            continue;
+        }
+        //Check if the variant is already marked
+        else if(a_checkSide == eFATHER && m_aFatherDecisions[a_nChrId][a_rVariantList[k]->m_nId] != eUnknown)
+        {
+            decParent[k] = m_aFatherDecisions[a_nChrId][a_rVariantList[k]->m_nId] == eCompliant ? true : false;
+            continue;
+        }
+        
+        
+        if(a_rVariantList[k]->m_genotype[0] != 0 && a_rVariantList[k]->m_genotype[1] != 0)
         {
             decParent[k] = false;
             continue;
@@ -1024,37 +1081,10 @@ void CMendelianAnalyzer::MergeFunc(int a_nChromosomeId)
 
     
     //We looked up all child variants. Now, we will look at parent variants where there is no corresponding child variant exist in the child.vcf (check for hidden 0/0 child variants)
-    
-    //Mother Checks
-    std::vector<const CVariant*> uniqueMotherVars = m_provider.GetVariantList(m_provider.GetVariantList(eMOTHER, a_nChromosomeId,  m_aBestPathsMotherChildGT[a_nChromosomeId].m_baseSemiPath.GetExcluded()),
-                                                                              m_aBestPathsMotherChildAM[a_nChromosomeId].m_baseSemiPath.GetExcluded());
-    std::vector<bool> motherDecisions(uniqueMotherVars.size());
-    CheckUniqueVars(eMOTHER, a_nChromosomeId, uniqueMotherVars, motherDecisions);
-    
-    //Father Checks
-    std::vector<const CVariant*> uniqueFatherVars = m_provider.GetVariantList(m_provider.GetVariantList(eFATHER, a_nChromosomeId,  m_aBestPathsFatherChildGT[a_nChromosomeId].m_baseSemiPath.GetExcluded()),
-                                                                              m_aBestPathsFatherChildAM[a_nChromosomeId].m_baseSemiPath.GetExcluded());
-    std::vector<bool> fatherDecisions(uniqueFatherVars.size());
-    CheckUniqueVars(eFATHER, a_nChromosomeId, uniqueFatherVars, fatherDecisions);
-    
-    //Fill the mother decision array
-    m_aMotherDecisions[a_nChromosomeId] = std::vector<EMendelianDecision>(m_provider.GetVariantCount(eMOTHER, a_nChromosomeId));
-    for(int k = 0; k < motherDecisions.size(); k++)
-    {
-        m_aMotherDecisions[a_nChromosomeId][uniqueMotherVars[k]->m_nId] = (motherDecisions[k] ? eCompliant : eViolation);
-    }
-    
-    //Fill the father decision array
-    m_aFatherDecisions[a_nChromosomeId] = std::vector<EMendelianDecision>(m_provider.GetVariantCount(eFATHER, a_nChromosomeId));
-    for(int k = 0; k < fatherDecisions.size(); k++)
-    {
-        m_aFatherDecisions[a_nChromosomeId][uniqueFatherVars[k]->m_nId] = (fatherDecisions[k] ? eCompliant : eViolation);
-    }
 
     //Fill the child decision array
     std::vector<const CVariant*>::iterator compliantsIterator = compliants.begin();
     std::vector<const CVariant*>::iterator violationsIterator = violations.begin();
-    m_aChildDecisions[a_nChromosomeId] = std::vector<EMendelianDecision>(childVariants.size());
     for(int k = 0; k < childVariants.size(); k++)
     {
         if(compliantsIterator != compliants.end() && childVariants[k]->m_nId == (*compliantsIterator)->m_nId)
@@ -1070,6 +1100,27 @@ void CMendelianAnalyzer::MergeFunc(int a_nChromosomeId)
         else
             m_aChildDecisions[a_nChromosomeId][k] = EMendelianDecision::eUnknown;
     }
+
+    //Mother Checks
+    std::vector<const CVariant*> uniqueMotherVars = m_provider.GetVariantList(m_provider.GetVariantList(eMOTHER, a_nChromosomeId,  m_aBestPathsMotherChildGT[a_nChromosomeId].m_baseSemiPath.GetExcluded()),
+                                                                              m_aBestPathsMotherChildAM[a_nChromosomeId].m_baseSemiPath.GetExcluded());
+    std::vector<bool> motherDecisions(uniqueMotherVars.size());
+    CheckUniqueVars(eMOTHER, a_nChromosomeId, uniqueMotherVars, motherDecisions);
+    
+    //Father Checks
+    std::vector<const CVariant*> uniqueFatherVars = m_provider.GetVariantList(m_provider.GetVariantList(eFATHER, a_nChromosomeId,  m_aBestPathsFatherChildGT[a_nChromosomeId].m_baseSemiPath.GetExcluded()),
+                                                                              m_aBestPathsFatherChildAM[a_nChromosomeId].m_baseSemiPath.GetExcluded());
+    std::vector<bool> fatherDecisions(uniqueFatherVars.size());
+    CheckUniqueVars(eFATHER, a_nChromosomeId, uniqueFatherVars, fatherDecisions);
+
+    //Fill the mother decision array
+    for(int k = 0; k < motherDecisions.size(); k++)
+        m_aMotherDecisions[a_nChromosomeId][uniqueMotherVars[k]->m_nId] = (motherDecisions[k] ? eCompliant : eViolation);
+    
+    //Fill the father decision array
+    for(int k = 0; k < fatherDecisions.size(); k++)
+        m_aFatherDecisions[a_nChromosomeId][uniqueFatherVars[k]->m_nId] = (fatherDecisions[k] ? eCompliant : eViolation);
+
     
     
     std::cout << "===================== STATISTICS " << a_nChromosomeId + 1 << " ===================" << std::endl;

@@ -11,9 +11,11 @@
 
 enum EMendelianDecision
 {
-    eUnknown,
-    eCompliant,
-    eViolation
+    eUnknown = 0,
+    eCompliant = 1,
+    eViolation = 2,
+    eNoCallParent = 3,
+    eNoCallChild = 4
 };
 
 #endif // _E_MENDELIAN_DECISION_H_

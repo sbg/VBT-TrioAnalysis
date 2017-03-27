@@ -53,10 +53,10 @@ int main (int argc, char** argv)
     //    UnitTestTrioComparison(m, true, false);
     //return 0;
     
-    //strcpy(argv[3],  "/Users/c1ms21p6h3qk/Desktop/TestVcfBuilder/father.vcf");
-    //strcpy(argv[5],  "/Users/c1ms21p6h3qk/Desktop/TestVcfBuilder/child.vcf");
-    //strcpy(argv[7],  "/Users/c1ms21p6h3qk/Desktop/TestVcfBuilder/mother.vcf");
-    //strcpy(argv[13], "/Users/c1ms21p6h3qk/Desktop/TestVcfBuilder/reference.fasta");
+    strcpy(argv[3],  "/Users/c1ms21p6h3qk/Desktop/TestVcfBuilder/father.vcf");
+    strcpy(argv[5],  "/Users/c1ms21p6h3qk/Desktop/TestVcfBuilder/child.vcf");
+    strcpy(argv[7],  "/Users/c1ms21p6h3qk/Desktop/TestVcfBuilder/mother.vcf");
+    strcpy(argv[13], "/Users/c1ms21p6h3qk/Desktop/TestVcfBuilder/reference.fasta");
     
     
     if(strcmp(argv[1], "-mendelian") == 0)

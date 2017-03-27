@@ -220,8 +220,9 @@ void CVcfWriter::AddMendelianRecord(const SVcfRecord& a_rVcfRecord)
         std::cerr << "Failed to update Alleles string for Record: " << "Chr" << a_rVcfRecord.m_nChrId << " Position: " << a_rVcfRecord.m_nPosition << std::endl;
     
     //Set Decision
-    success = bcf_update_info_string(m_pHeader, m_pRecord, "MD", a_rVcfRecord.m_mendelianDecision.c_str());
-    
+    int decArray = atoi(a_rVcfRecord.m_mendelianDecision.c_str());
+    success = bcf_update_info_int32(m_pHeader, m_pRecord, "MD", &decArray, 1);
+                                    
     if(success < 0)
         std::cerr << "Failed to update MD INFO for Record: " << "Chr" << a_rVcfRecord.m_nChrId << " Position: " << a_rVcfRecord.m_nPosition << std::endl;
     

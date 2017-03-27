@@ -48,6 +48,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		550E1F5C1E89613200AEFB0B /* ENoCallMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ENoCallMode.h; path = MendelianViolation/include/ENoCallMode.h; sourceTree = SOURCE_ROOT; };
 		551661C11E82C4D0002436FA /* CFastaParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CFastaParser.h; path = VcfIO/include/CFastaParser.h; sourceTree = SOURCE_ROOT; };
 		551661C21E82C4D0002436FA /* CVcfReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CVcfReader.h; path = VcfIO/include/CVcfReader.h; sourceTree = SOURCE_ROOT; };
 		551661C31E82C4D0002436FA /* CVcfWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CVcfWriter.h; path = VcfIO/include/CVcfWriter.h; sourceTree = SOURCE_ROOT; };
@@ -148,7 +149,7 @@
 			isa = PBXGroup;
 			children = (
 				551661B11E82BE4C002436FA /* Include */,
-				551661B21E82BE6B002436FA /* Src */,
+				551661B21E82BE6B002436FA /* src */,
 				551661BE1E82C31A002436FA /* test */,
 			);
 			name = Core;
@@ -168,7 +169,7 @@
 			name = Include;
 			sourceTree = "<group>";
 		};
-		551661B21E82BE6B002436FA /* Src */ = {
+		551661B21E82BE6B002436FA /* src */ = {
 			isa = PBXGroup;
 			children = (
 				551661D71E82C967002436FA /* CHaplotypeSequence.cpp */,
@@ -178,7 +179,7 @@
 				551661DB1E82C967002436FA /* CPathSet.cpp */,
 				551661DC1E82C967002436FA /* CSemiPath.cpp */,
 			);
-			name = Src;
+			name = src;
 			sourceTree = "<group>";
 		};
 		551661B31E82BFA0002436FA /* VcfIO */ = {
@@ -281,6 +282,7 @@
 				551661F51E82E8DB002436FA /* COverlappingVariantEliminator.h */,
 				551661F61E82E8DB002436FA /* EMendelianDecision.h */,
 				551661F71E82E8DB002436FA /* EMendelianVcfName.h */,
+				550E1F5C1E89613200AEFB0B /* ENoCallMode.h */,
 			);
 			name = include;
 			sourceTree = "<group>";
