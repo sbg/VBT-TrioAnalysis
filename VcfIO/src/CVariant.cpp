@@ -57,6 +57,7 @@ CVariant::CVariant(const CVariant& a_rObj)
     m_genotype[1] = a_rObj.m_genotype[1];
     m_variantStatus = a_rObj.m_variantStatus;
     m_nOriginalPos = a_rObj.m_nOriginalPos;
+    m_bIsNoCall = false;
     
 }
 
@@ -87,6 +88,7 @@ bool CVariant::Clear()
     m_alleles[1].m_bIsIgnored = false;
     m_genotype[0] = -1;
     m_genotype[1] = -1;
+    m_bIsNoCall = false;
     return true;
 }
 

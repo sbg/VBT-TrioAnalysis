@@ -219,10 +219,20 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
                 a_pVariant->m_allelesStr += ",";
             a_pVariant->m_allelesStr += std::string(m_pRecord->d.allele[k]);
         }
-        for(int k = 0; k < zygotCount; k++)
-            a_pVariant->m_genotype[k] = bcf_gt_allele(gt_arr[k]) == -1 ? 0 : bcf_gt_allele(gt_arr[k]);
         
+        //Set original genotypes
+        a_pVariant->m_bIsNoCall = true;
+        for(int k = 0; k < zygotCount; k++)
+        {
+            if(bcf_gt_allele(gt_arr[k]) != -1)
+                a_pVariant->m_bIsNoCall = false;
+            
+            a_pVariant->m_genotype[k] = bcf_gt_allele(gt_arr[k]) == -1 ? 0 : bcf_gt_allele(gt_arr[k]);
+        }
+        
+        //Set original position
         a_pVariant->m_nOriginalPos = m_pRecord->pos;
+        
         
         //FREE BUFFERS
         free(gt_arr);

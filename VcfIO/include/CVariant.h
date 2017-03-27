@@ -106,6 +106,9 @@ class CVariant
     //True if the first nucleotide is trimmed
     bool m_bIsFirstNucleotideTrimmed;
 
+    //True if genotype is ./.
+    bool m_bIsNoCall;
+    
     //Allele array of the variant
     SAllele m_alleles[2];
     //Allele count of the variant (2 for diploid and 1 for haploid)
