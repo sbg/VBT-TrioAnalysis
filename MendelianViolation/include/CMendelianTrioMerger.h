@@ -15,6 +15,7 @@
 #include "EMendelianVcfName.h"
 #include <vector>
 #include "Constants.h"
+#include "ENoCallMode.h"
 
 class CMendelianTrioMerger
 {
@@ -27,8 +28,11 @@ public:
     //Set variant references for merge
     void SetVariants(int a_nChromosomeId, EMendelianVcfName a_vcfName, const std::vector<const CVariant*>& a_rVarList);
     
-    //Set variant decisions for marking info columns
+    //Set variant decisions for marking MendelianDecision info columns
     void SetDecisions(int a_nChromosomeId, EMendelianVcfName a_vcfName, const std::vector<EMendelianDecision>& a_rDecisionList);
+    
+    //Set No Call mode to decide if no calls will be printed as ./. or 0/0s
+    void SetNoCallMode(ENoCallMode a_mode);
     
     //Set the full path of output trio vcf
     void SetTrioPath(const std::string& a_nTrioPath);
@@ -63,6 +67,8 @@ private:
     std::vector<const CVariant*> m_aChildVariants[CHROMOSOME_COUNT];
     std::vector<const CVariant*> m_aFatherVariants[CHROMOSOME_COUNT];
     std::vector<const CVariant*> m_aMotherVariants[CHROMOSOME_COUNT];
+    
+    ENoCallMode m_noCallMode;
     
     //Output trio full path
     std::string m_trioPath;

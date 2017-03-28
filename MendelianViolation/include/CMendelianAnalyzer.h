@@ -24,6 +24,9 @@ class CMendelianAnalyzer
     
 public:
     
+    //Default Constructor
+    CMendelianAnalyzer();
+    
     //Executes the mendelian violation analyzer
     void run(int argc, char** argv);
     
@@ -32,7 +35,7 @@ private:
     //Read the parameters if the execution mode is mendelian. If all mandatory parameters are set, return true.
     bool ReadParameters(int argc, char** argv);
     
-    //A function that perform merge operations after best path algorith m for mother-child and father-child is called
+    //A function that perform merge operations after best path algorith for mother-child and father-child is called
     void MergeFunc(int a_nChromosomeId);
     
     //Return the syncpointlist for given comparison. Writes to the last parameter

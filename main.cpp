@@ -59,13 +59,13 @@ int main (int argc, char** argv)
     strcpy(argv[13], "/Users/c1ms21p6h3qk/Desktop/TestVcfBuilder/reference.fasta");
     
     
-    if(strcmp(argv[1], "-mendelian") == 0)
+    if(strcmp(argv[1], "mendelian") == 0)
     {
        CMendelianAnalyzer mendelianAnalyzer;
        mendelianAnalyzer.run(argc, argv);
     }
     
-    else
+    else if(strcmp(argv[1], "varcomp") == 0)
     {
        CVcfAnalyzer analyzer;
        analyzer.Run(argc, argv);

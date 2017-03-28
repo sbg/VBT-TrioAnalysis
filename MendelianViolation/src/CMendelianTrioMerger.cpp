@@ -61,6 +61,12 @@ void CMendelianTrioMerger::SetDecisions(int a_nChromosomeId, EMendelianVcfName a
         pDecisionList->push_back(decision);
 }
 
+void CMendelianTrioMerger::SetNoCallMode(ENoCallMode a_mode)
+{
+    m_noCallMode = a_mode;
+}
+
+
 
 void CMendelianTrioMerger::FillHeader()
 {
@@ -160,11 +166,24 @@ void CMendelianTrioMerger::AddRecords(int a_nChromosomeId)
         {
             //CHECK IF FATHER IS SMALLER
             if(fatherItr != m_aFatherVariants[a_nChromosomeId].size() && m_aFatherVariants[a_nChromosomeId][fatherItr]->m_nOriginalPos < m_aChildVariants[a_nChromosomeId][childItr]->m_nOriginalPos)
-                DoSingleVar(a_nChromosomeId, fatherItr, eFATHER, m_aFatherDecisions[a_nChromosomeId][fatherItr]);
+            {
+                EMendelianDecision decision = m_noCallMode == ENoCallMode::eImplicitNoCall ? eNoCallChild : m_aFatherDecisions[a_nChromosomeId][fatherItr];
+                DoSingleVar(a_nChromosomeId, fatherItr, eFATHER, decision);
+            }
             //DO MOTHER CHILD MERGE
             else
             {
-                DoDoubleMerge(a_nChromosomeId, motherItr, childItr, eMOTHER, eCHILD, m_aChildDecisions[a_nChromosomeId][childItr]);
+                EMendelianDecision decision;
+                if(m_noCallMode == ENoCallMode::eExplicitNoCall && m_aChildDecisions[a_nChromosomeId][childItr] == EMendelianDecision::eNoCallChild)
+                    decision = eNoCallChild;
+                else if(m_noCallMode == ENoCallMode::eImplicitNoCall)
+                    decision = eNoCallParent;
+                else if(m_noCallMode == ENoCallMode::eExplicitNoCall && m_aMotherDecisions[a_nChromosomeId][motherItr] == EMendelianDecision::eNoCallParent)
+                    decision = eNoCallParent;
+                else
+                    decision = m_aChildDecisions[a_nChromosomeId][childItr];
+
+                DoDoubleMerge(a_nChromosomeId, motherItr, childItr, eMOTHER, eCHILD, decision);
             }
             continue;
         }
@@ -173,10 +192,25 @@ void CMendelianTrioMerger::AddRecords(int a_nChromosomeId)
         {
             //CHECK IF MOTHER IS SMALLER
             if(motherItr != m_aMotherVariants[a_nChromosomeId].size() && m_aMotherVariants[a_nChromosomeId][motherItr]->m_nOriginalPos < m_aChildVariants[a_nChromosomeId][childItr]->m_nOriginalPos)
-                DoSingleVar(a_nChromosomeId, motherItr, eMOTHER, m_aMotherDecisions[a_nChromosomeId][motherItr]);
+            {
+                EMendelianDecision decision = m_noCallMode == ENoCallMode::eImplicitNoCall ? eNoCallChild : m_aMotherDecisions[a_nChromosomeId][motherItr];
+                DoSingleVar(a_nChromosomeId, motherItr, eMOTHER, decision);
+            }
             //DO FATHER CHILD MERGE
             else
-                DoDoubleMerge(a_nChromosomeId, fatherItr, childItr, eFATHER, eCHILD, m_aChildDecisions[a_nChromosomeId][childItr]);
+            {
+                EMendelianDecision decision;
+                if(m_noCallMode == ENoCallMode::eExplicitNoCall && m_aChildDecisions[a_nChromosomeId][childItr] == EMendelianDecision::eNoCallChild)
+                    decision = eNoCallChild;
+                else if(m_noCallMode == ENoCallMode::eImplicitNoCall)
+                    decision = eNoCallParent;
+                else if(m_noCallMode == ENoCallMode::eExplicitNoCall && m_aFatherDecisions[a_nChromosomeId][fatherItr] == EMendelianDecision::eNoCallParent)
+                    decision = eNoCallParent;
+                else
+                    decision = m_aChildDecisions[a_nChromosomeId][childItr];
+                    
+                DoDoubleMerge(a_nChromosomeId, fatherItr, childItr, eFATHER, eCHILD, decision);
+            }
             
             continue;
         }
@@ -192,12 +226,21 @@ void CMendelianTrioMerger::AddRecords(int a_nChromosomeId)
         {
             //CHECK IF CHILD IS SMALLER
             if(childItr != m_aChildVariants[a_nChromosomeId].size() && m_aChildVariants[a_nChromosomeId][childItr]->m_nOriginalPos < m_aMotherVariants[a_nChromosomeId][motherItr]->m_nOriginalPos)
-                DoSingleVar(a_nChromosomeId, childItr, eCHILD, m_aChildDecisions[a_nChromosomeId][childItr]);
-            //DO MOTHER CHILD MERGE
+            {
+                EMendelianDecision decision = m_noCallMode == ENoCallMode::eImplicitNoCall ? eNoCallParent : m_aChildDecisions[a_nChromosomeId][childItr];
+                DoSingleVar(a_nChromosomeId, childItr, eCHILD, decision);
+            }
+            
+            //DO MOTHER FATHER MERGE
             else
             {
                 EMendelianDecision dec;
-                if(m_aMotherDecisions[a_nChromosomeId][motherItr] == eViolation || m_aFatherDecisions[a_nChromosomeId][fatherItr] == eViolation)
+                
+                if(m_noCallMode == ENoCallMode::eImplicitNoCall)
+                    dec = eNoCallChild;
+                else if(m_noCallMode == ENoCallMode::eExplicitNoCall && (m_aFatherDecisions[a_nChromosomeId][fatherItr] == eNoCallParent || m_aMotherDecisions[a_nChromosomeId][motherItr] == eNoCallParent))
+                    dec = eNoCallParent;
+                else if(m_aMotherDecisions[a_nChromosomeId][motherItr] == eViolation || m_aFatherDecisions[a_nChromosomeId][fatherItr] == eViolation)
                     dec = eViolation;
                 else if(m_aMotherDecisions[a_nChromosomeId][motherItr] == eCompliant || m_aFatherDecisions[a_nChromosomeId][fatherItr] == eCompliant)
                     dec = eCompliant;
@@ -219,11 +262,20 @@ void CMendelianTrioMerger::AddRecords(int a_nChromosomeId)
             int childPos  = childItr  != m_aChildVariants[a_nChromosomeId].size()  ? m_aChildVariants[a_nChromosomeId][childItr]->m_nOriginalPos   : INT_MAX;
         
             if(motherPos <= fatherPos && motherPos <= childPos)
-                DoSingleVar(a_nChromosomeId, motherItr, eMOTHER, m_aMotherDecisions[a_nChromosomeId][motherItr]);
+            {
+                EMendelianDecision decision = m_noCallMode == ENoCallMode::eImplicitNoCall ? EMendelianDecision::eNoCallChild : m_aMotherDecisions[a_nChromosomeId][motherItr];
+                DoSingleVar(a_nChromosomeId, motherItr, eMOTHER, decision);
+            }
             else if(fatherPos <= motherPos && fatherPos <= childPos)
-                DoSingleVar(a_nChromosomeId, fatherItr, eFATHER, m_aFatherDecisions[a_nChromosomeId][fatherItr]);
+            {
+                EMendelianDecision decision = m_noCallMode == ENoCallMode::eImplicitNoCall ? EMendelianDecision::eNoCallChild : m_aFatherDecisions[a_nChromosomeId][fatherItr];
+                DoSingleVar(a_nChromosomeId, fatherItr, eFATHER, decision);
+            }
             else
-                DoSingleVar(a_nChromosomeId, childItr, eCHILD, m_aChildDecisions[a_nChromosomeId][childItr]);
+            {
+                EMendelianDecision decision = m_noCallMode == ENoCallMode::eImplicitNoCall ? EMendelianDecision::eNoCallParent : m_aChildDecisions[a_nChromosomeId][childItr];
+                DoSingleVar(a_nChromosomeId, childItr, eCHILD, decision);
+            }
         }
     
     }
@@ -416,6 +468,11 @@ void CMendelianTrioMerger::DoDoubleMerge(int a_nChromosomeId, int& a_nItr1, int&
             }
         }
     }
+    else if(m_noCallMode == eNone && a_decision != eUnknown)
+    {
+        dataMother.m_aGenotype[0] = 0;
+        dataMother.m_aGenotype[1] = 0;
+    }
     
     //ADD FATHER
     SPerSampleData dataFather;
@@ -435,6 +492,12 @@ void CMendelianTrioMerger::DoDoubleMerge(int a_nChromosomeId, int& a_nItr1, int&
             }
         }
     }
+    else if(m_noCallMode == eNone && a_decision != eUnknown)
+    {
+        dataFather.m_aGenotype[0] = 0;
+        dataFather.m_aGenotype[1] = 0;
+    }
+
     
     //ADD CHILD
     SPerSampleData dataChild;
@@ -454,6 +517,12 @@ void CMendelianTrioMerger::DoDoubleMerge(int a_nChromosomeId, int& a_nItr1, int&
             }
         }
     }
+    else if(m_noCallMode == eNone && a_decision != eUnknown)
+    {
+        dataChild.m_aGenotype[0] = 0;
+        dataChild.m_aGenotype[1] = 0;
+    }
+
     
     //Push trip genotypes to the vcfrecord
     vcfrecord.m_aSampleData.push_back(dataMother);
@@ -492,8 +561,13 @@ void CMendelianTrioMerger::DoSingleVar(int a_nChromosomeId, int& a_nItr, EMendel
         for(int k = 0; k < pVariant->m_nZygotCount; k++)
             dataMother.m_aGenotype[k] = pVariant->m_genotype[k];
     }
+    else if(m_noCallMode == ENoCallMode::eNone && a_decision != eUnknown)
+    {
+        dataMother.m_aGenotype[0] = 0;
+        dataMother.m_aGenotype[1] = 0;
+    }
     
-    else if(a_name == eFATHER)
+    if(a_name == eFATHER)
     {
         dataFather.m_nHaplotypeCount = pVariant->m_nZygotCount;
         dataFather.m_bIsPhased = pVariant->m_bIsPhased; // TODO: This should be altered
@@ -501,13 +575,24 @@ void CMendelianTrioMerger::DoSingleVar(int a_nChromosomeId, int& a_nItr, EMendel
             dataFather.m_aGenotype[k] = pVariant->m_genotype[k];
     
     }
+    else if(m_noCallMode == ENoCallMode::eNone && a_decision != eUnknown)
+    {
+        dataFather.m_aGenotype[0] = 0;
+        dataFather.m_aGenotype[1] = 0;
+    }
+
     
-    else
+    if(a_name == eCHILD)
     {
         dataChild.m_nHaplotypeCount = pVariant->m_nZygotCount;
         dataChild.m_bIsPhased = pVariant->m_bIsPhased; // TODO: This should be altered
         for(int k = 0; k < pVariant->m_nZygotCount; k++)
             dataChild.m_aGenotype[k] = pVariant->m_genotype[k];
+    }
+    else if (m_noCallMode == ENoCallMode::eNone && a_decision != eUnknown)
+    {
+        dataChild.m_aGenotype[0] = 0;
+        dataChild.m_aGenotype[1] = 0;
     }
     
     //Push trip genotypes to the vcfrecord

@@ -26,6 +26,12 @@ bool isOverlap(int left1, int right1, int left2, int right2)
     return std::min(right1, right2) - std::max(left1, left2) >= 0;
 }
 
+
+CMendelianAnalyzer::CMendelianAnalyzer()
+{
+    m_noCallMode = ENoCallMode::eNone;
+}
+
 void CMendelianAnalyzer::run(int argc, char **argv)
 {
     std::clock_t start;
@@ -69,6 +75,7 @@ void CMendelianAnalyzer::run(int argc, char **argv)
     
     std::string trioPath = std::string(m_fatherChildConfig.m_pOutputDirectory) + "/trio.vcf";
     m_trioWriter.SetTrioPath(trioPath);
+    m_trioWriter.SetNoCallMode(m_noCallMode);
     
     for(int k = 0; k < chrIds.size(); k++)
     {
@@ -93,7 +100,7 @@ void CMendelianAnalyzer::run(int argc, char **argv)
 
 bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
 {
-    const char* PARAM_HELP = "-help";
+    const char* PARAM_HELP = "--help";
     
     const char* PARAM_FATHER = "-father";
     const char* PARAM_MOTHER = "-mother";
@@ -106,8 +113,8 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
     const char* PARAM_SAMPLE_CHILD = "-SampleChild";
     
     const char* PARAM_OUTPUT_DIR = "-outDir";
-    const char* PARAM_REF_OVERLAP = "-ref-overlap";
-    const char* PARAM_PLATFORM = "-platform-mode";
+    const char* PARAM_REF_OVERLAP = "--ref-overlap";
+    const char* PARAM_PLATFORM = "--platform-mode";
     const char* PARAM_NO_CALL = "-no-call";
     
     bool bFatherSet = false;
@@ -187,10 +194,13 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
         else if(0 == strcmp(argv[it], PARAM_NO_CALL))
         {
             if(0 == strcmp("none", argv[it+1]))
-            {
-            
-            }
-        
+                m_noCallMode = ENoCallMode::eNone;
+            else if(0 == strcmp("explicit", argv[it+1]))
+                m_noCallMode = ENoCallMode::eExplicitNoCall;
+            else if(0 == strcmp("implicit", argv[it+1]))
+                m_noCallMode = ENoCallMode::eImplicitNoCall;
+            else
+                m_noCallMode = ENoCallMode::eNone;
         }
         
         else if(0 == strcmp(argv[it], PARAM_SAMPLE_FATHER))
@@ -467,6 +477,7 @@ void CMendelianAnalyzer::CheckFor0Path(int a_nChrId,
                 
                 if(isOverlap(pVar->GetStart(), pVar->GetEnd(), tmpVarList[0]->GetStart(), tmpVarList[0]->GetEnd()))
                 {
+                    
                     if(pVar->m_genotype[0] != 0 && pVar->m_genotype[1] != 0)
                     {
                         if(a_bIsUpdateDecisionList)
@@ -481,6 +492,7 @@ void CMendelianAnalyzer::CheckFor0Path(int a_nChrId,
                         bIsCompliant = false;
                         break;
                     }
+                    
                     else
                     {
                         if(a_bIsUpdateDecisionList)
@@ -679,8 +691,10 @@ void CMendelianAnalyzer::ProcessChromosome(const std::vector<int>& a_nChromosome
         //Initialize the decision arrays
         m_aMotherDecisions[chromosomeId] = std::vector<EMendelianDecision>(m_provider.GetVariantCount(eMOTHER, chromosomeId));
         m_aFatherDecisions[chromosomeId] = std::vector<EMendelianDecision>(m_provider.GetVariantCount(eFATHER, chromosomeId));
-        m_aChildDecisions[chromosomeId] = std::vector<EMendelianDecision>(m_provider.GetVariantCount(eCHILD, chromosomeId));
-
+        m_aChildDecisions[chromosomeId]  = std::vector<EMendelianDecision>(m_provider.GetVariantCount(eCHILD,  chromosomeId));
+        
+        
+        
     }
 
 }
@@ -1100,7 +1114,7 @@ void CMendelianAnalyzer::MergeFunc(int a_nChromosomeId)
         else
             m_aChildDecisions[a_nChromosomeId][k] = EMendelianDecision::eUnknown;
     }
-
+    
     //Mother Checks
     std::vector<const CVariant*> uniqueMotherVars = m_provider.GetVariantList(m_provider.GetVariantList(eMOTHER, a_nChromosomeId,  m_aBestPathsMotherChildGT[a_nChromosomeId].m_baseSemiPath.GetExcluded()),
                                                                               m_aBestPathsMotherChildAM[a_nChromosomeId].m_baseSemiPath.GetExcluded());
@@ -1123,103 +1137,127 @@ void CMendelianAnalyzer::MergeFunc(int a_nChromosomeId)
 
     
     
+    //If NoCall Mode Is Enabled, mark all decisions of nocall childs as NoCallChild and all nocall parents as NoCallParent
+    if(m_noCallMode != eNone)
+    {
+        std::vector<const CVariant*> motherVariants = m_provider.GetVariantList(eMOTHER, a_nChromosomeId);
+        std::vector<const CVariant*> fatherVariants = m_provider.GetVariantList(eFATHER, a_nChromosomeId);
+
+        for(int k = 0; k < motherVariants.size(); k ++)
+        {
+            if(motherVariants[k]->m_bIsNoCall)
+                m_aMotherDecisions[a_nChromosomeId][k] = eNoCallParent;
+        }
+        
+        for(int k = 0; k < fatherVariants.size(); k ++)
+        {
+            if(fatherVariants[k]->m_bIsNoCall)
+                m_aFatherDecisions[a_nChromosomeId][k] = eNoCallParent;
+        }
+        
+        for(int k = 0; k < childVariants.size(); k ++)
+        {
+            if(childVariants[k]->m_bIsNoCall)
+                m_aChildDecisions[a_nChromosomeId][k] = eNoCallChild;
+        }
+    }
+    
+    
     std::cout << "===================== STATISTICS " << a_nChromosomeId + 1 << " ===================" << std::endl;
     std::cout << "Total Compliants:" << compliants.size() << std::endl;
     std::cout << "Total Violations:" << violations.size() << std::endl;
     std::cout << "Child Var Size:" << childVariants.size()<< std::endl;
     std::cout << "=====================================================" << std::endl << std::endl;
 
-    std::ofstream compliantsAll;
+    /*
     std::string commonPath = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/CHR1/chr" + std::to_string(a_nChromosomeId + 1);
-    
+
+    std::ofstream compliantsAll;
     compliantsAll.open(commonPath + "_CompliantsALL.txt");
-    
     for(const CVariant* k : compliants)
         compliantsAll << k->m_nOriginalPos << std::endl;
     compliantsAll.close();
 
     std::ofstream violationsAll;
     violationsAll.open(commonPath + "_ViolationsALL.txt");
-    
     for(const CVariant* k : violations)
         violationsAll << k->m_nOriginalPos << std::endl;
     violationsAll.close();
     
+    std::ofstream outputFileAlleleMatchVio;
+    outputFileAlleleMatchVio.open("/Users/c1ms21p6h3qk/Desktop/MendelianOutput/Chr21SameAlleleMatchViolation.txt");
+    for(const CVariant* k : MendelianViolationVars)
+        outputFileAlleleMatchVio << k->m_nOriginalPos << std::endl;
+    outputFileAlleleMatchVio.close();
+
+    std::ofstream outputFileMotherOnly;
+    outputFileMotherOnly.open("/Users/c1ms21p6h3qk/Desktop/MendelianOutput/Chr21MotherChildOnly.txt");
+    for(const CVariant* k : motherChildOnly)
+        outputFileMotherOnly << k->m_nOriginalPos << std::endl;
+    outputFileMotherOnly.close();
+
+    std::ofstream outputFileFatherOnly;
+    outputFileFatherOnly.open("/Users/c1ms21p6h3qk/Desktop/MendelianOutput/Chr21FatherChildOnly.txt");
+    for(const CVariant* k : fatherChildOnly)
+        outputFileFatherOnly << k->m_nOriginalPos << std::endl;
+    outputFileFatherOnly.close();
+
+    std::ofstream outputFile;
+    outputFile.open(commonPath + "_InitialCompliants.txt");
+    for(const CVariant* k : MendelianCompliantVars)
+        outputFile << k->m_nOriginalPos << std::endl;
+    outputFile.close();
+
+    std::ofstream outputFileF;
+    outputFileF.open(commonPath + "_Father0sCompliant.txt");
+    for(const CVariant* k : compliantVarsFrom0CheckFather)
+        outputFileF << k->m_nOriginalPos << std::endl;
+    outputFileF.close();
+
+    std::ofstream outputFileFvio;
+    outputFileFvio.open(commonPath + "_Father0sViolation.txt");
+    for(const CVariant* k : violationVarsFrom0CheckFather)
+        outputFileFvio << k->m_nOriginalPos << std::endl;
+    outputFileFvio.close();
     
-/*
-        std::ofstream outputFileAlleleMatchVio;
-        outputFileAlleleMatchVio.open("/Users/c1ms21p6h3qk/Desktop/MendelianOutput/Chr21SameAlleleMatchViolation.txt");
-        for(const CVariant* k : MendelianViolationVars)
-            outputFileAlleleMatchVio << k->m_nOriginalPos << std::endl;
-        outputFileAlleleMatchVio.close();
 
-        std::ofstream outputFileMotherOnly;
-        outputFileMotherOnly.open("/Users/c1ms21p6h3qk/Desktop/MendelianOutput/Chr21MotherChildOnly.txt");
-        for(const CVariant* k : motherChildOnly)
-            outputFileMotherOnly << k->m_nOriginalPos << std::endl;
-        outputFileMotherOnly.close();
- 
-        std::ofstream outputFileFatherOnly;
-        outputFileFatherOnly.open("/Users/c1ms21p6h3qk/Desktop/MendelianOutput/Chr21FatherChildOnly.txt");
-        for(const CVariant* k : fatherChildOnly)
-            outputFileFatherOnly << k->m_nOriginalPos << std::endl;
-        outputFileFatherOnly.close();
- 
-        std::ofstream outputFile;
-        outputFile.open(commonPath + "_InitialCompliants.txt");
-        for(const CVariant* k : MendelianCompliantVars)
-            outputFile << k->m_nOriginalPos << std::endl;
-        outputFile.close();
+    std::ofstream outputFileM;
+    outputFileM.open(commonPath + "_Mother0sCompliant.txt");
+    for(const CVariant* k : compliantVarsFrom0CheckMother)
+        outputFileM << k->m_nOriginalPos << std::endl;
+    outputFileM.close();
 
-        std::ofstream outputFileF;
-        outputFileF.open(commonPath + "_Father0sCompliant.txt");
-        for(const CVariant* k : compliantVarsFrom0CheckFather)
-            outputFileF << k->m_nOriginalPos << std::endl;
-        outputFileF.close();
+    std::ofstream outputFileMvio;
+    outputFileMvio.open(commonPath + "_Mother0sViolation.txt");
+    for(const CVariant* k : violationVarsFrom0CheckMother)
+        outputFileMvio << k->m_nOriginalPos << std::endl;
+    outputFileMvio.close();
 
-        std::ofstream outputFileFvio;
-        outputFileFvio.open(commonPath + "_Father0sViolation.txt");
-        for(const CVariant* k : violationVarsFrom0CheckFather)
-            outputFileFvio << k->m_nOriginalPos << std::endl;
-        outputFileFvio.close();
-        
+    std::ofstream outputFileCC1;
+    outputFileCC1.open(commonPath + "_00Compliants.txt");
+    for(const CVariant* k : compliantVarsFrom00Check)
+        outputFileCC1 << k->m_nOriginalPos << std::endl;
+    outputFileCC1.close();
 
-        std::ofstream outputFileM;
-        outputFileM.open(commonPath + "_Mother0sCompliant.txt");
-        for(const CVariant* k : compliantVarsFrom0CheckMother)
-            outputFileM << k->m_nOriginalPos << std::endl;
-        outputFileM.close();
-    
-        std::ofstream outputFileMvio;
-        outputFileMvio.open(commonPath + "_Mother0sViolation.txt");
-        for(const CVariant* k : violationVarsFrom0CheckMother)
-            outputFileMvio << k->m_nOriginalPos << std::endl;
-        outputFileMvio.close();
+    std::ofstream outputFileCC1v;
+    outputFileCC1v.open(commonPath + "_00Violations.txt");
+    for(const CVariant* k : violationVarsFrom00Check)
+        outputFileCC1v << k->m_nOriginalPos << std::endl;
+    outputFileCC1v.close();
 
-        std::ofstream outputFileCC1;
-        outputFileCC1.open(commonPath + "_00Compliants.txt");
-        for(const CVariant* k : compliantVarsFrom00Check)
-            outputFileCC1 << k->m_nOriginalPos << std::endl;
-        outputFileCC1.close();
+    std::ofstream outputFileCC11;
+    outputFileCC11.open(commonPath + "_00CompliantsGT.txt");
+    for(const CVariant* k : compliantVarsFrom00CheckGT)
+        outputFileCC11 << k->m_nOriginalPos << std::endl;
+    outputFileCC11.close();
 
-        std::ofstream outputFileCC1v;
-        outputFileCC1v.open(commonPath + "_00Violations.txt");
-        for(const CVariant* k : violationVarsFrom00Check)
-            outputFileCC1v << k->m_nOriginalPos << std::endl;
-        outputFileCC1v.close();
-
-        std::ofstream outputFileCC11;
-        outputFileCC11.open(commonPath + "_00CompliantsGT.txt");
-        for(const CVariant* k : compliantVarsFrom00CheckGT)
-            outputFileCC11 << k->m_nOriginalPos << std::endl;
-        outputFileCC11.close();
-
-        std::ofstream outputFileCC11v;
-        outputFileCC11v.open(commonPath + "_00ViolationsGT.txt");
-        for(const CVariant* k : violationVarsFrom00CheckGT)
-            outputFileCC11v << k->m_nOriginalPos << std::endl;
-        outputFileCC11v.close();
- */
+    std::ofstream outputFileCC11v;
+    outputFileCC11v.open(commonPath + "_00ViolationsGT.txt");
+    for(const CVariant* k : violationVarsFrom00CheckGT)
+        outputFileCC11v << k->m_nOriginalPos << std::endl;
+    outputFileCC11v.close();
+     
+    */
     
 }
 

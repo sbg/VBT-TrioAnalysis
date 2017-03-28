@@ -323,21 +323,23 @@ bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
     const char* PARAM_CALLED = "-called";
     const char* PARAM_FILTER = "-filter";
     const char* PARAM_REFERENCE = "-ref";
-    const char* PARAM_HELP = "-help";
+    const char* PARAM_HELP = "--help";
     const char* PARAM_SAMPLE_BASE = "-SampleBase";
     const char* PARAM_SAMPLE_CALLED = "-SampleCalled";
-    const char* PARAM_SNP_ONLY = "-SNP_ONLY";
-    const char* PARAM_INDEL_ONLY = "-INDEL_ONLY";
+    const char* PARAM_SNP_ONLY = "--SNP_ONLY";
+    const char* PARAM_INDEL_ONLY = "--INDEL_ONLY";
     const char* PARAM_OUTPUT_DIR = "-outDir";
-    const char* PARAM_REF_OVERLAP = "-ref-overlap";
-    const char* PARAM_PLATFORM = "-platform-mode";
+    const char* PARAM_REF_OVERLAP = "--ref-overlap";
+    const char* PARAM_PLATFORM = "--platform-mode";
     
     bool bBaselineSet = false;
     bool bCalledSet = false;
     bool bReferenceSet = false;
     bool bOutputDirSet = false;
     
-    int it = 1;
+    //Start from index 2 since first parameter will be variant comparison mode indicator
+    int it = 2;
+    
     if(argc < 2)
     {
         PrintHelp();
