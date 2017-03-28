@@ -49,6 +49,7 @@
 
 /* Begin PBXFileReference section */
 		550E1F5C1E89613200AEFB0B /* ENoCallMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ENoCallMode.h; path = MendelianViolation/include/ENoCallMode.h; sourceTree = SOURCE_ROOT; };
+		550E1F5D1E8AA33400AEFB0B /* CResultLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CResultLog.h; path = DuoComparison/include/CResultLog.h; sourceTree = SOURCE_ROOT; };
 		551661C11E82C4D0002436FA /* CFastaParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CFastaParser.h; path = VcfIO/include/CFastaParser.h; sourceTree = SOURCE_ROOT; };
 		551661C21E82C4D0002436FA /* CVcfReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CVcfReader.h; path = VcfIO/include/CVcfReader.h; sourceTree = SOURCE_ROOT; };
 		551661C31E82C4D0002436FA /* CVcfWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CVcfWriter.h; path = VcfIO/include/CVcfWriter.h; sourceTree = SOURCE_ROOT; };
@@ -80,7 +81,6 @@
 		551661EA1E82E7D9002436FA /* CResultLog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CResultLog.cpp; path = DuoComparison/src/CResultLog.cpp; sourceTree = SOURCE_ROOT; };
 		551661EB1E82E7D9002436FA /* CVariantProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CVariantProvider.cpp; path = DuoComparison/src/CVariantProvider.cpp; sourceTree = SOURCE_ROOT; };
 		551661EC1E82E7D9002436FA /* CVcfAnalyzer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CVcfAnalyzer.cpp; path = DuoComparison/src/CVcfAnalyzer.cpp; sourceTree = SOURCE_ROOT; };
-		551661F11E82E80A002436FA /* CResultLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CResultLog.h; path = DuoComparison/src/CResultLog.h; sourceTree = SOURCE_ROOT; };
 		551661F21E82E8DB002436FA /* CMendelianAnalyzer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CMendelianAnalyzer.h; path = MendelianViolation/include/CMendelianAnalyzer.h; sourceTree = SOURCE_ROOT; };
 		551661F31E82E8DB002436FA /* CMendelianTrioMerger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CMendelianTrioMerger.h; path = MendelianViolation/include/CMendelianTrioMerger.h; sourceTree = SOURCE_ROOT; };
 		551661F41E82E8DB002436FA /* CMendelianVariantProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CMendelianVariantProvider.h; path = MendelianViolation/include/CMendelianVariantProvider.h; sourceTree = SOURCE_ROOT; };
@@ -205,7 +205,7 @@
 		551661B51E82C0BE002436FA /* Include */ = {
 			isa = PBXGroup;
 			children = (
-				551661F11E82E80A002436FA /* CResultLog.h */,
+				550E1F5D1E8AA33400AEFB0B /* CResultLog.h */,
 				551661E31E82E582002436FA /* CVariantIterator.h */,
 				551661E41E82E582002436FA /* CVariantIteratorV2.h */,
 				551661E51E82E582002436FA /* CGa4ghOutputProvider.h */,

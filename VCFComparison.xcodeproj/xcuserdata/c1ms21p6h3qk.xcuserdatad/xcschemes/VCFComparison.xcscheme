@@ -63,7 +63,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-mendelian"
+            argument = "mendelian"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -115,7 +115,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-SampleMother"
+            argument = "-SampleMother11"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -123,7 +123,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-SampleFather"
+            argument = "-SampleFather11"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -131,11 +131,19 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-SampleChild"
+            argument = "-SampleChild11"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "D1"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-no-call"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "implicit"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
