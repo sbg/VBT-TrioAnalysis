@@ -8,6 +8,7 @@
 
 #include "CVariant.h"
 #include <iostream>
+#include <sstream>
 
 
 CVariant::CVariant(): m_nVcfId(-1),
@@ -213,6 +214,68 @@ EVariantType CVariant::GetVariantType() const
     //INDEL OTHERWISE
     return eINDEL;
 }
+
+
+EVariantCategory CVariant::GetVariantCategory() const
+{
+    //Split alleles string to vector of allele strings
+    std::vector<std::string> alleles;
+    std::stringstream ss(m_allelesStr);
+    
+    std::string al;
+    while (ss >> al)
+    {
+        alleles.push_back(al);
+        
+        if (ss.peek() == ',')
+            ss.ignore();
+    }
+    
+    //SNP CASE
+    if(alleles[0].length() == 1 && alleles[m_genotype[0]].length() == 1 && alleles[m_genotype[1]].length() == 1)
+        return EVariantCategory::eSNP;
+
+    //INDEL- INSERTION CASE
+    else if(alleles[0].length() == 1 && (alleles[m_genotype[0]].length() > 1 || alleles[m_genotype[1]].length() > 1))
+    {
+        int varLength = (int)std::max(alleles[m_genotype[0]].length(), alleles[m_genotype[1]].length());
+        
+        if(varLength < 5)
+            return EVariantCategory::eINDEL_INSERT_SMALL;
+        else if(varLength < 15)
+            return EVariantCategory::eINDEL_INSERT_MEDIUM;
+        else
+            return EVariantCategory::eINDEL_INSERT_LARGE;
+    }
+
+    //INDEL - DELETION CASE
+    else if(alleles[0].length() > 1 && alleles[m_genotype[0]].length() < alleles[0].length() &&  alleles[m_genotype[1]].length() < alleles[0].length())
+    {
+        int varLength = (int)alleles[0].length();
+    
+        if(varLength < 5)
+            return EVariantCategory::eINDEL_DELETE_SMALL;
+        else if(varLength < 15)
+            return EVariantCategory::eINDEL_DELETE_MEDIUM;
+        else
+            return EVariantCategory::eINDEL_DELETE_LARGE;
+    }
+ 
+    //COMPLEX
+    else
+    {
+        int varLength = (int)std::max(alleles[0].length(), std::max(alleles[m_genotype[0]].length(), alleles[m_genotype[1]].length()));
+
+        if(varLength < 5)
+            return EVariantCategory::eINDEL_COMPLEX_SMALL;
+        else if(varLength < 15)
+            return EVariantCategory::eINDEL_COMPLEX_MEDIUM;
+        else
+            return EVariantCategory::eINDEL_COMPLEX_LARGE;
+    }
+
+}
+
 
 
 

@@ -10,6 +10,8 @@
 #include <vector>
 #include "htslib/vcf.h"
 #include "EVariantMatch.h"
+#include "EVariantCategory.h"
+
 
 enum EVariantType
 {
@@ -79,6 +81,9 @@ class CVariant
 
     //Return the type of variant
     EVariantType GetVariantType() const;
+    
+    //Return the category of variant to use in mendelian violation reporting
+    EVariantCategory GetVariantCategory() const;
     
     //Fill the Genotype list with the original genotype indexes and the genotype count
     void GetGenotypeArr(int* a_pGenotypeList, int& a_rGenotypeCount);
