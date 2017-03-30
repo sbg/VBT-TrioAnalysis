@@ -26,6 +26,7 @@ CVariant::CVariant(): m_nVcfId(-1),
     m_variantStatus = eNOT_ASSESSED;
     m_genotype[0] = -1;
     m_genotype[1] = -1;
+    m_bIsNoCall = false;
 }
 
 CVariant::CVariant(const CVariant& a_rObj)
@@ -58,7 +59,7 @@ CVariant::CVariant(const CVariant& a_rObj)
     m_genotype[1] = a_rObj.m_genotype[1];
     m_variantStatus = a_rObj.m_variantStatus;
     m_nOriginalPos = a_rObj.m_nOriginalPos;
-    m_bIsNoCall = false;
+    m_bIsNoCall = a_rObj.m_bIsNoCall;
     
 }
 
@@ -223,12 +224,9 @@ EVariantCategory CVariant::GetVariantCategory() const
     std::stringstream ss(m_allelesStr);
     
     std::string al;
-    while (ss >> al)
+    while(std::getline(ss, al, ','))
     {
         alleles.push_back(al);
-        
-        if (ss.peek() == ',')
-            ss.ignore();
     }
     
     //SNP CASE
@@ -249,7 +247,7 @@ EVariantCategory CVariant::GetVariantCategory() const
     }
 
     //INDEL - DELETION CASE
-    else if(alleles[0].length() > 1 && alleles[m_genotype[0]].length() < alleles[0].length() &&  alleles[m_genotype[1]].length() < alleles[0].length())
+    else if(alleles[0].length() > 1 && (alleles[m_genotype[0]].length() == 1 ||  alleles[m_genotype[1]].length() == 1))
     {
         int varLength = (int)alleles[0].length();
     
