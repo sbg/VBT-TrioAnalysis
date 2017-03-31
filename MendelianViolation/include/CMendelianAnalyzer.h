@@ -13,11 +13,11 @@
 #include "SConfig.h"
 #include "CMendelianVariantProvider.h"
 #include "CPath.h"
-#include <thread>
-#include "CResultLog.h"
+#include "CMendelianResultLog.h"
 #include "CMendelianTrioMerger.h"
 #include "EMendelianDecision.h"
 #include "ENoCallMode.h"
+#include <thread>
 
 class CMendelianAnalyzer
 {
@@ -70,6 +70,9 @@ private:
     //A Function to process mendelian violation pipeline for given chromosome id
     void ProcessChromosome(const std::vector<int>& a_rChromosomeIds);
     
+    //Report short output table (Non 0/0 child variants only)
+    void ReportChildChromosomeData(int a_nChromosomeId, std::vector<const CVariant*>& a_rCompliants, std::vector<const CVariant*>& a_rViolations);
+    
     //Divide the jobs between different threads homogeneously for given number of thread count. Return the actual thread count
     int AssignJobsToThreads(int a_nThreadCount);
         
@@ -89,7 +92,7 @@ private:
     CMendelianTrioMerger m_trioWriter;
     
     //Result log for mendelian comparison
-    CResultLog m_resultLog;
+    CMendelianResultLog m_resultLog;
     
     //Best Paths written by each thread for each unique chromosome exists [Between father and child]
     CPath m_aBestPathsFatherChildGT[CHROMOSOME_COUNT];

@@ -76,6 +76,7 @@ void CMendelianAnalyzer::run(int argc, char **argv)
     std::string trioPath = std::string(m_fatherChildConfig.m_pOutputDirectory) + "/trio.vcf";
     m_trioWriter.SetTrioPath(trioPath);
     m_trioWriter.SetNoCallMode(m_noCallMode);
+    m_trioWriter.SetResultLogPointer(&m_resultLog);
     
     for(int k = 0; k < chrIds.size(); k++)
     {
@@ -91,8 +92,10 @@ void CMendelianAnalyzer::run(int argc, char **argv)
     
     
     //Write results to log file
-    m_resultLog.SetLogPath(m_fatherChildConfig.m_pOutputDirectory);
-    m_resultLog.WriteMendelianStatistics();
+    m_resultLog.SetLogDirectory(m_fatherChildConfig.m_pOutputDirectory);
+    m_resultLog.WriteBestPathStatistics();
+    m_resultLog.WriteDetailedReportTable();
+    m_resultLog.WriteShortReportTable();
     
     duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
     std::cout << "Program Completed in " << duration << " secs" << std::endl;
@@ -693,7 +696,20 @@ void CMendelianAnalyzer::ProcessChromosome(const std::vector<int>& a_nChromosome
         m_aFatherDecisions[chromosomeId] = std::vector<EMendelianDecision>(m_provider.GetVariantCount(eFATHER, chromosomeId));
         m_aChildDecisions[chromosomeId]  = std::vector<EMendelianDecision>(m_provider.GetVariantCount(eCHILD,  chromosomeId));
         
+        //Send TP/FP/FN values to the log file
+        m_resultLog.LogBestPathStatistic(true,
+                                         chromosomeId,
+                                         static_cast<int>(includedVarsChildGT.size() + includedVarsChildAM.size()),
+                                         static_cast<int>(m_aBestPathsFatherChildGT[chromosomeId].m_baseSemiPath.GetIncludedVariants().size() + m_aBestPathsFatherChildAM[chromosomeId].m_baseSemiPath.GetIncludedVariants().size()),
+                                         static_cast<int>(m_aBestPathsFatherChildAM[chromosomeId].m_calledSemiPath.GetExcluded().size()),
+                                         static_cast<int>(m_aBestPathsFatherChildAM[chromosomeId].m_baseSemiPath.GetExcluded().size()));
         
+        m_resultLog.LogBestPathStatistic(false,
+                                         chromosomeId,
+                                         static_cast<int>(includedVarsChildGTMC.size() + includedVarsChildAMMC.size()),
+                                         static_cast<int>(m_aBestPathsMotherChildGT[chromosomeId].m_baseSemiPath.GetIncludedVariants().size() + m_aBestPathsMotherChildAM[chromosomeId].m_baseSemiPath.GetIncludedVariants().size()),
+                                         static_cast<int>(m_aBestPathsMotherChildAM[chromosomeId].m_calledSemiPath.GetExcluded().size()),
+                                         static_cast<int>(m_aBestPathsMotherChildAM[chromosomeId].m_baseSemiPath.GetExcluded().size()));
         
     }
 
@@ -1162,6 +1178,7 @@ void CMendelianAnalyzer::MergeFunc(int a_nChromosomeId)
         }
     }
     
+    ReportChildChromosomeData(a_nChromosomeId, compliants, violations);
     
     std::cout << "===================== STATISTICS " << a_nChromosomeId + 1 << " ===================" << std::endl;
     std::cout << "Total Compliants:" << compliants.size() << std::endl;
@@ -1260,6 +1277,34 @@ void CMendelianAnalyzer::MergeFunc(int a_nChromosomeId)
     */
     
 }
+
+
+void CMendelianAnalyzer::ReportChildChromosomeData(int a_nChromosomeId, std::vector<const CVariant*>& a_rCompliants, std::vector<const CVariant*>& a_rViolations)
+{
+    int compliantSNPcount = 0;
+    int compliantINDELcount = 0;
+    int violationSNPcount = 0;
+    int violationINDELcount = 0;
+
+    for(const CVariant* pVar : a_rCompliants)
+    {
+        if(pVar->GetVariantType() == eSNP)
+            compliantSNPcount++;
+        else
+            compliantINDELcount++;
+    }
+    
+    for(const CVariant* pVar : a_rViolations)
+    {
+        if(pVar->GetVariantType() == eSNP)
+            violationSNPcount++;
+        else
+            violationINDELcount++;
+    }
+    
+    m_resultLog.LogShortReport(a_nChromosomeId, compliantSNPcount, violationSNPcount, compliantINDELcount, violationINDELcount);
+}
+
 
 
 
