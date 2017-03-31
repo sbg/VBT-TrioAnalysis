@@ -101,7 +101,7 @@ A tool for checking all mendelian violations in parent-child data.
 
 
 ### --help [Will be implemented]
-A **single** parameter mode which prints all parameter options to the console. (./vbt varComp -help)
+A **single** parameter mode which prints all parameter options to the console. (./vbt mendelian -help)
 
 
 ### -father <father_vcf_path>
@@ -134,17 +134,17 @@ An **optional** parameter which sets the way program process no call variants. D
 A **required** parameter which specifies the output directory for program/error logs and ga4gh output vcf file. In current version, in order not to damage multiplatform capability, **directory should be created by user**.
 
 
-### -SampleChild <child_vcf_sample_name>
+### -sampleChild <child_vcf_sample_name>
 
 An **optional** parameter which is used to select sample name from child vcf file. By default, first sample is selected.
 
 
-### -SampleMother <mother_vcf_sample_name>
+### -sampleMother <mother_vcf_sample_name>
 
 An **optional** parameter which is used to select sample name from mother vcf file. By default, first sample is selected.
 
 
-### -SampleFather <father_vcf_sample_name>
+### -sampleFather <father_vcf_sample_name>
 
 An **optional** parameter which is used to select sample name from father vcf file. By default, first sample is selected.
 
