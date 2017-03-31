@@ -115,7 +115,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-SampleMother"
+            argument = "-sampleMother"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -123,7 +123,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-SampleFather"
+            argument = "-sampleFather"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -131,7 +131,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-SampleChild"
+            argument = "-sampleChild"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

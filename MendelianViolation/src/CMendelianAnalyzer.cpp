@@ -14,7 +14,7 @@
 #include "CVariantIterator.h"
 #include "CSyncPoint.h"
 
-#include <fstream>
+//#include <fstream>
 
 
 //Compare variants according to id for sort operation
@@ -111,9 +111,9 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
     const char* PARAM_REFERENCE = "-ref";
     const char* PARAM_FILTER = "-filter";
     
-    const char* PARAM_SAMPLE_FATHER = "-SampleFather";
-    const char* PARAM_SAMPLE_MOTHER = "-SampleMother";
-    const char* PARAM_SAMPLE_CHILD = "-SampleChild";
+    const char* PARAM_SAMPLE_FATHER = "-sampleFather";
+    const char* PARAM_SAMPLE_MOTHER = "-sampleMother";
+    const char* PARAM_SAMPLE_CHILD = "-sampleChild";
     
     const char* PARAM_OUTPUT_DIR = "-outDir";
     const char* PARAM_REF_OVERLAP = "--ref-overlap";
@@ -1180,11 +1180,11 @@ void CMendelianAnalyzer::MergeFunc(int a_nChromosomeId)
     
     ReportChildChromosomeData(a_nChromosomeId, compliants, violations);
     
-    std::cout << "===================== STATISTICS " << a_nChromosomeId + 1 << " ===================" << std::endl;
-    std::cout << "Total Compliants:" << compliants.size() << std::endl;
-    std::cout << "Total Violations:" << violations.size() << std::endl;
-    std::cout << "Child Var Size:" << childVariants.size()<< std::endl;
-    std::cout << "=====================================================" << std::endl << std::endl;
+    //std::cout << "===================== STATISTICS " << a_nChromosomeId + 1 << " ===================" << std::endl;
+    //std::cout << "Total Compliants:" << compliants.size() << std::endl;
+    //std::cout << "Total Violations:" << violations.size() << std::endl;
+    //std::cout << "Child Var Size:" << childVariants.size()<< std::endl;
+    //std::cout << "=====================================================" << std::endl << std::endl;
 
     /*
     std::string commonPath = "/Users/c1ms21p6h3qk/Desktop/MendelianOutput/CHR1/chr" + std::to_string(a_nChromosomeId + 1);

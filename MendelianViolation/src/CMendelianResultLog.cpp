@@ -309,8 +309,8 @@ void CMendelianResultLog::WriteDetailedReportTable()
     outputLog << "+" << std::left << std::setw(91) << std::setfill('-') << "-" << "+" << std::endl;
     
     outputLog << std::endl;
-    outputLog << "Description of Columns for tables below:  There are 28 genotype columns for each category which are 3x3x3 genotype possibilitis + 1 for multi-allelelic site." << std::endl;
-    outputLog << "Table is oriented as CHILD FATHER MOTHER the column calculation is 9 x sum(mother gt) + 3 x sum(father gt) + sum(child gt). The last column is the multi-allelelic site." << std::endl;
+    outputLog << "Description of Columns for tables below:  There are 28 genotype columns for each category which are 3x3x3 genotype possibilities + 1 for multi-allelic site." << std::endl;
+    outputLog << "Table is oriented as CHILD FATHER MOTHER the column calculation is 9 x sum(mother gt) + 3 x sum(father gt) + sum(child gt). The last column is the multi-allelic site." << std::endl;
     
     outputLog << std::endl << std::endl << std:: endl;
     

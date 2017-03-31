@@ -22,11 +22,11 @@ void UnitTestTrioComparison(int a_nChrNumber, bool a_bIsFilterOverlap, bool a_bI
 
 int main (int argc, char** argv)
 {
-    std::ofstream out("/Users/c1ms21p6h3qk/Desktop/outXCODE.txt");
-    std::cout.rdbuf(out.rdbuf()); //redirect std::cout to out.txt!
+    //std::ofstream out("/Users/c1ms21p6h3qk/Desktop/outXCODE.txt");
+    //std::cout.rdbuf(out.rdbuf()); //redirect std::cout to out.txt!
     
-    std::ofstream err("/Users/c1ms21p6h3qk/Desktop/errXCOCD.txt");
-    std::cerr.rdbuf(err.rdbuf()); //redirect std::cerr to error.txt!
+    //std::ofstream err("/Users/c1ms21p6h3qk/Desktop/errXCOCD.txt");
+    //std::cerr.rdbuf(err.rdbuf()); //redirect std::cerr to error.txt!
     
     
     //COverlappingVariantEliminator elim;
