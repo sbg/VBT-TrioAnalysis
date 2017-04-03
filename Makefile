@@ -37,40 +37,40 @@ all: $(TARGET)
 
 
 $(TARGET): $(OBJECTS)
-@echo " Linking..."
-@echo " OBJECTS CORE: $(OBJECTSCORE)"
-@echo " OBJECTS DUO : $(OBJECTSDUO)"
-@echo " OBJECTS TRIO: $(OBJECTSTRIO)"
-@echo " $(CC) $^ -o $(TARGET) $(LIB)"; $(CC) $^ -o $(TARGET) $(LIB)
+    @echo " Linking..."
+    @echo " OBJECTS CORE: $(OBJECTSCORE)"
+    @echo " OBJECTS DUO : $(OBJECTSDUO)"
+    @echo " OBJECTS TRIO: $(OBJECTSTRIO)"
+    @echo " $(CC) $^ -o $(TARGET) $(LIB)"; $(CC) $^ -o $(TARGET) $(LIB)
 
 $(BUILDDIR)/%.o: $(SRCCORE)/%.cpp
-@mkdir -p $(BUILDDIR)
-@echo " CORE: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
+    @mkdir -p $(BUILDDIR)
+    @echo " CORE: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
 
 $(BUILDDIR)/%.o: $(SRCDUO)/%.cpp
-@mkdir -p $(BUILDDIR)
-@echo " DUO: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
+    @mkdir -p $(BUILDDIR)
+    @echo " DUO: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
 
 $(BUILDDIR)/%.o: $(SRCTRIO)/%.cpp
-@mkdir -p $(BUILDDIR)
-@echo " TRIO: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
+    @mkdir -p $(BUILDDIR)
+    @echo " TRIO: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
 
 $(BUILDDIR)/%.o: $(SRCVCFIO)/%.cpp
-@mkdir -p $(BUILDDIR)
-@echo " VCFIO: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
+    @mkdir -p $(BUILDDIR)
+    @echo " VCFIO: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
 
 $(BUILDDIR)/main.o: main.cpp
-@mkdir -p $(BUILDDIR)
-@echo " MAIN: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
+    @mkdir -p $(BUILDDIR)
+    @echo " MAIN: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
 
 $(BUILDDIR)/test.o: test.cpp
-@mkdir -p $(BUILDDIR)
-@echo " TEST: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
+    @mkdir -p $(BUILDDIR)
+    @echo " TEST: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
 
 
 clean:
-@echo " Cleaning...";
-@echo " $(RM) -r $(BUILDDIR) $(TARGET)"; $(RM) -r $(BUILDDIR) $(TARGET)
+    @echo " Cleaning...";
+    @echo " $(RM) -r $(BUILDDIR) $(TARGET)"; $(RM) -r $(BUILDDIR) $(TARGET)
 
 
 .PHONY: clean
