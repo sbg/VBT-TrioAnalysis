@@ -21,8 +21,6 @@ public:
 private:
     
     htsFile*    m_pHtsFileFiltered;
-    bcf_hdr_t * m_pHeaderFiltered;
-    bcf1_t *    m_pRecordFiltered;
     
     //Vcf reader instance
     CVcfReader m_vcfReader;

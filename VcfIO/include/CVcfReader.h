@@ -98,8 +98,6 @@ private:
     int GetChromosomeNumber(const std::string& a_chrName) const;
     
     
-    int refOverlapCount = 0;
-    
     std::string m_filename;
     bool m_bIsOpen;
     htsFile *   m_pHtsFile;

@@ -12,10 +12,11 @@
 
 
 CVariant::CVariant(): m_nVcfId(-1),
-            m_nChrId(-1), 
-            m_nStartPos(-1),
+            m_nChrId(-1),
             m_chrName(),
-            m_bIsPhased(false) 
+            m_bIsPhased(false),
+            m_nStartPos(-1)
+
 {
     m_nId = -1;
     m_nAlleleCount = 0;

@@ -48,11 +48,6 @@ private:
     void PrintVariants(std::string a_outputDirectory, std::string a_FileName, const std::vector<const CVariant*>& a_rVarList) const;
     
     
-    //Maximum # of thread that program executes
-    int m_nMaxThreadCount;
-    //Maximum memory will be used by the program
-    int m_nMaxMemoryInByte;
-    
     //Configurations for Vcf comparison
     SConfig m_config;
     
