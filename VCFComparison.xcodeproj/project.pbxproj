@@ -34,7 +34,7 @@
 		556D39961DD3AF2E00551040 /* libhts.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 556D39831DD3AF2E00551040 /* libhts.a */; };
 		556D39971DD3AF2E00551040 /* libhts.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 556D39841DD3AF2E00551040 /* libhts.dylib */; };
 		556D39CC1DD3AFAC00551040 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 556D39CB1DD3AFAC00551040 /* libz.tbd */; };
-		558A41701E92EABE00575FA6 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 558A416F1E92EABE00575FA6 /* Makefile */; };
+		558A41721E92EBF800575FA6 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 558A41711E92EBF800575FA6 /* Makefile */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -132,7 +132,7 @@
 		556D39841DD3AF2E00551040 /* libhts.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libhts.dylib; sourceTree = "<group>"; };
 		556D39861DD3AF2E00551040 /* htslib.pc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = htslib.pc; sourceTree = "<group>"; };
 		556D39CB1DD3AFAC00551040 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
-		558A416F1E92EABE00575FA6 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = VcfIO/include/Makefile; sourceTree = SOURCE_ROOT; };
+		558A41711E92EBF800575FA6 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -348,13 +348,13 @@
 		556D39781DD3AEA400551040 /* VCFComparison */ = {
 			isa = PBXGroup;
 			children = (
+				558A41711E92EBF800575FA6 /* Makefile */,
 				556D39B21DD3AF3800551040 /* htslib */,
 				556D39801DD3AF2E00551040 /* lib */,
 				551661B31E82BFA0002436FA /* VcfIO */,
 				551661B01E82BD39002436FA /* Core */,
 				551661B41E82C02B002436FA /* DuoComparison */,
 				551661BA1E82C230002436FA /* MendelianViolation */,
-				558A416F1E92EABE00575FA6 /* Makefile */,
 			);
 			path = VCFComparison;
 			sourceTree = "<group>";
@@ -474,7 +474,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				558A41701E92EABE00575FA6 /* Makefile in Sources */,
+				558A41721E92EBF800575FA6 /* Makefile in Sources */,
 				551661CB1E82C51B002436FA /* CVcfWriter.cpp in Sources */,
 				553B0F861E36A2FE00E7186C /* README.md in Sources */,
 				551661EE1E82E7D9002436FA /* CResultLog.cpp in Sources */,
