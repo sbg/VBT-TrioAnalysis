@@ -237,7 +237,7 @@ void CMendelianResultLog::WriteBestPathStatistics()
     outputLog << "====== MOTHER CHILD COMPARISON ======" << std::endl;
     outputLog << std::left << std::setw(10) << std::setfill(separator) << "CHR ID";
     outputLog << std::left << std::setw(20) << std::setfill(separator) << "True-Pos-Child";
-    outputLog << std::left << std::setw(20) << std::setfill(separator) << "True-Pos-Father";
+    outputLog << std::left << std::setw(20) << std::setfill(separator) << "True-Pos-Mother";
     outputLog << std::left << std::setw(15) << std::setfill(separator) << "False-Pos";
     outputLog << std::left << std::setw(15) << std::setfill(separator) << "False-Neg";
     outputLog << std::left << std::setw(15) << std::setfill(separator) << "Precision";
