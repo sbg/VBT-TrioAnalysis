@@ -285,11 +285,11 @@ void CVcfWriter::AddMendelianRecord(const SVcfRecord& a_rVcfRecord)
 
 std::string CVcfWriter::GetChrName(int a_nChrId)
 {
-    if(a_nChrId < 22)
+    if(a_nChrId < 23)
         return "chr" + std::to_string(a_nChrId);
-    else if(a_nChrId == 22)
-        return "chrX";
     else if(a_nChrId == 23)
+        return "chrX";
+    else if(a_nChrId == 24)
         return "chrY";
     else
         return "chrMT";

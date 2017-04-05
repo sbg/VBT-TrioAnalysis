@@ -51,6 +51,9 @@ public:
     //Set the status of each variant in the given lust
     void SetVariantStatus(const std::vector<const CVariant*>& a_rVariantList, EVariantMatch a_status) const;
     void SetVariantStatus(const std::vector<const COrientedVariant*>& a_rVariantList, EVariantMatch a_status) const;
+    
+    //Returns the 0 based index of variants starting from the first variant for that chromosome
+    int Get0BasedVariantIndex(EMendelianVcfName a_uFrom, int a_nChr, int a_nVariantId) const;
         
 private:
     

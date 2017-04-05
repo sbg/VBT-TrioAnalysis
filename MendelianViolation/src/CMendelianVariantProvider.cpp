@@ -135,7 +135,7 @@ void CMendelianVariantProvider::FillVariants()
             std::cout << "Processing chromosome " << preChrId << " of Parent[FATHER] vcf" << std::endl;
         }
 
-        //if(variant.m_nChrId > 1)
+        //if(variant.m_nChrId > 3)
         //  break;
         
         if(variant.m_nChrId == -1)
@@ -168,7 +168,7 @@ void CMendelianVariantProvider::FillVariants()
             std::cout << "Processing chromosome " << preChrId << " of Parent[MOTHER] vcf" << std::endl;
         }
 
-        //if(variant.m_nChrId > 1)
+        //if(variant.m_nChrId > 3)
         //    break;
         
         if(variant.m_nChrId == -1)
@@ -201,7 +201,7 @@ void CMendelianVariantProvider::FillVariants()
             std::cout << "Processing chromosome " << preChrId << " of Child vcf" << std::endl;
         }
 
-        //if(variant.m_nChrId > 1)
+        //if(variant.m_nChrId > 3)
         //    break;
         
         if(variant.m_nChrId == -1)
@@ -607,6 +607,34 @@ int CMendelianVariantProvider:: GetVariantCount(EMendelianVcfName a_uFrom, int a
     else
         return -1;
 }
+
+int CMendelianVariantProvider::Get0BasedVariantIndex(EMendelianVcfName a_uFrom, int a_nChr, int a_nVariantId) const
+{
+    int variantCountSoFar = 0;
+    
+    for(int k = 0; k < a_nChr; k++)
+        variantCountSoFar += GetVariantCount(a_uFrom, k);
+    
+    
+    return a_nVariantId - variantCountSoFar;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
