@@ -71,6 +71,13 @@ int main (int argc, char** argv)
        analyzer.Run(argc, argv);
     }
     
+    else
+    {
+        std::cout << "Invalid feature name.Please try either following:" << std::endl;
+        std::cout << "./vbt varcomp [PARAMETERS]" << std::endl;
+        std::cout << "./vbt mendelian [PARAMETERS]" << std::endl;
+    }
+    
 }
 
 
