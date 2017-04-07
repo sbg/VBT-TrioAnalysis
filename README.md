@@ -95,7 +95,7 @@ An **optional** parameter which tolerates reference overlaps to include more var
 
 An **optional** parameter which maximizes the thread count (to 25) assuming that there is no memory and processor limit. The default execution uses up to 4 threads and requires +4 GB memory to perform whole genome vcf file.
 
-## -thread-count <[0-25]>
+### -thread-count <[1-25]>
 An **optional** parameter to specify number of threads. Default value is 2
 
 
