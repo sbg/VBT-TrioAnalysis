@@ -35,6 +35,7 @@
 		556D39971DD3AF2E00551040 /* libhts.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 556D39841DD3AF2E00551040 /* libhts.dylib */; };
 		556D39CC1DD3AFAC00551040 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 556D39CB1DD3AFAC00551040 /* libz.tbd */; };
 		558A41741E92EDA900575FA6 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 558A41731E92EDA900575FA6 /* Makefile */; };
+		559BA2941E97D63F0018D734 /* CSplitOutputProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 559BA2931E97D63F0018D734 /* CSplitOutputProvider.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -133,6 +134,8 @@
 		556D39861DD3AF2E00551040 /* htslib.pc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = htslib.pc; sourceTree = "<group>"; };
 		556D39CB1DD3AFAC00551040 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		558A41731E92EDA900575FA6 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = SOURCE_ROOT; };
+		559BA2921E97D42F0018D734 /* CSplitOutputProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CSplitOutputProvider.h; path = DuoComparison/include/CSplitOutputProvider.h; sourceTree = SOURCE_ROOT; };
+		559BA2931E97D63F0018D734 /* CSplitOutputProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CSplitOutputProvider.cpp; path = DuoComparison/src/CSplitOutputProvider.cpp; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -218,6 +221,7 @@
 				551661E61E82E582002436FA /* CVariantProvider.h */,
 				551661E71E82E582002436FA /* CVcfAnalyzer.h */,
 				551661E81E82E582002436FA /* SVariantSummary.h */,
+				559BA2921E97D42F0018D734 /* CSplitOutputProvider.h */,
 			);
 			name = Include;
 			sourceTree = "<group>";
@@ -229,6 +233,7 @@
 				551661EA1E82E7D9002436FA /* CResultLog.cpp */,
 				551661EB1E82E7D9002436FA /* CVariantProvider.cpp */,
 				551661EC1E82E7D9002436FA /* CVcfAnalyzer.cpp */,
+				559BA2931E97D63F0018D734 /* CSplitOutputProvider.cpp */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -478,6 +483,7 @@
 				551661CB1E82C51B002436FA /* CVcfWriter.cpp in Sources */,
 				553B0F861E36A2FE00E7186C /* README.md in Sources */,
 				551661EE1E82E7D9002436FA /* CResultLog.cpp in Sources */,
+				559BA2941E97D63F0018D734 /* CSplitOutputProvider.cpp in Sources */,
 				551661EF1E82E7D9002436FA /* CVariantProvider.cpp in Sources */,
 				551662191E82EBC5002436FA /* CVariant.cpp in Sources */,
 				5516621E1E82F271002436FA /* test.cpp in Sources */,

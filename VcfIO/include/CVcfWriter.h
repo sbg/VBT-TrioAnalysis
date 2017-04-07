@@ -65,10 +65,7 @@ public:
     
     //Creates VCF file at the given path
     void CreateVcf(const char* a_pFileName);
-    
-    //Creates the vcf header according to ga4gh and writes it to the opened vcf file
-    void FillHeader();
-    
+        
     //Append the given variant to the opened vcf file
     void AddRecord(const SVcfRecord& a_rVcfRecord);
     

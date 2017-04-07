@@ -135,8 +135,8 @@ void CMendelianVariantProvider::FillVariants()
             std::cout << "Processing chromosome " << preChrId << " of Parent[FATHER] vcf" << std::endl;
         }
 
-        //if(variant.m_nChrId > 3)
-        //  break;
+        //if(variant.m_nChrId < 21)
+        //  continue;
         
         if(variant.m_nChrId == -1)
             continue;
@@ -168,8 +168,8 @@ void CMendelianVariantProvider::FillVariants()
             std::cout << "Processing chromosome " << preChrId << " of Parent[MOTHER] vcf" << std::endl;
         }
 
-        //if(variant.m_nChrId > 3)
-        //    break;
+        //if(variant.m_nChrId < 21)
+        //    continue;
         
         if(variant.m_nChrId == -1)
             continue;
@@ -201,8 +201,8 @@ void CMendelianVariantProvider::FillVariants()
             std::cout << "Processing chromosome " << preChrId << " of Child vcf" << std::endl;
         }
 
-        //if(variant.m_nChrId > 3)
-        //    break;
+        //if(variant.m_nChrId < 21)
+        //    continue;
         
         if(variant.m_nChrId == -1)
             continue;

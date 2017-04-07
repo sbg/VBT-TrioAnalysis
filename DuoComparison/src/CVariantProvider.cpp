@@ -423,7 +423,7 @@ void CVariantProvider::GetUniqueChromosomeIds(std::vector<int>& a_rChrIds)
 {
     for(int k=0; k < CHROMOSOME_COUNT; k++)
     {
-        if(m_aBaseVariantList[k].size() != 0 && m_aCalledVariantList[k].size() != 0)
+        if(m_aBaseVariantList[k].size() > LEAST_VARIANT_THRESHOLD && m_aCalledVariantList[k].size() > LEAST_VARIANT_THRESHOLD)
             a_rChrIds.push_back(k);
     }
 }

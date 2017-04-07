@@ -64,7 +64,7 @@ CPath CPathReplay::FindBestPath(SContig a_contig, bool a_bIsGenotypeMatch)
             baseIncluded = &(processedPath.m_pPath->m_baseSemiPath.GetIncludedVariants());
             baseExcluded = &(processedPath.m_pPath->m_baseSemiPath.GetExcluded());
 
-            if(calledIncluded->size() > 5 || baseIncluded->size() > 5)
+            if(calledIncluded->size() > 0 || baseIncluded->size() > 0)
             {
                 for(int k = 0; k < calledIncluded->size(); k++)
                     m_IncludedVariantsCalledBest.push_back((*calledIncluded)[k]);

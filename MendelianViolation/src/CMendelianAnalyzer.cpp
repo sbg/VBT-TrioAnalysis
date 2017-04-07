@@ -34,7 +34,7 @@ CMendelianAnalyzer::CMendelianAnalyzer()
 
 void CMendelianAnalyzer::run(int argc, char **argv)
 {
-    std::clock_t start;
+    std::time_t start, start1;
     double duration;
     
     //Reads the command line parameters
@@ -43,36 +43,31 @@ void CMendelianAnalyzer::run(int argc, char **argv)
     if(!isSuccess)
         return;
     
-    start = std::clock();
+    start = std::time(0);
     
     //Initialize variant provider
     isSuccess = m_provider.InitializeReaders(m_fatherChildConfig, m_motherChildConfig);
     
-    duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
+    duration = std::difftime(std::time(0), start);
     std::cout << "Vcf and fasta Parser read completed in " << duration << " secs" << std::endl;
+    
+    start1 = std::time(0);
     
     if(!isSuccess)
         return;
     
-    //Decide Thread count and start parent child comparison
-    if(m_fatherChildConfig.m_bIsPlatformMode)
-    {
-        int threadCount = AssignJobsToThreads(CHROMOSOME_COUNT);
+    //Run duo comparison engine on parallel
+    int threadCount = AssignJobsToThreads(m_fatherChildConfig.m_nThreadCount);
         for(int k = 0; k < threadCount; k++)
             m_pThreadPool[k].join();
-    }
-    else
-    {
-        int threadCount = AssignJobsToThreads(MAC_THREAD_COUNT);
-        for(int k = 0; k < threadCount; k++)
-            m_pThreadPool[k].join();
-    }
     
+    //Perform merge process
     std::vector<int> chrIds = m_provider.GetCommonChromosomes();
     for(int k = 0; k < chrIds.size(); k++)
         MergeFunc(chrIds[k]);
     
     
+    //Initialize output writer
     std::string trioPath = std::string(m_fatherChildConfig.m_pOutputDirectory) + "/trio.vcf";
     m_trioWriter.SetTrioPath(trioPath);
     m_trioWriter.SetNoCallMode(m_noCallMode);
@@ -97,8 +92,12 @@ void CMendelianAnalyzer::run(int argc, char **argv)
     m_resultLog.WriteDetailedReportTable();
     m_resultLog.WriteShortReportTable();
     
-    duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
-    std::cout << "Program Completed in " << duration << " secs" << std::endl;
+    
+    duration = std::difftime(std::time(0), start1);
+    std::cout << "Processing Chromosomes completed in " << duration << " secs" << std::endl;
+    duration = std::difftime(std::time(0), start);
+    std::cout << "Total execution time is " << duration << " secs" << std::endl;
+
 }
 
 bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
@@ -229,8 +228,8 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
         
         else if(0 == strcmp(argv[it], PARAM_PLATFORM))
         {
-            m_motherChildConfig.m_bIsPlatformMode = true;
-            m_fatherChildConfig.m_bIsPlatformMode = true;
+            m_motherChildConfig.m_nThreadCount = CHROMOSOME_COUNT;
+            m_fatherChildConfig.m_nThreadCount = CHROMOSOME_COUNT;
             it--;
         }
         
@@ -826,7 +825,6 @@ void CMendelianAnalyzer::CheckUniqueVars(EMendelianVcfName a_checkSide, int a_nC
 
 void CMendelianAnalyzer::MergeFunc(int a_nChromosomeId)
 {
-    
     std::vector<const CVariant*> compliants;
     std::vector<const CVariant*> violations;
 
@@ -1275,7 +1273,6 @@ void CMendelianAnalyzer::MergeFunc(int a_nChromosomeId)
     outputFileCC11v.close();
      
     */
-    
 }
 
 

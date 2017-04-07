@@ -5,6 +5,8 @@
 #ifndef _S_CONFIG_H_
 #define _S_CONFIG_H_
 
+#include "Constants.h"
+
 //Any configuration that will be used send via this config object
 struct SConfig
 {
@@ -12,7 +14,7 @@ struct SConfig
     bool m_bIsOK;
     
     //Maximum size of the variant that will be processed by VCF comparison algorithm (Use it to eliminate SVs)
-    int m_nMaxVariantSize = 1000;
+    int m_nMaxVariantSize = DEFAULT_MAX_BP_LENGTH;
     
     //Base Vcf file
     const char* m_pBaseVcfFileName;
@@ -25,6 +27,12 @@ struct SConfig
     
     //Output Directory
     const char* m_pOutputDirectory;
+    
+    //Output Mode
+    const char* m_pOutputMode = "SPLIT";
+    
+    //Comparison engine mode
+    bool m_bIsGenotypeMatch = true;
     
     //If filtering enabled
     bool m_bIsFilterEnabled = true;
@@ -55,8 +63,8 @@ struct SConfig
     //Enable REF Overlap mode
     bool m_bIsRefOverlap = false;
     
-    //Run in Platform mode [1 Thread per chromosome]
-    bool m_bIsPlatformMode = false;
+    //Number of thread to use during execution
+    int m_nThreadCount = DEFAULT_THREAD_COUNT;
     
 };
 

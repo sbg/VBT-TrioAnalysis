@@ -32,17 +32,18 @@ private:
     //Prints the help menu at console
     void PrintHelp() const;
     
-    //Process all chromosomes in parallel. Called if there is enough memory and core
-    void SetThreadsPlatform();
+    //Divide the jobs between different threads homogeneously for given number of thread count. Return the actual thread count
+    int AssignJobsToThreads(int a_nThreadCount);
     
     //Calculate the thread count that will be generated and initialize the threads
     void SetThreadsCustom(int a_nMemoryInMB);
     
-    //Function that will be send to each thread
-    void ThreadFunc(int a_nChromosomeId);
-    
-    //Function that process chromosome in bulk
-    void ThreadFunc2(std::vector<int> a_nChrArr);
+    //Function that process chromosome in bulk for SPLIT mode (process either genotype or allele match)
+    void ThreadFunctionSPLIT(std::vector<int> a_nChrArr, bool a_bIsGenotypeMatch);
+
+    //Function that process chromosome in bulk for GA4GH mode (process both genotype and allele matches)
+    void ThreadFunctionGA4GH(std::vector<int> a_nChrArr);
+
     
     void PrintVariants(std::string a_outputDirectory, std::string a_FileName, const std::vector<const COrientedVariant*>& a_rOvarList) const;
     void PrintVariants(std::string a_outputDirectory, std::string a_FileName, const std::vector<const CVariant*>& a_rVarList) const;
@@ -62,6 +63,9 @@ private:
     
     //Best Paths written by each thread to find Allele matches for each unique chromosome exists
     CPath m_aBestPathsAllele[CHROMOSOME_COUNT];
+    
+    //Thread pool we have for multitasking by per chromosome
+    std::thread *m_pThreadPool;
 
 };
 
