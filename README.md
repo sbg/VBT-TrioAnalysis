@@ -55,6 +55,13 @@ A **required** parameter which specifies the reference FASTA file path. It shoul
 
 A **required** parameter which specifies the output directory for program/error logs and ga4gh output vcf file. In current version, in order not to damage multiplatform capability, **directory should be created by user**.
 
+### -output-mode <Output_Mode>
+
+An **optional** parameter which specifies the way output will generated. SPLIT mode creates 4 vcf files(TPbase, TPcalled, FP, FN). GA4GH mode creates a single merged vcf file. Default valus is SPLIT.
+
+### --allele-match
+
+An **optinal** parameter which changes comparison mode to Allele Matching
 
 ### -sampleBase <Baseline_vcf_sample_name>
 
@@ -87,6 +94,9 @@ An **optional** parameter which tolerates reference overlaps to include more var
 ### --platform-mode
 
 An **optional** parameter which maximizes the thread count (to 25) assuming that there is no memory and processor limit. The default execution uses up to 4 threads and requires +4 GB memory to perform whole genome vcf file.
+
+## -thread-count <[0-25]>
+An **optional** parameter to specify number of threads. Default value is 2
 
 
 ## 2. MENDELIAN VIOLATION DETECTOR
