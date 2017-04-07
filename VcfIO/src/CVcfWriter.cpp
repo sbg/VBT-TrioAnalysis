@@ -143,51 +143,55 @@ void CVcfWriter::AddRecord(const SVcfRecord& a_rVcfRecord)
     
     bcf_update_genotypes(m_pHeader, m_pRecord, static_cast<int*>(&genotypes[0]), bcf_hdr_nsamples(m_pHeader)*2);
 
-    //2.Decision Set (BD)
-    char* tmpstr[m_nSampleCount];
-    int k;
-    for(k = 0; k < a_rVcfRecord.m_aSampleData.size(); k++)
-    {
-        tmpstr[k] = new char[a_rVcfRecord.m_aSampleData[k].m_decisionBD.size()];
-        strcpy(tmpstr[k], a_rVcfRecord.m_aSampleData[k].m_decisionBD.c_str());
-    }
-    
-    if(a_rVcfRecord.m_aSampleData.size() != m_nSampleCount)
-    {
-        tmpstr[k] = new char[1];
-        tmpstr[k][0] = bcf_str_missing;
-    }
-    bcf_update_format_string(m_pHeader, m_pRecord, "BD", (const char**)tmpstr, m_nSampleCount);
-    
 
-    //3.Match Type Set (BK)
-    char* tmpstr2[m_nSampleCount];
-    for(k = 0; k < a_rVcfRecord.m_aSampleData.size(); k++)
+    if(a_rVcfRecord.m_aSampleData.size() > 1)
     {
-        tmpstr2[k] = new char[a_rVcfRecord.m_aSampleData[k].m_matchTypeBK.size()];
-        strcpy(tmpstr2[k], a_rVcfRecord.m_aSampleData[k].m_matchTypeBK.c_str());
+        //2.Decision Set (BD)
+        char* tmpstr[m_nSampleCount];
+        int k;
+        for(k = 0; k < a_rVcfRecord.m_aSampleData.size(); k++)
+        {
+            tmpstr[k] = new char[a_rVcfRecord.m_aSampleData[k].m_decisionBD.size()];
+            strcpy(tmpstr[k], a_rVcfRecord.m_aSampleData[k].m_decisionBD.c_str());
+        }
+        
+        if(a_rVcfRecord.m_aSampleData.size() != m_nSampleCount)
+        {
+            tmpstr[k] = new char[1];
+            tmpstr[k][0] = bcf_str_missing;
+        }
+        bcf_update_format_string(m_pHeader, m_pRecord, "BD", (const char**)tmpstr, m_nSampleCount);
+
+        //3.Match Type Set (BK)
+        char* tmpstr2[m_nSampleCount];
+        for(k = 0; k < a_rVcfRecord.m_aSampleData.size(); k++)
+        {
+            tmpstr2[k] = new char[a_rVcfRecord.m_aSampleData[k].m_matchTypeBK.size()];
+            strcpy(tmpstr2[k], a_rVcfRecord.m_aSampleData[k].m_matchTypeBK.c_str());
+        }
+        
+        if(a_rVcfRecord.m_aSampleData.size() != m_nSampleCount)
+        {
+            tmpstr2[k] = new char[1];
+            tmpstr2[k][0] = bcf_str_missing;
+        }
+        bcf_update_format_string(m_pHeader, m_pRecord, "BK", (const char**)tmpstr2, m_nSampleCount);
+        
+        //Write record to created VCF File
+        bcf_write1(m_pHtsFile, m_pHeader, m_pRecord);
+
+        //Clean Temporary strings we used
+        for(int k = 0; k < a_rVcfRecord.m_aSampleData.size(); k++)
+        {
+            delete[] tmpstr[k];
+            delete[] tmpstr2[k];
+        }
     }
-    
-    if(a_rVcfRecord.m_aSampleData.size() != m_nSampleCount)
+    else
     {
-        tmpstr2[k] = new char[1];
-        tmpstr2[k][0] = bcf_str_missing;
+        bcf_write1(m_pHtsFile, m_pHeader, m_pRecord);
     }
-    bcf_update_format_string(m_pHeader, m_pRecord, "BK", (const char**)tmpstr2, m_nSampleCount);
-    
  
-    //Write record to created VCF File
-    bcf_write1(m_pHtsFile, m_pHeader, m_pRecord);
-    
-    
-    //Clean Temporary strings we used
-    for(int k = 0; k < a_rVcfRecord.m_aSampleData.size(); k++)
-    {
-        delete[] tmpstr[k];
-        delete[] tmpstr2[k];
-    }
-    
-    
 }
 
 void CVcfWriter::AddMendelianRecord(const SVcfRecord& a_rVcfRecord)

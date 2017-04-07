@@ -98,28 +98,6 @@
 		551661FA1E82E8EB002436FA /* CMendelianVariantProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CMendelianVariantProvider.cpp; path = MendelianViolation/src/CMendelianVariantProvider.cpp; sourceTree = SOURCE_ROOT; };
 		551661FB1E82E8EB002436FA /* COverlappingVariantEliminator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = COverlappingVariantEliminator.cpp; path = MendelianViolation/src/COverlappingVariantEliminator.cpp; sourceTree = SOURCE_ROOT; };
 		551662001E82E934002436FA /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = SOURCE_ROOT; };
-		551662011E82E99A002436FA /* bgzf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bgzf.h; path = htslib/bgzf.h; sourceTree = SOURCE_ROOT; };
-		551662021E82E99A002436FA /* cram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cram.h; path = htslib/cram.h; sourceTree = SOURCE_ROOT; };
-		551662031E82E99A002436FA /* faidx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = faidx.h; path = htslib/faidx.h; sourceTree = SOURCE_ROOT; };
-		551662041E82E99A002436FA /* hfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = hfile.h; path = htslib/hfile.h; sourceTree = SOURCE_ROOT; };
-		551662051E82E99A002436FA /* hts_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = hts_defs.h; path = htslib/hts_defs.h; sourceTree = SOURCE_ROOT; };
-		551662061E82E99A002436FA /* hts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = hts.h; path = htslib/hts.h; sourceTree = SOURCE_ROOT; };
-		551662071E82E99A002436FA /* kbitset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = kbitset.h; path = htslib/kbitset.h; sourceTree = SOURCE_ROOT; };
-		551662081E82E99A002436FA /* kfunc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = kfunc.h; path = htslib/kfunc.h; sourceTree = SOURCE_ROOT; };
-		551662091E82E99A002436FA /* khash_str2int.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = khash_str2int.h; path = htslib/khash_str2int.h; sourceTree = SOURCE_ROOT; };
-		5516620A1E82E99A002436FA /* khash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = khash.h; path = htslib/khash.h; sourceTree = SOURCE_ROOT; };
-		5516620B1E82E99A002436FA /* klist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = klist.h; path = htslib/klist.h; sourceTree = SOURCE_ROOT; };
-		5516620C1E82E99A002436FA /* knetfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = knetfile.h; path = htslib/knetfile.h; sourceTree = SOURCE_ROOT; };
-		5516620D1E82E99A002436FA /* kseq.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = kseq.h; path = htslib/kseq.h; sourceTree = SOURCE_ROOT; };
-		5516620E1E82E99A002436FA /* ksort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ksort.h; path = htslib/ksort.h; sourceTree = SOURCE_ROOT; };
-		5516620F1E82E99A002436FA /* kstring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = kstring.h; path = htslib/kstring.h; sourceTree = SOURCE_ROOT; };
-		551662101E82E99A002436FA /* regidx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = regidx.h; path = htslib/regidx.h; sourceTree = SOURCE_ROOT; };
-		551662111E82E99A002436FA /* sam.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sam.h; path = htslib/sam.h; sourceTree = SOURCE_ROOT; };
-		551662121E82E99A002436FA /* synced_bcf_reader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = synced_bcf_reader.h; path = htslib/synced_bcf_reader.h; sourceTree = SOURCE_ROOT; };
-		551662131E82E99A002436FA /* tbx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tbx.h; path = htslib/tbx.h; sourceTree = SOURCE_ROOT; };
-		551662141E82E99A002436FA /* vcf_sweep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vcf_sweep.h; path = htslib/vcf_sweep.h; sourceTree = SOURCE_ROOT; };
-		551662151E82E99A002436FA /* vcf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vcf.h; path = htslib/vcf.h; sourceTree = SOURCE_ROOT; };
-		551662161E82E99A002436FA /* vcfutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vcfutils.h; path = htslib/vcfutils.h; sourceTree = SOURCE_ROOT; };
 		551662171E82EBB9002436FA /* CVariant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CVariant.h; path = VcfIO/include/CVariant.h; sourceTree = SOURCE_ROOT; };
 		551662181E82EBC5002436FA /* CVariant.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CVariant.cpp; path = VcfIO/src/CVariant.cpp; sourceTree = SOURCE_ROOT; };
 		5516621A1E82F09E002436FA /* EVariantMatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EVariantMatch.h; path = VcfIO/include/EVariantMatch.h; sourceTree = SOURCE_ROOT; };
@@ -136,6 +114,28 @@
 		558A41731E92EDA900575FA6 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = SOURCE_ROOT; };
 		559BA2921E97D42F0018D734 /* CSplitOutputProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CSplitOutputProvider.h; path = DuoComparison/include/CSplitOutputProvider.h; sourceTree = SOURCE_ROOT; };
 		559BA2931E97D63F0018D734 /* CSplitOutputProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CSplitOutputProvider.cpp; path = DuoComparison/src/CSplitOutputProvider.cpp; sourceTree = SOURCE_ROOT; };
+		559BA2961E982DFE0018D734 /* bgzf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bgzf.h; sourceTree = "<group>"; };
+		559BA2971E982DFE0018D734 /* cram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cram.h; sourceTree = "<group>"; };
+		559BA2981E982DFE0018D734 /* faidx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = faidx.h; sourceTree = "<group>"; };
+		559BA2991E982DFE0018D734 /* hfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hfile.h; sourceTree = "<group>"; };
+		559BA29A1E982DFE0018D734 /* hts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hts.h; sourceTree = "<group>"; };
+		559BA29B1E982DFE0018D734 /* hts_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hts_defs.h; sourceTree = "<group>"; };
+		559BA29C1E982DFE0018D734 /* kbitset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kbitset.h; sourceTree = "<group>"; };
+		559BA29D1E982DFE0018D734 /* kfunc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kfunc.h; sourceTree = "<group>"; };
+		559BA29E1E982DFE0018D734 /* khash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = khash.h; sourceTree = "<group>"; };
+		559BA29F1E982DFE0018D734 /* khash_str2int.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = khash_str2int.h; sourceTree = "<group>"; };
+		559BA2A01E982DFE0018D734 /* klist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = klist.h; sourceTree = "<group>"; };
+		559BA2A11E982DFE0018D734 /* knetfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = knetfile.h; sourceTree = "<group>"; };
+		559BA2A21E982DFE0018D734 /* kseq.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kseq.h; sourceTree = "<group>"; };
+		559BA2A31E982DFE0018D734 /* ksort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ksort.h; sourceTree = "<group>"; };
+		559BA2A41E982DFE0018D734 /* kstring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kstring.h; sourceTree = "<group>"; };
+		559BA2A51E982DFE0018D734 /* regidx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = regidx.h; sourceTree = "<group>"; };
+		559BA2A61E982DFE0018D734 /* sam.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sam.h; sourceTree = "<group>"; };
+		559BA2A71E982DFE0018D734 /* synced_bcf_reader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = synced_bcf_reader.h; sourceTree = "<group>"; };
+		559BA2A81E982DFE0018D734 /* tbx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tbx.h; sourceTree = "<group>"; };
+		559BA2A91E982DFE0018D734 /* vcf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vcf.h; sourceTree = "<group>"; };
+		559BA2AA1E982DFE0018D734 /* vcf_sweep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vcf_sweep.h; sourceTree = "<group>"; };
+		559BA2AB1E982DFE0018D734 /* vcfutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vcfutils.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -353,8 +353,8 @@
 		556D39781DD3AEA400551040 /* VCFComparison */ = {
 			isa = PBXGroup;
 			children = (
+				559BA2951E982DFE0018D734 /* htslib */,
 				558A41731E92EDA900575FA6 /* Makefile */,
-				556D39B21DD3AF3800551040 /* htslib */,
 				556D39801DD3AF2E00551040 /* lib */,
 				551661B31E82BFA0002436FA /* VcfIO */,
 				551661B01E82BD39002436FA /* Core */,
@@ -384,36 +384,6 @@
 			path = pkgconfig;
 			sourceTree = "<group>";
 		};
-		556D39B21DD3AF3800551040 /* htslib */ = {
-			isa = PBXGroup;
-			children = (
-				551662011E82E99A002436FA /* bgzf.h */,
-				551662021E82E99A002436FA /* cram.h */,
-				551662031E82E99A002436FA /* faidx.h */,
-				551662041E82E99A002436FA /* hfile.h */,
-				551662051E82E99A002436FA /* hts_defs.h */,
-				551662061E82E99A002436FA /* hts.h */,
-				551662071E82E99A002436FA /* kbitset.h */,
-				551662081E82E99A002436FA /* kfunc.h */,
-				551662091E82E99A002436FA /* khash_str2int.h */,
-				5516620A1E82E99A002436FA /* khash.h */,
-				5516620B1E82E99A002436FA /* klist.h */,
-				5516620C1E82E99A002436FA /* knetfile.h */,
-				5516620D1E82E99A002436FA /* kseq.h */,
-				5516620E1E82E99A002436FA /* ksort.h */,
-				5516620F1E82E99A002436FA /* kstring.h */,
-				551662101E82E99A002436FA /* regidx.h */,
-				551662111E82E99A002436FA /* sam.h */,
-				551662121E82E99A002436FA /* synced_bcf_reader.h */,
-				551662131E82E99A002436FA /* tbx.h */,
-				551662141E82E99A002436FA /* vcf_sweep.h */,
-				551662151E82E99A002436FA /* vcf.h */,
-				551662161E82E99A002436FA /* vcfutils.h */,
-			);
-			name = htslib;
-			path = ../include/htslib;
-			sourceTree = "<group>";
-		};
 		556D39CA1DD3AFAC00551040 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -421,6 +391,35 @@
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
+		};
+		559BA2951E982DFE0018D734 /* htslib */ = {
+			isa = PBXGroup;
+			children = (
+				559BA2961E982DFE0018D734 /* bgzf.h */,
+				559BA2971E982DFE0018D734 /* cram.h */,
+				559BA2981E982DFE0018D734 /* faidx.h */,
+				559BA2991E982DFE0018D734 /* hfile.h */,
+				559BA29A1E982DFE0018D734 /* hts.h */,
+				559BA29B1E982DFE0018D734 /* hts_defs.h */,
+				559BA29C1E982DFE0018D734 /* kbitset.h */,
+				559BA29D1E982DFE0018D734 /* kfunc.h */,
+				559BA29E1E982DFE0018D734 /* khash.h */,
+				559BA29F1E982DFE0018D734 /* khash_str2int.h */,
+				559BA2A01E982DFE0018D734 /* klist.h */,
+				559BA2A11E982DFE0018D734 /* knetfile.h */,
+				559BA2A21E982DFE0018D734 /* kseq.h */,
+				559BA2A31E982DFE0018D734 /* ksort.h */,
+				559BA2A41E982DFE0018D734 /* kstring.h */,
+				559BA2A51E982DFE0018D734 /* regidx.h */,
+				559BA2A61E982DFE0018D734 /* sam.h */,
+				559BA2A71E982DFE0018D734 /* synced_bcf_reader.h */,
+				559BA2A81E982DFE0018D734 /* tbx.h */,
+				559BA2A91E982DFE0018D734 /* vcf.h */,
+				559BA2AA1E982DFE0018D734 /* vcf_sweep.h */,
+				559BA2AB1E982DFE0018D734 /* vcfutils.h */,
+			);
+			path = htslib;
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
@@ -599,7 +598,7 @@
 		556D397E1DD3AEA400551040 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				HEADER_SEARCH_PATHS = /Users/c1ms21p6h3qk/Desktop/SBGProjectClean/VCFComparison;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/lib",
@@ -611,7 +610,7 @@
 		556D397F1DD3AEA400551040 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				HEADER_SEARCH_PATHS = /Users/c1ms21p6h3qk/Desktop/SBGProjectClean/VCFComparison;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/lib",

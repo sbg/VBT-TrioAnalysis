@@ -68,7 +68,7 @@ int main (int argc, char** argv)
     else if(strcmp(argv[1], "varcomp") == 0)
     {
        CVcfAnalyzer analyzer;
-       analyzer.Run(argc, argv);
+       analyzer.Run(13, argv);
     }
     
     else

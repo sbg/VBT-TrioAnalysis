@@ -64,55 +64,55 @@ void CSplitOutputProvider::GenerateTpBaseVcf()
 void CSplitOutputProvider::GenerateTpCalledVcf()
 {
     std::string filePath = m_vcfsFolder + "/TPCalled.vcf";
-    m_TPBaseWriter.CreateVcf(filePath.c_str());
+    m_TPCalledWriter.CreateVcf(filePath.c_str());
     
     //Fill the header section
-    FillHeader(&m_TPBaseWriter, false);
+    FillHeader(&m_TPCalledWriter, false);
     
     //Process each chromosome
     for(int k = 0; k < CHROMOSOME_COUNT; k++)
     {
         const std::vector<const COrientedVariant*> ovarList = m_pBestPaths[k].m_calledSemiPath.GetIncludedVariants();
-        AddRecords(&m_TPBaseWriter, ovarList);
+        AddRecords(&m_TPCalledWriter, ovarList);
     }
     
-    m_TPBaseWriter.CloseVcf();
+    m_TPCalledWriter.CloseVcf();
 }
 
 void CSplitOutputProvider::GenerateFnVcf()
 {
     std::string filePath = m_vcfsFolder + "/FN.vcf";
-    m_TPBaseWriter.CreateVcf(filePath.c_str());
+    m_FNWriter.CreateVcf(filePath.c_str());
     
     //Fill the header section
-    FillHeader(&m_TPBaseWriter, true);
+    FillHeader(&m_FNWriter, true);
     
     //Process each chromosome
     for(int k = 0; k < CHROMOSOME_COUNT; k++)
     {
         const std::vector<const CVariant*> varList = m_pProvider->GetVariantList(eBASE, k, m_pBestPaths[k].m_baseSemiPath.GetExcluded());
-        AddRecords(&m_TPBaseWriter, varList);
+        AddRecords(&m_FNWriter, varList);
     }
     
-    m_TPBaseWriter.CloseVcf();
+    m_FNWriter.CloseVcf();
 }
 
 void CSplitOutputProvider::GenerateFpVcf()
 {
     std::string filePath = m_vcfsFolder + "/FP.vcf";
-    m_TPBaseWriter.CreateVcf(filePath.c_str());
+    m_FPWriter.CreateVcf(filePath.c_str());
     
     //Fill the header section
-    FillHeader(&m_TPBaseWriter, false);
+    FillHeader(&m_FPWriter, false);
     
     //Process each chromosome
     for(int k = 0; k < CHROMOSOME_COUNT; k++)
     {
         const std::vector<const CVariant*> varList = m_pProvider->GetVariantList(eCALLED, k, m_pBestPaths[k].m_calledSemiPath.GetExcluded());
-        AddRecords(&m_TPBaseWriter, varList);
+        AddRecords(&m_FPWriter, varList);
     }
     
-    m_TPBaseWriter.CloseVcf();
+    m_FPWriter.CloseVcf();
 }
 
 

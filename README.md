@@ -26,7 +26,7 @@ Variant Comparison tool is written using the algorithm of [vcfeval](https://gith
 
 #### Parameter Format:
 ```
-./vbt varComp -called <called_vcf_file> -baseline <baseline_vcf> -ref <reference_fasta> -outDir <output_directory> [OPTIONAL PARAMETERS]
+./vbt varcomp -called <called_vcf_file> -base <baseline_vcf> -ref <reference_fasta> -outDir <output_directory> [OPTIONAL PARAMETERS]
 ```
 
 ## Command line parameters:

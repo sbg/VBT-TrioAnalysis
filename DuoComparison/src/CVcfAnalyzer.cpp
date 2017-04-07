@@ -10,6 +10,7 @@
 #include <math.h>
 #include <algorithm>
 #include "CGa4ghOutputProvider.h"
+#include "CSplitOutputProvider.h"
 #include <fstream>
 
 
@@ -40,15 +41,27 @@ void CVcfAnalyzer::Run(int argc, char** argv)
     std::time_t start1 = std::time(0);
     //Creates the threads according to given memory and process the data
 
-    AssignJobsToThreads(m_config.m_nThreadCount);
+    int threadCount = AssignJobsToThreads(m_config.m_nThreadCount);
+    for(int k = 0; k < threadCount; k++)
+        m_pThreadPool[k].join();
     
-    
-    CGa4ghOutputProvider outputprovider;
-    outputprovider.SetVcfPath(m_config.m_pOutputDirectory);
-    outputprovider.SetVariantProvider(&m_provider);
-    outputprovider.SetBestPaths(m_aBestPaths, m_aBestPathsAllele);
-    outputprovider.GenerateGa4ghVcf();
-    
+    if(0 == strcmp(m_config.m_pOutputMode, "SPLIT"))
+    {
+        
+        CSplitOutputProvider outputprovider;
+        outputprovider.SetVcfPath(m_config.m_pOutputDirectory);
+        outputprovider.SetVariantProvider(&m_provider);
+        outputprovider.SetBestPaths(m_aBestPaths);
+        outputprovider.GenerateSplitVcfs();
+    }
+    else
+    {
+        CGa4ghOutputProvider outputprovider;
+        outputprovider.SetVcfPath(m_config.m_pOutputDirectory);
+        outputprovider.SetVariantProvider(&m_provider);
+        outputprovider.SetBestPaths(m_aBestPaths, m_aBestPathsAllele);
+        outputprovider.GenerateGa4ghVcf();
+    }
     
     m_resultLogger.SetLogPath(m_config.m_pOutputDirectory);
     m_resultLogger.WriteStatistics();

@@ -108,6 +108,10 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
         
         //READ FILTER DATA
         bool isPassed = false;
+        
+        if(m_pRecord->d.n_flt == 0)
+            isPassed = true;
+        
         for(int k=0; k< m_pRecord->d.n_flt; k++)
         {
             a_pVariant->m_filterString.push_back(std::string(m_pHeader->id[BCF_DT_ID][m_pRecord->d.flt[k]].key));
