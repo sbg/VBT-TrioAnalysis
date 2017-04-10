@@ -19,9 +19,12 @@ const int LEAST_VARIANT_THRESHOLD = 2;
 const int DEFAULT_THREAD_COUNT = 2;
 
 //DEFAULT BASE PAIR LENGTH OF A VARIANT THAT COMPARISON ENGINE PROCESSS
-const int DEFAULT_MAX_BP_LENGTH = 1000;
+const int DEFAULT_MAX_BP_LENGTH = 2000;
 
 //DEFAULT SIZE OF PATH SET (For Dynamic Programming result saving. This variable should be increased carefully since it is easy to exceed available memory)
-const int DEFAULT_MAX_PATH_SIZE = 150000;
+const int DEFAULT_MAX_PATH_SIZE = 500000; //150000;
+
+const int DEFAULT_MAX_ITERATION_SIZE = 100000000; //150000;
+
 
 #endif //_CONSTANTS_H_

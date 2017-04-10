@@ -44,19 +44,19 @@ $(TARGET): $(OBJECTS)
 	@echo " OBJECTS TRIO: $(OBJECTSTRIO)"
 	@echo " $(CC) $^ -o $(TARGET) $(LIB)"; $(CC) $^ -o $(TARGET) $(LIB)
 
-$(BUILDDIR)/%.o: $(SRCCORE)/%.cpp
+$(BUILDDIR)/%.o: $(SRCCORE)/%.cpp Constants.h
 	@mkdir -p $(BUILDDIR)
 	@echo " CORE: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
 
-$(BUILDDIR)/%.o: $(SRCDUO)/%.cpp
+$(BUILDDIR)/%.o: $(SRCDUO)/%.cpp Constants.h
 	@mkdir -p $(BUILDDIR)
 	@echo " DUO: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
 
-$(BUILDDIR)/%.o: $(SRCTRIO)/%.cpp
+$(BUILDDIR)/%.o: $(SRCTRIO)/%.cpp Constants.h
 	@mkdir -p $(BUILDDIR)
 	@echo " TRIO: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
 
-$(BUILDDIR)/%.o: $(SRCVCFIO)/%.cpp
+$(BUILDDIR)/%.o: $(SRCVCFIO)/%.cpp Constants.h
 	@mkdir -p $(BUILDDIR)
 	@echo " VCFIO: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
 

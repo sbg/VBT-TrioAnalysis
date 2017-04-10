@@ -64,7 +64,8 @@ void CVcfAnalyzer::Run(int argc, char** argv)
     }
     
     m_resultLogger.SetLogPath(m_config.m_pOutputDirectory);
-    m_resultLogger.WriteStatistics();
+    int logMode = (0 == strcmp(m_config.m_pOutputMode, "SPLIT") ? 0 : 2) + (m_config.m_bIsGenotypeMatch ? 0 : 1);
+    m_resultLogger.WriteStatistics(logMode);
     
     duration = std::difftime(std::time(0), start1);
     std::cout << "Processing Chromosomes completed in " << duration << " secs" << std::endl;
@@ -80,7 +81,7 @@ int CVcfAnalyzer::AssignJobsToThreads(int a_nThreadCount)
     m_provider.GetUniqueChromosomeIds(chromosomeListToProcess);
     
     int exactThreadCount = std::min(a_nThreadCount, (int)chromosomeListToProcess.size());
-    
+        
     //Allocate threads
     m_pThreadPool = new std::thread[exactThreadCount];
     

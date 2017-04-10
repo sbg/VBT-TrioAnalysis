@@ -14,8 +14,6 @@
 #include "CPathSet.h"
 #include "CVariant.h"
 
-const int MAX_ITERATION = 30000000;
-const int MAX_COMPLEXITY = 150000;
 
 class CPath;
 class CPathContainer;

@@ -99,9 +99,10 @@ CPath CPathReplay::FindBestPath(SContig a_contig, bool a_bIsGenotypeMatch)
             lastSyncPos = currentSyncPos;
             lastSyncPath = processedPath;
         }
-        else if(m_pathList.Size() >  MAX_COMPLEXITY || currentIterations > MAX_ITERATION)
+        else if(m_pathList.Size() >  DEFAULT_MAX_PATH_SIZE || currentIterations > DEFAULT_MAX_ITERATION_SIZE)
         {
             std::cout << "Evaluation is too complex!!" << std::endl;
+            std::cout << m_pathList.Size() << " unresolved paths, " << currentIterations << " iterations at reference region " << a_contig.m_chromosome << ":" << (lastSyncPos + 1) << "-" << (m_nCurrentPosition + 2) << std::endl;
             //Drop all paths currently in play
             m_pathList.Clear();
             currentIterations = 0;

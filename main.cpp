@@ -68,7 +68,7 @@ int main (int argc, char** argv)
     else if(strcmp(argv[1], "varcomp") == 0)
     {
        CVcfAnalyzer analyzer;
-       analyzer.Run(13, argv);
+       analyzer.Run(argc, argv);
     }
     
     else
@@ -76,6 +76,7 @@ int main (int argc, char** argv)
         std::cout << "Invalid feature name.Please try either following:" << std::endl;
         std::cout << "./vbt varcomp [PARAMETERS]" << std::endl;
         std::cout << "./vbt mendelian [PARAMETERS]" << std::endl;
+        std::cout << "Please type ./vbt <select_feature> --help for short info about the parameter structure." << std::endl;
     }
     
 }

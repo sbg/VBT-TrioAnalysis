@@ -19,6 +19,7 @@ make
 ./vbt varComp [PARAMETERS]
 ./vbt mendelian [PARAMETERS]
 ```
+#### Warning: #### Parameters are **case sensitive**
 
 ## 1. VARIANT COMPARISON
 
@@ -57,7 +58,7 @@ A **required** parameter which specifies the output directory for program/error 
 
 ### -output-mode <Output_Mode>
 
-An **optional** parameter which specifies the way output will generated. SPLIT mode creates 4 vcf files(TPbase, TPcalled, FP, FN). GA4GH mode creates a single merged vcf file. Default valus is SPLIT.
+An **optional** parameter which specifies the way output will generated. **SPLIT** mode creates 4 vcf files(TPbase, TPcalled, FP, FN). **GA4GH** mode creates a single merged vcf file. Default valus is **SPLIT**.
 
 ### --allele-match
 

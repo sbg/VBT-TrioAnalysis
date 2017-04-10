@@ -35,7 +35,8 @@ public:
     void LogStatistic(int a_nChromosomeId, int a_nTpCalled, int a_nTpBaseline, int a_nHalfTPCalled, int a_nHalfTPBaseline, int a_nFalsePositive, int a_nFalseNegative);
     
     //Write the results in log.txt file
-    void WriteStatistics();
+    //@ a_nMode: 0 - SPLIT (genotype match)   1 - SPLIT (allele match) s 2 - GA4GH
+    void WriteStatistics(int a_nMode);
         
 private:
     
