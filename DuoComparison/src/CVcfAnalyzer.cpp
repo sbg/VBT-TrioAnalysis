@@ -443,12 +443,12 @@ void CVcfAnalyzer::PrintHelp() const
     std::cout << "COPYRIGHT (C) 2016 SEVEN BRIDGES GENOMICS." << std::endl;
     std::cout << "COPYRIGHT (C) 2017 SBGD INC" << std::endl;
     std::cout << std::endl;
-    std::cout << " --- PARAMETERS --- " << std::endl;
+    std::cout << " --- VARCOMP PARAMETERS --- " << std::endl;
     std::cout << "-base <baseline_vcf_path>    [Required.Add baseline VCF file.]" << std::endl;
     std::cout << "-called <called_vcf_path>    [Required.Add called VCF file.]" << std::endl;
     std::cout << "-ref <reference_fasta_path>  [Required.Add reference FASTA file]" << std::endl;
     std::cout << "-outDir <output_directory>   [Required.Add output directory]" << std::endl;
-    std::cout << "-outputmode <output_mode>    [Optional.Choose the output mode. SPLIT creates 4 vcf files. GA4GH creates a single merged vcf. Default is SPLIT]" << std::endl;
+    std::cout << "-output-mode <output_mode>   [Optional.Choose the output mode. SPLIT creates 4 vcf files. GA4GH creates a single merged vcf. Default is SPLIT]" << std::endl;
     std::cout << "-filter <filter_name>        [Optional.Filter variants based on filter column. Default value is PASS. Use 'none' to unfilter]" << std::endl;
     std::cout << "--allele-match               [Optional.Execute the variant comparison engine in allele matching mode]";
     std::cout << "--SNP_ONLY                   [Optional.Filter INDELs out from both base and called VCF file.]" << std::endl;
@@ -457,9 +457,9 @@ void CVcfAnalyzer::PrintHelp() const
     std::cout << "-SampleCalled <sample_name>  [Optional.Read only the given sample in called VCF. Default is the first sample.]" << std::endl;
     std::cout << "--ref-overlap                [Optional.Allow reference overlapping by trimming nucleotides and ignoring 0 genotype.]" << std::endl;
     std::cout << "--platform-mode              [Optional.Allow to run program with the thread number of different chromosome count.]" << std::endl;
-    std::cout << "-threadcount                 [Optional.Specify the number of threads that program will use. Default value is 2]" << std::endl;
+    std::cout << "-thread-count                [Optional.Specify the number of threads that program will use. Default value is 2]" << std::endl;
     std::cout << std::endl;
     std::cout << "Example Commands:" << std::endl;
     std::cout << "./vbt varcomp -called called.vcf -base base.vcf -ref reference.fa -outDir SampleResultDir -filter none" << std::endl;
-    std::cout << "./vbt varcomp -called called2.vcf -base base2.vcf -ref reference.fa -outDir SampleResultDir -filter PASS -SNP_ONLY -sampleBase sample0 -sampleCalled sample01" << std::endl;
+    std::cout << "./vbt varcomp -called duo.vcf -base duo.vcf -ref reference.fa -outDir SampleResultDir -filter PASS -SNP_ONLY -sampleBase sample00 -sampleCalled sample01" << std::endl;
 }

@@ -1303,7 +1303,34 @@ void CMendelianAnalyzer::ReportChildChromosomeData(int a_nChromosomeId, std::vec
 }
 
 
-
+void CMendelianAnalyzer::PrintHelp() const
+{
+    std::cout << "==== SBG VCF COMPARISON TOOL VERSION 1.0 (Beta) ==== " << std::endl;
+    std::cout << "Author: Berke Cagkan Toptas (berke.toptas@sbgenomics.com || berke.toptas@sbgdinc.com)" << std::endl;
+    std::cout << "Please notify me if program fails or return unexpected results" << std::endl;
+    std::cout << "COPYRIGHT (C) 2016 SEVEN BRIDGES GENOMICS." << std::endl;
+    std::cout << "COPYRIGHT (C) 2017 SBGD INC" << std::endl;
+    std::cout << std::endl;
+    std::cout << " --- MENDELIAN PARAMETERS --- " << std::endl;
+    std::cout << "-father <father_vcf_path>    [Required.Add father VCF file.]" << std::endl;
+    std::cout << "-mother <mother_vcf_path>    [Required.Add mother VCF file.]" << std::endl;
+    std::cout << "-child <child_vcf_path>      [Required.Add child VCF file.]" << std::endl;
+    std::cout << "-ref <reference_fasta_path>  [Required.Add reference FASTA file]" << std::endl;
+    std::cout << "-outDir <output_directory>   [Required.Add output directory]" << std::endl;
+    std::cout << "-no-call <no_call_mode>      [Optional. Decides what to do with no call variants. There are 3 modes:" << std::endl;
+    std::cout << "\t" << "implicit : mark boths implicit and explicit no call variant as NoCall" << std::endl;
+    std::cout << "\t" << "explicit : mark explicit no call variants only as NoCall. Implicit no call variants will be treated as 0/0" << std::endl;
+    std::cout << "\t" << "none : [DEFAULT] Treat all of no call variants as 0/0" << std::endl;
+    std::cout << "-filter <filter_name>        [Optional.Filter variants based on filter column. Default value is PASS. Use 'none' to unfilter]" << std::endl;
+    std::cout << "-SampleFather <sample_name>  [Optional.Read only the given sample in father VCF. Default is the first sample.]" << std::endl;
+    std::cout << "-SampleMother <sample_name>  [Optional.Read only the given sample in mother VCF. Default is the first sample.]" << std::endl;
+    std::cout << "-SampleChild <sample_name>   [Optional.Read only the given sample in child VCF. Default is the first sample.]" << std::endl;
+    std::cout << "-threadcount                 [Optional.Specify the number of threads that program will use. Default value is 2]" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Example Commands:" << std::endl;
+    std::cout << "./vbt mendelian -mother mother.vcf -father father.vcf -child child.vcf -ref reference.fa -outDir SampleResultDir -filter none -no-call explicit" << std::endl;
+    std::cout << "./vbt mendelian -mother trio.vcf -father trio.vcf -child trio.vcf -ref reference.fa -outDir SampleResultDir -filter PASS -sampleMother mother -sampleFather father -sampleChild child" << std::endl;
+}
 
 
 

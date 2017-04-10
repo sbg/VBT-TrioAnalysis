@@ -75,7 +75,10 @@ private:
     
     //Divide the jobs between different threads homogeneously for given number of thread count. Return the actual thread count
     int AssignJobsToThreads(int a_nThreadCount);
-        
+    
+    //Prints the help menu at console
+    void PrintHelp() const;
+    
     //Config file for father-child comparison which is passed to m_fatherChildProvider
     SConfig m_fatherChildConfig;
     

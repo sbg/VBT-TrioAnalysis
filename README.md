@@ -34,7 +34,7 @@ Variant Comparison tool is written using the algorithm of [vcfeval](https://gith
 
 
 ### --help
-A **single** parameter mode which prints all parameter options to the console. (./vbt varComp -help)
+A **single** parameter mode which prints all parameter options to the console. (./vbt varComp --help)
 
 
 ### -base <Baseline_vcf_path>
@@ -112,8 +112,8 @@ A tool for checking all mendelian violations in parent-child data.
 ## Command line parameters:
 
 
-### --help [Will be implemented]
-A **single** parameter mode which prints all parameter options to the console. (./vbt mendelian -help)
+### --help
+A **single** parameter mode which prints all parameter options to the console. (./vbt mendelian --help)
 
 
 ### -father <father_vcf_path>
