@@ -31,12 +31,12 @@ void CVcfAnalyzer::Run(int argc, char** argv)
     
     //Initialize Variant providers which contains VCF and FASTA files
     isSuccess = m_provider.InitializeReaders(m_config);
-    
-    duration = std::difftime(std::time(0) ,start);
-    std::cout << "Vcf and fasta Parser read completed in " << duration << " secs" << std::endl;
 
     if(!isSuccess)
         return;
+    
+    duration = std::difftime(std::time(0) ,start);
+    std::cout << "Vcf and fasta Parser read completed in " << duration << " secs" << std::endl;
     
     std::time_t start1 = std::time(0);
     //Creates the threads according to given memory and process the data

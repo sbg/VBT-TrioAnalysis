@@ -48,7 +48,6 @@ CPath CPathReplay::FindBestPath(SContig a_contig, bool a_bIsGenotypeMatch)
         currentMaxIterations = std::max(currentMaxIterations, currentIterations++);
         m_pathList.GetLeastAdvanced(processedPath);
         
-        //TestID++;
         //std::cout << "====" << TestID++ << "====" << "PathID:" << processedPath.m_pPath->m_nPathId << std::endl;
         //std::cout << "Size:" << m_pathList.Size() + 1 << " Range:" << lastSyncPos + 1 << "-" << m_nCurrentPosition + 1 << " LocalIterations:" << currentIterations << std::endl;
        
@@ -80,8 +79,8 @@ CPath CPathReplay::FindBestPath(SContig a_contig, bool a_bIsGenotypeMatch)
                     m_SyncPointsBest.push_back(processedPath.m_pPath->m_aSyncPointList[k]);
                 
                 processedPath.m_pPath->ClearSyncPointList();
-                processedPath.m_pPath->ClearIncludedVariants();
-                processedPath.m_pPath->ClearExcludedVariants();
+                //processedPath.m_pPath->ClearIncludedVariants();
+                //processedPath.m_pPath->ClearExcludedVariants();
             }
 
             //std::cout << TestID << "Included Size:" << processedPath.m_pPath->m_baseSemiPath.GetIncludedVariants().size() << " Excluded Size:" << processedPath.m_pPath->m_baseSemiPath.GetExcluded().size() << std::endl;
@@ -225,6 +224,62 @@ void CPathReplay::AddIfBetter(const CPathContainer& a_path)
     }
 }
 
+bool CPathReplay::FindBetter2(const CPathContainer& lhs, const CPathContainer& rhs)
+{
+    // See if we have obvious no-ops we would rather drop
+    bool lhsSync = lhs.m_pPath->InSync() || lhs.m_pPath->HasFinished();
+    bool rhsSync = rhs.m_pPath->InSync() || rhs.m_pPath->HasFinished();
+    
+    if(lhsSync && rhsSync)
+    {
+        if(lhs.m_pPath->HasNoOperation())
+        {
+            return false;
+        }
+        else if(rhs.m_pPath->HasNoOperation())
+        {
+            return true;
+        }
+    }
+
+    const int lhsVariantCountCalled = static_cast<int>(lhs.m_pPath->m_calledSemiPath.GetIncludedVariants().size());
+    const int rhsVariantCountCalled = static_cast<int>(rhs.m_pPath->m_calledSemiPath.GetIncludedVariants().size());
+    
+    if(lhsVariantCountCalled != rhsVariantCountCalled)
+        return lhsVariantCountCalled > rhsVariantCountCalled;
+    
+    const int lhsVariantCountBaseline = static_cast<int>(lhs.m_pPath->m_baseSemiPath.GetIncludedVariants().size());
+    const int rhsVariantCountBaseline = static_cast<int>(rhs.m_pPath->m_baseSemiPath.GetIncludedVariants().size());
+    
+    if(lhsVariantCountBaseline != rhsVariantCountBaseline)
+        return lhsVariantCountBaseline > rhsVariantCountBaseline;
+
+    // Prefer solutions that minimize discrepencies between baseline and call counts since last sync point
+    const int lhsDelta = abs(lhs.m_pPath->m_nBSinceSync - lhs.m_pPath->m_nCSinceSync);
+    const int rhsDelta = abs(rhs.m_pPath->m_nBSinceSync - rhs.m_pPath->m_nCSinceSync);
+    if(lhsDelta != rhsDelta)
+        return lhsDelta < rhsDelta ? true : false;
+    
+    // Prefer solutions that sync more regularly (more likely to be "simpler")
+    const int syncDelta = (lhs.m_pPath->m_aSyncPointList.size() == 0 ? 0 : lhs.m_pPath->m_aSyncPointList.back()) - (rhs.m_pPath->m_aSyncPointList.size() == 0 ? 0 : rhs.m_pPath->m_aSyncPointList.back());
+    if(syncDelta != 0)
+        return syncDelta > 0 ? true : false;
+    
+    
+    const std::vector<const COrientedVariant*> lhsIncludedVariants = (lhs.m_pPath->m_calledSemiPath.GetIncludedVariants().size() == 0) ? lhs.m_pPath->m_baseSemiPath.GetIncludedVariants() :
+                                                                                                                                         lhs.m_pPath->m_calledSemiPath.GetIncludedVariants();
+    const std::vector<const COrientedVariant*> rhsIncludedVariants = (rhs.m_pPath->m_calledSemiPath.GetIncludedVariants().size() == 0) ? rhs.m_pPath->m_baseSemiPath.GetIncludedVariants() :
+                                                                                                                                         rhs.m_pPath->m_calledSemiPath.GetIncludedVariants();
+
+    // At this point break ties arbitrarily based on allele ordering
+    return (lhsIncludedVariants.back()->GetAlleleIndex() < rhsIncludedVariants.back()->GetAlleleIndex()) ? true : false;
+
+}
+
+
+
+
+
 bool CPathReplay::FindBetter(const CPathContainer& lhs, const CPathContainer& rhs)
 {
     // See if we have obvious no-ops we would rather drop
@@ -277,6 +332,7 @@ bool CPathReplay::FindBetter(const CPathContainer& lhs, const CPathContainer& rh
     
     return lhsVariantCount > rhsVariantCount ? true : false;
 }
+
 
 bool CPathReplay::EnqueueVariant(CPath& a_rPathToPlay, EVcfName a_uVcfSide, int a_nChromosomeId, bool a_bIsGenotypeMatch)
 {

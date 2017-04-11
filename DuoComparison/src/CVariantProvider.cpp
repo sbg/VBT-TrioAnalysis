@@ -51,37 +51,59 @@ bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
     //OPEN VCF FILES
     bIsSuccess = m_baseVCF.Open(a_rConfig.m_pBaseVcfFileName);
     if(!bIsSuccess)
+    {
         std::cout << "Baseline VCF file is unable to open!: " << a_rConfig.m_pBaseVcfFileName << std::endl;
+        return false;
+    }
     m_baseVCF.setID(0);
 
     bIsSuccess = m_calledVCF.Open(a_rConfig.m_pCalledVcfFileName);
     if(!bIsSuccess)
+    {
         std::cout << "Called VCF file is unable to open!: " << a_rConfig.m_pCalledVcfFileName << std::endl;
+        return false;
+    }
     m_calledVCF.setID(1);
     
     //SET SAMPLE NAME TO READ ONLY ONE SAMPLE FROM THE VCF
     if (true == m_config.m_bBaseSampleEnabled)
-        m_baseVCF.SelectSample(m_config.m_pBaseSample);
+       bIsSuccess = m_baseVCF.SelectSample(m_config.m_pBaseSample);
     else
     {
         std::vector<std::string> sampleNames;
         m_baseVCF.GetSampleNames(sampleNames);
-        m_baseVCF.SelectSample(sampleNames[0]);
+       bIsSuccess = m_baseVCF.SelectSample(sampleNames[0]);
+    }
+    
+    if(!bIsSuccess)
+    {
+        std::cout << "Baseline Sample name is incorrect!" << std::endl;
+        return false;
     }
     
     if (true == m_config.m_bCalledSampleEnabled)
-        m_baseVCF.SelectSample(m_config.m_pCalledSample);
+        bIsSuccess = m_baseVCF.SelectSample(m_config.m_pCalledSample);
     else
     {
         std::vector<std::string> sampleNames;
         m_calledVCF.GetSampleNames(sampleNames);
-        m_calledVCF.SelectSample(sampleNames[0]);
+        bIsSuccess = m_calledVCF.SelectSample(sampleNames[0]);
     }
+    
+    if(!bIsSuccess)
+    {
+        std::cout << "Called Sample name is incorrect!" << std::endl;
+        return false;
+    }
+
     
     // OPEN FASTA FILE
     bIsSuccess = m_fastaParser.OpenFastaFile(a_rConfig.m_pFastaFileName);
     if(!bIsSuccess)
+    {
         std::cout << "FASTA file is unable to open!: " << a_rConfig.m_pFastaFileName << std::endl;
+        return false;
+    }
     
     if(bIsSuccess)
     {

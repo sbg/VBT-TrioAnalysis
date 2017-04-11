@@ -14,6 +14,7 @@
 #include "CVariantIterator.h"
 #include "CSyncPoint.h"
 
+
 //#include <fstream>
 
 
@@ -48,24 +49,28 @@ void CMendelianAnalyzer::run(int argc, char **argv)
     //Initialize variant provider
     isSuccess = m_provider.InitializeReaders(m_fatherChildConfig, m_motherChildConfig);
     
-    duration = std::difftime(std::time(0), start);
-    std::cout << "Vcf and fasta Parser read completed in " << duration << " secs" << std::endl;
-    
-    start1 = std::time(0);
-    
     if(!isSuccess)
         return;
+
+    duration = std::difftime(std::time(0), start);
+    std::cout << "Vcf and fasta Parser read completed in " << duration << " secs" << std::endl;
+    start1 = std::time(0);
+    
+    std::cout << "Running best path algorithm pipeline for each chromosome..." << std::endl;
     
     //Run duo comparison engine on parallel
     int threadCount = AssignJobsToThreads(m_fatherChildConfig.m_nThreadCount);
         for(int k = 0; k < threadCount; k++)
             m_pThreadPool[k].join();
     
+    std::cout << "Evaluating mendelian consistency of variants..." << std::endl;
+    
     //Perform merge process
     std::vector<int> chrIds = m_provider.GetCommonChromosomes();
     for(int k = 0; k < chrIds.size(); k++)
         MergeFunc(chrIds[k]);
     
+    std::cout << "Generating the output trio vcf..." << std::endl;
     
     //Initialize output writer
     std::string trioPath = std::string(m_fatherChildConfig.m_pOutputDirectory) + "/trio.vcf";
@@ -117,6 +122,7 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
     const char* PARAM_OUTPUT_DIR = "-outDir";
     const char* PARAM_REF_OVERLAP = "--ref-overlap";
     const char* PARAM_PLATFORM = "--platform-mode";
+    const char* PARAM_THREAD_COUNT = "-thread-count";
     const char* PARAM_NO_CALL = "-no-call";
     
     bool bFatherSet = false;
@@ -232,6 +238,14 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
             m_fatherChildConfig.m_nThreadCount = CHROMOSOME_COUNT;
             it--;
         }
+        
+        else if(0 == strcmp(argv[it], PARAM_THREAD_COUNT))
+        {
+            m_motherChildConfig.m_nThreadCount = std::min(std::max(1, atoi(argv[it+1])), CHROMOSOME_COUNT);
+            m_fatherChildConfig.m_nThreadCount = std::min(std::max(1, atoi(argv[it+1])), CHROMOSOME_COUNT);
+            it+=2;
+        }
+
         
         it += 2;
     }
@@ -595,6 +609,9 @@ int CMendelianAnalyzer::AssignJobsToThreads(int a_nThreadCount)
     {
         m_pThreadPool[k] = std::thread(&CMendelianAnalyzer::ProcessChromosome, this, chromosomeLists[k]);
     }
+    
+    //Clean allocation
+    delete[] chromosomeLists;
     
     return exactThreadCount;
     

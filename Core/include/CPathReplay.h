@@ -48,6 +48,8 @@ class CPathReplay
         //Compare the two paths and find the one that maximize TP count
         bool FindBetter(const CPathContainer& lhs, const CPathContainer& rhs);
     
+        bool FindBetter2(const CPathContainer& lhs, const CPathContainer& rhs);
+    
         //Process next variant for the input path
         bool EnqueueVariant(CPath& a_rPathToPlay, EVcfName a_uVcfSide, int a_nChromosomeId, bool a_bIsGenotypeMatch);
     

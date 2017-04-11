@@ -8,6 +8,7 @@
 
 #include "CMendelianTrioMerger.h"
 #include <algorithm>
+#include <iostream>
 
 
 void CMendelianTrioMerger::SetTrioPath(const std::string& a_nTrioPath)
@@ -135,11 +136,14 @@ void CMendelianTrioMerger::GenerateTrioVcf()
     //Initialize log objects
     m_logEntry.clear();
     m_logGenotypes.clear();
-    
+        
     for(int k = 0; k < CHROMOSOME_COUNT; k++)
     {
         if(m_aChildVariants[k].size() != 0)
+        {
+            std::cout << "Processing " << k << std::endl;
             AddRecords(k);
+        }
     }
     
     //Send the logs to the log class
