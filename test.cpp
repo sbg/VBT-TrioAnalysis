@@ -241,7 +241,7 @@ void compareTrimmedVariables()
     int k=0;
     int p=0;
     
-    while(k != sbgLines.size() && p!= vcfevalLines.size())
+    while(k != (int)sbgLines.size() && p!= (int)vcfevalLines.size())
     {
         if(sbgLines[k].compare(vcfevalLines[p]) == 0)
         {
@@ -345,7 +345,7 @@ void testTripletReader2()
 
     //MOTHER-CHILD COMPARISON
     int k=0, m=0;
-    for(; k < motherVariants.size() && m < childVariants.size();)
+    for(; k < (int)motherVariants.size() && m < (int)childVariants.size();)
     {
         if(motherVariants[k].m_nOriginalPos == 5021073)
         {
@@ -398,16 +398,16 @@ void testTripletReader2()
         }
     }
     
-    for(int x = k; x < motherVariants.size(); x++)
+    for(int x = k; x < (int)motherVariants.size(); x++)
         motherUnique.push_back(&motherVariants[x]);
-    for(int x = m; x < childVariants.size(); x++)
+    for(int x = m; x < (int)childVariants.size(); x++)
         childUniqueMC.push_back(&childVariants[x]);
     
         
 
     
     //FATHER-CHILD COMPARISON
-    for(k=0, m=0; k < fatherVariants.size() && m < childVariants.size();)
+    for(k=0, m=0; k < (int)fatherVariants.size() && m < (int)childVariants.size();)
     {
         if(fatherVariants[k].m_nOriginalPos == 5021073)
         {
@@ -462,9 +462,9 @@ void testTripletReader2()
         }
     }
 
-    for(int x = k; x < fatherVariants.size(); x++)
+    for(int x = k; x < (int)fatherVariants.size(); x++)
         fatherUnique.push_back(&fatherVariants[x]);
-    for(int x = m; x < childVariants.size(); x++)
+    for(int x = m; x < (int)childVariants.size(); x++)
         childUniqueFC.push_back(&childVariants[x]);
     
     
@@ -473,7 +473,7 @@ void testTripletReader2()
     std::vector<int> mendelianCompliants;
     
     
-    for(k = 0, m = 0; k < motherChildCommon.size() && m < fatherChildCommon.size();)
+    for(k = 0, m = 0; k < (int)motherChildCommon.size() && m < (int)fatherChildCommon.size();)
     {
         if(motherChildCommon[k]->m_nOriginalPos == fatherChildCommon[m]->m_nOriginalPos)
         {
@@ -516,12 +516,12 @@ void testTripletReader2()
         }
     }
     
-    for(int x = k; x < motherChildCommon.size(); x++)
+    for(int x = k; x < (int)motherChildCommon.size(); x++)
         mendelianViolations.push_back(motherChildCommon[x]->m_nOriginalPos);
-    for(int x = m; x < fatherChildCommon.size(); x++)
+    for(int x = m; x < (int)fatherChildCommon.size(); x++)
         mendelianViolations.push_back(fatherChildCommon[x]->m_nOriginalPos);
     
-    for(k = 0, m=0; k < childUniqueMC.size() && m <  childUniqueFC.size();)
+    for(k = 0, m=0; k < (int)childUniqueMC.size() && m <  (int)childUniqueFC.size();)
     {
         if(childUniqueMC[k]->m_nOriginalPos == childUniqueFC[m]->m_nOriginalPos)
         {
@@ -598,7 +598,7 @@ SCompareResult compare2List(const std::string& a_pathTest, const std::string& a_
     
     int k,m;
     
-    for(k = 0, m=0; k < origIndexes.size() && m <  testIndexes.size();)
+    for(k = 0, m=0; k < (int)origIndexes.size() && m <  (int)testIndexes.size();)
     {
         if(origIndexes[k] == testIndexes[m])
         {
@@ -618,9 +618,9 @@ SCompareResult compare2List(const std::string& a_pathTest, const std::string& a_
         }
     }
     
-    for(int x = k; x < origIndexes.size(); x++)
+    for(int x = k; x < (int)origIndexes.size(); x++)
         unmatchOrig.push_back(origIndexes[x]);
-    for(int x = m; x < testIndexes.size(); x++)
+    for(int x = m; x < (int)testIndexes.size(); x++)
         unmatchTest.push_back(testIndexes[x]);
     
     std::cout << "Common Cnt:"   << commonVariants.size() << std::endl;
@@ -738,7 +738,7 @@ void GenerateTruthSetsMaria(std::string a_rFilename, bool a_bIsFilterOverlap, bo
     
     
     CVariant variants[3];
-    bool isAdd;
+
     
     bool endLoop = false;
     
@@ -755,7 +755,7 @@ void GenerateTruthSetsMaria(std::string a_rFilename, bool a_bIsFilterOverlap, bo
             std::vector<int> mendelianViolations;
             std::vector<int> mendelianCompliants;
             
-            for(int k = 0; k < motherVariants.size(); k++)
+            for(int k = 0; k < (int)motherVariants.size(); k++)
             {
                 bool c1 = motherVariants[k].m_genotype[0] == childVariants[k].m_genotype[0] || motherVariants[k].m_genotype[1] == childVariants[k].m_genotype[0];
                 bool c2 = motherVariants[k].m_genotype[0] == childVariants[k].m_genotype[1] || motherVariants[k].m_genotype[1] == childVariants[k].m_genotype[1];
@@ -791,7 +791,6 @@ void GenerateTruthSetsMaria(std::string a_rFilename, bool a_bIsFilterOverlap, bo
                 break;
         }
         
-        isAdd = true;
         for(int k = 0; k < variants[0].m_nAlleleCount; k++)
         {
             if(variants[0].m_alleles[k].m_sequence == "*")

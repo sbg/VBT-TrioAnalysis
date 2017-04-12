@@ -9,6 +9,7 @@
 
 #include "CPath.h"
 #include <iostream>
+#include <memory>
 
 CPath::CPath()
 {}

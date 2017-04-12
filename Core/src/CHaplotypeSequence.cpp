@@ -24,10 +24,10 @@ CHaplotypeSequence::CHaplotypeSequence(const char* a_aRefSequence, int a_nRefSiz
 }
 
 CHaplotypeSequence::CHaplotypeSequence(const CHaplotypeSequence& a_rObj)
-: m_nextVariant(a_rObj.m_nextVariant),
-  m_nRefSequenceLength(a_rObj.m_nRefSequenceLength),
+: m_aVariants(a_rObj.m_aVariants),
   m_aRefSequence(a_rObj.m_aRefSequence),
-  m_aVariants(a_rObj.m_aVariants)
+  m_nRefSequenceLength(a_rObj.m_nRefSequenceLength),
+  m_nextVariant(a_rObj.m_nextVariant)
 {
     m_nPositionInVariant = a_rObj.m_nPositionInVariant;
     m_nLastVariantEnd = a_rObj.m_nLastVariantEnd;
@@ -183,10 +183,10 @@ void CHaplotypeSequence::Next()
 
     if(!m_nextVariant.IsNull())
     {
-        while(1)
+        while(true)
         {
             
-            if(m_nPositionInVariant != m_nextVariant.GetAllele().m_sequence.length())
+            if(m_nPositionInVariant != static_cast<int>(m_nextVariant.GetAllele().m_sequence.length()))
             {
                 // Haven't reached the end of the current variant.
                 break;
@@ -241,7 +241,7 @@ bool CHaplotypeSequence::WantsFutureVariantBases() const
     if (m_nextVariant.IsNull())
         return true;
     
-    if (m_nPositionInVariant != g_nINVALID && m_nPositionInVariant < m_nextVariant.GetAllele().m_sequence.length() - 1)
+    if (m_nPositionInVariant != g_nINVALID && m_nPositionInVariant <  static_cast<int>(m_nextVariant.GetAllele().m_sequence.length()) - 1)
         return false;
     
     for(int k= 0; k < static_cast<int>(m_aVariants.size()); k++)

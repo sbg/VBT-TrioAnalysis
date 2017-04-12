@@ -108,7 +108,7 @@ void CVcfWriter::AddRecord(const SVcfRecord& a_rVcfRecord)
     if(a_rVcfRecord.m_aFilterString.size() != 0)
     {
         int32_t* tmpi = new int[a_rVcfRecord.m_aFilterString.size()];
-        for(int k = 0; k < a_rVcfRecord.m_aFilterString.size(); k++)
+        for(int k = 0; k < (int)a_rVcfRecord.m_aFilterString.size(); k++)
             tmpi[k] = bcf_hdr_id2int(m_pHeader, BCF_DT_ID, a_rVcfRecord.m_aFilterString[k].c_str());
         bcf_update_filter(m_pHeader, m_pRecord, tmpi, static_cast<int>(a_rVcfRecord.m_aFilterString.size()));
     }
@@ -117,7 +117,7 @@ void CVcfWriter::AddRecord(const SVcfRecord& a_rVcfRecord)
 
     //1.Genotype Set (GT)
     std::vector<int> genotypes;
-    for(int k = 0; k < a_rVcfRecord.m_aSampleData.size(); k++)
+    for(int k = 0; k < (int)a_rVcfRecord.m_aSampleData.size(); k++)
     {
         for(int p = 0; p < a_rVcfRecord.m_aSampleData[k].m_nHaplotypeCount; p++)
         {
@@ -134,7 +134,7 @@ void CVcfWriter::AddRecord(const SVcfRecord& a_rVcfRecord)
     }
 
     
-    if(m_nSampleCount != a_rVcfRecord.m_aSampleData.size())
+    if(m_nSampleCount != (int)a_rVcfRecord.m_aSampleData.size())
     {
         genotypes.push_back(bcf_gt_missing);
         genotypes.push_back(bcf_gt_missing);
@@ -149,13 +149,13 @@ void CVcfWriter::AddRecord(const SVcfRecord& a_rVcfRecord)
         //2.Decision Set (BD)
         char* tmpstr[m_nSampleCount];
         int k;
-        for(k = 0; k < a_rVcfRecord.m_aSampleData.size(); k++)
+        for(k = 0; k < (int)a_rVcfRecord.m_aSampleData.size(); k++)
         {
             tmpstr[k] = new char[a_rVcfRecord.m_aSampleData[k].m_decisionBD.size()];
             strcpy(tmpstr[k], a_rVcfRecord.m_aSampleData[k].m_decisionBD.c_str());
         }
         
-        if(a_rVcfRecord.m_aSampleData.size() != m_nSampleCount)
+        if((int)a_rVcfRecord.m_aSampleData.size() != m_nSampleCount)
         {
             tmpstr[k] = new char[1];
             tmpstr[k][0] = bcf_str_missing;
@@ -164,13 +164,13 @@ void CVcfWriter::AddRecord(const SVcfRecord& a_rVcfRecord)
 
         //3.Match Type Set (BK)
         char* tmpstr2[m_nSampleCount];
-        for(k = 0; k < a_rVcfRecord.m_aSampleData.size(); k++)
+        for(k = 0; k < (int)a_rVcfRecord.m_aSampleData.size(); k++)
         {
             tmpstr2[k] = new char[a_rVcfRecord.m_aSampleData[k].m_matchTypeBK.size()];
             strcpy(tmpstr2[k], a_rVcfRecord.m_aSampleData[k].m_matchTypeBK.c_str());
         }
         
-        if(a_rVcfRecord.m_aSampleData.size() != m_nSampleCount)
+        if((int)a_rVcfRecord.m_aSampleData.size() != m_nSampleCount)
         {
             tmpstr2[k] = new char[1];
             tmpstr2[k][0] = bcf_str_missing;
@@ -181,7 +181,7 @@ void CVcfWriter::AddRecord(const SVcfRecord& a_rVcfRecord)
         bcf_write1(m_pHtsFile, m_pHeader, m_pRecord);
 
         //Clean Temporary strings we used
-        for(int k = 0; k < a_rVcfRecord.m_aSampleData.size(); k++)
+        for(int k = 0; k < (int)a_rVcfRecord.m_aSampleData.size(); k++)
         {
             delete[] tmpstr[k];
             delete[] tmpstr2[k];
@@ -235,7 +235,7 @@ void CVcfWriter::AddMendelianRecord(const SVcfRecord& a_rVcfRecord)
     if(a_rVcfRecord.m_aFilterString.size() != 0)
     {
         int32_t* tmpi = new int[a_rVcfRecord.m_aFilterString.size()];
-        for(int k = 0; k < a_rVcfRecord.m_aFilterString.size(); k++)
+        for(int k = 0; k < (int)a_rVcfRecord.m_aFilterString.size(); k++)
             tmpi[k] = bcf_hdr_id2int(m_pHeader, BCF_DT_ID, a_rVcfRecord.m_aFilterString[k].c_str());
         bcf_update_filter(m_pHeader, m_pRecord, tmpi, static_cast<int>(a_rVcfRecord.m_aFilterString.size()));
     }
@@ -245,7 +245,7 @@ void CVcfWriter::AddMendelianRecord(const SVcfRecord& a_rVcfRecord)
     //1.Genotype Set (GT)
     int* genotypes = new int[bcf_hdr_nsamples(m_pHeader)*2];
     int genotypeItr = 0;
-    for(int k = 0; k < a_rVcfRecord.m_aSampleData.size(); k++)
+    for(int k = 0; k < (int)a_rVcfRecord.m_aSampleData.size(); k++)
     {
         for(int p = 0; p < a_rVcfRecord.m_aSampleData[k].m_nHaplotypeCount; p++)
         {
@@ -261,7 +261,7 @@ void CVcfWriter::AddMendelianRecord(const SVcfRecord& a_rVcfRecord)
             genotypes[genotypeItr++] = bcf_int32_vector_end;
     }
 
-    if(m_nSampleCount != a_rVcfRecord.m_aSampleData.size())
+    if(m_nSampleCount != (int)a_rVcfRecord.m_aSampleData.size())
     {
         for(int k = static_cast<int>(a_rVcfRecord.m_aSampleData.size()); k < m_nSampleCount; k++)
         {

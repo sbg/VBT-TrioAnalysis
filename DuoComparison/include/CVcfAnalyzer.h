@@ -11,7 +11,7 @@
 
 #include <thread>
 #include "CPathReplay.h"
-#include "Sconfig.h"
+#include "SConfig.h"
 #include "CVariantProvider.h"
 #include "CResultLog.h"
 

@@ -58,7 +58,7 @@ void CGa4ghOutputProvider::FillHeader()
     std::vector<std::string> filterNames;
     std::vector<std::string> filterDescriptions;
     m_pVariantProvider->GetFilterInfo(eCALLED, filterNames, filterDescriptions);
-    for(int k = 1; k < filterNames.size(); k++)
+    for(int k = 1; k < (int)filterNames.size(); k++)
         m_vcfWriter.AddHeaderLine("##FILTER=<ID=" + filterNames[k] + ",Description=" + filterDescriptions[k] + ">");
     
     //ADD CONTIG IDs
@@ -130,9 +130,9 @@ void CGa4ghOutputProvider::AddRecords(const CPath& a_rBestPath, const CPath& a_r
         if(basePosition == calledPosition)
         {
             //Look for a match between base and called list
-            for(int i = 0; i < nextVarBaseList.size(); i++)
+            for(int i = 0; i < (int)nextVarBaseList.size(); i++)
             {
-                for(int j = 0; j < nextVarCalledList.size(); j++)
+                for(int j = 0; j < (int)nextVarCalledList.size(); j++)
                 {
                     if(CanMerge(nextVarBaseList[i].m_pVariant, nextVarCalledList[j].m_pVariant))
                     {
@@ -281,10 +281,10 @@ void CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase,
     }
 
     
-    for(int k=0; k < baseVariants.size(); k++)
+    for(int k=0; k < (int)baseVariants.size(); k++)
     {
         int bHasFound = false;
-        for(int p = 0; p < calledVariants.size(); p++)
+        for(int p = 0; p < (int)calledVariants.size(); p++)
         {
             std::string allele = baseVariants[a_pVariantBase->m_genotype[k]];
             if(0 == calledVariants[p].compare(allele))

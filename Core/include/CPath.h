@@ -12,6 +12,7 @@
 
 #include "CSemiPath.h"
 #include "EVcfName.h"
+#include <memory>
 
 class CPathContainer;
 class CSyncPoint;

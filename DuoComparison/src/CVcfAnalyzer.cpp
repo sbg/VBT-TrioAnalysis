@@ -45,9 +45,9 @@ void CVcfAnalyzer::Run(int argc, char** argv)
     for(int k = 0; k < threadCount; k++)
         m_pThreadPool[k].join();
     
+    
     if(0 == strcmp(m_config.m_pOutputMode, "SPLIT"))
     {
-        
         CSplitOutputProvider outputprovider;
         outputprovider.SetVcfPath(m_config.m_pOutputDirectory);
         outputprovider.SetVariantProvider(&m_provider);
@@ -89,7 +89,7 @@ int CVcfAnalyzer::AssignJobsToThreads(int a_nThreadCount)
     std::vector<int> *chromosomeLists = new std::vector<int>[exactThreadCount];
     
     //Divide tasks into threads
-    for(int k = 0; k < chromosomeListToProcess.size(); k++)
+    for(int k = 0; k < (int)chromosomeListToProcess.size(); k++)
     {
         chromosomeLists[threadPoolIt].push_back(chromosomeListToProcess[k]);
         threadPoolIt = (threadPoolIt+1) % exactThreadCount;
@@ -105,13 +105,15 @@ int CVcfAnalyzer::AssignJobsToThreads(int a_nThreadCount)
            
     }
     
+    delete[] chromosomeLists;
+    
     return exactThreadCount;
 }
 
 
 void CVcfAnalyzer::ThreadFunctionGA4GH(std::vector<int> a_nChrArr)
 {
-    for(int k = 0; k < a_nChrArr.size(); k++)
+    for(int k = 0; k < (int)a_nChrArr.size(); k++)
     {
         std::vector<const CVariant*> varListBase = m_provider.GetVariantList(eBASE, a_nChrArr[k]);
         std::vector<const CVariant*> varListCalled = m_provider.GetVariantList(eCALLED, a_nChrArr[k]);
@@ -187,7 +189,7 @@ void CVcfAnalyzer::ThreadFunctionGA4GH(std::vector<int> a_nChrArr)
 
 void CVcfAnalyzer::ThreadFunctionSPLIT(std::vector<int> a_nChrArr, bool a_bIsGenotypeMatch)
 {
-    for(int k = 0; k < a_nChrArr.size(); k++)
+    for(int k = 0; k < (int)a_nChrArr.size(); k++)
     {
         std::vector<const CVariant*> varListBase = m_provider.GetVariantList(eBASE, a_nChrArr[k]);
         std::vector<const CVariant*> varListCalled = m_provider.GetVariantList(eCALLED, a_nChrArr[k]);

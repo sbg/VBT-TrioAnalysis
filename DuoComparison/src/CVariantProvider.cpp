@@ -29,7 +29,7 @@ std::vector<SVcfContig> CVariantProvider::GetCommonChromosomes()
     
     for(SVcfContig contig : a_rBaseContigList)
     {
-        for(int k = 0; k < a_rCalledContigList.size(); k++)
+        for(int k = 0; k < (int)a_rCalledContigList.size(); k++)
         {
             if(a_rBaseContigList[k].name == contig.name)
             {
@@ -229,13 +229,13 @@ void CVariantProvider::FillOrientedVariantLists()
 {
     for(int i=0; i < CHROMOSOME_COUNT; i++)
     {
-        for(int j=0; j < m_aBaseVariantList[i].size(); j++)
+        for(int j=0; j < (int)m_aBaseVariantList[i].size(); j++)
         {
             m_aBaseOrientedVariantList[i].push_back(COrientedVariant(m_aBaseVariantList[i][j], true));
             m_aBaseOrientedVariantList[i].push_back(COrientedVariant(m_aBaseVariantList[i][j], false));
         }
         
-        for(int j=0; j < m_aCalledVariantList[i].size(); j++)
+        for(int j=0; j < (int)m_aCalledVariantList[i].size(); j++)
         {
             m_aCalledOrientedVariantList[i].push_back(COrientedVariant(m_aCalledVariantList[i][j], true));
             m_aCalledOrientedVariantList[i].push_back(COrientedVariant(m_aCalledVariantList[i][j], false));
@@ -245,13 +245,13 @@ void CVariantProvider::FillOrientedVariantLists()
 
 void CVariantProvider::FillAlleleMatchVariantList(int a_nChrId, std::vector<const CVariant*>& a_rBaseVariants, std::vector<const CVariant*>& a_rCalledVariants)
 {
-    for(int j=0; j < a_rBaseVariants.size(); j++)
+    for(int j=0; j < (int)a_rBaseVariants.size(); j++)
     {
         m_aBaseHomozygousOrientedVariantList[a_nChrId].push_back(COrientedVariant(*a_rBaseVariants[j], 0));
         m_aBaseHomozygousOrientedVariantList[a_nChrId].push_back(COrientedVariant(*a_rBaseVariants[j], 1));
     }
         
-    for(int j=0; j < a_rCalledVariants.size(); j++)
+    for(int j=0; j < (int)a_rCalledVariants.size(); j++)
     {
         m_aCalledHomozygousOrientedVariantList[a_nChrId].push_back(COrientedVariant(*a_rCalledVariants[j], 0));
         m_aCalledHomozygousOrientedVariantList[a_nChrId].push_back(COrientedVariant(*a_rCalledVariants[j], 1));
@@ -274,12 +274,12 @@ std::vector<const CVariant*> CVariantProvider::GetVariantList(EVcfName a_uFrom, 
     switch (a_uFrom)
     {
         case eBASE:
-            for(int k=0; k< a_VariantIndexes.size(); k++)
+            for(int k=0; k< (int)a_VariantIndexes.size(); k++)
                 result.push_back(&(m_aBaseVariantList[a_nChrNo][a_VariantIndexes[k]]));
             break;
             
         case eCALLED:
-            for(int k=0; k< a_VariantIndexes.size(); k++)
+            for(int k=0; k< (int)a_VariantIndexes.size(); k++)
                 result.push_back(&(m_aCalledVariantList[a_nChrNo][a_VariantIndexes[k]]));
             
         default:
@@ -297,12 +297,12 @@ std::vector<const CVariant*> CVariantProvider::GetVariantList(EVcfName a_uFrom, 
     switch (a_uFrom)
     {
         case eBASE:
-            for(int k=0; k < size; k++)
+            for(int k=0; k < (int)size; k++)
                 result[k] = &(m_aBaseVariantList[a_nChrNo][k]);
             break;
             
         case eCALLED:
-            for(int k=0; k< size; k++)
+            for(int k=0; k< (int)size; k++)
                 result[k] = &(m_aCalledVariantList[a_nChrNo][k]);
             
         default:
@@ -317,7 +317,7 @@ std::vector<const CVariant*> CVariantProvider::GetVariantList(std::vector<const 
 {
     std::vector<const CVariant*> result(a_VariantIndexes.size());
     
-    for(int k = 0; k < a_VariantIndexes.size(); k++)
+    for(int k = 0; k < (int)a_VariantIndexes.size(); k++)
     {
         result[k] = a_varList[a_VariantIndexes[k]];
     }
@@ -335,12 +335,12 @@ std::vector<const COrientedVariant*> CVariantProvider::GetOrientedVariantList(EV
         switch (a_uFrom)
         {
             case eBASE:
-                for(int k=0; k < size; k++)
+                for(int k=0; k < (int)size; k++)
                     result[k] = &(m_aBaseOrientedVariantList[a_nChrNo][k]);
                 break;
                 
             case eCALLED:
-                for(int k=0; k< size; k++)
+                for(int k=0; k< (int)size; k++)
                     result[k] = &(m_aCalledOrientedVariantList[a_nChrNo][k]);
                 
             default:
@@ -358,12 +358,12 @@ std::vector<const COrientedVariant*> CVariantProvider::GetOrientedVariantList(EV
         switch (a_uFrom)
         {
             case eBASE:
-                for(int k=0; k < size; k++)
+                for(int k=0; k < (int)size; k++)
                     result[k] = &(m_aBaseHomozygousOrientedVariantList[a_nChrNo][k]);
                 break;
                 
             case eCALLED:
-                for(int k=0; k< size; k++)
+                for(int k=0; k< (int)size; k++)
                     result[k] = &(m_aCalledHomozygousOrientedVariantList[a_nChrNo][k]);
                 
             default:
@@ -384,7 +384,7 @@ bool CVariantProvider::IsStructuralVariant(const CVariant& a_rVariant, int a_nMa
     {
         std::string allele = a_rVariant.m_alleles[k].m_sequence;
         
-        if(allele.size() > a_nMaxLength)
+        if((int)allele.size() > a_nMaxLength)
             return true;
         found = allele.find('[');
         if(found != std::string::npos)

@@ -160,16 +160,16 @@ void CMendelianTrioMerger::AddRecords(int a_nChromosomeId)
     
     int childItr = 0, motherItr = 0, fatherItr = 0;
     
-    while(childItr < m_aChildVariants[a_nChromosomeId].size() || motherItr < m_aMotherVariants[a_nChromosomeId].size() || fatherItr < m_aFatherVariants[a_nChromosomeId].size())
+    while(childItr < (int)m_aChildVariants[a_nChromosomeId].size() || motherItr < (int)m_aMotherVariants[a_nChromosomeId].size() || fatherItr < (int)m_aFatherVariants[a_nChromosomeId].size())
     {
         bool mergeMotherChild;
         bool mergeFatherChild;
         
-        if(childItr == m_aChildVariants[a_nChromosomeId].size() || motherItr == m_aMotherVariants[a_nChromosomeId].size())
+        if(childItr == (int)m_aChildVariants[a_nChromosomeId].size() || motherItr == (int)m_aMotherVariants[a_nChromosomeId].size())
             mergeMotherChild = false;
         else
             mergeMotherChild = IsMerge(m_aChildVariants[a_nChromosomeId][childItr], m_aMotherVariants[a_nChromosomeId][motherItr]);
-        if(childItr == m_aChildVariants[a_nChromosomeId].size() || fatherItr == m_aFatherVariants[a_nChromosomeId].size())
+        if(childItr == (int)m_aChildVariants[a_nChromosomeId].size() || fatherItr == (int)m_aFatherVariants[a_nChromosomeId].size())
             mergeFatherChild = false;
         else
             mergeFatherChild = IsMerge(m_aChildVariants[a_nChromosomeId][childItr], m_aFatherVariants[a_nChromosomeId][fatherItr]);
@@ -198,7 +198,7 @@ void CMendelianTrioMerger::AddRecords(int a_nChromosomeId)
         else if(mergeMotherChild)
         {
             //CHECK IF FATHER IS SMALLER
-            if(fatherItr != m_aFatherVariants[a_nChromosomeId].size() && m_aFatherVariants[a_nChromosomeId][fatherItr]->m_nOriginalPos < m_aChildVariants[a_nChromosomeId][childItr]->m_nOriginalPos)
+            if(fatherItr != (int)m_aFatherVariants[a_nChromosomeId].size() && m_aFatherVariants[a_nChromosomeId][fatherItr]->m_nOriginalPos < m_aChildVariants[a_nChromosomeId][childItr]->m_nOriginalPos)
             {
                 EMendelianDecision decision = GetMendelianDecision(0, m_aFatherVariants[a_nChromosomeId][fatherItr], 0, m_aFatherDecisions[a_nChromosomeId][fatherItr]);
                 
@@ -236,7 +236,7 @@ void CMendelianTrioMerger::AddRecords(int a_nChromosomeId)
         else if(mergeFatherChild)
         {
             //CHECK IF MOTHER IS SMALLER
-            if(motherItr != m_aMotherVariants[a_nChromosomeId].size() && m_aMotherVariants[a_nChromosomeId][motherItr]->m_nOriginalPos < m_aChildVariants[a_nChromosomeId][childItr]->m_nOriginalPos)
+            if(motherItr != (int)m_aMotherVariants[a_nChromosomeId].size() && m_aMotherVariants[a_nChromosomeId][motherItr]->m_nOriginalPos < m_aChildVariants[a_nChromosomeId][childItr]->m_nOriginalPos)
             {
                 EMendelianDecision decision = GetMendelianDecision(m_aMotherVariants[a_nChromosomeId][motherItr], 0, 0, m_aMotherDecisions[a_nChromosomeId][motherItr]);
                 
@@ -271,7 +271,7 @@ void CMendelianTrioMerger::AddRecords(int a_nChromosomeId)
         
         // No Child variant is merged check for father-mother merge
         bool mergeMotherFather;
-        if(motherItr == m_aMotherVariants[a_nChromosomeId].size() || fatherItr == m_aFatherVariants[a_nChromosomeId].size())
+        if(motherItr == (int)m_aMotherVariants[a_nChromosomeId].size() || fatherItr == (int)m_aFatherVariants[a_nChromosomeId].size())
             mergeMotherFather = false;
         else
             mergeMotherFather = IsMerge(m_aMotherVariants[a_nChromosomeId][motherItr], m_aFatherVariants[a_nChromosomeId][fatherItr]);
@@ -279,7 +279,7 @@ void CMendelianTrioMerger::AddRecords(int a_nChromosomeId)
         if(mergeMotherFather)
         {
             //CHECK IF CHILD IS SMALLER
-            if(childItr != m_aChildVariants[a_nChromosomeId].size() && m_aChildVariants[a_nChromosomeId][childItr]->m_nOriginalPos < m_aMotherVariants[a_nChromosomeId][motherItr]->m_nOriginalPos)
+            if(childItr != (int)m_aChildVariants[a_nChromosomeId].size() && m_aChildVariants[a_nChromosomeId][childItr]->m_nOriginalPos < m_aMotherVariants[a_nChromosomeId][motherItr]->m_nOriginalPos)
             {
                 EMendelianDecision decision = GetMendelianDecision(0, 0, m_aChildVariants[a_nChromosomeId][childItr], m_aChildDecisions[a_nChromosomeId][childItr]);
                 
@@ -326,9 +326,9 @@ void CMendelianTrioMerger::AddRecords(int a_nChromosomeId)
         //There is no merge between three variant print the smallest one
         else
         {
-            int motherPos = motherItr != m_aMotherVariants[a_nChromosomeId].size() ? m_aMotherVariants[a_nChromosomeId][motherItr]->m_nOriginalPos : INT_MAX;
-            int fatherPos = fatherItr != m_aFatherVariants[a_nChromosomeId].size() ? m_aFatherVariants[a_nChromosomeId][fatherItr]->m_nOriginalPos : INT_MAX;
-            int childPos  = childItr  != m_aChildVariants[a_nChromosomeId].size()  ? m_aChildVariants[a_nChromosomeId][childItr]->m_nOriginalPos   : INT_MAX;
+            int motherPos = motherItr != (int)m_aMotherVariants[a_nChromosomeId].size() ? m_aMotherVariants[a_nChromosomeId][motherItr]->m_nOriginalPos : INT_MAX;
+            int fatherPos = fatherItr != (int)m_aFatherVariants[a_nChromosomeId].size() ? m_aFatherVariants[a_nChromosomeId][fatherItr]->m_nOriginalPos : INT_MAX;
+            int childPos  = childItr  != (int)m_aChildVariants[a_nChromosomeId].size()  ? m_aChildVariants[a_nChromosomeId][childItr]->m_nOriginalPos   : INT_MAX;
         
             if(motherPos <= fatherPos && motherPos <= childPos)
             {
@@ -416,7 +416,7 @@ void CMendelianTrioMerger::DoTripleMerge(int a_nChromosomeId, int& a_nChildItr, 
     }
     
     std::string alleleString = "";
-    for(int k=0; k < alleles.size(); k++)
+    for(int k=0; k < (int)alleles.size(); k++)
     {
         if(k != 0)
             alleleString = alleleString + ",";
@@ -430,7 +430,7 @@ void CMendelianTrioMerger::DoTripleMerge(int a_nChromosomeId, int& a_nChildItr, 
     dataMother.m_bIsPhased = m_aMotherVariants[a_nChromosomeId][a_nMotherItr]->m_bIsPhased; // TODO: This should be altered
     for(int k = 0; k < m_aMotherVariants[a_nChromosomeId][a_nMotherItr]->m_nZygotCount; k++)
     {
-        for(int m = 0; m < alleles.size(); m++)
+        for(int m = 0; m < (int)alleles.size(); m++)
         {
             if(m_aMotherVariants[a_nChromosomeId][a_nMotherItr]->GetOriginalAlleleStr(k) == alleles[m])
             {
@@ -446,7 +446,7 @@ void CMendelianTrioMerger::DoTripleMerge(int a_nChromosomeId, int& a_nChildItr, 
     dataFather.m_bIsPhased = m_aFatherVariants[a_nChromosomeId][a_nFatherItr]->m_bIsPhased; // TODO: This should be altered
     for(int k = 0; k < m_aFatherVariants[a_nChromosomeId][a_nFatherItr]->m_nZygotCount; k++)
     {
-        for(int m = 0; m < alleles.size(); m++)
+        for(int m = 0; m < (int)alleles.size(); m++)
         {
             if(m_aFatherVariants[a_nChromosomeId][a_nFatherItr]->GetOriginalAlleleStr(k) == alleles[m])
             {
@@ -532,7 +532,7 @@ void CMendelianTrioMerger::DoDoubleMerge(int a_nChromosomeId, int& a_nItr1, int&
     }
     
     std::string alleleString = "";
-    for(int k=0; k < alleles.size(); k++)
+    for(int k=0; k < (int)alleles.size(); k++)
     {
         if(k != 0)
             alleleString = alleleString + ",";
@@ -548,7 +548,7 @@ void CMendelianTrioMerger::DoDoubleMerge(int a_nChromosomeId, int& a_nItr1, int&
         dataMother.m_bIsPhased = pVarMother->m_bIsPhased; // TODO: This should be altered
         for(int k = 0; k < pVarMother->m_nZygotCount; k++)
         {
-            for(int m = 0; m < alleles.size(); m++)
+            for(int m = 0; m < (int)alleles.size(); m++)
             {
                 if(pVarMother->GetOriginalAlleleStr(k) == alleles[m])
                 {
@@ -572,7 +572,7 @@ void CMendelianTrioMerger::DoDoubleMerge(int a_nChromosomeId, int& a_nItr1, int&
         dataFather.m_bIsPhased = pVarFather->m_bIsPhased; // TODO: This should be altered
         for(int k = 0; k < pVarFather->m_nZygotCount; k++)
         {
-            for(int m = 0; m < alleles.size(); m++)
+            for(int m = 0; m < (int)alleles.size(); m++)
             {
                 if(pVarFather->GetOriginalAlleleStr(k) == alleles[m])
                 {
@@ -597,7 +597,7 @@ void CMendelianTrioMerger::DoDoubleMerge(int a_nChromosomeId, int& a_nItr1, int&
         dataChild.m_bIsPhased = pVarChild->m_bIsPhased; // TODO: This should be altered
         for(int k = 0; k < pVarChild->m_nZygotCount; k++)
         {
-            for(int m = 0; m < alleles.size(); m++)
+            for(int m = 0; m < (int)alleles.size(); m++)
             {
                 if(pVarChild->GetOriginalAlleleStr(k) == alleles[m])
                 {

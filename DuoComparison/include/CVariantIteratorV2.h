@@ -20,8 +20,8 @@ class CVariantIteratorV2
 public:
     
     CVariantIteratorV2(std::vector<const COrientedVariant*>& included, std::vector<const CVariant*>& excluded, std::vector<CVariant>& notAssessed)
-    : m_aExcluded(excluded),
-    m_aIncluded(included),
+    : m_aIncluded(included),
+    m_aExcluded(excluded),
     m_aNotAssessed(notAssessed)
     {
         it_Included = m_aIncluded.begin();

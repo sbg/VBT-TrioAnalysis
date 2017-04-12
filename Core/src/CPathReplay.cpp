@@ -65,17 +65,17 @@ CPath CPathReplay::FindBestPath(SContig a_contig, bool a_bIsGenotypeMatch)
 
             if(calledIncluded->size() > 0 || baseIncluded->size() > 0)
             {
-                for(int k = 0; k < calledIncluded->size(); k++)
+                for(int k = 0; k < (int)calledIncluded->size(); k++)
                     m_IncludedVariantsCalledBest.push_back((*calledIncluded)[k]);
-                for(int k = 0; k < baseIncluded->size(); k++)
+                for(int k = 0; k < (int)baseIncluded->size(); k++)
                     m_IncludedVariantsBaselineBest.push_back((*baseIncluded)[k]);
                 
-                for(int k = 0; k < calledExcluded->size(); k++)
+                for(int k = 0; k < (int)calledExcluded->size(); k++)
                     m_ExcludedVariantsCalledBest.push_back((*calledExcluded)[k]);
-                for(int k = 0; k < baseExcluded->size(); k++)
+                for(int k = 0; k < (int)baseExcluded->size(); k++)
                     m_ExcludedVariantsBaselineBest.push_back((*baseExcluded)[k]);
                 
-                for(int k = 0; k < processedPath.m_pPath->m_aSyncPointList.size(); k++)
+                for(int k = 0; k < (int)processedPath.m_pPath->m_aSyncPointList.size(); k++)
                     m_SyncPointsBest.push_back(processedPath.m_pPath->m_aSyncPointList[k]);
                 
                 processedPath.m_pPath->ClearSyncPointList();
@@ -172,15 +172,15 @@ CPath CPathReplay::FindBestPath(SContig a_contig, bool a_bIsGenotypeMatch)
     baseIncluded = &(best.m_pPath->m_baseSemiPath.GetIncludedVariants());
     baseExcluded = &(best.m_pPath->m_baseSemiPath.GetExcluded());
 
-    for(int k = 0; k < calledIncluded->size(); k++)
+    for(int k = 0; k < (int)calledIncluded->size(); k++)
         m_IncludedVariantsCalledBest.push_back((*calledIncluded)[k]);
-    for(int k = 0; k < baseIncluded->size(); k++)
+    for(int k = 0; k < (int)baseIncluded->size(); k++)
         m_IncludedVariantsBaselineBest.push_back((*baseIncluded)[k]);
-    for(int k = 0; k < calledExcluded->size(); k++)
+    for(int k = 0; k < (int)calledExcluded->size(); k++)
         m_ExcludedVariantsCalledBest.push_back((*calledExcluded)[k]);
-    for(int k = 0; k < baseExcluded->size(); k++)
+    for(int k = 0; k < (int)baseExcluded->size(); k++)
         m_ExcludedVariantsBaselineBest.push_back((*baseExcluded)[k]);
-    for(int k = 0; k < best.m_pPath->m_aSyncPointList.size(); k++)
+    for(int k = 0; k < (int)best.m_pPath->m_aSyncPointList.size(); k++)
         m_SyncPointsBest.push_back(best.m_pPath->m_aSyncPointList[k]);
     
     best.m_pPath->ClearSyncPointList();
@@ -336,7 +336,7 @@ bool CPathReplay::FindBetter(const CPathContainer& lhs, const CPathContainer& rh
 
 bool CPathReplay::EnqueueVariant(CPath& a_rPathToPlay, EVcfName a_uVcfSide, int a_nChromosomeId, bool a_bIsGenotypeMatch)
 {
-    const CSemiPath* pSemiPath;
+    const CSemiPath* pSemiPath = 0;
 
     switch(a_uVcfSide)
     {
@@ -433,7 +433,7 @@ void CPathReplay::SkipVariantsTo(CPath& a_rPath, const SContig& a_rContig, int a
     //BASE SEMIPATH
     int varIndex = a_rPath.m_baseSemiPath.GetVariantIndex();
     
-    while(varIndex < m_aVariantListBase.size() && (varIndex == -1  || m_aVariantListBase[varIndex]->GetStart() < a_nMaxPos))
+    while(varIndex < (int)m_aVariantListBase.size() && (varIndex == -1  || m_aVariantListBase[varIndex]->GetStart() < a_nMaxPos))
     {
         varIndex++;
     }
@@ -445,7 +445,7 @@ void CPathReplay::SkipVariantsTo(CPath& a_rPath, const SContig& a_rContig, int a
     //CALLED SEMIPATH
     varIndex = a_rPath.m_calledSemiPath.GetVariantIndex();
     
-    while(varIndex < m_aVariantListCalled.size() && (varIndex == -1  || m_aVariantListCalled[varIndex]->GetStart() < a_nMaxPos))
+    while(varIndex < (int)m_aVariantListCalled.size() && (varIndex == -1  || m_aVariantListCalled[varIndex]->GetStart() < a_nMaxPos))
     {
         varIndex++;
     }
