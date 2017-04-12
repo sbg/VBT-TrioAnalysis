@@ -139,7 +139,7 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
     {
         if(0 == strcmp(argv[it], PARAM_HELP))
         {
-            //PrintHelp();
+            PrintHelp();
             return false;
         }
         
@@ -1323,7 +1323,7 @@ void CMendelianAnalyzer::ReportChildChromosomeData(int a_nChromosomeId, std::vec
 
 void CMendelianAnalyzer::PrintHelp() const
 {
-    std::cout << "==== SBG VCF COMPARISON TOOL VERSION 1.0 (Beta) ==== " << std::endl;
+    std::cout << "==== VARIANT BENCHMARKING TOOL VERSION 1.0 (Beta) ==== " << std::endl;
     std::cout << "Author: Berke Cagkan Toptas (berke.toptas@sbgenomics.com || berke.toptas@sbgdinc.com)" << std::endl;
     std::cout << "Please notify me if program fails or return unexpected results" << std::endl;
     std::cout << "COPYRIGHT (C) 2016 SEVEN BRIDGES GENOMICS." << std::endl;
@@ -1338,11 +1338,11 @@ void CMendelianAnalyzer::PrintHelp() const
     std::cout << "-no-call <no_call_mode>      [Optional. Decides what to do with no call variants. There are 3 modes:" << std::endl;
     std::cout << "\t" << "implicit : mark boths implicit and explicit no call variant as NoCall" << std::endl;
     std::cout << "\t" << "explicit : mark explicit no call variants only as NoCall. Implicit no call variants will be treated as 0/0" << std::endl;
-    std::cout << "\t" << "none : [DEFAULT] Treat all of no call variants as 0/0" << std::endl;
+    std::cout << "\t" << "none : [Default Value] Treat all of no call variants as 0/0" << std::endl;
     std::cout << "-filter <filter_name>        [Optional.Filter variants based on filter column. Default value is PASS. Use 'none' to unfilter]" << std::endl;
-    std::cout << "-SampleFather <sample_name>  [Optional.Read only the given sample in father VCF. Default is the first sample.]" << std::endl;
-    std::cout << "-SampleMother <sample_name>  [Optional.Read only the given sample in mother VCF. Default is the first sample.]" << std::endl;
-    std::cout << "-SampleChild <sample_name>   [Optional.Read only the given sample in child VCF. Default is the first sample.]" << std::endl;
+    std::cout << "-SampleFather <sample_name>  [Optional.Read only the given sample in father VCF. Default value is the first sample.]" << std::endl;
+    std::cout << "-SampleMother <sample_name>  [Optional.Read only the given sample in mother VCF. Default value is the first sample.]" << std::endl;
+    std::cout << "-SampleChild <sample_name>   [Optional.Read only the given sample in child VCF. Default value is the first sample.]" << std::endl;
     std::cout << "-threadcount                 [Optional.Specify the number of threads that program will use. Default value is 2]" << std::endl;
     std::cout << std::endl;
     std::cout << "Example Commands:" << std::endl;

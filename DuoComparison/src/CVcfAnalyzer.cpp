@@ -121,6 +121,7 @@ void CVcfAnalyzer::ThreadFunctionGA4GH(std::vector<int> a_nChrArr)
         std::vector<const COrientedVariant*> ovarListCalled = m_provider.GetOrientedVariantList(eCALLED, a_nChrArr[k], true);
         
         CPathReplay pathReplay(varListBase, varListCalled, ovarListBase, ovarListCalled);
+        pathReplay.SetMaxPathAndIteration(m_config.m_nMaxPathSize, m_config.m_nMaxIterationCount);
         SContig ctg;
         m_provider.GetContig(a_nChrArr[k], ctg);
         
@@ -207,6 +208,7 @@ void CVcfAnalyzer::ThreadFunctionSPLIT(std::vector<int> a_nChrArr, bool a_bIsGen
         ovarListCalled = m_provider.GetOrientedVariantList(eCALLED, a_nChrArr[k], a_bIsGenotypeMatch);
         
         CPathReplay pathReplay(varListBase, varListCalled, ovarListBase, ovarListCalled);
+        pathReplay.SetMaxPathAndIteration(m_config.m_nMaxPathSize, m_config.m_nMaxIterationCount);
         SContig ctg;
         m_provider.GetContig(a_nChrArr[k], ctg);
         
@@ -291,6 +293,9 @@ bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
     const char* PARAM_THREAD_COUNT = "-thread-count";
     const char* PARAM_OUTPUT_MODE = "-output-mode";
     const char* PARAM_ALLELE_MATCH = "--allele-match";
+    const char* PARAM_MAX_PATH_SIZE = "-max-path-size";
+    const char* PARAM_MAX_ITERATION_COUNT = "-max-path-size";
+    const char* PARAM_MAX_BP_LENGTH = "-max-bp-length";
     
     bool bBaselineSet = false;
     bool bCalledSet = false;
@@ -419,8 +424,26 @@ bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
             it++;
         }
         
+        else if(0 == strcmp(argv[it], PARAM_MAX_PATH_SIZE))
+        {
+            m_config.m_nMaxPathSize = atoi(argv[it+1]);
+            it+=2;
+        }
+        
+        else if(0 == strcmp(argv[it], PARAM_MAX_ITERATION_COUNT))
+        {
+            m_config.m_nMaxIterationCount = atoi(argv[it+1]);
+            it+=2;
+        }
+
+        else if(0 == strcmp(argv[it], PARAM_MAX_BP_LENGTH))
+        {
+            m_config.m_nMaxVariantSize = atoi(argv[it+1]);
+            it+=2;
+        }
+        
         else
-            it++;
+            it++; //break;
     }
     
     if(!bBaselineSet)
@@ -438,7 +461,7 @@ bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
 
 void CVcfAnalyzer::PrintHelp() const
 {
-    std::cout << "==== SBG VCF COMPARISON TOOL VERSION 1.0 (Beta) ==== " << std::endl;
+    std::cout << "==== VARIANT BENCHMARKING TOOL VERSION 1.0 (Beta) ==== " << std::endl;
     std::cout << "Based on paper: http://biorxiv.org/content/biorxiv/early/2015/08/02/023754.full.pdf" << std::endl;
     std::cout << "Author: Berke Cagkan Toptas (berke.toptas@sbgenomics.com || berke.toptas@sbgdinc.com)" << std::endl;
     std::cout << "Please notify me if program fails or return unexpected results" << std::endl;
@@ -450,16 +473,20 @@ void CVcfAnalyzer::PrintHelp() const
     std::cout << "-called <called_vcf_path>    [Required.Add called VCF file.]" << std::endl;
     std::cout << "-ref <reference_fasta_path>  [Required.Add reference FASTA file]" << std::endl;
     std::cout << "-outDir <output_directory>   [Required.Add output directory]" << std::endl;
-    std::cout << "-output-mode <output_mode>   [Optional.Choose the output mode. SPLIT creates 4 vcf files. GA4GH creates a single merged vcf. Default is SPLIT]" << std::endl;
+    std::cout << "-output-mode <output_mode>   [Optional.Choose the output mode. SPLIT creates 4 vcf files. GA4GH creates a single merged vcf. Default value is SPLIT]" << std::endl;
     std::cout << "-filter <filter_name>        [Optional.Filter variants based on filter column. Default value is PASS. Use 'none' to unfilter]" << std::endl;
     std::cout << "--allele-match               [Optional.Execute the variant comparison engine in allele matching mode]";
     std::cout << "--SNP_ONLY                   [Optional.Filter INDELs out from both base and called VCF file.]" << std::endl;
     std::cout << "--INDEL_ONLY                 [Optional.Filter SNPs out from both base and called VCF file.]" << std::endl;
-    std::cout << "-SampleBase <sample_name>    [Optional.Read only the given sample in base VCF. Default is the first sample.]" << std::endl;
-    std::cout << "-SampleCalled <sample_name>  [Optional.Read only the given sample in called VCF. Default is the first sample.]" << std::endl;
+    std::cout << "-SampleBase <sample_name>    [Optional.Read only the given sample in base VCF. Default value is the first sample.]" << std::endl;
+    std::cout << "-SampleCalled <sample_name>  [Optional.Read only the given sample in called VCF. Default value is the first sample.]" << std::endl;
     std::cout << "--ref-overlap                [Optional.Allow reference overlapping by trimming nucleotides and ignoring 0 genotype.]" << std::endl;
     std::cout << "--platform-mode              [Optional.Allow to run program with the thread number of different chromosome count.]" << std::endl;
     std::cout << "-thread-count                [Optional.Specify the number of threads that program will use. Default value is 2]" << std::endl;
+    std::cout << "-max-bp-length               [*Optional.Specify the maximum base pair length of variant to process. Default value is 1000]" << std::endl;
+    std::cout << "-max-path-size <size>        [*Optional.Specify the maximum size of path that core algorithm can store inside. Default value is 150000]" << std::endl;
+    std::cout << "-max-iteration-count <count> [*Optional.Specify the maximum iteration count that core algorithm can decide to include/exclude variant. Default value is 3000000]" << std::endl;
+    std::cout << "(*) - advanced usage" << std::endl;
     std::cout << std::endl;
     std::cout << "Example Commands:" << std::endl;
     std::cout << "./vbt varcomp -called called.vcf -base base.vcf -ref reference.fa -outDir SampleResultDir -filter none" << std::endl;

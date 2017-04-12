@@ -23,7 +23,14 @@ CPathReplay::CPathReplay(std::vector<const CVariant*>& a_aVarListBase,
   m_aOrientedVariantListBase(a_aOVarListBase),
  m_aOrientedVariantListCalled(a_aOvarlistCalled)
 {
+    m_nMaxPathSize = DEFAULT_MAX_PATH_SIZE;
+    m_nMaxIterationCount = DEFAULT_MAX_ITERATION_SIZE;
+}
 
+void CPathReplay::SetMaxPathAndIteration(int a_nMaxPathSize, int a_nMaxIterationCount)
+{
+    m_nMaxIterationCount = a_nMaxIterationCount;
+    m_nMaxPathSize = a_nMaxPathSize;
 }
 
 
@@ -98,7 +105,7 @@ CPath CPathReplay::FindBestPath(SContig a_contig, bool a_bIsGenotypeMatch)
             lastSyncPos = currentSyncPos;
             lastSyncPath = processedPath;
         }
-        else if(m_pathList.Size() >  DEFAULT_MAX_PATH_SIZE || currentIterations > DEFAULT_MAX_ITERATION_SIZE)
+        else if(m_pathList.Size() >  m_nMaxPathSize || currentIterations > m_nMaxIterationCount)
         {
             std::cout << "Evaluation is too complex!!" << std::endl;
             std::cout << m_pathList.Size() << " unresolved paths, " << currentIterations << " iterations at reference region " << a_contig.m_chromosome << ":" << (lastSyncPos + 1) << "-" << (m_nCurrentPosition + 2) << std::endl;

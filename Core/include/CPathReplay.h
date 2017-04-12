@@ -28,6 +28,10 @@ class CPathReplay
                     std::vector<const COrientedVariant*>& a_aOVarListBase,
                     std::vector<const COrientedVariant*>& a_aOvarlistCalled);
     
+    
+        //Sets maximum pathsize and maximum path iteration count
+        void SetMaxPathAndIteration(int a_nMaxPathSize, int a_nMaxIterationCount);
+    
         //Clears variants belong to best path
         void Clear();
     
@@ -76,6 +80,10 @@ class CPathReplay
         std::vector<const CVariant*>& m_aVariantListCalled;
         std::vector<const COrientedVariant*>& m_aOrientedVariantListBase;
         std::vector<const COrientedVariant*>& m_aOrientedVariantListCalled;
+    
+    
+        int m_nMaxPathSize;
+        int m_nMaxIterationCount;
 };
 
 

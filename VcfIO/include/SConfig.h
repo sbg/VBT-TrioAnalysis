@@ -13,9 +13,6 @@ struct SConfig
     //Indicates if enough parameters are received from command line
     bool m_bIsOK;
     
-    //Maximum size of the variant that will be processed by VCF comparison algorithm (Use it to eliminate SVs)
-    int m_nMaxVariantSize = DEFAULT_MAX_BP_LENGTH;
-    
     //Base Vcf file
     const char* m_pBaseVcfFileName;
     
@@ -65,6 +62,15 @@ struct SConfig
     
     //Number of thread to use during execution
     int m_nThreadCount = DEFAULT_THREAD_COUNT;
+    
+    //Maximum number of path that variant comparison core can store at a time [History Table for Dynamic Programming]
+    int m_nMaxPathSize = DEFAULT_MAX_PATH_SIZE;
+
+    //Maximum number of iteration to resolve a variant (max iteration count for a variant to give TP/FP/FN decision)
+    int m_nMaxIterationCount = DEFAULT_MAX_ITERATION_SIZE;
+    
+    //Maximum size of the variant that will be processed by VCF comparison algorithm (Use it to eliminate SVs)
+    int m_nMaxVariantSize = DEFAULT_MAX_BP_LENGTH;
     
 };
 
