@@ -475,7 +475,7 @@ void CVcfAnalyzer::PrintHelp() const
     std::cout << "-outDir <output_directory>   [Required.Add output directory]" << std::endl;
     std::cout << "-output-mode <output_mode>   [Optional.Choose the output mode. SPLIT creates 4 vcf files. GA4GH creates a single merged vcf. Default value is SPLIT]" << std::endl;
     std::cout << "-filter <filter_name>        [Optional.Filter variants based on filter column. Default value is PASS. Use 'none' to unfilter]" << std::endl;
-    std::cout << "--allele-match               [Optional.Execute the variant comparison engine in allele matching mode]";
+    std::cout << "--allele-match               [Optional.Execute the variant comparison engine in allele matching mode]" << std::endl;
     std::cout << "--SNP_ONLY                   [Optional.Filter INDELs out from both base and called VCF file.]" << std::endl;
     std::cout << "--INDEL_ONLY                 [Optional.Filter SNPs out from both base and called VCF file.]" << std::endl;
     std::cout << "-SampleBase <sample_name>    [Optional.Read only the given sample in base VCF. Default value is the first sample.]" << std::endl;
