@@ -116,9 +116,9 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
     const char* PARAM_REFERENCE = "-ref";
     const char* PARAM_FILTER = "-filter";
     
-    const char* PARAM_SAMPLE_FATHER = "-sampleFather";
-    const char* PARAM_SAMPLE_MOTHER = "-sampleMother";
-    const char* PARAM_SAMPLE_CHILD = "-sampleChild";
+    const char* PARAM_SAMPLE_FATHER = "-sample-father";
+    const char* PARAM_SAMPLE_MOTHER = "-sample-mother";
+    const char* PARAM_SAMPLE_CHILD = "-sample-child";
     
     const char* PARAM_OUTPUT_DIR = "-outDir";
     const char* PARAM_REF_OVERLAP = "--ref-overlap";
@@ -1340,14 +1340,14 @@ void CMendelianAnalyzer::PrintHelp() const
     std::cout << "\t" << "explicit : mark explicit no call variants only as NoCall. Implicit no call variants will be treated as 0/0" << std::endl;
     std::cout << "\t" << "none : [Default Value] Treat all of no call variants as 0/0" << std::endl;
     std::cout << "-filter <filter_name>        [Optional.Filter variants based on filter column. Default value is PASS. Use 'none' to unfilter]" << std::endl;
-    std::cout << "-SampleFather <sample_name>  [Optional.Read only the given sample in father VCF. Default value is the first sample.]" << std::endl;
-    std::cout << "-SampleMother <sample_name>  [Optional.Read only the given sample in mother VCF. Default value is the first sample.]" << std::endl;
-    std::cout << "-SampleChild <sample_name>   [Optional.Read only the given sample in child VCF. Default value is the first sample.]" << std::endl;
+    std::cout << "-sample-father <sample_name>  [Optional.Read only the given sample in father VCF. Default value is the first sample.]" << std::endl;
+    std::cout << "-sample-mother <sample_name>  [Optional.Read only the given sample in mother VCF. Default value is the first sample.]" << std::endl;
+    std::cout << "-sample-child <sample_name>   [Optional.Read only the given sample in child VCF. Default value is the first sample.]" << std::endl;
     std::cout << "-threadcount                 [Optional.Specify the number of threads that program will use. Default value is 2]" << std::endl;
     std::cout << std::endl;
     std::cout << "Example Commands:" << std::endl;
-    std::cout << "./vbt mendelian -mother mother.vcf -father father.vcf -child child.vcf -ref reference.fa -outDir SampleResultDir -filter none -no-call explicit" << std::endl;
-    std::cout << "./vbt mendelian -mother trio.vcf -father trio.vcf -child trio.vcf -ref reference.fa -outDir SampleResultDir -filter PASS -sampleMother mother -sampleFather father -sampleChild child" << std::endl;
+    std::cout << "./vbt mendelian -mother mother.vcf -father father.vcf -child child.vcf -ref reference.fasta -outDir SampleResultDir -filter none -no-call explicit" << std::endl;
+    std::cout << "./vbt mendelian -mother trio.vcf -father trio.vcf -child trio.vcf -ref reference.fasta -outDir SampleResultDir -filter PASS -sample-mother mother -sample-father father -sample-child child" << std::endl;
 }
 
 

@@ -283,8 +283,8 @@ bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
     const char* PARAM_FILTER = "-filter";
     const char* PARAM_REFERENCE = "-ref";
     const char* PARAM_HELP = "--help";
-    const char* PARAM_SAMPLE_BASE = "-sampleBase";
-    const char* PARAM_SAMPLE_CALLED = "-sampleCalled";
+    const char* PARAM_SAMPLE_BASE = "-sample-base";
+    const char* PARAM_SAMPLE_CALLED = "-sample-called";
     const char* PARAM_SNP_ONLY = "--SNP_ONLY";
     const char* PARAM_INDEL_ONLY = "--INDEL_ONLY";
     const char* PARAM_OUTPUT_DIR = "-outDir";
@@ -478,8 +478,8 @@ void CVcfAnalyzer::PrintHelp() const
     std::cout << "--allele-match               [Optional.Execute the variant comparison engine in allele matching mode]" << std::endl;
     std::cout << "--SNP_ONLY                   [Optional.Filter INDELs out from both base and called VCF file.]" << std::endl;
     std::cout << "--INDEL_ONLY                 [Optional.Filter SNPs out from both base and called VCF file.]" << std::endl;
-    std::cout << "-SampleBase <sample_name>    [Optional.Read only the given sample in base VCF. Default value is the first sample.]" << std::endl;
-    std::cout << "-SampleCalled <sample_name>  [Optional.Read only the given sample in called VCF. Default value is the first sample.]" << std::endl;
+    std::cout << "-sample-base <sample_name>   [Optional.Read only the given sample in base VCF. Default value is the first sample.]" << std::endl;
+    std::cout << "-sample-called <sample_name> [Optional.Read only the given sample in called VCF. Default value is the first sample.]" << std::endl;
     std::cout << "--ref-overlap                [Optional.Allow reference overlapping by trimming nucleotides and ignoring 0 genotype.]" << std::endl;
     std::cout << "--platform-mode              [Optional.Allow to run program with the thread number of different chromosome count.]" << std::endl;
     std::cout << "-thread-count                [Optional.Specify the number of threads that program will use. Default value is 2]" << std::endl;
@@ -490,5 +490,5 @@ void CVcfAnalyzer::PrintHelp() const
     std::cout << std::endl;
     std::cout << "Example Commands:" << std::endl;
     std::cout << "./vbt varcomp -called called.vcf -base base.vcf -ref reference.fa -outDir SampleResultDir -filter none" << std::endl;
-    std::cout << "./vbt varcomp -called duo.vcf -base duo.vcf -ref reference.fa -outDir SampleResultDir -filter PASS -SNP_ONLY -sampleBase sample00 -sampleCalled sample01" << std::endl;
+    std::cout << "./vbt varcomp -called duo.vcf -base duo.vcf -ref reference.fa -outDir SampleResultDir -filter PASS -SNP_ONLY -sample-base sample00 -sample-called sample01" << std::endl;
 }
