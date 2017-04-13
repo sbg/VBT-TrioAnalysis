@@ -86,8 +86,8 @@ CPath CPathReplay::FindBestPath(SContig a_contig, bool a_bIsGenotypeMatch)
                     m_SyncPointsBest.push_back(processedPath.m_pPath->m_aSyncPointList[k]);
                 
                 processedPath.m_pPath->ClearSyncPointList();
-                //processedPath.m_pPath->ClearIncludedVariants();
-                //processedPath.m_pPath->ClearExcludedVariants();
+                processedPath.m_pPath->ClearIncludedVariants();
+                processedPath.m_pPath->ClearExcludedVariants();
             }
 
             //std::cout << TestID << "Included Size:" << processedPath.m_pPath->m_baseSemiPath.GetIncludedVariants().size() << " Excluded Size:" << processedPath.m_pPath->m_baseSemiPath.GetExcluded().size() << std::endl;

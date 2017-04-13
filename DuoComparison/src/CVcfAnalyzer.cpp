@@ -105,7 +105,7 @@ int CVcfAnalyzer::AssignJobsToThreads(int a_nThreadCount)
            
     }
     
-    delete[] chromosomeLists;
+    //delete[] chromosomeLists;
     
     return exactThreadCount;
 }
@@ -294,7 +294,7 @@ bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
     const char* PARAM_OUTPUT_MODE = "-output-mode";
     const char* PARAM_ALLELE_MATCH = "--allele-match";
     const char* PARAM_MAX_PATH_SIZE = "-max-path-size";
-    const char* PARAM_MAX_ITERATION_COUNT = "-max-path-size";
+    const char* PARAM_MAX_ITERATION_COUNT = "-max-iteration-count";
     const char* PARAM_MAX_BP_LENGTH = "-max-bp-length";
     
     bool bBaselineSet = false;
