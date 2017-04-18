@@ -46,6 +46,8 @@ CPath CPathReplay::FindBestPath(SContig a_contig, bool a_bIsGenotypeMatch)
     int currentMax = 0;
     m_nCurrentPosition = 0;
     int lastSyncPos = 0;
+    int complexRegionCount = 0;
+    int totalSkippedVariantCount = 0;
     
     CPathContainer processedPath;
     
@@ -107,15 +109,19 @@ CPath CPathReplay::FindBestPath(SContig a_contig, bool a_bIsGenotypeMatch)
         }
         else if(m_pathList.Size() >  m_nMaxPathSize || currentIterations > m_nMaxIterationCount)
         {
+            complexRegionCount++;
             std::cout << "Evaluation is too complex!!" << std::endl;
             std::cout << m_pathList.Size() << " unresolved paths, " << currentIterations << " iterations at reference region " << a_contig.m_chromosome << ":" << (lastSyncPos + 1) << "-" << (m_nCurrentPosition + 2) << std::endl;
+            std::cerr << "Evaluation is too complex!!" << std::endl;
+            std::cerr << m_pathList.Size() << " unresolved paths, " << currentIterations << " iterations at reference region " << a_contig.m_chromosome << ":" << (lastSyncPos + 1) << "-" << (m_nCurrentPosition + 2) << std::endl;
+
             //Drop all paths currently in play
             m_pathList.Clear();
             currentIterations = 0;
             // Create new head containing path up until last sync point
             processedPath = lastSyncPath;
             //Ignore variants until Current Position
-            SkipVariantsTo(*processedPath.m_pPath, a_contig, m_nCurrentPosition+1);
+            totalSkippedVariantCount += SkipVariantsTo(*processedPath.m_pPath, a_contig, m_nCurrentPosition+1);
         }
 
         if(processedPath.m_pPath->HasFinished())
@@ -197,7 +203,10 @@ CPath CPathReplay::FindBestPath(SContig a_contig, bool a_bIsGenotypeMatch)
     best.m_pPath->ClearExcludedVariants();
     best.m_pPath->AddExcludedVariants(m_ExcludedVariantsCalledBest, m_ExcludedVariantsBaselineBest);
     
-    
+    std::cout << "Complex Region Count :" << complexRegionCount << std::endl;
+    std::cerr << "Complex Region Count :" << complexRegionCount << std::endl;
+    std::cout << "Total Skipped Variant Count:" << totalSkippedVariantCount << std::endl;
+    std::cerr << "Total Skipped Variant Count:" << totalSkippedVariantCount << std::endl;
     std::cout << "Best Path Found for " << a_contig.m_nChrId + 1 << std::endl;
     std::cout << "Maximum path complexity is " << maxPaths << ", with "  << currentMaxIterations << " iterations " << std::endl;
     return *best.m_pPath;
@@ -435,19 +444,24 @@ int CPathReplay::GetNextVariant(const CSemiPath& a_rSemiPath) const
 
 }
 
-void CPathReplay::SkipVariantsTo(CPath& a_rPath, const SContig& a_rContig, int a_nMaxPos)
+int CPathReplay::SkipVariantsTo(CPath& a_rPath, const SContig& a_rContig, int a_nMaxPos)
 {
     //BASE SEMIPATH
     int varIndex = a_rPath.m_baseSemiPath.GetVariantIndex();
+    int baseSkippedCount = 0;
+    int calledSkippedCount = 0;
     
     while(varIndex < (int)m_aVariantListBase.size() && (varIndex == -1  || m_aVariantListBase[varIndex]->GetStart() < a_nMaxPos))
     {
         varIndex++;
+        baseSkippedCount++;
     }
     varIndex--;
     a_rPath.m_baseSemiPath.SetVariantIndex(varIndex);
     a_rPath.m_baseSemiPath.MoveForward(std::min(a_nMaxPos, a_rContig.m_nRefLength -1));
     
+    std::cout << "Baseline skipped Variant Count:" << baseSkippedCount << std::endl;
+    std::cerr << "Baseline skipped Variant Count:" << baseSkippedCount << std::endl;
     
     //CALLED SEMIPATH
     varIndex = a_rPath.m_calledSemiPath.GetVariantIndex();
@@ -455,10 +469,17 @@ void CPathReplay::SkipVariantsTo(CPath& a_rPath, const SContig& a_rContig, int a
     while(varIndex < (int)m_aVariantListCalled.size() && (varIndex == -1  || m_aVariantListCalled[varIndex]->GetStart() < a_nMaxPos))
     {
         varIndex++;
+        calledSkippedCount++;
     }
     varIndex--;
     a_rPath.m_calledSemiPath.SetVariantIndex(varIndex);
     a_rPath.m_calledSemiPath.MoveForward(std::min(a_nMaxPos, a_rContig.m_nRefLength-1));
+    
+    std::cout << "Called skipped Variant Count:" <<  calledSkippedCount << std::endl;
+    std::cerr << "Called skipped Variant Count:" <<  calledSkippedCount << std::endl;
+
+    
+    return calledSkippedCount + baseSkippedCount;
 }
 
 void CPathReplay::Clear()

@@ -61,8 +61,8 @@ class CPathReplay
         //or -1 if there is none to be enqueued at the current position
         int GetNextVariant(const CSemiPath& a_rSemiPath) const;
     
-        //Move the path to the specified position, ignoring any intervening variants.
-        void SkipVariantsTo(CPath& a_rPath, const SContig& a_rContig, int a_nMaxPos);
+        //Move the path to the specified position, ignoring any intervening variants. Returns the skipped variant count
+        int SkipVariantsTo(CPath& a_rPath, const SContig& a_rContig, int a_nMaxPos);
     
         //Path list to store generated paths
         CPathSet m_pathList;

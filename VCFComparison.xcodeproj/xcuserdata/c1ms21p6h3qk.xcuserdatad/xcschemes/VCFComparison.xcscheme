@@ -71,7 +71,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT/vbt/sample/father.vcf"
+            argument = "/Users/c1ms21p6h3qk/Desktop/KaushikTest/baseline_sim1-50x-hiseq-2500-v1-pcr-free.vcf"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -79,7 +79,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT/vbt/sample/child.vcf"
+            argument = "/Users/c1ms21p6h3qk/Desktop/KaushikTest/called_sim1.merged.and_more.concat.sorted.vcf"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -95,7 +95,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT/vbt/sample/reference.fasta"
+            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/human_g1k_v37_decoy.fasta"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
