@@ -246,8 +246,15 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
             m_fatherChildConfig.m_nThreadCount = std::min(std::max(1, atoi(argv[it+1])), CHROMOSOME_COUNT);
             it+=2;
         }
-
         
+        else
+        {
+            std::cerr << "Unknown Command or Argument: " << argv[it] << std::endl;
+            std::cerr << "Use the following command for parameter usage:" << std::endl;
+            std::cerr << "./vbt mendelian --help" << std::endl;
+            return false;
+        }
+
         it += 2;
     }
     

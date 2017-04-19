@@ -68,10 +68,7 @@ private:
 
     //Fill Oriented variant sets for parent and child
     void FillAlleleMatchOrientedVariants(std::vector<int>& a_aCommonChromosomes);
-    
-    //Push the variant to the variantlist in the order of starting point (ascending order)
-    void PushVariant(CVariant& a_rVariant, std::vector<CVariant>& a_rVecToPush);
-    
+        
     //VCF FILES FOR COMPARISON
     CVcfReader m_FatherVcf;
     CVcfReader m_MotherVcf;

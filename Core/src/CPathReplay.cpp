@@ -110,10 +110,9 @@ CPath CPathReplay::FindBestPath(SContig a_contig, bool a_bIsGenotypeMatch)
         else if(m_pathList.Size() >  m_nMaxPathSize || currentIterations > m_nMaxIterationCount)
         {
             complexRegionCount++;
-            std::cout << "Evaluation is too complex!!" << std::endl;
-            std::cout << m_pathList.Size() << " unresolved paths, " << currentIterations << " iterations at reference region " << a_contig.m_chromosome << ":" << (lastSyncPos + 1) << "-" << (m_nCurrentPosition + 2) << std::endl;
             std::cerr << "Evaluation is too complex!!" << std::endl;
-            std::cerr << m_pathList.Size() << " unresolved paths, " << currentIterations << " iterations at reference region " << a_contig.m_chromosome << ":" << (lastSyncPos + 1) << "-" << (m_nCurrentPosition + 2) << std::endl;
+            std::cerr << m_pathList.Size() << " unresolved paths, " << currentIterations << " iterations at reference region ";
+            std::cerr << a_contig.m_chromosome << ":" << (lastSyncPos + 1) << "-" << (m_nCurrentPosition + 2) << std::endl;
 
             //Drop all paths currently in play
             m_pathList.Clear();
@@ -204,9 +203,7 @@ CPath CPathReplay::FindBestPath(SContig a_contig, bool a_bIsGenotypeMatch)
     best.m_pPath->AddExcludedVariants(m_ExcludedVariantsCalledBest, m_ExcludedVariantsBaselineBest);
     
     std::cout << "Complex Region Count :" << complexRegionCount << std::endl;
-    std::cerr << "Complex Region Count :" << complexRegionCount << std::endl;
     std::cout << "Total Skipped Variant Count:" << totalSkippedVariantCount << std::endl;
-    std::cerr << "Total Skipped Variant Count:" << totalSkippedVariantCount << std::endl;
     std::cout << "Best Path Found for " << a_contig.m_nChrId + 1 << std::endl;
     std::cout << "Maximum path complexity is " << maxPaths << ", with "  << currentMaxIterations << " iterations " << std::endl;
     return *best.m_pPath;

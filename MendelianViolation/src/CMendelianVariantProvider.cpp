@@ -6,9 +6,9 @@
 //  Copyright © 2017 Seven Bridges Genomics. All rights reserved.
 //
 
+#include <algorithm>
 #include "CMendelianVariantProvider.h"
 #include <iostream>
-
 
 bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildConfig, const SConfig& a_rMotherChildConfig)
 {
@@ -120,8 +120,19 @@ bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildC
 }
 
 
+bool CompareVariants(const CVariant& var1, const CVariant& var2)
+{
+    if(var1.m_nStartPos != var2.m_nStartPos)
+        return var1.m_nStartPos < var2.m_nStartPos;
+    else if(var1.m_nOriginalPos != var2.m_nOriginalPos)
+        return var1.m_nOriginalPos < var2.m_nOriginalPos;
+    else
+        return var1.m_nId < var2.m_nId;
+}
+
 void CMendelianVariantProvider::FillVariants()
 {
+    
     CVariant variant;
     int id = 0;
     std::string preChrId = "";
@@ -134,30 +145,37 @@ void CMendelianVariantProvider::FillVariants()
             preChrId = variant.m_chrName;
             std::cout << "Processing chromosome " << preChrId << " of Parent[FATHER] vcf" << std::endl;
         }
-
-        //if(variant.m_nChrId < 21)
-        //  continue;
+        
+        if(variant.m_nChrId == 3)
+            break;
         
         if(variant.m_nChrId == -1)
             continue;
         else if(variant.m_nChrId > 23) //DISCARD Y and MT chromosome
-            PushVariant(variant, m_aFatherNotAssessedVariantList[variant.m_nChrId-1]);
-
+            m_aFatherNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
+        
         else if(m_fatherChildConfig.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
-            PushVariant(variant, m_aFatherNotAssessedVariantList[variant.m_nChrId-1]);
+            m_aFatherNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
         
         else if(IsStructuralVariant(variant, m_fatherChildConfig.m_nMaxVariantSize))
-            PushVariant(variant, m_aFatherNotAssessedVariantList[variant.m_nChrId-1]);
-        
+            m_aFatherNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
+
         else
         {
-            PushVariant(variant, m_aFatherVariantList[variant.m_nChrId-1]);
+            m_aFatherVariantList[variant.m_nChrId-1].push_back(variant);
             id++;
         }
     }
-
+    
     preChrId = "";
     id = 0;
+
+    
+    for(int k = 0; k < CHROMOSOME_COUNT; k++)
+    {
+        std::sort(m_aFatherNotAssessedVariantList[k].begin(), m_aFatherNotAssessedVariantList[k].end(), CompareVariants);
+        std::sort(m_aFatherVariantList[k].begin(), m_aFatherVariantList[k].end(), CompareVariants);
+    }
 
     //READ VARIANTS OF MOTHER
     while(m_MotherVcf.GetNextRecord(&variant, id, m_motherChildConfig))
@@ -167,30 +185,37 @@ void CMendelianVariantProvider::FillVariants()
             preChrId = variant.m_chrName;
             std::cout << "Processing chromosome " << preChrId << " of Parent[MOTHER] vcf" << std::endl;
         }
-
-        //if(variant.m_nChrId < 21)
-        //    continue;
+        
+        if(variant.m_nChrId == 3)
+            break;
         
         if(variant.m_nChrId == -1)
             continue;
         else if(variant.m_nChrId > 23) //DISCARD Y and MT chromosome
-            PushVariant(variant, m_aMotherNotAssessedVariantList[variant.m_nChrId-1]);
+            m_aMotherNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
         
         else if(m_motherChildConfig.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
-            PushVariant(variant, m_aMotherNotAssessedVariantList[variant.m_nChrId-1]);
+            m_aMotherNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
         
         else if(IsStructuralVariant(variant, m_motherChildConfig.m_nMaxVariantSize))
-            PushVariant(variant, m_aMotherNotAssessedVariantList[variant.m_nChrId-1]);
+            m_aMotherNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
         
         else
         {
-            PushVariant(variant, m_aMotherVariantList[variant.m_nChrId-1]);
+            m_aMotherVariantList[variant.m_nChrId-1].push_back(variant);
             id++;
         }
     }
-
+    
     preChrId = "";
     id = 0;
+
+    
+    for(int k = 0; k < CHROMOSOME_COUNT; k++)
+    {
+        std::sort(m_aMotherNotAssessedVariantList[k].begin(), m_aMotherNotAssessedVariantList[k].end(), CompareVariants);
+        std::sort(m_aMotherVariantList[k].begin(), m_aMotherVariantList[k].end(), CompareVariants);
+    }
     
     //READ VARIANTS OF CHILD
     while(m_ChildVcf.GetNextRecord(&variant, id, m_motherChildConfig))
@@ -198,29 +223,36 @@ void CMendelianVariantProvider::FillVariants()
         if(preChrId != variant.m_chrName)
         {
             preChrId = variant.m_chrName;
-            std::cout << "Processing chromosome " << preChrId << " of Child vcf" << std::endl;
+            std::cout << "Processing chromosome " << preChrId << " of child vcf" << std::endl;
         }
-
-        //if(variant.m_nChrId < 21)
-        //    continue;
+        
+        if(variant.m_nChrId == 3)
+            break;
         
         if(variant.m_nChrId == -1)
             continue;
         else if(variant.m_nChrId > 23) //DISCARD Y and MT chromosome
-            PushVariant(variant, m_aChildNotAssessedVariantList[variant.m_nChrId-1]);
+            m_aChildNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
         
         else if(m_motherChildConfig.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
-            PushVariant(variant, m_aChildNotAssessedVariantList[variant.m_nChrId-1]);
+            m_aChildNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
         
         else if(IsStructuralVariant(variant, m_motherChildConfig.m_nMaxVariantSize))
-            PushVariant(variant, m_aChildNotAssessedVariantList[variant.m_nChrId-1]);
+            m_aChildNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
         
         else
         {
-            PushVariant(variant, m_aChildVariantList[variant.m_nChrId-1]);
+            m_aChildVariantList[variant.m_nChrId-1].push_back(variant);
             id++;
         }
     }
+    
+    for(int k = 0; k < CHROMOSOME_COUNT; k++)
+    {
+        std::sort(m_aChildNotAssessedVariantList[k].begin(), m_aChildNotAssessedVariantList[k].end(), CompareVariants);
+        std::sort(m_aChildVariantList[k].begin(), m_aChildVariantList[k].end(), CompareVariants);
+    }
+
 }
 
 
@@ -308,43 +340,6 @@ bool CMendelianVariantProvider::IsStructuralVariant(const CVariant& a_rVariant, 
             return true;
     }
     return false;
-}
-
-void CMendelianVariantProvider::PushVariant(CVariant& a_rVariant, std::vector<CVariant>& a_rVecToPush)
-{
-    int k = 0;
-    int size = static_cast<int>(a_rVecToPush.size())-1;
-    std::vector<CVariant>::iterator it;
-    
-    if(size == -1)
-    {
-        a_rVecToPush.push_back(a_rVariant);
-        return;
-    }
-    
-    while(k <= size && a_rVariant.GetStart() < a_rVecToPush[size-k].GetStart())
-        k++;
-    
-    if(a_rVariant.GetStart() == a_rVecToPush[size-k].GetStart())
-    {
-        if(a_rVariant.m_bIsFirstNucleotideTrimmed && !a_rVecToPush[size-k].m_bIsFirstNucleotideTrimmed)
-            k++;
-        
-        else if(a_rVariant.m_bIsFirstNucleotideTrimmed == a_rVecToPush[size-k].m_bIsFirstNucleotideTrimmed)
-        {
-            if(a_rVariant.GetEnd() < a_rVecToPush[size-k].GetEnd())
-                k++;
-        }
-        
-        //        if(a_rVariant.GetEnd() == a_rVecToPush[size-k].GetEnd())
-        //        {
-        //            if(a_rVariant.m_alleles[0].m_sequence.length() < a_rVecToPush[size-k].m_alleles[0].m_sequence.length())
-        //                k++;
-        //        }
-    }
-    
-    it = a_rVecToPush.begin() + (size - k) + 1;
-    a_rVecToPush.insert(it, a_rVariant);
 }
 
 std::vector<int> CMendelianVariantProvider::GetCommonChromosomes(bool a_bIsCalledInProviderInitialization)

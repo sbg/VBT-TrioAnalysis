@@ -63,42 +63,6 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "varcomp"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-base"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/KaushikTest/baseline_sim1-50x-hiseq-2500-v1-pcr-free.vcf"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-called"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/KaushikTest/called_sim1.merged.and_more.concat.sorted.vcf"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-outDir"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT/vbt/output"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-ref"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/human_g1k_v37_decoy.fasta"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
             argument = "mendelian"
             isEnabled = "YES">
          </CommandLineArgument>
@@ -151,7 +115,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-sampleMother"
+            argument = "-sample-mother"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -159,7 +123,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-sampleFather"
+            argument = "-sample-father"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -167,7 +131,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-sampleChild"
+            argument = "-sample-child"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
