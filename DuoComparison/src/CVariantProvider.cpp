@@ -52,7 +52,7 @@ bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
     bIsSuccess = m_baseVCF.Open(a_rConfig.m_pBaseVcfFileName);
     if(!bIsSuccess)
     {
-        std::cout << "Baseline VCF file is unable to open!: " << a_rConfig.m_pBaseVcfFileName << std::endl;
+        std::cerr << "Baseline VCF file is unable to open!: " << a_rConfig.m_pBaseVcfFileName << std::endl;
         return false;
     }
     m_baseVCF.setID(0);
@@ -60,7 +60,7 @@ bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
     bIsSuccess = m_calledVCF.Open(a_rConfig.m_pCalledVcfFileName);
     if(!bIsSuccess)
     {
-        std::cout << "Called VCF file is unable to open!: " << a_rConfig.m_pCalledVcfFileName << std::endl;
+        std::cerr << "Called VCF file is unable to open!: " << a_rConfig.m_pCalledVcfFileName << std::endl;
         return false;
     }
     m_calledVCF.setID(1);
@@ -77,7 +77,7 @@ bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
     
     if(!bIsSuccess)
     {
-        std::cout << "Baseline Sample name is incorrect!" << std::endl;
+        std::cerr << "Baseline Sample name is incorrect!" << std::endl;
         return false;
     }
     
@@ -92,7 +92,7 @@ bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
     
     if(!bIsSuccess)
     {
-        std::cout << "Called Sample name is incorrect!" << std::endl;
+        std::cerr << "Called Sample name is incorrect!" << std::endl;
         return false;
     }
 
@@ -101,7 +101,7 @@ bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
     bIsSuccess = m_fastaParser.OpenFastaFile(a_rConfig.m_pFastaFileName);
     if(!bIsSuccess)
     {
-        std::cout << "FASTA file is unable to open!: " << a_rConfig.m_pFastaFileName << std::endl;
+        std::cerr << "FASTA file is unable to open!: " << a_rConfig.m_pFastaFileName << std::endl;
         return false;
     }
     
@@ -131,7 +131,7 @@ bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
                 bool bIsSuccess2 = m_fastaParser.FetchNewChromosome(m_aBaseVariantList[k][0].m_chrName, m_aContigList[k]);
                 if(!bIsSuccess2)
                 {
-                    std::cout << "Chromosome " << k+1 << "will be filtered out from the comparison since reference FASTA could not read or it does not contain given chromosome" << std::endl;
+                    std::cerr << "Chromosome " << k+1 << "will be filtered out from the comparison since reference FASTA could not read or it does not contain given chromosome" << std::endl;
                     m_aCalledVariantList[k].clear();
                     m_aBaseVariantList[k].clear();
                     m_aBaseOrientedVariantList[k].clear();

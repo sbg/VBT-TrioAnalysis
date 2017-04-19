@@ -24,7 +24,7 @@ bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildC
     //Open FATHER vcf file
     bIsSuccessFather = m_FatherVcf.Open(a_rFatherChildConfig.m_pBaseVcfFileName);
     if(!bIsSuccessFather)
-        std::cout << "Father VCF file is unable to open!: " << a_rFatherChildConfig.m_pBaseVcfFileName << std::endl;
+        std::cerr << "Father VCF file is unable to open!: " << a_rFatherChildConfig.m_pBaseVcfFileName << std::endl;
     
     //Set sample name of FATHER
     else if (true == m_fatherChildConfig.m_bBaseSampleEnabled)
@@ -33,13 +33,20 @@ bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildC
     {
         std::vector<std::string> sampleNames;
         m_FatherVcf.GetSampleNames(sampleNames);
-        m_FatherVcf.SelectSample(sampleNames[0]);
+        bIsSuccessFather = m_FatherVcf.SelectSample(sampleNames[0]);
     }
+    
+    if(!bIsSuccessFather)
+    {
+        std::cerr << "Father Sample name is incorrect!" << std::endl;
+        return false;
+    }
+
     
     //Open MOTHER vcf file
     bIsSuccessMother = m_MotherVcf.Open(a_rMotherChildConfig.m_pBaseVcfFileName);
     if(!bIsSuccessMother)
-        std::cout << "Mother VCF file is unable to open!: " << a_rMotherChildConfig.m_pBaseVcfFileName << std::endl;
+        std::cerr << "Mother VCF file is unable to open!: " << a_rMotherChildConfig.m_pBaseVcfFileName << std::endl;
     
     //Set sample name of MOTHER
     else if (true == m_motherChildConfig.m_bBaseSampleEnabled)
@@ -48,13 +55,20 @@ bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildC
     {
         std::vector<std::string> sampleNames;
         m_MotherVcf.GetSampleNames(sampleNames);
-        m_MotherVcf.SelectSample(sampleNames[0]);
+        bIsSuccessMother = m_MotherVcf.SelectSample(sampleNames[0]);
     }
+    
+    if(!bIsSuccessMother)
+    {
+        std::cerr << "Mother Sample name is incorrect!" << std::endl;
+        return false;
+    }
+
     
     //Open CHILD vcf file
     bIsSuccessChild = m_ChildVcf.Open(a_rFatherChildConfig.m_pCalledVcfFileName);
     if(!bIsSuccessChild)
-        std::cout << "Child VCF file is unable to open!: " << a_rFatherChildConfig.m_pCalledVcfFileName << std::endl;
+        std::cerr << "Child VCF file is unable to open!: " << a_rFatherChildConfig.m_pCalledVcfFileName << std::endl;
     
     //Set sample name of CHILD
     else if (true == m_fatherChildConfig.m_bCalledSampleEnabled)
@@ -63,13 +77,20 @@ bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildC
     {
         std::vector<std::string> sampleNames;
         m_ChildVcf.GetSampleNames(sampleNames);
-        m_ChildVcf.SelectSample(sampleNames[0]);
+        bIsSuccessChild = m_ChildVcf.SelectSample(sampleNames[0]);
     }
+    
+    if(!bIsSuccessChild)
+    {
+        std::cerr << "Child Sample name is incorrect!" << std::endl;
+        return false;
+    }
+
     
     // OPEN FASTA FILE
     bIsSuccessFasta = m_fastaParser.OpenFastaFile(a_rFatherChildConfig.m_pFastaFileName);
     if(!bIsSuccessFasta)
-        std::cout << "FASTA file is unable to open!: " << a_rFatherChildConfig.m_pFastaFileName << std::endl;
+        std::cerr << "FASTA file is unable to open!: " << a_rFatherChildConfig.m_pFastaFileName << std::endl;
     
     if(bIsSuccessChild && bIsSuccessMother && bIsSuccessFather && bIsSuccessFasta)
     {
@@ -92,7 +113,7 @@ bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildC
             bool bIsSuccess2 = m_fastaParser.FetchNewChromosome(m_aChildVariantList[commonChromosomeIds[k]][0].m_chrName, m_aContigList[commonChromosomeIds[k]]);
             if(!bIsSuccess2)
             {
-                std::cout << "Chromosome " << k+1 << "will be filtered out from the comparison since reference FASTA could not read or it does not contain given chromosome" << std::endl;
+                std::cerr << "Chromosome " << k+1 << "will be filtered out from the comparison since reference FASTA could not read or it does not contain given chromosome" << std::endl;
                 m_aFatherVariantList[commonChromosomeIds[k]].clear();
                 m_aMotherVariantList[commonChromosomeIds[k]].clear();
                 m_aChildVariantList[commonChromosomeIds[k]].clear();
@@ -146,8 +167,8 @@ void CMendelianVariantProvider::FillVariants()
             std::cout << "Processing chromosome " << preChrId << " of Parent[FATHER] vcf" << std::endl;
         }
         
-        if(variant.m_nChrId == 3)
-            break;
+        //if(variant.m_nChrId == 3)
+        //    break;
         
         if(variant.m_nChrId == -1)
             continue;
@@ -186,8 +207,8 @@ void CMendelianVariantProvider::FillVariants()
             std::cout << "Processing chromosome " << preChrId << " of Parent[MOTHER] vcf" << std::endl;
         }
         
-        if(variant.m_nChrId == 3)
-            break;
+        //if(variant.m_nChrId == 3)
+        //    break;
         
         if(variant.m_nChrId == -1)
             continue;
@@ -226,8 +247,8 @@ void CMendelianVariantProvider::FillVariants()
             std::cout << "Processing chromosome " << preChrId << " of child vcf" << std::endl;
         }
         
-        if(variant.m_nChrId == 3)
-            break;
+        //if(variant.m_nChrId == 3)
+        //    break;
         
         if(variant.m_nChrId == -1)
             continue;
@@ -352,7 +373,7 @@ std::vector<int> CMendelianVariantProvider::GetCommonChromosomes(bool a_bIsCalle
             commonChrIds.push_back(k);
         else if(true == a_bIsCalledInProviderInitialization)
         {
-            std::cout << "Warning! Chromosome " << k+1 << " is not contained by all three vcf files. Variants will be filtered out from comparison" << std::endl;
+            std::cerr << "Warning! Chromosome " << k+1 << " is not contained by all three vcf files. Variants will be filtered out from comparison" << std::endl;
             
             //Clear redundant variants
             m_aChildVariantList[k].clear();
