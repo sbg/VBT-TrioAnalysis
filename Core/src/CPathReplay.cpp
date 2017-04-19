@@ -457,7 +457,6 @@ int CPathReplay::SkipVariantsTo(CPath& a_rPath, const SContig& a_rContig, int a_
     a_rPath.m_baseSemiPath.SetVariantIndex(varIndex);
     a_rPath.m_baseSemiPath.MoveForward(std::min(a_nMaxPos, a_rContig.m_nRefLength -1));
     
-    std::cout << "Baseline skipped Variant Count:" << baseSkippedCount << std::endl;
     std::cerr << "Baseline skipped Variant Count:" << baseSkippedCount << std::endl;
     
     //CALLED SEMIPATH
@@ -472,7 +471,6 @@ int CPathReplay::SkipVariantsTo(CPath& a_rPath, const SContig& a_rContig, int a_
     a_rPath.m_calledSemiPath.SetVariantIndex(varIndex);
     a_rPath.m_calledSemiPath.MoveForward(std::min(a_nMaxPos, a_rContig.m_nRefLength-1));
     
-    std::cout << "Called skipped Variant Count:" <<  calledSkippedCount << std::endl;
     std::cerr << "Called skipped Variant Count:" <<  calledSkippedCount << std::endl;
 
     
