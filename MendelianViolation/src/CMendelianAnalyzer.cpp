@@ -672,10 +672,14 @@ void CMendelianAnalyzer::ProcessChromosome(const std::vector<int>& a_nChromosome
         //Find Best Path Father-Child AM Match
         m_aBestPathsFatherChildAM[chromosomeId] = replayFatherChildAM.FindBestPath(ctg, false);
         const std::vector<const COrientedVariant*>& includedVarsChildAM = m_aBestPathsFatherChildAM[chromosomeId].m_calledSemiPath.GetIncludedVariants();
+        const std::vector<const CVariant*> excludedVarsChildFC = m_provider.GetVariantList(excludedVarsChild, m_aBestPathsFatherChildAM[chromosomeId].m_calledSemiPath.GetExcluded());
+
 
         //Set Variant status of child variants
         m_provider.SetVariantStatus(includedVarsChildAM, eALLELE_MATCH);
         m_provider.SetVariantStatus(includedVarsChildGT, eGENOTYPE_MATCH);
+        m_provider.SetVariantStatus(excludedVarsChildFC, eNO_MATCH);
+
         
         //Clear Father child replay object
         replayFatherChildAM.Clear();
@@ -706,10 +710,13 @@ void CMendelianAnalyzer::ProcessChromosome(const std::vector<int>& a_nChromosome
         //Find Best Path Mother-Child AM Match
         m_aBestPathsMotherChildAM[chromosomeId] = replayMotherChildAM.FindBestPath(ctg, false);
         const std::vector<const COrientedVariant*>& includedVarsChildAMMC = m_aBestPathsMotherChildAM[chromosomeId].m_calledSemiPath.GetIncludedVariants();
+        const std::vector<const CVariant*> excludedVarsChildMC = m_provider.GetVariantList(excludedVarsChild2, m_aBestPathsMotherChildAM[chromosomeId].m_calledSemiPath.GetExcluded());
         
         //Set Variant status of child variants
         m_provider.SetVariantStatus(includedVarsChildAMMC, eALLELE_MATCH);
         m_provider.SetVariantStatus(includedVarsChildGTMC, eGENOTYPE_MATCH);
+        m_provider.SetVariantStatus(excludedVarsChildMC, eNO_MATCH);
+        
         
         
         //Clear Father child replay object

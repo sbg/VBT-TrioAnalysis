@@ -77,7 +77,6 @@
 		551661DA1E82C967002436FA /* CPathReplay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CPathReplay.cpp; path = Core/src/CPathReplay.cpp; sourceTree = SOURCE_ROOT; };
 		551661DB1E82C967002436FA /* CPathSet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CPathSet.cpp; path = Core/src/CPathSet.cpp; sourceTree = SOURCE_ROOT; };
 		551661DC1E82C967002436FA /* CSemiPath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CSemiPath.cpp; path = Core/src/CSemiPath.cpp; sourceTree = SOURCE_ROOT; };
-		551661E31E82E582002436FA /* CVariantIterator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CVariantIterator.h; path = DuoComparison/include/CVariantIterator.h; sourceTree = SOURCE_ROOT; };
 		551661E41E82E582002436FA /* CVariantIteratorV2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CVariantIteratorV2.h; path = DuoComparison/include/CVariantIteratorV2.h; sourceTree = SOURCE_ROOT; };
 		551661E51E82E582002436FA /* CGa4ghOutputProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CGa4ghOutputProvider.h; path = DuoComparison/include/CGa4ghOutputProvider.h; sourceTree = SOURCE_ROOT; };
 		551661E61E82E582002436FA /* CVariantProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CVariantProvider.h; path = DuoComparison/include/CVariantProvider.h; sourceTree = SOURCE_ROOT; };
@@ -104,6 +103,7 @@
 		5516621B1E82F271002436FA /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = SOURCE_ROOT; };
 		5516621C1E82F271002436FA /* test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test.cpp; sourceTree = SOURCE_ROOT; };
 		553B0F851E36A2FE00E7186C /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
+		55647EF01EA810DB00D2625D /* CVariantIterator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CVariantIterator.h; path = MendelianViolation/include/CVariantIterator.h; sourceTree = SOURCE_ROOT; };
 		556D39761DD3AEA400551040 /* VCFComparison */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = VCFComparison; sourceTree = BUILT_PRODUCTS_DIR; };
 		556D39811DD3AF2E00551040 /* libhts.1.3.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libhts.1.3.2.dylib; sourceTree = "<group>"; };
 		556D39821DD3AF2E00551040 /* libhts.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libhts.1.dylib; sourceTree = "<group>"; };
@@ -215,7 +215,6 @@
 			isa = PBXGroup;
 			children = (
 				550E1F5D1E8AA33400AEFB0B /* CResultLog.h */,
-				551661E31E82E582002436FA /* CVariantIterator.h */,
 				551661E41E82E582002436FA /* CVariantIteratorV2.h */,
 				551661E51E82E582002436FA /* CGa4ghOutputProvider.h */,
 				551661E61E82E582002436FA /* CVariantProvider.h */,
@@ -289,6 +288,7 @@
 		551661BC1E82C272002436FA /* include */ = {
 			isa = PBXGroup;
 			children = (
+				55647EF01EA810DB00D2625D /* CVariantIterator.h */,
 				551661F21E82E8DB002436FA /* CMendelianAnalyzer.h */,
 				551661F31E82E8DB002436FA /* CMendelianTrioMerger.h */,
 				551661F41E82E8DB002436FA /* CMendelianVariantProvider.h */,

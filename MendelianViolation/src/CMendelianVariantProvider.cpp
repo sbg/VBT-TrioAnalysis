@@ -580,7 +580,7 @@ void CMendelianVariantProvider::SetVariantStatus(const std::vector<const CVarian
         else if(a_status == eNO_MATCH && pVar-> m_variantStatus == eNOT_ASSESSED)
             pVar->m_variantStatus = a_status;
         else
-            break;
+            continue;
     }
 }
 
@@ -596,7 +596,7 @@ void CMendelianVariantProvider::SetVariantStatus(const std::vector<const COrient
         else if(a_status == eNO_MATCH && pOVar->GetVariant().m_variantStatus == eNOT_ASSESSED)
             pOVar->GetVariant().m_variantStatus = a_status;
         else
-            break;
+            continue;
     }
 }
 
