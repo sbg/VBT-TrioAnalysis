@@ -26,6 +26,10 @@ void CVcfAnalyzer::Run(int argc, char** argv)
     
     if(!isSuccess)
         return;
+
+    std::cout << "MaxPath: " << m_config.m_nMaxPathSize << std::endl;
+    std::cout << "MaxIteration: " << m_config.m_nMaxIterationCount << std::endl;
+
     
     start = std::time(0);
     
