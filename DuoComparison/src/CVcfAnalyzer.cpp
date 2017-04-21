@@ -39,8 +39,8 @@ void CVcfAnalyzer::Run(int argc, char** argv)
     std::cout << "Vcf and fasta Parser read completed in " << duration << " secs" << std::endl;
     
     std::time_t start1 = std::time(0);
+    
     //Creates the threads according to given memory and process the data
-
     int threadCount = AssignJobsToThreads(m_config.m_nThreadCount);
     for(int k = 0; k < threadCount; k++)
         m_pThreadPool[k].join();
@@ -48,6 +48,7 @@ void CVcfAnalyzer::Run(int argc, char** argv)
     
     if(0 == strcmp(m_config.m_pOutputMode, "SPLIT"))
     {
+        std::cout << "Generating Outputs [SPLIT MODE]..." << std::endl;
         CSplitOutputProvider outputprovider;
         outputprovider.SetVcfPath(m_config.m_pOutputDirectory);
         outputprovider.SetVariantProvider(&m_provider);
@@ -56,6 +57,7 @@ void CVcfAnalyzer::Run(int argc, char** argv)
     }
     else
     {
+        std::cout << "Generating Outputs [GA4GH MODE]..." << std::endl;
         CGa4ghOutputProvider outputprovider;
         outputprovider.SetVcfPath(m_config.m_pOutputDirectory);
         outputprovider.SetVariantProvider(&m_provider);
