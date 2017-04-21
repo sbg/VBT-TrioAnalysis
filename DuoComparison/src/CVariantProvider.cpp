@@ -82,7 +82,7 @@ bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
     }
     
     if (true == m_config.m_bCalledSampleEnabled)
-        bIsSuccess = m_baseVCF.SelectSample(m_config.m_pCalledSample);
+        bIsSuccess = m_calledVCF.SelectSample(m_config.m_pCalledSample);
     else
     {
         std::vector<std::string> sampleNames;
@@ -208,9 +208,11 @@ void CVariantProvider::FillVariantLists()
             //    break;
         }
         
-        if(m_config.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
-            m_aCalledNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
+        if(variant.m_nChrId == -1)
+            break;
 
+        else if(m_config.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
+            m_aCalledNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
         
         else if(m_config.m_bSNPOnly && variant.GetVariantType() != eSNP)
             m_aCalledNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
