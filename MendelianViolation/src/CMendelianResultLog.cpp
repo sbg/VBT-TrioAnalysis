@@ -285,13 +285,20 @@ void CMendelianResultLog::WriteDetailedReportTable()
     std::string path = m_aLogDirectory + "/DetailedReportTable.txt";
     outputLog.open(path.c_str());
     
+    outputLog << "Skipped Total Child  Variant Count [Complex Region]: " << m_nTotalSkippedCountChild << std::endl;
+    outputLog << "Skipped Total Mother Variant Count [Complex Region]: " << m_nTotalSkippedCountMother << std::endl;
+    outputLog << "Skipped Total Father Variant Count [Complex Region]: " << m_nTotalSkippedCountFather << std::endl;
+    if(m_nTotalSkippedCountMother + m_nTotalSkippedCountChild + m_nTotalSkippedCountFather > 0)
+        outputLog << "Note: Please try to increase memory-related parameters for getting less skipped variants" << std::endl;
+    outputLog << std::endl << std::endl;
+    
     outputLog << "+" << std::left << std::setw(91) << std::setfill('-') << "-" << "+" << std::endl;
     
     outputLog << "|" << std::left << std::setw(20) << std::setfill(separator) << " VARIANT TYPES" << "|";
-    outputLog << std::left << std::setw(19) << std::setfill(separator) << " COMPLIANT NO" << "|" ;
-    outputLog << std::left << std::setw(16) << std::setfill(separator) << " VIOLATION NO" << "|";
+    outputLog << std::left << std::setw(19) << std::setfill(separator) << " COMPLIANT NO"  << "|" ;
+    outputLog << std::left << std::setw(16) << std::setfill(separator) << " VIOLATION NO"  << "|";
     outputLog << std::left << std::setw(16) << std::setfill(separator) << " NOCALL PARENT" << "|";
-    outputLog << std::left << std::setw(16) << std::setfill(separator) << " NOCALL CHILD" <<  "|";
+    outputLog << std::left << std::setw(16) << std::setfill(separator) << " NOCALL CHILD"  << "|";
     outputLog << std::endl;
     
     WriteRow(&outputLog, "SNP", m_DetailedLogEntries.m_nSNP);
@@ -435,6 +442,13 @@ void SMendelianDetailedLogGenotypes::clear()
         }
 }
 
+
+void CMendelianResultLog::LogSkippedVariantCounts(int a_nChildSkipped, int a_nFatherSkipped, int a_nMotherSkipped)
+{
+    m_nTotalSkippedCountChild = a_nChildSkipped;
+    m_nTotalSkippedCountFather = a_nFatherSkipped;
+    m_nTotalSkippedCountMother = a_nMotherSkipped;
+}
 
 
 

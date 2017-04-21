@@ -80,6 +80,9 @@ public:
     //For ALL chromosomes, logs the genotype possibility counts for each 10 variant category
     void LogGenotypeMatrix(SMendelianDetailedLogGenotypes& a_rLogEntry);
     
+    //For ALL chromosomes, logs the skipped variant counts for father/mother/child
+    void LogSkippedVariantCounts(int a_nChildSkipped, int a_nFatherSkipped, int a_nMotherSkipped);
+    
     //Write Statistic of parent-child comparison from Best Path Algorithm
     void WriteBestPathStatistics();
     
@@ -124,6 +127,11 @@ private:
     
     //File directory where the result logs will be stored
     std::string m_aLogDirectory;
+    
+    //Skipped variant counts
+    int m_nTotalSkippedCountFather;
+    int m_nTotalSkippedCountMother;
+    int m_nTotalSkippedCountChild;
     
 };
 
