@@ -25,7 +25,7 @@ const int DEFAULT_MAX_BP_LENGTH = 1000;
 const int DEFAULT_MAX_PATH_SIZE = 150000;
 
 //DEFAULT SIZE OF ITERATION COUNT (For Dynamic Programming result saving. This variable should be increased carefully since it is easy to exceed available memory)
-const int DEFAULT_MAX_ITERATION_SIZE = 3000000;
+const int DEFAULT_MAX_ITERATION_SIZE = 10000000;
 
 
 #endif //_CONSTANTS_H_

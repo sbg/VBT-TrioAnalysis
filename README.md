@@ -64,12 +64,12 @@ An **optional** parameter which specifies the way output will generated. **SPLIT
 
 An **optinal** parameter which changes comparison mode to Allele Matching
 
-### -sampleBase <Baseline_vcf_sample_name>
+### -sample-base <Baseline_vcf_sample_name>
 
 An **optional** parameter which is used to select sample name from baseline vcf file. By default, first sample is selected.
 
 
-### -sampleCalled <Called_vcf_sample_name>
+### -sample-called <Called_vcf_sample_name>
 
 An **optional** parameter which is used to select sample name from called vcf file. By default, first sample is selected.
 
@@ -146,17 +146,17 @@ An **optional** parameter which sets the way program process no call variants. D
 A **required** parameter which specifies the output directory for program/error logs and ga4gh output vcf file. In current version, in order not to damage multiplatform capability, **directory should be created by user**.
 
 
-### -sampleChild <child_vcf_sample_name>
+### -sample-child <child_vcf_sample_name>
 
 An **optional** parameter which is used to select sample name from child vcf file. By default, first sample is selected.
 
 
-### -sampleMother <mother_vcf_sample_name>
+### -sample-mother <mother_vcf_sample_name>
 
 An **optional** parameter which is used to select sample name from mother vcf file. By default, first sample is selected.
 
 
-### -sampleFather <father_vcf_sample_name>
+### -sample-father <father_vcf_sample_name>
 
 An **optional** parameter which is used to select sample name from father vcf file. By default, first sample is selected.
 
