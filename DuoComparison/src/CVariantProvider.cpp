@@ -183,11 +183,6 @@ void CVariantProvider::FillVariantLists()
             std::cout << "Processing chromosome " << preChrId << " of base vcf" << std::endl;
         }
         
-        if(variant.m_nChrId < 8)
-            continue;
-        if(variant.m_nChrId > 12)
-            break;
-
         if(m_config.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
             m_aBaseNotAssessedVariantList[variant.m_nChrId].push_back(variant);
         
@@ -215,11 +210,6 @@ void CVariantProvider::FillVariantLists()
             preChrId = variant.m_chrName;
             std::cout << "Processing chromosome " << preChrId << " of called vcf" << std::endl;
         }
-        
-        if(variant.m_nChrId < 8)
-            continue;
-        if(variant.m_nChrId > 12)
-            break;
         
         else if(m_config.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
             m_aCalledNotAssessedVariantList[variant.m_nChrId].push_back(variant);
