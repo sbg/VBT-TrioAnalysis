@@ -151,10 +151,17 @@ SAllele CVariant::GetAllele(int a_nAlleleId) const
 
 std::string CVariant::GetOriginalAlleleStr(int a_nAlleleIndex) const
 {
-    if(true == m_bIsFirstNucleotideTrimmed)
-        return m_refSequence[0] + m_alleles[a_nAlleleIndex].m_sequence;
-    else
-        return m_alleles[a_nAlleleIndex].m_sequence;
+    std::vector<std::string> alleleList;
+    std::stringstream ss(m_allelesStr);
+    std::string alel;
+    while (std::getline(ss, alel, ','))
+    {
+        alleleList.push_back(alel);
+    }
+    
+    assert(a_nAlleleIndex < alleleList.size());
+    
+    return alleleList[m_genotype[a_nAlleleIndex]];
 }
 
 bool CVariant::IsNull() const
