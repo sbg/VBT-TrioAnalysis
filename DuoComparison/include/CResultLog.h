@@ -11,9 +11,11 @@
 
 #include <string>
 #include "Constants.h"
+#include <vector>
 
 struct SLogEntry
 {
+    std::string m_chrName;
     bool m_bIsNull = true;
     int m_nTpCalled;
     int m_nTpBase;
@@ -32,7 +34,7 @@ public:
     void SetLogPath(const std::string& a_rLogPath);
     
     //Records the result for given chromosome
-    void LogStatistic(int a_nChromosomeId, int a_nTpCalled, int a_nTpBaseline, int a_nHalfTPCalled, int a_nHalfTPBaseline, int a_nFalsePositive, int a_nFalseNegative);
+    void LogStatistic(std::string a_chromosomeName, int a_nTpCalled, int a_nTpBaseline, int a_nHalfTPCalled, int a_nHalfTPBaseline, int a_nFalsePositive, int a_nFalseNegative);
     
     //Write the results in log.txt file
     //@ a_nMode: 0 - SPLIT (genotype match)   1 - SPLIT (allele match) s 2 - GA4GH
@@ -41,7 +43,7 @@ public:
 private:
     
     //Log entry array for ga4gh output [THE STANTARD OUTPUT]
-    SLogEntry m_aResultEntries[CHROMOSOME_COUNT];
+    std::vector<SLogEntry> m_aResultEntries;
         
     std::string m_aLogPath;
 };

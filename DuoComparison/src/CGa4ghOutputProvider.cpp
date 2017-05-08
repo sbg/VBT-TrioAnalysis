@@ -18,10 +18,10 @@ void CGa4ghOutputProvider::SetVariantProvider(CVariantProvider* a_pProvider)
     m_pVariantProvider = a_pProvider;
 }
 
-void CGa4ghOutputProvider::SetBestPaths(CPath* a_pBestPathList, CPath* a_pBestAlleleMatchPathList)
+void CGa4ghOutputProvider::SetBestPaths(std::vector<CPath>& a_rBestPathList, std::vector<CPath>& a_rBestAlleleMatchPathList)
 {
-    m_pBestPaths = a_pBestPathList;
-    m_pBestAlleleMatchPaths = a_pBestAlleleMatchPathList;
+    m_aBestPaths = a_rBestPathList;
+    m_aBestAlleleMatchPaths = a_rBestAlleleMatchPathList;
 }
 
 void CGa4ghOutputProvider::SetVcfPath(const std::string& a_rVcfPath)
@@ -29,15 +29,25 @@ void CGa4ghOutputProvider::SetVcfPath(const std::string& a_rVcfPath)
     m_vcfPath = a_rVcfPath + "/Ga4ghOutput.vcf";
 }
 
-void CGa4ghOutputProvider::GenerateGa4ghVcf()
+void CGa4ghOutputProvider::SetContigList(const std::vector<SVcfContig>& a_rContigs)
 {
+    m_contigs = a_rContigs;
+}
+
+
+void CGa4ghOutputProvider::GenerateGa4ghVcf(const std::vector<SChrIdTuple>& a_rCommonChromosomes)
+{
+    
+    std::vector<SChrIdTuple> commonChromosomesSorted(a_rCommonChromosomes);
+    std::sort(commonChromosomesSorted.begin(), commonChromosomesSorted.end(), [](const SChrIdTuple& t1, const SChrIdTuple& t2){ return t1.m_nBaseId < t2.m_nBaseId; });
+    
     m_vcfWriter.CreateVcf(m_vcfPath.c_str());
     FillHeader();
     
-    for(int k = 0; k < CHROMOSOME_COUNT; k++)
+    for(SChrIdTuple tuple : a_rCommonChromosomes)
     {
-        std::cout << "PROCESS CHROMOSOME " << k+1 << std::endl;
-        AddRecords(m_pBestPaths[k], m_pBestAlleleMatchPaths[k], k);
+        std::cout << "Processing Chromosome " << tuple.m_chrName << std::endl;
+        AddRecords(m_aBestPaths[tuple.m_nTupleIndex], m_aBestAlleleMatchPaths[tuple.m_nTupleIndex], tuple);
     }
     
     m_vcfWriter.CloseVcf();
@@ -62,32 +72,9 @@ void CGa4ghOutputProvider::FillHeader()
         m_vcfWriter.AddHeaderLine("##FILTER=<ID=" + filterNames[k] + ",Description=" + filterDescriptions[k] + ">");
     
     //ADD CONTIG IDs
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr1,length=249250621>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr2,length=243199373>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr3,length=198022430>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr4,length=191154276>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr5,length=180915260>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr6,length=171115067>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr7,length=159138663>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr8,length=146364022>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr9,length=141213431>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr10,length=135534747>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr11,length=135006516>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr12,length=133851895>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr13,length=115169878>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr14,length=107349540>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr15,length=102531392>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr16,length=90354753>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr17,length=81195210>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr18,length=78077248>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr19,length=59128983>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr20,length=63025520>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr21,length=48129895>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr22,length=51304566>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chrM,length=16571>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chrX,length=155270560>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chrY,length=59373566>");
-
+    for(int k = 0; k < m_contigs.size(); k++)
+        m_vcfWriter.AddHeaderLine("##contig=<ID=" + m_contigs[k].name + ",length=" + std::to_string(m_contigs[k].length) + ">");
+    
     //ADD REQUIRED SAMPLES
     m_vcfWriter.AddSampleName("TRUTH");
     m_vcfWriter.AddSampleName("QUERY");
@@ -96,18 +83,18 @@ void CGa4ghOutputProvider::FillHeader()
     m_vcfWriter.WriteHeaderToVcf();
 }
 
-void CGa4ghOutputProvider::AddRecords(const CPath& a_rBestPath, const CPath& a_rBestAlleleMatchPath, int a_nChrId)
+void CGa4ghOutputProvider::AddRecords(const CPath& a_rBestPath, const CPath& a_rBestAlleleMatchPath, SChrIdTuple a_rTuple)
 {
     //Best Path included/excluded variants
-    std::vector<const CVariant*> excludedVarsBase = m_pVariantProvider->GetVariantList(eBASE, a_nChrId, a_rBestPath.m_baseSemiPath.GetExcluded());
-    std::vector<const CVariant*> excludedVarsCall = m_pVariantProvider->GetVariantList(eCALLED, a_nChrId,a_rBestPath.m_calledSemiPath.GetExcluded());
+    std::vector<const CVariant*> excludedVarsBase = m_pVariantProvider->GetVariantList(eBASE, a_rTuple.m_nBaseId, a_rBestPath.m_baseSemiPath.GetExcluded());
+    std::vector<const CVariant*> excludedVarsCall = m_pVariantProvider->GetVariantList(eCALLED, a_rTuple.m_nCalledId, a_rBestPath.m_calledSemiPath.GetExcluded());
     
     std::vector<const COrientedVariant*> includedVarsBase = a_rBestPath.m_baseSemiPath.GetIncludedVariants();
     std::vector<const COrientedVariant*> includedVarsCall = a_rBestPath.m_calledSemiPath.GetIncludedVariants();
     
     //Not Asessed variants
-    std::vector<CVariant>& notAssessedBase = m_pVariantProvider->GetNotAssessedVariantList(eBASE, a_nChrId);
-    std::vector<CVariant>& notAssessedCalled = m_pVariantProvider->GetNotAssessedVariantList(eCALLED, a_nChrId);
+    std::vector<CVariant>& notAssessedBase = m_pVariantProvider->GetNotAssessedVariantList(eBASE, a_rTuple.m_nBaseId);
+    std::vector<CVariant>& notAssessedCalled = m_pVariantProvider->GetNotAssessedVariantList(eCALLED, a_rTuple.m_nCalledId);
 
     //Variant Iterators
     CVariantIteratorV2 baseVariants(includedVarsBase, excludedVarsBase, notAssessedBase);
@@ -226,7 +213,7 @@ void CGa4ghOutputProvider::AddRecords(const CPath& a_rBestPath, const CPath& a_r
 void CGa4ghOutputProvider::VariantToVcfRecord(const CVariant* a_pVariant, SVcfRecord& a_rOutputRec, bool a_bIsBase, const std::string& a_rMatchType, const::std::string& a_rDecision)
 {
     //Fill basic variant data
-    a_rOutputRec.m_nChrId = a_pVariant->m_nChrId;
+    a_rOutputRec.m_chrName = a_pVariant->m_chrName;
     a_rOutputRec.m_nPosition = a_pVariant->m_nOriginalPos;
     a_rOutputRec.m_alleles = a_pVariant->m_allelesStr;
     if(!a_bIsBase)
@@ -254,7 +241,7 @@ void CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase,
 {
 
     //Fill basic variant data
-    a_rOutputRec.m_nChrId = a_pVariantCalled->m_nChrId;
+    a_rOutputRec.m_chrName = a_pVariantCalled->m_chrName;
     a_rOutputRec.m_nPosition = a_pVariantCalled->m_nOriginalPos;
     a_rOutputRec.m_alleles = a_pVariantCalled->m_allelesStr;
     a_rOutputRec.m_aFilterString = a_pVariantCalled->m_filterString;
@@ -263,6 +250,7 @@ void CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase,
     SPerSampleData data;
     data.m_bIsPhased = a_pVariantBase->m_bIsPhased;
     data.m_nHaplotypeCount = a_pVariantBase->m_nZygotCount;
+    data.m_bIsNoCallVariant = a_pVariantBase->m_bIsNoCall;
     
     std::stringstream ss(a_pVariantCalled->m_allelesStr);
     std::stringstream ss2(a_pVariantBase->m_allelesStr);
@@ -281,12 +269,13 @@ void CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase,
     }
 
     
-    for(int k=0; k < (int)baseVariants.size(); k++)
+    for(int k=0; k < (int)a_pVariantBase->m_nZygotCount; k++)
     {
+        std::string allele = baseVariants[a_pVariantBase->m_genotype[k]];
+        
         int bHasFound = false;
         for(int p = 0; p < (int)calledVariants.size(); p++)
         {
-            std::string allele = baseVariants[a_pVariantBase->m_genotype[k]];
             if(0 == calledVariants[p].compare(allele))
             {
                 data.m_aGenotype[k] = p;
@@ -297,7 +286,6 @@ void CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase,
         
         if(!bHasFound)
         {
-            std::string allele = baseVariants[a_pVariantBase->m_genotype[k]];
             calledVariants.push_back(allele);
             a_rOutputRec.m_alleles += ("," + allele);
             data.m_aGenotype[k] = static_cast<int>(calledVariants.size()) - 1;
@@ -316,6 +304,7 @@ void CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase,
     SPerSampleData data2;
     data2.m_bIsPhased = a_pVariantCalled->m_bIsPhased;
     data2.m_nHaplotypeCount = a_pVariantCalled->m_nZygotCount;
+    data2.m_bIsNoCallVariant = a_pVariantCalled->m_bIsNoCall;
     
     for(int k = 0; k < data2.m_nHaplotypeCount; k++)
         data2.m_aGenotype[k] = a_pVariantCalled->m_genotype[k];

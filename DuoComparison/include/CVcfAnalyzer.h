@@ -39,10 +39,10 @@ private:
     void SetThreadsCustom(int a_nMemoryInMB);
     
     //Function that process chromosome in bulk for SPLIT mode (process either genotype or allele match)
-    void ThreadFunctionSPLIT(std::vector<int> a_nChrArr, bool a_bIsGenotypeMatch);
+    void ThreadFunctionSPLIT(std::vector<SChrIdTuple> a_aTuples, bool a_bIsGenotypeMatch);
 
     //Function that process chromosome in bulk for GA4GH mode (process both genotype and allele matches)
-    void ThreadFunctionGA4GH(std::vector<int> a_nChrArr);
+    void ThreadFunctionGA4GH(std::vector<SChrIdTuple> a_aTuples);
 
     
     void PrintVariants(std::string a_outputDirectory, std::string a_FileName, const std::vector<const COrientedVariant*>& a_rOvarList) const;
@@ -59,10 +59,10 @@ private:
     CVariantProvider m_provider;
     
     //Best Paths written by each thread for each unique chromosome exists
-    CPath m_aBestPaths[CHROMOSOME_COUNT];
+    std::vector<CPath> m_aBestPaths;
     
     //Best Paths written by each thread to find Allele matches for each unique chromosome exists
-    CPath m_aBestPathsAllele[CHROMOSOME_COUNT];
+    std::vector<CPath> m_aBestPathsAllele;
     
     //Thread pool we have for multitasking by per chromosome
     std::thread *m_pThreadPool;

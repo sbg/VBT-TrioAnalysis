@@ -11,6 +11,7 @@
 #include "SConfig.h"
 #include "CFastaParser.h"
 #include "Constants.h"
+#include "SChrIdTuple.h"
 
 class COrientedVariant;
 
@@ -35,14 +36,14 @@ class CVariantProvider
         //Return all the oriented variants belongs to given chromosome
         std::vector<const COrientedVariant*> GetOrientedVariantList(EVcfName a_uFrom, int a_nChrNo, bool a_bIsGenotypeMatch);
     
-        //Return contig object given by the chromosome Id
-        void GetContig(int a_nChrId, SContig& a_rContig) const;
+        //Return the index tuples of chromosomes which both contained by baseline and called VCF
+        std::vector<SChrIdTuple>& GetChromosomeIdTuples();
     
-        //Return the count of chromosome which both contained by baseline and called VCF
-        void GetUniqueChromosomeIds(std::vector<int>& a_rChrIds);
+        //Get the contig from fasta file with given chromosome name
+        void GetContig(std::string a_chrName, SContig& a_rCtg);
     
-        //Intersect base and called VCF files to find common chromosomes
-        std::vector<SVcfContig> GetCommonChromosomes();
+        //Return contig information from header of query vcf
+        const std::vector<SVcfContig>& GetContigs() const;
     
         //Read the header of Called vcf and return the filter names and descriptions
         void GetFilterInfo(EVcfName a_vcfType, std::vector<std::string>& a_rFilterNames, std::vector<std::string>& a_rFilterDescriptions);
@@ -51,14 +52,16 @@ class CVariantProvider
         std::vector<CVariant>& GetNotAssessedVariantList(EVcfName a_uFrom, int a_nChrNo);
     
         //Initialize Homozygous Oriented Variant Lists with given base and called variant set
-        void FillAlleleMatchVariantList(int a_nChrId, std::vector<const CVariant*>& a_rBaseVariants, std::vector<const CVariant*>& a_rCalledVariants);
+        void FillAlleleMatchVariantList(SChrIdTuple& a_rTuple, std::vector<const CVariant*>& a_rBaseVariants, std::vector<const CVariant*>& a_rCalledVariants);
     
         //Set the status of each variant in the given lust
         void SetVariantStatus(const std::vector<const CVariant*>& a_rVariantList, EVariantMatch a_status) const;
         void SetVariantStatus(const std::vector<const COrientedVariant*>& a_rVariantList, EVariantMatch a_status) const;
     
-    
     private:
+    
+        //Finds the tuple index list of chromosome which is contained by both baseline and called vcf
+        void SetChromosomeIdTuples();
     
         //Read through the variant file and fill the variant lists. It assumes that positions are sorted.
         void FillVariantLists();
@@ -77,26 +80,26 @@ class CVariantProvider
         CVcfReader m_calledVCF;
 
         //List that stores base Variants in order
-        std::vector<CVariant> m_aBaseVariantList[CHROMOSOME_COUNT];
+        std::vector<std::vector<CVariant>> m_aBaseVariantList;
         //List that stores called Variants in order
-        std::vector<CVariant> m_aCalledVariantList[CHROMOSOME_COUNT];
+        std::vector<std::vector<CVariant>> m_aCalledVariantList;
     
         //THESE TWO LIST STORES VARIANT ORIENTATIONS WHILE PERFORMING GT MATCHING
         //List that store the base Oriented variant tuples (In the order of genotype)
-        std::vector<COrientedVariant> m_aBaseOrientedVariantList[CHROMOSOME_COUNT];
+        std::vector<std::vector<COrientedVariant>> m_aBaseOrientedVariantList;
         //List that store the called Oriented variant tuples (In the order of genotype)
-        std::vector<COrientedVariant> m_aCalledOrientedVariantList[CHROMOSOME_COUNT];
+        std::vector<std::vector<COrientedVariant>> m_aCalledOrientedVariantList;
     
         //THESE TWO LIST STORES WHILE VARIANT ORIENTATIONS PERFORMING ALLELE MATCH OPERATION AFTER GT MATCHING
         //List that store the base Oriented variant tuples (Allele match homozygous variants)
-        std::vector<COrientedVariant> m_aBaseHomozygousOrientedVariantList[CHROMOSOME_COUNT];
+        std::vector<std::vector<COrientedVariant>> m_aBaseHomozygousOrientedVariantList;
         //List that store the called Oriented variant tuples (Allele match homozygous variants)
-        std::vector<COrientedVariant> m_aCalledHomozygousOrientedVariantList[CHROMOSOME_COUNT];
+        std::vector<std::vector<COrientedVariant>> m_aCalledHomozygousOrientedVariantList;
     
         //List that stores baseline variants which are filtered out from comparison
-        std::vector<CVariant> m_aBaseNotAssessedVariantList[CHROMOSOME_COUNT];
+        std::vector<std::vector<CVariant>> m_aBaseNotAssessedVariantList;
         //List that stores called variants which are filtered out from comparison
-        std::vector<CVariant> m_aCalledNotAssessedVariantList[CHROMOSOME_COUNT];
+        std::vector<std::vector<CVariant>> m_aCalledNotAssessedVariantList;
     
         //Parameters come from command line arguments
         SConfig m_config;
@@ -104,7 +107,10 @@ class CVariantProvider
         //Reference to the fasta reader object
         CFastaParser m_fastaParser;
         //Reference contig list
-        SContig m_aContigList[CHROMOSOME_COUNT];
+        std::vector<SContig> m_aContigList;
+    
+        //Chromosome id tuples for each common chromosome
+        std::vector<SChrIdTuple> m_aCommonChrTupleList;
     
 };
 

@@ -55,7 +55,7 @@ class CPathReplay
         bool FindBetter2(const CPathContainer& lhs, const CPathContainer& rhs);
     
         //Process next variant for the input path
-        bool EnqueueVariant(CPath& a_rPathToPlay, EVcfName a_uVcfSide, int a_nChromosomeId, bool a_bIsGenotypeMatch);
+        bool EnqueueVariant(CPath& a_rPathToPlay, EVcfName a_uVcfSide, bool a_bIsGenotypeMatch);
     
         //Gets the index of the next variant if it should be enqueued to the supplied HalfPath at the current position,
         //or -1 if there is none to be enqueued at the current position

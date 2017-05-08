@@ -11,6 +11,8 @@
 
 #include "Constants.h"
 #include <string>
+#include <vector>
+#include "SChrIdTriplet.h"
 
 struct SMendelianBestPathLogEntry
 {
@@ -19,6 +21,7 @@ struct SMendelianBestPathLogEntry
     int m_nTpBase;
     int m_nFP;
     int m_nFn;
+    std::string m_chrName;
 };
 
 struct SMendelianDetailedLogEntry
@@ -45,6 +48,7 @@ struct SMendelianShortLogEntry
     int m_nSNPviolation;
     int m_nINDELcompliant;
     int m_nINDELviolation;
+    std::string m_chrName;
 };
 
 
@@ -69,10 +73,10 @@ public:
     
     
     //For given chromosome it reports the result of best path algorithm for parent-child
-    void LogBestPathStatistic(bool a_bIsFatherChild, int a_nChromosomeId, int a_nTpCalled, int a_nTpBaseline, int a_nFalsePositive, int a_nFalseNegative);
+    void LogBestPathStatistic(bool a_bIsFatherChild, SChrIdTriplet a_triplet, int a_nTpCalled, int a_nTpBaseline, int a_nFalsePositive, int a_nFalseNegative);
     
     //For given chromosome it reports the short result table (SNP and INDEL counts for non 0/0 variants)
-    void LogShortReport(int a_nChrId, int a_nSNPcompliant, int a_nSNPviolation, int a_nINDELcompliant, int a_nINDELviolation);
+    void LogShortReport(std::string& a_rChrName, int a_nSNPcompliant, int a_nSNPviolation, int a_nINDELcompliant, int a_nINDELviolation);
     
     //For given chromosome logs the number of compliant and violations for each of 10 variant category
     void LogDetailedReport(SMendelianDetailedLogEntry& a_rLogEntry);
@@ -82,6 +86,9 @@ public:
     
     //For ALL chromosomes, logs the skipped variant counts for father/mother/child
     void LogSkippedVariantCounts(int a_nChildSkipped, int a_nFatherSkipped, int a_nMotherSkipped);
+    
+    //For ALL chromosomes, logs the filtered variant counts for father/mother/child
+    void LogFilteredComplexVariantCounts(int a_nChildFiltered, int a_nFatherFiltered, int a_nMotherFiltered);
     
     //Write Statistic of parent-child comparison from Best Path Algorithm
     void WriteBestPathStatistics();
@@ -113,8 +120,8 @@ private:
 
 
     //Stores best Path algorithm results (TP/FP/FN of comparisons)
-    SMendelianBestPathLogEntry m_aMotherChildLogEntries[CHROMOSOME_COUNT];
-    SMendelianBestPathLogEntry m_aFatherChildLogEntries[CHROMOSOME_COUNT];
+    std::vector<SMendelianBestPathLogEntry> m_aMotherChildLogEntries;
+    std::vector<SMendelianBestPathLogEntry> m_aFatherChildLogEntries;
 
     //Detailed log entry for each chromosome
     SMendelianDetailedLogEntry m_DetailedLogEntries;
@@ -123,15 +130,20 @@ private:
     SMendelianDetailedLogGenotypes m_DetailedLogGenotypes;
     
     //Short log entry for each chromosome
-    SMendelianShortLogEntry m_aShortLogEntries[CHROMOSOME_COUNT];
+    std::vector<SMendelianShortLogEntry> m_aShortLogEntries;
     
     //File directory where the result logs will be stored
     std::string m_aLogDirectory;
     
-    //Skipped variant counts
+    //Skipped variant counts [Complex Region]
     int m_nTotalSkippedCountFather;
     int m_nTotalSkippedCountMother;
     int m_nTotalSkippedCountChild;
+    
+    //Filtered  variant counts [Complex variant representation]
+    int m_nTotalNonAssessedVarCountFather;
+    int m_nTotalNonAssessedVarCountMother;
+    int m_nTotalNonAssessedVarCountChild;
     
 };
 

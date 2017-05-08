@@ -9,6 +9,7 @@
 #ifndef _C_MENDELIAN_TRIO_MERGER_H_
 #define _C_MENDELIAN_TRIO_MERGER_H_
 
+#include "CVcfReader.h"
 #include "CVcfWriter.h"
 #include "CVariant.h"
 #include "EMendelianDecision.h"
@@ -17,7 +18,7 @@
 #include "Constants.h"
 #include "ENoCallMode.h"
 #include "CMendelianResultLog.h"
-
+#include "SChrIdTriplet.h"
 
 
 class CMendelianTrioMerger
@@ -26,14 +27,14 @@ class CMendelianTrioMerger
 public:
     
     //Generates the trio vcf by merging parent-child variants into single 3-sample vcf file
-    void GenerateTrioVcf();
+    void GenerateTrioVcf(std::vector<SChrIdTriplet>& a_rCommonChromosomes);
     
-    //Set variant references for merge
-    void SetVariants(int a_nChromosomeId, EMendelianVcfName a_vcfName, const std::vector<const CVariant*>& a_rVarList);
+    //Set contigs to write output header. Also initializes size of decision and variant arrays according to number of common chromosomes
+    void SetContigList(const std::vector<SVcfContig>& a_rContigs, int a_nCommonContigCount, int a_nChildVarListSize, int a_nFatherVarListSize, int a_nMotherVarListSize);
     
-    //Set variant decisions for marking MendelianDecision info columns
-    void SetDecisions(int a_nChromosomeId, EMendelianVcfName a_vcfName, const std::vector<EMendelianDecision>& a_rDecisionList);
-    
+    //Set variants and their decisions for marking MendelianDecision info columns
+    void SetDecisionsAndVariants(SChrIdTriplet& a_rTriplet, EMendelianVcfName a_vcfName, const std::vector<EMendelianDecision>& a_rDecisionList, const std::vector<const CVariant*>& a_rVarList);
+
     //Set No Call mode to decide if no calls will be printed as ./. or 0/0s
     void SetNoCallMode(ENoCallMode a_mode);
     
@@ -46,7 +47,7 @@ public:
 private:
 
     //Merge 3 variant set into one trio.vcf that mendelian decisions are marked
-    void AddRecords(int a_nChromosomeId);
+    void AddRecords(SChrIdTriplet& a_rTriplet);
     
     //Fill the header part of the trio vcf
     void FillHeader();
@@ -55,13 +56,13 @@ private:
     bool IsMerge(const CVariant* a_pVar1, const CVariant* a_pVar2);
     
     //Merge 3 variant to single vcf record
-    void DoTripleMerge(int a_nChromosomeId, int& a_nChildItr, int& a_nFatherItr, int& a_nMotherItr, EMendelianDecision a_decision);
+    void DoTripleMerge(SChrIdTriplet& a_rTriplet, int& a_nChildItr, int& a_nFatherItr, int& a_nMotherItr, EMendelianDecision a_decision);
 
     //Merge 2 variant to single vcf record
-    void DoDoubleMerge(int a_nChromosomeId, int& a_nItr1, int& a_nItr2, EMendelianVcfName a_name1, EMendelianVcfName a_name2, EMendelianDecision a_decision);
+    void DoDoubleMerge(SChrIdTriplet& a_rTriplet, int& a_nItr1, int& a_nItr2, EMendelianVcfName a_name1, EMendelianVcfName a_name2, EMendelianDecision a_decision);
  
     //Write single variant to vcf record
-    void DoSingleVar(int a_nChromosomeId, int& a_nItr, EMendelianVcfName a_name, EMendelianDecision a_decision);
+    void DoSingleVar(SChrIdTriplet& a_rTriplet, int& a_nItr, EMendelianVcfName a_name, EMendelianDecision a_decision);
     
     //Decide the mendelian type of the given three variant in a row
     EMendelianDecision GetMendelianDecision(const CVariant* a_pVarMother, const CVariant* a_pVarFather, const CVariant* a_pVarChild, EMendelianDecision a_initDecision);
@@ -79,15 +80,18 @@ private:
     //Vcf writer instance
     CVcfWriter m_vcfWriter;
     
-    std::vector<EMendelianDecision> m_aChildDecisions[CHROMOSOME_COUNT];
-    std::vector<EMendelianDecision> m_aFatherDecisions[CHROMOSOME_COUNT];
-    std::vector<EMendelianDecision> m_aMotherDecisions[CHROMOSOME_COUNT];
+    std::vector<std::vector<EMendelianDecision>> m_aChildDecisions;
+    std::vector<std::vector<EMendelianDecision>> m_aFatherDecisions;
+    std::vector<std::vector<EMendelianDecision>> m_aMotherDecisions;
 
-    std::vector<const CVariant*> m_aChildVariants[CHROMOSOME_COUNT];
-    std::vector<const CVariant*> m_aFatherVariants[CHROMOSOME_COUNT];
-    std::vector<const CVariant*> m_aMotherVariants[CHROMOSOME_COUNT];
+    std::vector<std::vector<const CVariant*>> m_aChildVariants;
+    std::vector<std::vector<const CVariant*>> m_aFatherVariants;
+    std::vector<std::vector<const CVariant*>> m_aMotherVariants;
     
     ENoCallMode m_noCallMode;
+    
+    //Contig list which will be used to fill header part of output vcf
+    std::vector<SVcfContig> m_contigs;
     
     //Output trio full path
     std::string m_trioPath;

@@ -12,34 +12,33 @@
 
 CVariantProvider::~CVariantProvider()
 {
-    for(int k= 0; k < CHROMOSOME_COUNT; k++)
+    for(int k= 0; k < (int)m_aContigList.size(); k++)
     {
         if(m_aContigList[k].m_nRefLength > 0 && m_aContigList[k].m_pRefSeq != 0)
-            delete m_aContigList[k].m_pRefSeq;
+            delete[] m_aContigList[k].m_pRefSeq;
     }
 }
 
 
-std::vector<SVcfContig> CVariantProvider::GetCommonChromosomes()
+void CVariantProvider::SetChromosomeIdTuples()
 {
-    std::vector<SVcfContig> commonChromosomes;
+    int tupleIndex = 0;
     
-    const std::vector<SVcfContig>& a_rBaseContigList = m_baseVCF.GetContigs();
-    const std::vector<SVcfContig>& a_rCalledContigList = m_calledVCF.GetContigs();
-    
-    for(SVcfContig contig : a_rBaseContigList)
+    for(auto baseItr = m_baseVCF.m_chrIndexMap.begin(); baseItr != m_baseVCF.m_chrIndexMap.end(); baseItr++)
     {
-        for(int k = 0; k < (int)a_rCalledContigList.size(); k++)
+        for(auto calledItr = m_calledVCF.m_chrIndexMap.begin(); calledItr != m_calledVCF.m_chrIndexMap.end(); calledItr++)
         {
-            if(a_rBaseContigList[k].name == contig.name)
+            if(baseItr->first == calledItr->first)
             {
-                commonChromosomes.push_back(contig);
-                break;
+                if(m_aBaseVariantList[baseItr->second].size() > LEAST_VARIANT_THRESHOLD
+                   &&
+                   m_aCalledVariantList[calledItr->second].size() > LEAST_VARIANT_THRESHOLD)
+                {
+                    m_aCommonChrTupleList.push_back(SChrIdTuple(baseItr->second, calledItr->second, baseItr->first, tupleIndex++));
+                }
             }
         }
     }
-    
-    return commonChromosomes;
 }
 
 bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
@@ -109,41 +108,47 @@ bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
     {
         FillVariantLists();
         FillOrientedVariantLists();
+        
+        //Set the common chromosome list for parsing
+        SetChromosomeIdTuples();
+        
+        //Initialize contig list
+        m_aContigList = std::vector<SContig>(m_aCommonChrTupleList.size());
     
-        for(int k = 0; k < CHROMOSOME_COUNT; k++)
+        for(SChrIdTuple tuple : m_aCommonChrTupleList)
         {
-            if(m_aBaseVariantList[k].size() != 0 && m_aCalledVariantList[k].size() == 0)
+            if(m_aBaseVariantList[tuple.m_nBaseId].size() != 0 && m_aCalledVariantList[tuple.m_nCalledId].size() == 0)
             {
-                std::cout << "Called VCF does not contain Chromosome " << k+1 << ".The chromosome will be filtered out from the comparison!" << std::endl;
-                m_aCalledVariantList[k].clear();
-                m_aCalledOrientedVariantList[k].clear();
+                std::cout << "Called VCF does not contain Chromosome " << m_aCommonChrTupleList[tuple.m_nTupleIndex].m_chrName << ".The chromosome will be filtered out from the comparison!" << std::endl;
+                m_aCalledVariantList[tuple.m_nCalledId].clear();
+                m_aCalledOrientedVariantList[tuple.m_nCalledId].clear();
             }
-            else if(m_aBaseVariantList[k].size() == 0 && m_aCalledVariantList[k].size() != 0)
+            else if(m_aBaseVariantList[tuple.m_nBaseId].size() == 0 && m_aCalledVariantList[tuple.m_nCalledId].size() != 0)
             {
-                std::cout << "Baseline VCF does not contain Chromosome " << k+1 << ".The chromosome will be filtered out from the comparison!" << std::endl;
-                m_aBaseVariantList[k].clear();
-                m_aBaseOrientedVariantList[k].clear();
+                std::cout << "Baseline VCF does not contain Chromosome " << m_aCommonChrTupleList[tuple.m_nTupleIndex].m_chrName << ".The chromosome will be filtered out from the comparison!" << std::endl;
+                m_aBaseVariantList[tuple.m_nBaseId].clear();
+                m_aBaseOrientedVariantList[tuple.m_nBaseId].clear();
             }
-            else if(m_aBaseVariantList[k].size() != 0 && m_aCalledVariantList[k].size() != 0)
+            else if(m_aBaseVariantList[tuple.m_nBaseId].size() != 0 && m_aCalledVariantList[tuple.m_nCalledId].size() != 0)
             {
                 //Read contig from FASTA file for the given chromosome
-                std::cout << "Reading reference of chromosome " << m_aBaseVariantList[k][0].m_chrName << " from the FASTA file" << std::endl;
-                bool bIsSuccess2 = m_fastaParser.FetchNewChromosome(m_aBaseVariantList[k][0].m_chrName, m_aContigList[k]);
+                std::cout << "Reading reference of chromosome " << m_aCommonChrTupleList[tuple.m_nTupleIndex].m_chrName << " from the FASTA file" << std::endl;
+                bool bIsSuccess2 = m_fastaParser.FetchNewChromosome(m_aCommonChrTupleList[tuple.m_nTupleIndex].m_chrName, m_aContigList[tuple.m_nTupleIndex]);
                 if(!bIsSuccess2)
                 {
-                    std::cerr << "Chromosome " << k+1 << "will be filtered out from the comparison since reference FASTA could not read or it does not contain given chromosome" << std::endl;
-                    m_aCalledVariantList[k].clear();
-                    m_aBaseVariantList[k].clear();
-                    m_aBaseOrientedVariantList[k].clear();
-                    m_aCalledOrientedVariantList[k].clear();
+                    std::cerr << "Chromosome " << m_aCommonChrTupleList[tuple.m_nTupleIndex].m_chrName << "will be filtered out from the comparison since reference FASTA could not read or it does not contain given chromosome" << std::endl;
+                    m_aCalledVariantList[tuple.m_nCalledId].clear();
+                    m_aBaseVariantList[tuple.m_nBaseId].clear();
+                    m_aBaseOrientedVariantList[tuple.m_nBaseId].clear();
+                    m_aCalledOrientedVariantList[tuple.m_nCalledId].clear();
                 }
                 else
                 {
                     //Trim the variants which are out of bound according to FASTA file
-                    while(m_aBaseVariantList[k].back().GetEnd() > m_aContigList[k].m_nRefLength)
-                        m_aBaseVariantList[k].pop_back();
-                    while(m_aCalledVariantList[k].back().GetEnd() > m_aContigList[k].m_nRefLength)
-                        m_aCalledVariantList[k].pop_back();
+                    while(m_aBaseVariantList[tuple.m_nBaseId].back().GetEnd() > m_aContigList[tuple.m_nTupleIndex].m_nRefLength)
+                        m_aBaseVariantList[tuple.m_nBaseId].pop_back();
+                    while(m_aCalledVariantList[tuple.m_nCalledId].back().GetEnd() > m_aContigList[tuple.m_nTupleIndex].m_nRefLength)
+                        m_aCalledVariantList[tuple.m_nCalledId].pop_back();
                 }
             }
         }
@@ -161,9 +166,12 @@ void CVariantProvider::FillVariantLists()
     int id = 0;
     std::string preChrId = "";
     
-    std::vector<SVcfContig> commonChromosomes = GetCommonChromosomes();
+    //Initialize variantLists
+    m_aBaseVariantList = std::vector<std::vector<CVariant>>(m_baseVCF.GetContigs().size());
+    m_aCalledVariantList = std::vector<std::vector<CVariant>>(m_calledVCF.GetContigs().size());
+    m_aBaseNotAssessedVariantList = std::vector<std::vector<CVariant>>(m_baseVCF.GetContigs().size());
+    m_aCalledNotAssessedVariantList = std::vector<std::vector<CVariant>>(m_calledVCF.GetContigs().size());
 
-    
     while(m_baseVCF.GetNextRecord(&variant, id++, m_config))
     {
         if(m_calledVCF.GetContigId(variant.m_chrName) == -1)
@@ -173,24 +181,26 @@ void CVariantProvider::FillVariantLists()
         {
             preChrId = variant.m_chrName;
             std::cout << "Processing chromosome " << preChrId << " of base vcf" << std::endl;
-            //if(preChrId == "2")
-            //    break;
         }
-        if(variant.m_nChrId == -1)
+        
+        if(variant.m_nChrId < 8)
             continue;
+        if(variant.m_nChrId > 12)
+            break;
+
         if(m_config.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
-            m_aBaseNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
+            m_aBaseNotAssessedVariantList[variant.m_nChrId].push_back(variant);
         
         else if(m_config.m_bSNPOnly && variant.GetVariantType() != eSNP)
-            m_aBaseNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
+            m_aBaseNotAssessedVariantList[variant.m_nChrId].push_back(variant);
         
         else if(m_config.m_bINDELOnly && variant.GetVariantType() != eINDEL)
-            m_aBaseNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
+            m_aBaseNotAssessedVariantList[variant.m_nChrId].push_back(variant);
         
         else if(IsStructuralVariant(variant, m_config.m_nMaxVariantSize))
-            m_aBaseNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
+            m_aBaseNotAssessedVariantList[variant.m_nChrId].push_back(variant);
         else
-            PushVariant(variant, m_aBaseVariantList[variant.m_nChrId-1]);
+            PushVariant(variant, m_aBaseVariantList[variant.m_nChrId]);
     }
     
     preChrId = "";
@@ -204,39 +214,47 @@ void CVariantProvider::FillVariantLists()
         {
             preChrId = variant.m_chrName;
             std::cout << "Processing chromosome " << preChrId << " of called vcf" << std::endl;
-            //if(preChrId == "2")
-            //    break;
         }
         
-        if(variant.m_nChrId == -1)
+        if(variant.m_nChrId < 8)
+            continue;
+        if(variant.m_nChrId > 12)
             break;
-
+        
         else if(m_config.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
-            m_aCalledNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
+            m_aCalledNotAssessedVariantList[variant.m_nChrId].push_back(variant);
         
         else if(m_config.m_bSNPOnly && variant.GetVariantType() != eSNP)
-            m_aCalledNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
+            m_aCalledNotAssessedVariantList[variant.m_nChrId].push_back(variant);
         
         else if(m_config.m_bINDELOnly && variant.GetVariantType() != eINDEL)
-            m_aCalledNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
+            m_aCalledNotAssessedVariantList[variant.m_nChrId].push_back(variant);
         
         else if(IsStructuralVariant(variant, m_config.m_nMaxVariantSize))
-            m_aCalledNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
+            m_aCalledNotAssessedVariantList[variant.m_nChrId].push_back(variant);
         else
-            PushVariant(variant, m_aCalledVariantList[variant.m_nChrId-1]);
+            PushVariant(variant, m_aCalledVariantList[variant.m_nChrId]);
     }
 }
 
 void CVariantProvider::FillOrientedVariantLists()
 {
-    for(int i=0; i < CHROMOSOME_COUNT; i++)
+    //Initialize OrientedVariantLists
+    m_aBaseOrientedVariantList = std::vector<std::vector<COrientedVariant>>(m_baseVCF.GetContigs().size());
+    m_aCalledOrientedVariantList = std::vector<std::vector<COrientedVariant>>(m_calledVCF.GetContigs().size());
+    
+    
+    for(int i=0; i < m_aBaseOrientedVariantList.size(); i++)
     {
         for(int j=0; j < (int)m_aBaseVariantList[i].size(); j++)
         {
             m_aBaseOrientedVariantList[i].push_back(COrientedVariant(m_aBaseVariantList[i][j], true));
             m_aBaseOrientedVariantList[i].push_back(COrientedVariant(m_aBaseVariantList[i][j], false));
         }
-        
+    }
+    
+    for(int i=0; i < m_aCalledOrientedVariantList.size(); i++)
+    {
         for(int j=0; j < (int)m_aCalledVariantList[i].size(); j++)
         {
             m_aCalledOrientedVariantList[i].push_back(COrientedVariant(m_aCalledVariantList[i][j], true));
@@ -245,28 +263,23 @@ void CVariantProvider::FillOrientedVariantLists()
     }
 }
 
-void CVariantProvider::FillAlleleMatchVariantList(int a_nChrId, std::vector<const CVariant*>& a_rBaseVariants, std::vector<const CVariant*>& a_rCalledVariants)
+void CVariantProvider::FillAlleleMatchVariantList(SChrIdTuple& a_tuple, std::vector<const CVariant*>& a_rBaseVariants, std::vector<const CVariant*>& a_rCalledVariants)
 {
+    //Initialize HomozygousOrientedVariantLists
+    m_aBaseHomozygousOrientedVariantList = std::vector<std::vector<COrientedVariant>>(m_baseVCF.GetContigs().size());
+    m_aCalledHomozygousOrientedVariantList = std::vector<std::vector<COrientedVariant>>(m_calledVCF.GetContigs().size());
+    
     for(int j=0; j < (int)a_rBaseVariants.size(); j++)
     {
-        m_aBaseHomozygousOrientedVariantList[a_nChrId].push_back(COrientedVariant(*a_rBaseVariants[j], 0));
-        m_aBaseHomozygousOrientedVariantList[a_nChrId].push_back(COrientedVariant(*a_rBaseVariants[j], 1));
+        m_aBaseHomozygousOrientedVariantList[a_tuple.m_nBaseId].push_back(COrientedVariant(*a_rBaseVariants[j], 0));
+        m_aBaseHomozygousOrientedVariantList[a_tuple.m_nBaseId].push_back(COrientedVariant(*a_rBaseVariants[j], 1));
     }
         
     for(int j=0; j < (int)a_rCalledVariants.size(); j++)
     {
-        m_aCalledHomozygousOrientedVariantList[a_nChrId].push_back(COrientedVariant(*a_rCalledVariants[j], 0));
-        m_aCalledHomozygousOrientedVariantList[a_nChrId].push_back(COrientedVariant(*a_rCalledVariants[j], 1));
+        m_aCalledHomozygousOrientedVariantList[a_tuple.m_nCalledId].push_back(COrientedVariant(*a_rCalledVariants[j], 0));
+        m_aCalledHomozygousOrientedVariantList[a_tuple.m_nCalledId].push_back(COrientedVariant(*a_rCalledVariants[j], 1));
     }
-}
-
-
-void CVariantProvider::GetContig(int a_nChrId, SContig& a_rContig) const
-{
-    a_rContig.m_chromosome = m_aContigList[a_nChrId].m_chromosome;
-    a_rContig.m_nRefLength = m_aContigList[a_nChrId].m_nRefLength;
-    a_rContig.m_nChrId = a_nChrId;
-    a_rContig.m_pRefSeq = m_aContigList[a_nChrId].m_pRefSeq;
 }
 
 std::vector<const CVariant*> CVariantProvider::GetVariantList(EVcfName a_uFrom, int a_nChrNo, const std::vector<int>& a_VariantIndexes)
@@ -443,13 +456,9 @@ void CVariantProvider::PushVariant(CVariant& a_rVariant, std::vector<CVariant>& 
 }
 
 
-void CVariantProvider::GetUniqueChromosomeIds(std::vector<int>& a_rChrIds)
+std::vector<SChrIdTuple>& CVariantProvider::GetChromosomeIdTuples()
 {
-    for(int k=0; k < CHROMOSOME_COUNT; k++)
-    {
-        if(m_aBaseVariantList[k].size() > LEAST_VARIANT_THRESHOLD && m_aCalledVariantList[k].size() > LEAST_VARIANT_THRESHOLD)
-            a_rChrIds.push_back(k);
-    }
+    return m_aCommonChrTupleList;
 }
 
 void CVariantProvider::GetFilterInfo(EVcfName a_vcfType, std::vector<std::string>& a_rFilterNames, std::vector<std::string>& a_rFilterDescriptions)
@@ -489,6 +498,27 @@ void CVariantProvider::SetVariantStatus(const std::vector<const COrientedVariant
     for(const COrientedVariant* pOvar : a_rVariantList)
         pOvar->GetVariant().m_variantStatus = a_status;
 }
+
+
+void CVariantProvider::GetContig(std::string a_chrName, SContig& a_rCtg)
+{
+    for(int k = 0; k < (int)m_aContigList.size(); k++)
+    {
+        if(m_aContigList[k].m_chromosomeName == a_chrName)
+        {
+            a_rCtg.m_chromosomeName = a_chrName;
+            a_rCtg.m_pRefSeq = m_aContigList[k].m_pRefSeq;
+            a_rCtg.m_nRefLength = m_aContigList[k].m_nRefLength;
+            break;
+        }
+    }
+}
+
+const std::vector<SVcfContig>& CVariantProvider::GetContigs() const
+{
+    return m_calledVCF.GetContigs();
+}
+
 
 
 

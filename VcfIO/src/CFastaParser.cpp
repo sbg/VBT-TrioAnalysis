@@ -34,8 +34,9 @@ bool CFastaParser::OpenFastaFile(const char *fn)
 
 CFastaParser::~CFastaParser()
 {
-    if(fai != 0)
-        fai_destroy(fai);
+    //TODO: Whats the problem with that ??
+    //if(fai != 0)
+    //    fai_destroy(fai);
 }
 
 
@@ -72,7 +73,7 @@ bool CFastaParser::FetchNewChromosome(std::string chromosome, SContig& a_rContig
     
     char chrom_num[80] = {0};
     strcpy(chrom_num, chromosome.c_str());
-    a_rContig.m_chromosome = chromosome;
+    a_rContig.m_chromosomeName = chromosome;
     
     a_rContig.m_pRefSeq = faidx_fetch_seq(fai, chrom_num, 0, 0x7fffffff, &a_rContig.m_nRefLength);
     
@@ -87,6 +88,22 @@ bool CFastaParser::FetchNewChromosome(std::string chromosome, SContig& a_rContig
         bIsSuccess = false;
     }
     
+    return bIsSuccess;
+}
+
+bool SContig::Clean()
+{
+    bool bIsSuccess = true;
+
+    try
+    {
+        delete[] m_pRefSeq;
+    }
+    catch(std::exception ex)
+    {
+        bIsSuccess = false;
+    }
+
     return bIsSuccess;
 }
 

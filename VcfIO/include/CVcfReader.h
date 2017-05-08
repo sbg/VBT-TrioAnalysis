@@ -10,12 +10,20 @@
 #include "htslib/vcf.h"
 #include "CVariant.h"
 #include "SConfig.h"
+#include <map>
 
 struct SVcfContig
 {
     std::string name;
     int length;
 };
+
+struct classcomp
+{
+    bool operator() (const char& lhs, const char& rhs) const
+    {return lhs<rhs;}
+};
+
 
 class CVcfReader
 {
@@ -50,16 +58,16 @@ public:
     int GetNumberOfSamples() const;
     
     // Get contig size
-    inline int GetContigSize() const {return (int)(contigs_.size());};
+    inline int GetContigSize() const {return (int)(m_contigs.size());};
     
     //Return the list of chromosome that vcf file contains
     const std::vector<SVcfContig>& GetContigs() const;
     
     // Get a contig name
-    inline std::string GetContigName(const unsigned int& id) const {if (id < contigs_.size()) return contigs_[id].name; else return "";};
+    inline std::string GetContigName(const unsigned int& id) const {if (id < m_contigs.size()) return m_contigs[id].name; else return "";};
     
     // Get a contig length
-    inline int GetContigLength(const unsigned int& id) const {if (id < contigs_.size()) return contigs_[id].length; else return -1;};
+    inline int GetContigLength(const unsigned int& id) const {if (id < m_contigs.size()) return m_contigs[id].length; else return -1;};
     
     // Get contig id by name. -1 means cannot find the contig
     int GetContigId(std::string a_name) const;
@@ -83,6 +91,9 @@ public:
     bcf_hdr_t* GetHeaderPointer();
     bcf1_t* GetRecordPointer();
     
+    //Store chromosome name indexes
+    std::map<std::string, int> m_chrIndexMap;
+    
 private:
 
     // Trimms the alt string that contains ref allele
@@ -104,9 +115,8 @@ private:
     bcf_hdr_t * m_pHeader;
     bcf1_t *    m_pRecord;  
 
-    std::vector<SVcfContig> contigs_;
-
-    int m_nVcfId;    
+    std::vector<SVcfContig> m_contigs;
+    int m_nVcfId;
   
 };
 

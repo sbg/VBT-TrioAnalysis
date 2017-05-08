@@ -17,7 +17,6 @@ bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildC
     bool bIsSuccessChild = true;
     bool bIsSuccessFasta = true;
     
-    
     m_motherChildConfig = a_rMotherChildConfig;
     m_fatherChildConfig = a_rFatherChildConfig;
     
@@ -86,7 +85,6 @@ bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildC
         return false;
     }
 
-    
     // OPEN FASTA FILE
     bIsSuccessFasta = m_fastaParser.OpenFastaFile(a_rFatherChildConfig.m_pFastaFileName);
     if(!bIsSuccessFasta)
@@ -96,44 +94,15 @@ bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildC
     {
         //Fill the variants of 3 vcf file
         FillVariants();
-        
+
         //Get the common chromosome ids and clear the uncommon variants from provider
-        std::vector<int> commonChromosomeIds = GetCommonChromosomes(true);
-        
+        SetCommonChromosomes();
+
         //Fill the oriented variants of 3 vcf for genotype matching
-        FillGenotypeMatchOrientedVariants(commonChromosomeIds);
+        FillGenotypeMatchOrientedVariants(m_aCommonChromosomes);
         
         //Fill the oriented variants of 3 vcf for allele matching
-        FillAlleleMatchOrientedVariants(commonChromosomeIds);
-        
-        for(int k = 0; k < (int)commonChromosomeIds.size(); k++)
-        {
-            //Read contig from FASTA file for the given chromosome
-            std::cout << "Reading reference of chromosome " << m_aChildVariantList[commonChromosomeIds[k]][0].m_chrName << " from the FASTA file" << std::endl;
-            bool bIsSuccess2 = m_fastaParser.FetchNewChromosome(m_aChildVariantList[commonChromosomeIds[k]][0].m_chrName, m_aContigList[commonChromosomeIds[k]]);
-            if(!bIsSuccess2)
-            {
-                std::cerr << "Chromosome " << k+1 << "will be filtered out from the comparison since reference FASTA could not read or it does not contain given chromosome" << std::endl;
-                m_aFatherVariantList[commonChromosomeIds[k]].clear();
-                m_aMotherVariantList[commonChromosomeIds[k]].clear();
-                m_aChildVariantList[commonChromosomeIds[k]].clear();
-                
-                m_aFatherOrientedVariantList[commonChromosomeIds[k]].clear();
-                m_aMotherOrientedVariantList[commonChromosomeIds[k]].clear();
-                m_aChildOrientedVariantList[commonChromosomeIds[k]].clear();
-            }
-            
-            else
-            {
-                //Trim the variants which are out of bound according to FASTA file
-                while(m_aChildVariantList[commonChromosomeIds[k]].back().GetEnd() > m_aContigList[commonChromosomeIds[k]].m_nRefLength)
-                    m_aChildVariantList[commonChromosomeIds[k]].pop_back();
-                while(m_aFatherVariantList[commonChromosomeIds[k]].back().GetEnd() > m_aContigList[commonChromosomeIds[k]].m_nRefLength)
-                    m_aFatherVariantList[commonChromosomeIds[k]].pop_back();
-                while(m_aMotherVariantList[commonChromosomeIds[k]].back().GetEnd() > m_aContigList[commonChromosomeIds[k]].m_nRefLength)
-                    m_aMotherVariantList[commonChromosomeIds[k]].pop_back();
-            }
-        }
+        FillAlleleMatchOrientedVariants(m_aCommonChromosomes);
         
     }
 
@@ -158,6 +127,14 @@ void CMendelianVariantProvider::FillVariants()
     int id = 0;
     std::string preChrId = "";
 
+    //initialize variant lists
+    m_aFatherVariantList = std::vector<std::vector<CVariant>>(m_FatherVcf.GetContigs().size());
+    m_aMotherVariantList = std::vector<std::vector<CVariant>>(m_MotherVcf.GetContigs().size());
+    m_aChildVariantList = std::vector<std::vector<CVariant>>(m_ChildVcf.GetContigs().size());
+    m_aFatherNotAssessedVariantList = std::vector<std::vector<CVariant>>(m_FatherVcf.GetContigs().size());
+    m_aMotherNotAssessedVariantList = std::vector<std::vector<CVariant>>(m_MotherVcf.GetContigs().size());
+    m_aChildNotAssessedVariantList = std::vector<std::vector<CVariant>>(m_ChildVcf.GetContigs().size());
+    
     //READ VARIANTS OF FATHER
     while(m_FatherVcf.GetNextRecord(&variant, id, m_fatherChildConfig))
     {
@@ -167,23 +144,20 @@ void CMendelianVariantProvider::FillVariants()
             std::cout << "Processing chromosome " << preChrId << " of Parent[FATHER] vcf" << std::endl;
         }
         
-        //if(variant.m_nChrId == 3)
-        //    break;
-        
-        if(variant.m_nChrId == -1)
+        if(variant.m_nChrId < 8)
             continue;
-        else if(variant.m_nChrId > 23) //DISCARD Y and MT chromosome
-            m_aFatherNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
+        else if(variant.m_nChrId > 11)
+            break;
         
         else if(m_fatherChildConfig.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
-            m_aFatherNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
+            m_aFatherNotAssessedVariantList[variant.m_nChrId].push_back(variant);
         
         else if(IsStructuralVariant(variant, m_fatherChildConfig.m_nMaxVariantSize))
-            m_aFatherNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
+            m_aFatherNotAssessedVariantList[variant.m_nChrId].push_back(variant);
 
         else
         {
-            m_aFatherVariantList[variant.m_nChrId-1].push_back(variant);
+            m_aFatherVariantList[variant.m_nChrId].push_back(variant);
             id++;
         }
     }
@@ -192,7 +166,7 @@ void CMendelianVariantProvider::FillVariants()
     id = 0;
 
     
-    for(int k = 0; k < CHROMOSOME_COUNT; k++)
+    for(int k = 0; k < m_FatherVcf.GetContigs().size(); k++)
     {
         std::sort(m_aFatherNotAssessedVariantList[k].begin(), m_aFatherNotAssessedVariantList[k].end(), CompareVariants);
         std::sort(m_aFatherVariantList[k].begin(), m_aFatherVariantList[k].end(), CompareVariants);
@@ -207,23 +181,20 @@ void CMendelianVariantProvider::FillVariants()
             std::cout << "Processing chromosome " << preChrId << " of Parent[MOTHER] vcf" << std::endl;
         }
         
-        //if(variant.m_nChrId == 3)
-        //    break;
-        
-        if(variant.m_nChrId == -1)
+        if(variant.m_nChrId < 8)
             continue;
-        else if(variant.m_nChrId > 23) //DISCARD Y and MT chromosome
-            m_aMotherNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
+        else if(variant.m_nChrId > 11)
+            break;
         
         else if(m_motherChildConfig.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
-            m_aMotherNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
+            m_aMotherNotAssessedVariantList[variant.m_nChrId].push_back(variant);
         
         else if(IsStructuralVariant(variant, m_motherChildConfig.m_nMaxVariantSize))
-            m_aMotherNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
+            m_aMotherNotAssessedVariantList[variant.m_nChrId].push_back(variant);
         
         else
         {
-            m_aMotherVariantList[variant.m_nChrId-1].push_back(variant);
+            m_aMotherVariantList[variant.m_nChrId].push_back(variant);
             id++;
         }
     }
@@ -232,7 +203,7 @@ void CMendelianVariantProvider::FillVariants()
     id = 0;
 
     
-    for(int k = 0; k < CHROMOSOME_COUNT; k++)
+    for(int k = 0; k < m_MotherVcf.GetContigs().size(); k++)
     {
         std::sort(m_aMotherNotAssessedVariantList[k].begin(), m_aMotherNotAssessedVariantList[k].end(), CompareVariants);
         std::sort(m_aMotherVariantList[k].begin(), m_aMotherVariantList[k].end(), CompareVariants);
@@ -247,28 +218,25 @@ void CMendelianVariantProvider::FillVariants()
             std::cout << "Processing chromosome " << preChrId << " of child vcf" << std::endl;
         }
         
-        //if(variant.m_nChrId == 3)
-        //    break;
-        
-        if(variant.m_nChrId == -1)
+        if(variant.m_nChrId < 8)
             continue;
-        else if(variant.m_nChrId > 23) //DISCARD Y and MT chromosome
-            m_aChildNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
+        else if(variant.m_nChrId > 11)
+            break;
         
         else if(m_motherChildConfig.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
-            m_aChildNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
+            m_aChildNotAssessedVariantList[variant.m_nChrId].push_back(variant);
         
         else if(IsStructuralVariant(variant, m_motherChildConfig.m_nMaxVariantSize))
-            m_aChildNotAssessedVariantList[variant.m_nChrId-1].push_back(variant);
+            m_aChildNotAssessedVariantList[variant.m_nChrId].push_back(variant);
         
         else
         {
-            m_aChildVariantList[variant.m_nChrId-1].push_back(variant);
+            m_aChildVariantList[variant.m_nChrId].push_back(variant);
             id++;
         }
     }
     
-    for(int k = 0; k < CHROMOSOME_COUNT; k++)
+    for(int k = 0; k < m_ChildVcf.GetContigs().size(); k++)
     {
         std::sort(m_aChildNotAssessedVariantList[k].begin(), m_aChildNotAssessedVariantList[k].end(), CompareVariants);
         std::sort(m_aChildVariantList[k].begin(), m_aChildVariantList[k].end(), CompareVariants);
@@ -277,62 +245,72 @@ void CMendelianVariantProvider::FillVariants()
 }
 
 
-void CMendelianVariantProvider::FillGenotypeMatchOrientedVariants(std::vector<int>& a_aCommonChromosomes)
+void CMendelianVariantProvider::FillGenotypeMatchOrientedVariants(std::vector<SChrIdTriplet>& a_aCommonChromosomes)
 {
+    //INITIALIZE ORIENTED VARIANT LISTS
+    m_aFatherOrientedVariantList = std::vector<std::vector<COrientedVariant>>(m_FatherVcf.GetContigs().size());
+    m_aMotherOrientedVariantList = std::vector<std::vector<COrientedVariant>>(m_MotherVcf.GetContigs().size());
+    m_aChildOrientedVariantList = std::vector<std::vector<COrientedVariant>>(m_ChildVcf.GetContigs().size());
+    
     for(int i=0; i < (int)a_aCommonChromosomes.size(); i++)
     {
         //GENERATE FATHER ORIENTED VARS
-        m_aFatherOrientedVariantList[a_aCommonChromosomes[i]] = std::vector<COrientedVariant>(m_aFatherVariantList[a_aCommonChromosomes[i]].size() * 2);
-        for(int j=0, k=0; j < (int)m_aFatherVariantList[a_aCommonChromosomes[i]].size(); j++, k+=2)
+        m_aFatherOrientedVariantList[a_aCommonChromosomes[i].m_nFid] = std::vector<COrientedVariant>(m_aFatherVariantList[a_aCommonChromosomes[i].m_nFid].size() * 2);
+        for(int j=0, k=0; j < (int)m_aFatherVariantList[a_aCommonChromosomes[i].m_nFid].size(); j++, k+=2)
         {
-            m_aFatherOrientedVariantList[a_aCommonChromosomes[i]][k] = COrientedVariant(m_aFatherVariantList[a_aCommonChromosomes[i]][j], true);
-            m_aFatherOrientedVariantList[a_aCommonChromosomes[i]][k+1] = COrientedVariant(m_aFatherVariantList[a_aCommonChromosomes[i]][j], false);
+            m_aFatherOrientedVariantList[a_aCommonChromosomes[i].m_nFid][k] = COrientedVariant(m_aFatherVariantList[a_aCommonChromosomes[i].m_nFid][j], true);
+            m_aFatherOrientedVariantList[a_aCommonChromosomes[i].m_nFid][k+1] = COrientedVariant(m_aFatherVariantList[a_aCommonChromosomes[i].m_nFid][j], false);
         }
         
         //GENERATE CHILD ORIENTED VARS
-        m_aChildOrientedVariantList[a_aCommonChromosomes[i]] = std::vector<COrientedVariant>(m_aChildVariantList[a_aCommonChromosomes[i]].size() * 2);
-        for(int j=0, k=0; j < (int)m_aChildVariantList[a_aCommonChromosomes[i]].size(); j++,k+=2)
+        m_aChildOrientedVariantList[a_aCommonChromosomes[i].m_nCid] = std::vector<COrientedVariant>(m_aChildVariantList[a_aCommonChromosomes[i].m_nCid].size() * 2);
+        for(int j=0, k=0; j < (int)m_aChildVariantList[a_aCommonChromosomes[i].m_nCid].size(); j++,k+=2)
         {
-            m_aChildOrientedVariantList[a_aCommonChromosomes[i]][k] = COrientedVariant(m_aChildVariantList[a_aCommonChromosomes[i]][j], true);
-            m_aChildOrientedVariantList[a_aCommonChromosomes[i]][k+1] = COrientedVariant(m_aChildVariantList[a_aCommonChromosomes[i]][j], false);
+            m_aChildOrientedVariantList[a_aCommonChromosomes[i].m_nCid][k] = COrientedVariant(m_aChildVariantList[a_aCommonChromosomes[i].m_nCid][j], true);
+            m_aChildOrientedVariantList[a_aCommonChromosomes[i].m_nCid][k+1] = COrientedVariant(m_aChildVariantList[a_aCommonChromosomes[i].m_nCid][j], false);
         }
         
         //GENERATE MOTHER ORIENTED VARS
-        m_aMotherOrientedVariantList[a_aCommonChromosomes[i]] = std::vector<COrientedVariant>(m_aMotherVariantList[a_aCommonChromosomes[i]].size() * 2);
-        for(int j=0, k=0; j < (int)m_aMotherVariantList[a_aCommonChromosomes[i]].size(); j++, k+=2)
+        m_aMotherOrientedVariantList[a_aCommonChromosomes[i].m_nMid] = std::vector<COrientedVariant>(m_aMotherVariantList[a_aCommonChromosomes[i].m_nMid].size() * 2);
+        for(int j=0, k=0; j < (int)m_aMotherVariantList[a_aCommonChromosomes[i].m_nMid].size(); j++, k+=2)
         {
-            m_aMotherOrientedVariantList[a_aCommonChromosomes[i]][k] = COrientedVariant(m_aMotherVariantList[a_aCommonChromosomes[i]][j], true);
-            m_aMotherOrientedVariantList[a_aCommonChromosomes[i]][k+1] = COrientedVariant(m_aMotherVariantList[a_aCommonChromosomes[i]][j], false);
+            m_aMotherOrientedVariantList[a_aCommonChromosomes[i].m_nMid][k] = COrientedVariant(m_aMotherVariantList[a_aCommonChromosomes[i].m_nMid][j], true);
+            m_aMotherOrientedVariantList[a_aCommonChromosomes[i].m_nMid][k+1] = COrientedVariant(m_aMotherVariantList[a_aCommonChromosomes[i].m_nMid][j], false);
         }
     }
 }
 
-void CMendelianVariantProvider::FillAlleleMatchOrientedVariants(std::vector<int>& a_aCommonChromosomes)
+void CMendelianVariantProvider::FillAlleleMatchOrientedVariants(std::vector<SChrIdTriplet>& a_aCommonChromosomes)
 {
+    //INITIALIZE ORIENTED VARIANT LISTS
+    m_aFatherAlleleMatchOrientedVariantList = std::vector<std::vector<COrientedVariant>>(m_FatherVcf.GetContigs().size());
+    m_aMotherAlleleMatchOrientedVariantList = std::vector<std::vector<COrientedVariant>>(m_MotherVcf.GetContigs().size());
+    m_aChildAlleleMatchOrientedVariantList = std::vector<std::vector<COrientedVariant>>(m_ChildVcf.GetContigs().size());
+
     for(int i=0; i < (int)a_aCommonChromosomes.size(); i++)
     {
         //GENERATE FATHER ORIENTED VARS
-        m_aFatherAlleleMatchOrientedVariantList[a_aCommonChromosomes[i]] = std::vector<COrientedVariant>(m_aFatherVariantList[a_aCommonChromosomes[i]].size() * 2);
-        for(int j=0, k=0; j < (int)m_aFatherVariantList[a_aCommonChromosomes[i]].size(); j++, k+=2)
+        m_aFatherAlleleMatchOrientedVariantList[a_aCommonChromosomes[i].m_nFid] = std::vector<COrientedVariant>(m_aFatherVariantList[a_aCommonChromosomes[i].m_nFid].size() * 2);
+        for(int j=0, k=0; j < (int)m_aFatherVariantList[a_aCommonChromosomes[i].m_nFid].size(); j++, k+=2)
         {
-            m_aFatherAlleleMatchOrientedVariantList[a_aCommonChromosomes[i]][k] = COrientedVariant(m_aFatherVariantList[a_aCommonChromosomes[i]][j], 0);
-            m_aFatherAlleleMatchOrientedVariantList[a_aCommonChromosomes[i]][k+1] = COrientedVariant(m_aFatherVariantList[a_aCommonChromosomes[i]][j], 1);
+            m_aFatherAlleleMatchOrientedVariantList[a_aCommonChromosomes[i].m_nFid][k] = COrientedVariant(m_aFatherVariantList[a_aCommonChromosomes[i].m_nFid][j], 0);
+            m_aFatherAlleleMatchOrientedVariantList[a_aCommonChromosomes[i].m_nFid][k+1] = COrientedVariant(m_aFatherVariantList[a_aCommonChromosomes[i].m_nFid][j], 1);
         }
         
         //GENERATE CHILD ORIENTED VARS
-        m_aChildAlleleMatchOrientedVariantList[a_aCommonChromosomes[i]] = std::vector<COrientedVariant>(m_aChildVariantList[a_aCommonChromosomes[i]].size() * 2);
-        for(int j=0, k=0; j < (int)m_aChildVariantList[a_aCommonChromosomes[i]].size(); j++,k+=2)
+        m_aChildAlleleMatchOrientedVariantList[a_aCommonChromosomes[i].m_nFid] = std::vector<COrientedVariant>(m_aChildVariantList[a_aCommonChromosomes[i].m_nFid].size() * 2);
+        for(int j=0, k=0; j < (int)m_aChildVariantList[a_aCommonChromosomes[i].m_nFid].size(); j++,k+=2)
         {
-            m_aChildAlleleMatchOrientedVariantList[a_aCommonChromosomes[i]][k] = COrientedVariant(m_aChildVariantList[a_aCommonChromosomes[i]][j], 0);
-            m_aChildAlleleMatchOrientedVariantList[a_aCommonChromosomes[i]][k+1] = COrientedVariant(m_aChildVariantList[a_aCommonChromosomes[i]][j], 1);
+            m_aChildAlleleMatchOrientedVariantList[a_aCommonChromosomes[i].m_nFid][k] = COrientedVariant(m_aChildVariantList[a_aCommonChromosomes[i].m_nFid][j], 0);
+            m_aChildAlleleMatchOrientedVariantList[a_aCommonChromosomes[i].m_nFid][k+1] = COrientedVariant(m_aChildVariantList[a_aCommonChromosomes[i].m_nFid][j], 1);
         }
         
         //GENERATE MOTHER ORIENTED VARS
-        m_aMotherAlleleMatchOrientedVariantList[a_aCommonChromosomes[i]] = std::vector<COrientedVariant>(m_aMotherVariantList[a_aCommonChromosomes[i]].size() * 2);
-        for(int j=0, k=0; j < (int)m_aMotherVariantList[a_aCommonChromosomes[i]].size(); j++, k+=2)
+        m_aMotherAlleleMatchOrientedVariantList[a_aCommonChromosomes[i].m_nFid] = std::vector<COrientedVariant>(m_aMotherVariantList[a_aCommonChromosomes[i].m_nFid].size() * 2);
+        for(int j=0, k=0; j < (int)m_aMotherVariantList[a_aCommonChromosomes[i].m_nFid].size(); j++, k+=2)
         {
-            m_aMotherAlleleMatchOrientedVariantList[a_aCommonChromosomes[i]][k] = COrientedVariant(m_aMotherVariantList[a_aCommonChromosomes[i]][j], 0);
-            m_aMotherAlleleMatchOrientedVariantList[a_aCommonChromosomes[i]][k+1] = COrientedVariant(m_aMotherVariantList[a_aCommonChromosomes[i]][j], 1);
+            m_aMotherAlleleMatchOrientedVariantList[a_aCommonChromosomes[i].m_nFid][k] = COrientedVariant(m_aMotherVariantList[a_aCommonChromosomes[i].m_nFid][j], 0);
+            m_aMotherAlleleMatchOrientedVariantList[a_aCommonChromosomes[i].m_nFid][k+1] = COrientedVariant(m_aMotherVariantList[a_aCommonChromosomes[i].m_nFid][j], 1);
         }
     }
 }
@@ -363,27 +341,57 @@ bool CMendelianVariantProvider::IsStructuralVariant(const CVariant& a_rVariant, 
     return false;
 }
 
-std::vector<int> CMendelianVariantProvider::GetCommonChromosomes(bool a_bIsCalledInProviderInitialization)
+void CMendelianVariantProvider::SetCommonChromosomes()
 {
-    std::vector<int> commonChrIds;
-
-    for(int k = 0; k < CHROMOSOME_COUNT; k++)
+    int tripleIndex = 0;
+    
+    for(auto fatherItr = m_FatherVcf.m_chrIndexMap.begin(); fatherItr != m_FatherVcf.m_chrIndexMap.end(); fatherItr++)
     {
-        if(m_aChildVariantList[k].size() > LEAST_VARIANT_THRESHOLD && m_aFatherVariantList[k].size() > LEAST_VARIANT_THRESHOLD && m_aMotherVariantList[k].size() > LEAST_VARIANT_THRESHOLD)
-            commonChrIds.push_back(k);
-        else if(true == a_bIsCalledInProviderInitialization)
+        bool isFound = false;
+        
+        for(auto motherItr = m_MotherVcf.m_chrIndexMap.begin(); motherItr != m_MotherVcf.m_chrIndexMap.end(); motherItr++)
         {
-            std::cerr << "Warning! Chromosome " << k+1 << " is not contained by all three vcf files. Variants will be filtered out from comparison" << std::endl;
+            for(auto childItr = m_ChildVcf.m_chrIndexMap.begin(); childItr != m_ChildVcf.m_chrIndexMap.end(); childItr++)
+            {
+                if(childItr->first == motherItr->first && childItr->first == fatherItr->first)
+                {
+                    if(m_aChildVariantList[childItr->second].size() > LEAST_VARIANT_THRESHOLD
+                       &&
+                       m_aFatherVariantList[fatherItr->second].size() > LEAST_VARIANT_THRESHOLD
+                       &&
+                       m_aMotherVariantList[motherItr->second].size() > LEAST_VARIANT_THRESHOLD)
+                    {
+                        m_aCommonChromosomes.push_back(SChrIdTriplet(motherItr->second, fatherItr->second, childItr->second, motherItr->first, tripleIndex++));
+                        isFound = true;
+                        break;
+                    }
+                }
+            }
             
-            //Clear redundant variants
-            m_aChildVariantList[k].clear();
-            m_aMotherVariantList[k].clear();
-            m_aFatherVariantList[k].clear();
+            if(isFound == true)
+                break;
         }
     }
     
-    return commonChrIds;
+    //Clear redundant variants TODO: We can remove redundant variants. Following part of code should be arranged to eliminate unique chromosomes
+/*    for(int k = 0; k < m_aCommonChromosomes.size(); k++)
+    {
+        std::cerr << "Warning! Chromosome " << m_aCommonChromosomes[k].m_chrName << " is not contained by all three vcf files. Variants will be filtered out from comparison" << std::endl;
+        m_aChildVariantList[m_aCommonChromosomes[k].m_nCid].clear();
+        m_aFatherVariantList[m_aCommonChromosomes[k].m_nFid].clear();
+        m_aMotherVariantList[m_aCommonChromosomes[k].m_nMid].clear();
+    }
+ */
+    
+    
+    
 }
+
+std::vector<SChrIdTriplet>& CMendelianVariantProvider::GetCommonChromosomes()
+{
+    return m_aCommonChromosomes;
+}
+
 
 std::vector<const CVariant*> CMendelianVariantProvider::GetVariantList(EMendelianVcfName a_uFrom, int a_nChrNo) const
 {
@@ -560,14 +568,10 @@ std::vector<const COrientedVariant*> CMendelianVariantProvider::GetOrientedVaria
 
 }
 
-void CMendelianVariantProvider::GetContig(int a_nChrId, SContig& a_rContig) const
+void CMendelianVariantProvider::ReadContig(std::string a_chrId, SContig& a_rContig)
 {
-    a_rContig.m_chromosome = m_aContigList[a_nChrId].m_chromosome;
-    a_rContig.m_nRefLength = m_aContigList[a_nChrId].m_nRefLength;
-    a_rContig.m_nChrId = a_nChrId;
-    a_rContig.m_pRefSeq = m_aContigList[a_nChrId].m_pRefSeq;
+    m_fastaParser.FetchNewChromosome(a_chrId, a_rContig);
 }
-
 
 void CMendelianVariantProvider::SetVariantStatus(const std::vector<const CVariant*>& a_rVariantList, EVariantMatch a_status) const
 {
@@ -634,6 +638,100 @@ int CMendelianVariantProvider::Get0BasedVariantIndex(EMendelianVcfName a_uFrom, 
     
     return a_nVariantId - variantCountSoFar;
 }
+
+
+int CMendelianVariantProvider::GetSkippedVariantCount(EMendelianVcfName a_uFrom) const
+{
+    int totalCount = 0;
+    
+    
+    if(a_uFrom == eFATHER)
+    {
+        for(int k = 0; k < (int)m_aFatherVariantList.size(); k++)
+        {
+            for(CVariant var : m_aFatherVariantList[k])
+            {
+                if(var.m_variantStatus == eNOT_ASSESSED)
+                    totalCount++;
+            }
+        }
+    }
+
+    else if(a_uFrom == eMOTHER)
+    {
+        for(int k = 0; k < (int)m_aMotherVariantList.size(); k++)
+        {
+            for(CVariant var : m_aMotherVariantList[k])
+            {
+                if(var.m_variantStatus == eNOT_ASSESSED)
+                    totalCount++;
+            }
+        }
+    }
+    
+    
+    else if(a_uFrom == eCHILD)
+    {
+        for(int k = 0; k < (int)m_aChildVariantList.size(); k++)
+        {
+            for(CVariant var : m_aChildVariantList[k])
+            {
+                if(var.m_variantStatus == eNOT_ASSESSED)
+                    totalCount++;
+            }
+        }
+    }
+    
+    return totalCount;
+}
+
+
+const std::vector<SVcfContig>& CMendelianVariantProvider::GetContigs()
+{
+    return m_ChildVcf.GetContigs();
+}
+
+int CMendelianVariantProvider::GetContigCount(EMendelianVcfName a_uFrom)
+{
+    switch (a_uFrom)
+    {
+        case eCHILD:
+            return (int)m_aChildVariantList.size();
+        case eFATHER:
+            return (int)m_aFatherVariantList.size();
+        case eMOTHER:
+            return (int)m_aMotherVariantList.size();
+        default:
+            return -1;
+    }
+}
+
+
+int CMendelianVariantProvider::GetNotAssessedVariantCount(EMendelianVcfName a_uFrom)
+{
+    unsigned int skippedVariantCount = 0;
+    
+    
+    switch (a_uFrom) {
+        case eMOTHER:
+            for(int k = 0; k < m_aMotherNotAssessedVariantList.size(); k++)
+                skippedVariantCount += m_aMotherNotAssessedVariantList[k].size();
+            break;
+        case eFATHER:
+            for(int k = 0; k < m_aFatherNotAssessedVariantList.size(); k++)
+                skippedVariantCount += m_aFatherNotAssessedVariantList[k].size();
+            break;
+        case eCHILD:
+            for(int k = 0; k < m_aChildNotAssessedVariantList.size(); k++)
+                skippedVariantCount += m_aChildNotAssessedVariantList[k].size();
+            break;
+        default:
+            break;
+    }
+    
+    return static_cast<int>(skippedVariantCount);
+}
+
 
 
 

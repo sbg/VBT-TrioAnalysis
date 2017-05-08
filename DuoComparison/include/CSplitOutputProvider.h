@@ -10,6 +10,8 @@
 #define _C_SPLIT_OUTPUT_PROVIDER_H_
 
 #include "CVcfWriter.h"
+#include "CVcfReader.h"
+#include "SChrIdTuple.h"
 
 class COrientedVariant;
 class CVariantProvider;
@@ -27,13 +29,16 @@ public:
     void SetVariantProvider(CVariantProvider* a_pProvider);
     
     //Set access to best path list
-    void SetBestPaths(CPath* a_pBestPathList);
+    void SetBestPaths(std::vector<CPath>& a_rBestPathList);
     
     //Set the output vcfs path FOLDER
     void SetVcfPath(const std::string& a_rVcfPath);
     
+    //Set contigs [id, name and length] to write output header
+    void SetContigList(const std::vector<SVcfContig>& a_rContigs);
+    
     //Generates 4 vcf files splitting each variant decisions
-    void GenerateSplitVcfs();
+    void GenerateSplitVcfs(const std::vector<SChrIdTuple>& a_rCommonChromosomes);
 
     
 private:
@@ -51,10 +56,10 @@ private:
     void FillHeader(CVcfWriter *a_pWriter, bool a_bIsBaseSide);
     
     //Generates the vcf files of each category
-    void GenerateTpBaseVcf();
-    void GenerateTpCalledVcf();
-    void GenerateFnVcf();
-    void GenerateFpVcf();
+    void GenerateTpBaseVcf(const std::vector<SChrIdTuple>& a_rCommonChromosomes);
+    void GenerateTpCalledVcf(const std::vector<SChrIdTuple>& a_rCommonChromosomes);
+    void GenerateFnVcf(const std::vector<SChrIdTuple>& a_rCommonChromosomes);
+    void GenerateFpVcf(const std::vector<SChrIdTuple>& a_rCommonChromosomes);
     
     //Path of output folder where we place vcf files
     std::string m_vcfsFolder;
@@ -69,7 +74,10 @@ private:
     CVariantProvider* m_pProvider;
     
     //Access to best paths
-    CPath * m_pBestPaths;
+    std::vector<CPath> m_aBestPaths;
+    
+    //Contig list which will be used to fill header part of output vcf
+    std::vector<SVcfContig> m_contigs;
     
 };
 

@@ -45,9 +45,7 @@ void CVcfAnalyzer::Run(int argc, char** argv)
     std::time_t start1 = std::time(0);
     
     //Creates the threads according to given memory and process the data
-    int threadCount = AssignJobsToThreads(m_config.m_nThreadCount);
-    for(int k = 0; k < threadCount; k++)
-        m_pThreadPool[k].join();
+    AssignJobsToThreads(m_config.m_nThreadCount);
     
     
     if(0 == strcmp(m_config.m_pOutputMode, "SPLIT"))
@@ -57,7 +55,8 @@ void CVcfAnalyzer::Run(int argc, char** argv)
         outputprovider.SetVcfPath(m_config.m_pOutputDirectory);
         outputprovider.SetVariantProvider(&m_provider);
         outputprovider.SetBestPaths(m_aBestPaths);
-        outputprovider.GenerateSplitVcfs();
+        outputprovider.SetContigList(m_provider.GetContigs());
+        outputprovider.GenerateSplitVcfs(m_provider.GetChromosomeIdTuples());
     }
     else
     {
@@ -66,7 +65,8 @@ void CVcfAnalyzer::Run(int argc, char** argv)
         outputprovider.SetVcfPath(m_config.m_pOutputDirectory);
         outputprovider.SetVariantProvider(&m_provider);
         outputprovider.SetBestPaths(m_aBestPaths, m_aBestPathsAllele);
-        outputprovider.GenerateGa4ghVcf();
+        outputprovider.SetContigList(m_provider.GetContigs());
+        outputprovider.GenerateGa4ghVcf(m_provider.GetChromosomeIdTuples());
     }
     
     m_resultLogger.SetLogPath(m_config.m_pOutputDirectory);
@@ -83,8 +83,12 @@ void CVcfAnalyzer::Run(int argc, char** argv)
 int CVcfAnalyzer::AssignJobsToThreads(int a_nThreadCount)
 {
     //Get the list of chromosomes to be processed
-    std::vector<int> chromosomeListToProcess;
-    m_provider.GetUniqueChromosomeIds(chromosomeListToProcess);
+    std::vector<SChrIdTuple> chromosomeListToProcess = m_provider.GetChromosomeIdTuples();
+    
+    //Initialize best Path vectors
+    m_aBestPaths = std::vector<CPath>(chromosomeListToProcess.size());
+    m_aBestPathsAllele = std::vector<CPath>(chromosomeListToProcess.size());
+    
     
     int exactThreadCount = std::min(a_nThreadCount, (int)chromosomeListToProcess.size());
         
@@ -92,7 +96,7 @@ int CVcfAnalyzer::AssignJobsToThreads(int a_nThreadCount)
     m_pThreadPool = new std::thread[exactThreadCount];
     
     int threadPoolIt = 0;
-    std::vector<int> *chromosomeLists = new std::vector<int>[exactThreadCount];
+    std::vector<SChrIdTuple> *chromosomeLists = new std::vector<SChrIdTuple>[exactThreadCount];
     
     //Divide tasks into threads
     for(int k = 0; k < (int)chromosomeListToProcess.size(); k++)
@@ -111,39 +115,44 @@ int CVcfAnalyzer::AssignJobsToThreads(int a_nThreadCount)
            
     }
     
-    //delete[] chromosomeLists;
-    
+    for(int k = 0; k < exactThreadCount; k++)
+        m_pThreadPool[k].join();
+
+    //Clear allocated memory
+    delete[] chromosomeLists;
+    delete[] m_pThreadPool;
+
     return exactThreadCount;
 }
 
 
-void CVcfAnalyzer::ThreadFunctionGA4GH(std::vector<int> a_nChrArr)
+void CVcfAnalyzer::ThreadFunctionGA4GH(std::vector<SChrIdTuple> a_aTuples)
 {
-    for(int k = 0; k < (int)a_nChrArr.size(); k++)
+    for(int k = 0; k < (int)a_aTuples.size(); k++)
     {
-        std::vector<const CVariant*> varListBase = m_provider.GetVariantList(eBASE, a_nChrArr[k]);
-        std::vector<const CVariant*> varListCalled = m_provider.GetVariantList(eCALLED, a_nChrArr[k]);
-        std::vector<const COrientedVariant*> ovarListBase = m_provider.GetOrientedVariantList(eBASE, a_nChrArr[k], true);
-        std::vector<const COrientedVariant*> ovarListCalled = m_provider.GetOrientedVariantList(eCALLED, a_nChrArr[k], true);
+        std::vector<const CVariant*> varListBase = m_provider.GetVariantList(eBASE, a_aTuples[k].m_nBaseId);
+        std::vector<const CVariant*> varListCalled = m_provider.GetVariantList(eCALLED, a_aTuples[k].m_nCalledId);
+        std::vector<const COrientedVariant*> ovarListBase = m_provider.GetOrientedVariantList(eBASE, a_aTuples[k].m_nBaseId, true);
+        std::vector<const COrientedVariant*> ovarListCalled = m_provider.GetOrientedVariantList(eCALLED, a_aTuples[k].m_nCalledId, true);
         
         CPathReplay pathReplay(varListBase, varListCalled, ovarListBase, ovarListCalled);
         pathReplay.SetMaxPathAndIteration(m_config.m_nMaxPathSize, m_config.m_nMaxIterationCount);
         SContig ctg;
-        m_provider.GetContig(a_nChrArr[k], ctg);
+        m_provider.GetContig(a_aTuples[k].m_chrName, ctg);
         
         //Find Best Path [GENOTYPE MATCH]
-        m_aBestPaths[a_nChrArr[k]] = pathReplay.FindBestPath(ctg,true);
+        m_aBestPaths[a_aTuples[k].m_nTupleIndex] = pathReplay.FindBestPath(ctg,true);
         
         //Genotype Match variants
-        const std::vector<const COrientedVariant*>& includedVarsBase = m_aBestPaths[a_nChrArr[k]].m_baseSemiPath.GetIncludedVariants();
-        const std::vector<const COrientedVariant*>& includedVarsCall = m_aBestPaths[a_nChrArr[k]].m_calledSemiPath.GetIncludedVariants();
+        const std::vector<const COrientedVariant*>& includedVarsBase = m_aBestPaths[a_aTuples[k].m_nTupleIndex].m_baseSemiPath.GetIncludedVariants();
+        const std::vector<const COrientedVariant*>& includedVarsCall = m_aBestPaths[a_aTuples[k].m_nTupleIndex].m_calledSemiPath.GetIncludedVariants();
         
         //Variants that will be passed for allele match check
-        std::vector<const CVariant*> excludedVarsBase = m_provider.GetVariantList(eBASE, a_nChrArr[k], m_aBestPaths[a_nChrArr[k]].m_baseSemiPath.GetExcluded());
-        std::vector<const CVariant*> excludedVarsCall = m_provider.GetVariantList(eCALLED, a_nChrArr[k], m_aBestPaths[a_nChrArr[k]].m_calledSemiPath.GetExcluded());
+        std::vector<const CVariant*> excludedVarsBase = m_provider.GetVariantList(eBASE, a_aTuples[k].m_nBaseId, m_aBestPaths[a_aTuples[k].m_nTupleIndex].m_baseSemiPath.GetExcluded());
+        std::vector<const CVariant*> excludedVarsCall = m_provider.GetVariantList(eCALLED, a_aTuples[k].m_nCalledId, m_aBestPaths[a_aTuples[k].m_nTupleIndex].m_calledSemiPath.GetExcluded());
         
         //Fill oriented variants for allele match
-        m_provider.FillAlleleMatchVariantList(a_nChrArr[k], excludedVarsBase, excludedVarsCall);
+        m_provider.FillAlleleMatchVariantList(a_aTuples[k], excludedVarsBase, excludedVarsCall);
         
         //Clear old variant pointers
         ovarListBase.clear();
@@ -154,25 +163,25 @@ void CVcfAnalyzer::ThreadFunctionGA4GH(std::vector<int> a_nChrArr)
         //Set new variant pointers for allele match comparison
         varListBase = excludedVarsBase;
         varListCalled = excludedVarsCall;
-        ovarListBase = m_provider.GetOrientedVariantList(eBASE, a_nChrArr[k], false);
-        ovarListCalled = m_provider.GetOrientedVariantList(eCALLED, a_nChrArr[k], false);
+        ovarListBase = m_provider.GetOrientedVariantList(eBASE, a_aTuples[k].m_nBaseId, false);
+        ovarListCalled = m_provider.GetOrientedVariantList(eCALLED, a_aTuples[k].m_nCalledId, false);
         pathReplay.Clear();
         
         //Find Best Path [ALLELE MATCH]
-        m_aBestPathsAllele[a_nChrArr[k]] = pathReplay.FindBestPath(ctg, false);
+        m_aBestPathsAllele[a_aTuples[k].m_nTupleIndex] = pathReplay.FindBestPath(ctg, false);
         
         //No Match variants
         std::vector<const CVariant*> excludedVarsBase2 = m_provider.GetVariantList(excludedVarsBase,
-                                                                                   m_aBestPathsAllele[a_nChrArr[k]].m_baseSemiPath.GetExcluded());
+                                                                                   m_aBestPathsAllele[a_aTuples[k].m_nTupleIndex].m_baseSemiPath.GetExcluded());
         std::vector<const CVariant*> excludedVarsCall2 = m_provider.GetVariantList(excludedVarsCall,
-                                                                                   m_aBestPathsAllele[a_nChrArr[k]].m_calledSemiPath.GetExcluded());
+                                                                                   m_aBestPathsAllele[a_aTuples[k].m_nTupleIndex].m_calledSemiPath.GetExcluded());
         
         //Allele Match variants
-        const std::vector<const COrientedVariant*>& includedVarsBase2 = m_aBestPathsAllele[a_nChrArr[k]].m_baseSemiPath.GetIncludedVariants();
-        const std::vector<const COrientedVariant*>& includedVarsCall2 = m_aBestPathsAllele[a_nChrArr[k]].m_calledSemiPath.GetIncludedVariants();
+        const std::vector<const COrientedVariant*>& includedVarsBase2 = m_aBestPathsAllele[a_aTuples[k].m_nTupleIndex].m_baseSemiPath.GetIncludedVariants();
+        const std::vector<const COrientedVariant*>& includedVarsCall2 = m_aBestPathsAllele[a_aTuples[k].m_nTupleIndex].m_calledSemiPath.GetIncludedVariants();
         
         
-        m_resultLogger.LogStatistic(a_nChrArr[k],
+        m_resultLogger.LogStatistic(a_aTuples[k].m_chrName,
                                     static_cast<int>(includedVarsCall.size()),
                                     static_cast<int>(includedVarsBase.size()),
                                     static_cast<int>(includedVarsCall2.size()),
@@ -194,12 +203,12 @@ void CVcfAnalyzer::ThreadFunctionGA4GH(std::vector<int> a_nChrArr)
     }
 }
 
-void CVcfAnalyzer::ThreadFunctionSPLIT(std::vector<int> a_nChrArr, bool a_bIsGenotypeMatch)
+void CVcfAnalyzer::ThreadFunctionSPLIT(std::vector<SChrIdTuple> a_aTuples, bool a_bIsGenotypeMatch)
 {
-    for(int k = 0; k < (int)a_nChrArr.size(); k++)
+    for(int k = 0; k < (int)a_aTuples.size(); k++)
     {
-        std::vector<const CVariant*> varListBase = m_provider.GetVariantList(eBASE, a_nChrArr[k]);
-        std::vector<const CVariant*> varListCalled = m_provider.GetVariantList(eCALLED, a_nChrArr[k]);
+        std::vector<const CVariant*> varListBase = m_provider.GetVariantList(eBASE, a_aTuples[k].m_nBaseId);
+        std::vector<const CVariant*> varListCalled = m_provider.GetVariantList(eCALLED, a_aTuples[k].m_nCalledId);
         
         std::vector<const COrientedVariant*> ovarListBase;
         std::vector<const COrientedVariant*> ovarListCalled;
@@ -207,29 +216,29 @@ void CVcfAnalyzer::ThreadFunctionSPLIT(std::vector<int> a_nChrArr, bool a_bIsGen
         if(!a_bIsGenotypeMatch)
         {
             //Fill oriented variants for allele match
-            m_provider.FillAlleleMatchVariantList(a_nChrArr[k], varListBase, varListCalled);
+            m_provider.FillAlleleMatchVariantList(a_aTuples[k], varListBase, varListCalled);
         }
         
-        ovarListBase = m_provider.GetOrientedVariantList(eBASE, a_nChrArr[k], a_bIsGenotypeMatch);
-        ovarListCalled = m_provider.GetOrientedVariantList(eCALLED, a_nChrArr[k], a_bIsGenotypeMatch);
+        ovarListBase = m_provider.GetOrientedVariantList(eBASE, a_aTuples[k].m_nBaseId, a_bIsGenotypeMatch);
+        ovarListCalled = m_provider.GetOrientedVariantList(eCALLED, a_aTuples[k].m_nCalledId, a_bIsGenotypeMatch);
         
         CPathReplay pathReplay(varListBase, varListCalled, ovarListBase, ovarListCalled);
         pathReplay.SetMaxPathAndIteration(m_config.m_nMaxPathSize, m_config.m_nMaxIterationCount);
         SContig ctg;
-        m_provider.GetContig(a_nChrArr[k], ctg);
+        m_provider.GetContig(a_aTuples[k].m_chrName, ctg);
         
-        m_aBestPaths[a_nChrArr[k]] = pathReplay.FindBestPath(ctg,a_bIsGenotypeMatch);
+        m_aBestPaths[a_aTuples[k].m_nTupleIndex] = pathReplay.FindBestPath(ctg,a_bIsGenotypeMatch);
         
         //Genotype Match variants
-        const std::vector<const COrientedVariant*>& includedVarsBase = m_aBestPaths[a_nChrArr[k]].m_baseSemiPath.GetIncludedVariants();
-        const std::vector<const COrientedVariant*>& includedVarsCall = m_aBestPaths[a_nChrArr[k]].m_calledSemiPath.GetIncludedVariants();
+        const std::vector<const COrientedVariant*>& includedVarsBase = m_aBestPaths[a_aTuples[k].m_nTupleIndex].m_baseSemiPath.GetIncludedVariants();
+        const std::vector<const COrientedVariant*>& includedVarsCall = m_aBestPaths[a_aTuples[k].m_nTupleIndex].m_calledSemiPath.GetIncludedVariants();
         
         //Variants that will be passed for allele match check
-        std::vector<const CVariant*> excludedVarsBase = m_provider.GetVariantList(eBASE, a_nChrArr[k], m_aBestPaths[a_nChrArr[k]].m_baseSemiPath.GetExcluded());
-        std::vector<const CVariant*> excludedVarsCall = m_provider.GetVariantList(eCALLED, a_nChrArr[k], m_aBestPaths[a_nChrArr[k]].m_calledSemiPath.GetExcluded());
+        std::vector<const CVariant*> excludedVarsBase = m_provider.GetVariantList(eBASE, a_aTuples[k].m_nBaseId, m_aBestPaths[a_aTuples[k].m_nTupleIndex].m_baseSemiPath.GetExcluded());
+        std::vector<const CVariant*> excludedVarsCall = m_provider.GetVariantList(eCALLED, a_aTuples[k].m_nCalledId, m_aBestPaths[a_aTuples[k].m_nTupleIndex].m_calledSemiPath.GetExcluded());
         
         
-        m_resultLogger.LogStatistic(a_nChrArr[k],
+        m_resultLogger.LogStatistic(a_aTuples[k].m_chrName,
                                     static_cast<int>(includedVarsCall.size()),
                                     static_cast<int>(includedVarsBase.size()),
                                     static_cast<int>(0),
@@ -414,13 +423,13 @@ bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
         
         else if(0 == strcmp(argv[it], PARAM_PLATFORM))
         {
-            m_config.m_nThreadCount = CHROMOSOME_COUNT;
+            m_config.m_nThreadCount = MAX_THREAD_COUNT;
             it++;
         }
         
         else if(0 == strcmp(argv[it], PARAM_THREAD_COUNT))
         {
-            m_config.m_nThreadCount = std::min(std::max(1, atoi(argv[it+1])), CHROMOSOME_COUNT);
+            m_config.m_nThreadCount = std::min(std::max(1, atoi(argv[it+1])), MAX_THREAD_COUNT);
             it+=2;
         }
         

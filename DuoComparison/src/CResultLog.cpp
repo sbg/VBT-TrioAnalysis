@@ -17,15 +17,20 @@ void CResultLog::SetLogPath(const std::string& a_rLogFolder)
 
 
 //Records the result for given chromosome
-void CResultLog::LogStatistic(int a_nChromosomeId, int a_nTpCalled, int a_nTpBaseline, int a_nHalfTPCalled, int a_nHalfTPBaseline, int a_nFalsePositive, int a_nFalseNegative)
+void CResultLog::LogStatistic(std::string a_chromosomeName, int a_nTpCalled, int a_nTpBaseline, int a_nHalfTPCalled, int a_nHalfTPBaseline, int a_nFalsePositive, int a_nFalseNegative)
 {
-    m_aResultEntries[a_nChromosomeId].m_nTpCalled = a_nTpCalled;
-    m_aResultEntries[a_nChromosomeId].m_nTpBase = a_nTpBaseline;
-    m_aResultEntries[a_nChromosomeId].m_nHalfTpCalled = a_nHalfTPCalled;
-    m_aResultEntries[a_nChromosomeId].m_nHalfTpBase = a_nHalfTPBaseline;
-    m_aResultEntries[a_nChromosomeId].m_nFp = a_nFalsePositive;
-    m_aResultEntries[a_nChromosomeId].m_nFn = a_nFalseNegative;
-    m_aResultEntries[a_nChromosomeId].m_bIsNull = false;
+    SLogEntry entry;
+    
+    entry.m_nTpCalled = a_nTpCalled;
+    entry.m_nTpBase = a_nTpBaseline;
+    entry.m_nHalfTpCalled = a_nHalfTPCalled;
+    entry.m_nHalfTpBase = a_nHalfTPBaseline;
+    entry.m_nFp = a_nFalsePositive;
+    entry.m_nFn = a_nFalseNegative;
+    entry.m_bIsNull = false;
+    entry.m_chrName = a_chromosomeName;
+    
+    m_aResultEntries.push_back(entry);
 }
 
 //Write the results in log.txt file
@@ -42,27 +47,17 @@ void CResultLog::WriteStatistics(int a_nMode)
         outputLog << "ID" << "\t" << "True-Pos-Called" << "\t\t" << "True-Pos-Baseline" << "\t" << "False-Pos" << "\t" << "False-Neg" << "\t" << "Precision" << "\t" << "Recall";
         outputLog << "\t" << "F-measure" << std::endl;
 
-        for(int k = 0; k < CHROMOSOME_COUNT; k++)
+        for(int k = 0; k < (int)m_aResultEntries.size(); k++)
         {
             if(m_aResultEntries[k].m_bIsNull)
                 continue;
-            
-            if(k < 22)
-                outputLog << "Chr" << k+1;
-            else if(k == 23)
-                outputLog << "ChrX";
-            else if(k == 24)
-                outputLog << "ChrY";
-            else
-                outputLog << "ChrM";
             
             int TPbase = m_aResultEntries[k].m_nTpBase;
             int TPcalled = m_aResultEntries[k].m_nTpCalled;
             int FP = m_aResultEntries[k].m_nFp + m_aResultEntries[k].m_nHalfTpCalled;
             int FN = m_aResultEntries[k].m_nFn + m_aResultEntries[k].m_nHalfTpBase;
             
-            
-            outputLog << "\t" << TPcalled << "\t" << TPbase << "\t" << FP << "\t" << FN;
+            outputLog << m_aResultEntries[k].m_chrName << "\t" << TPcalled << "\t" << TPbase << "\t" << FP << "\t" << FN;
             
             double Precision = static_cast<double>(TPbase) / static_cast<double>(TPbase + FP);
             double Recall = static_cast<double>(TPbase) / static_cast<double>(TPbase + FN);
@@ -82,26 +77,17 @@ void CResultLog::WriteStatistics(int a_nMode)
         outputLog << "ID" << "\t" << "True-Pos-Called" << "\t\t" << "True-Pos-Baseline" << "\t" << "False-Pos" << "\t" << "False-Neg" << "\t" << "Precision" << "\t" << "Recall";
         outputLog << "\t" << "F-measure" << std::endl;
         
-        for(int k = 0; k < CHROMOSOME_COUNT; k++)
+        for(int k = 0; k < (int)m_aResultEntries.size(); k++)
         {
             if(m_aResultEntries[k].m_bIsNull)
                 continue;
-            
-            if(k < 22)
-                outputLog << "Chr" << k+1;
-            else if(k == 23)
-                outputLog << "ChrX";
-            else if(k == 24)
-                outputLog << "ChrY";
-            else
-                outputLog << "ChrM";
             
             int TPbase = m_aResultEntries[k].m_nTpBase + m_aResultEntries[k].m_nHalfTpBase;
             int TPcalled = m_aResultEntries[k].m_nTpCalled + m_aResultEntries[k].m_nHalfTpCalled;
             int FP = m_aResultEntries[k].m_nFp;
             int FN = m_aResultEntries[k].m_nFn;
             
-            outputLog << "\t" << TPcalled << "\t" << TPbase << "\t" << FP << "\t" << FN;
+            outputLog << m_aResultEntries[k].m_chrName << "\t" << TPcalled << "\t" << TPbase << "\t" << FP << "\t" << FN;
             
             double Precision = static_cast<double>(TPbase) / static_cast<double>(TPbase + FP);
             double Recall = static_cast<double>(TPbase) / static_cast<double>(TPbase + FN);
@@ -115,11 +101,11 @@ void CResultLog::WriteStatistics(int a_nMode)
     if(a_nMode == 2)
     {
         int totalBaseTP = 0;
-        for(int k= 0; k < CHROMOSOME_COUNT; k++)
+        for(int k= 0; k < (int)m_aResultEntries.size(); k++)
             totalBaseTP += m_aResultEntries[k].m_nTpBase;
         
         int totalCalledTP = 0;
-        for(int k= 0; k < CHROMOSOME_COUNT; k++)
+        for(int k= 0; k < (int)m_aResultEntries.size(); k++)
             totalCalledTP += m_aResultEntries[k].m_nTpCalled;
         
         outputLog << std::endl << std::endl;

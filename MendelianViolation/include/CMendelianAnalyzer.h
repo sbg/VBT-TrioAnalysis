@@ -18,6 +18,7 @@
 #include "EMendelianDecision.h"
 #include "ENoCallMode.h"
 #include <thread>
+#include "SChrIdTriplet.h"
 
 class CMendelianAnalyzer
 {
@@ -36,13 +37,13 @@ private:
     bool ReadParameters(int argc, char** argv);
     
     //A function that perform merge operations after best path algorith for mother-child and father-child is called
-    void MergeFunc(int a_nChromosomeId);
+    void MergeFunc(SChrIdTriplet& a_rTriplet);
     
     //Return the syncpointlist for given comparison. Writes to the last parameter
-    void GetSyncPointList(int a_nChrId, bool a_bIsFatherChild, std::vector<CSyncPoint>& a_rSyncPointList, bool a_bIsGT = false);
+    void GetSyncPointList(SChrIdTriplet& a_rTriplet, bool a_bIsFatherChild, std::vector<CSyncPoint>& a_rSyncPointList, bool a_bIsGT = false);
     
     //Check sync points which child excluded contains 0 Allele variant. If that 0 allele is playable for the parent, we mark variants as compliant, violation otherwise
-    void CheckFor0Path(int a_nChrId,
+    void CheckFor0Path(SChrIdTriplet& a_rTriplet,
                        bool a_bIsFatherChild,
                        std::vector<const CVariant*>& a_rOvarList,
                        std::vector<const CVariant*>& a_rViolationList,
@@ -50,10 +51,10 @@ private:
                        bool a_bIsUpdateDecisionList = true);
     
     //Check each unique vars and seek for 0 path at the requested side and fills the a_rSideDecisionList
-    void CheckUniqueVars(EMendelianVcfName a_checkSide, int a_nChrId, const std::vector<const CVariant*>& a_rVariantList, std::vector<bool>& a_rSideDecisions);
+    void CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTriplet& a_rTriplet, const std::vector<const CVariant*>& a_rVariantList, std::vector<bool>& a_rSideDecisions);
     
     //Check sync points which child excluded contains 0 Allele variant. If that 0 allele is playable for the parent, we mark variants as compliant, violation otherwise
-    void CheckFor0PathFor00(int a_nChrId,
+    void CheckFor0PathFor00(SChrIdTriplet& a_rTriplet,
                             bool a_bIsFatherChild,
                             std::vector<const CVariant*>& a_rOvarList,
                             std::vector<const CVariant*>& a_rViolationList,
@@ -61,17 +62,17 @@ private:
     
     
     //Check sync points which child excluded variant is 0/0. If that is playable for the both parent, we mark variants as compliant, violation otherwise
-    void CheckFor00Child(int a_nChrId,
+    void CheckFor00Child(SChrIdTriplet& a_rTriplet,
                          std::vector<const CVariant*>& a_rOvarList,
                          std::vector<const CVariant*>& a_rViolationList,
                          std::vector<const CVariant*>& a_rCompliantList,
                          bool a_bIsGTMatch);
         
     //A Function to process mendelian violation pipeline for given chromosome id
-    void ProcessChromosome(const std::vector<int>& a_rChromosomeIds);
+    void ProcessChromosome(const std::vector<SChrIdTriplet>& a_rChromosomeIds);
     
     //Report short output table (Non 0/0 child variants only)
-    void ReportChildChromosomeData(int a_nChromosomeId, std::vector<const CVariant*>& a_rCompliants, std::vector<const CVariant*>& a_rViolations);
+    void ReportChildChromosomeData(SChrIdTriplet& a_rTriplet, std::vector<const CVariant*>& a_rCompliants, std::vector<const CVariant*>& a_rViolations);
     
     //Divide the jobs between different threads homogeneously for given number of thread count. Return the actual thread count
     int AssignJobsToThreads(int a_nThreadCount);
@@ -98,18 +99,17 @@ private:
     CMendelianResultLog m_resultLog;
     
     //Best Paths written by each thread for each unique chromosome exists [Between father and child]
-    CPath m_aBestPathsFatherChildGT[CHROMOSOME_COUNT];
-    CPath m_aBestPathsFatherChildAM[CHROMOSOME_COUNT];
+    std::vector<CPath> m_aBestPathsFatherChildGT;
+    std::vector<CPath> m_aBestPathsFatherChildAM;
 
     //Best Paths written by each thread for each unique chromosome exists [Between mother and child]
-    CPath m_aBestPathsMotherChildGT[CHROMOSOME_COUNT];
-    CPath m_aBestPathsMotherChildAM[CHROMOSOME_COUNT];
+    std::vector<CPath> m_aBestPathsMotherChildGT;
+    std::vector<CPath> m_aBestPathsMotherChildAM;
     
     //Menndelian compliant/violation decision of each child variant
-    std::vector<EMendelianDecision> m_aChildDecisions[CHROMOSOME_COUNT];
-    std::vector<EMendelianDecision> m_aFatherDecisions[CHROMOSOME_COUNT];
-    std::vector<EMendelianDecision> m_aMotherDecisions[CHROMOSOME_COUNT];
-    
+    std::vector<std::vector<EMendelianDecision>> m_aChildDecisions;
+    std::vector<std::vector<EMendelianDecision>> m_aFatherDecisions;
+    std::vector<std::vector<EMendelianDecision>> m_aMotherDecisions;
     
     //Thread pool we have for multitasking by per chromosome
     std::thread *m_pThreadPool;

@@ -18,10 +18,11 @@
 
 struct SContig
 {
+    //Free the reference sequence
+    bool Clean();
+    
     //Chromosome name written on fasta/vcf
-    std::string m_chromosome;
-    //Chromosome index in variant provider
-    int m_nChrId;
+    std::string  m_chromosomeName;
     char* m_pRefSeq = 0;
     int m_nRefLength;
 };

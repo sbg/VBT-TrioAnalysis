@@ -112,7 +112,7 @@ CPath CPathReplay::FindBestPath(SContig a_contig, bool a_bIsGenotypeMatch)
             complexRegionCount++;
             std::cerr << "Evaluation is too complex!";
             std::cerr << " There are " << m_pathList.Size() << " unresolved paths, " << currentIterations << " iterations at reference region ";
-            std::cerr << a_contig.m_chromosome << ":" << (lastSyncPos + 1) << "-" << (m_nCurrentPosition + 2) << std::endl;
+            std::cerr << a_contig.m_chromosomeName << ":" << (lastSyncPos + 1) << "-" << (m_nCurrentPosition + 2) << std::endl;
 
             //Drop all paths currently in play
             m_pathList.Clear();
@@ -132,13 +132,13 @@ CPath CPathReplay::FindBestPath(SContig a_contig, bool a_bIsGenotypeMatch)
             continue;
         }
 
-        if(EnqueueVariant(*processedPath.m_pPath, eCALLED, a_contig.m_nChrId, a_bIsGenotypeMatch))
+        if(EnqueueVariant(*processedPath.m_pPath, eCALLED, a_bIsGenotypeMatch))
         {
             //std::cout << "Called semipath enqueued" << std::endl;
             continue;
         }
         
-        if(EnqueueVariant(*processedPath.m_pPath, eBASE, a_contig.m_nChrId, a_bIsGenotypeMatch))
+        if(EnqueueVariant(*processedPath.m_pPath, eBASE, a_bIsGenotypeMatch))
         {
             //std::cout << "Base semipath enqueued" << std::endl;
             continue;
@@ -202,7 +202,7 @@ CPath CPathReplay::FindBestPath(SContig a_contig, bool a_bIsGenotypeMatch)
     best.m_pPath->ClearExcludedVariants();
     best.m_pPath->AddExcludedVariants(m_ExcludedVariantsCalledBest, m_ExcludedVariantsBaselineBest);
     
-    std::cerr << "FINISHED " << a_contig.m_nChrId + 1 << ": Complex Region: " << complexRegionCount;
+    std::cerr << "FINISHED " << a_contig.m_chromosomeName << ": Complex Region: " << complexRegionCount;
     std::cerr << " Skipped Variant Count :" << totalSkippedVariantCount;
     std::cerr << " Maximum path complexity is " << maxPaths << ", with "  << currentMaxIterations << " iterations " << std::endl;
     return *best.m_pPath;
@@ -346,7 +346,7 @@ bool CPathReplay::FindBetter(const CPathContainer& lhs, const CPathContainer& rh
 }
 
 
-bool CPathReplay::EnqueueVariant(CPath& a_rPathToPlay, EVcfName a_uVcfSide, int a_nChromosomeId, bool a_bIsGenotypeMatch)
+bool CPathReplay::EnqueueVariant(CPath& a_rPathToPlay, EVcfName a_uVcfSide, bool a_bIsGenotypeMatch)
 {
     const CSemiPath* pSemiPath = 0;
 

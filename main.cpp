@@ -22,11 +22,13 @@
 
 int main (int argc, char** argv)
 {
-    //std::ofstream out("/Users/c1ms21p6h3qk/Desktop/outXCODE.txt");
-    //std::cout.rdbuf(out.rdbuf()); //redirect std::cout to out.txt!
-    
-    //std::ofstream err("/Users/c1ms21p6h3qk/Desktop/errXCOCD.txt");
-    //std::cerr.rdbuf(err.rdbuf()); //redirect std::cerr to error.txt!
+    if(argc == 1)
+    {
+        std::cerr << "You have not entered an input.Please try either following:" << std::endl;
+        std::cerr << "./vbt varcomp [PARAMETERS]" << std::endl;
+        std::cerr << "./vbt mendelian [PARAMETERS]" << std::endl;
+        std::cerr << "Please type ./vbt <select_feature> --help for short info about the parameter structure." << std::endl;
+    }
     
     if(strcmp(argv[1], "mendelian") == 0)
     {
@@ -37,17 +39,16 @@ int main (int argc, char** argv)
     else if(strcmp(argv[1], "varcomp") == 0)
     {
        CVcfAnalyzer analyzer;
-       analyzer.Run(argc, argv);
+       analyzer.Run(20, argv);
     }
     
     else
     {
-        std::cout << "Invalid feature name.Please try either following:" << std::endl;
-        std::cout << "./vbt varcomp [PARAMETERS]" << std::endl;
-        std::cout << "./vbt mendelian [PARAMETERS]" << std::endl;
-        std::cout << "Please type ./vbt <select_feature> --help for short info about the parameter structure." << std::endl;
+        std::cerr << "Invalid feature name.Please try either following:" << std::endl;
+        std::cerr << "./vbt varcomp [PARAMETERS]" << std::endl;
+        std::cerr << "./vbt mendelian [PARAMETERS]" << std::endl;
+        std::cerr << "Please type ./vbt <select_feature> --help for short info about the parameter structure." << std::endl;
     }
-    
 }
 
 

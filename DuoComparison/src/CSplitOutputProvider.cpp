@@ -9,6 +9,7 @@
 #include "CSplitOutputProvider.h"
 #include "CPath.h"
 #include "CVariantProvider.h"
+#include <algorithm>
 
 
 CSplitOutputProvider::CSplitOutputProvider()
@@ -21,9 +22,9 @@ void CSplitOutputProvider::SetVariantProvider(CVariantProvider* a_pProvider)
     m_pProvider = a_pProvider;
 }
 
-void CSplitOutputProvider::SetBestPaths(CPath* a_pBestPathList)
+void CSplitOutputProvider::SetBestPaths(std::vector<CPath>& a_rBestPathList)
 {
-    m_pBestPaths = a_pBestPathList;
+    m_aBestPaths = a_rBestPathList;
 }
 
 
@@ -32,18 +33,25 @@ void CSplitOutputProvider::SetVcfPath(const std::string& a_rVcfPath)
     m_vcfsFolder = a_rVcfPath;
 }
 
-void CSplitOutputProvider::GenerateSplitVcfs()
+void CSplitOutputProvider::SetContigList(const std::vector<SVcfContig>& a_rContigs)
 {
-    GenerateTpCalledVcf();
-    GenerateTpBaseVcf();
-    GenerateFnVcf();
-    GenerateFpVcf();
+    m_contigs = a_rContigs;
 }
 
 
-
-void CSplitOutputProvider::GenerateTpBaseVcf()
+void CSplitOutputProvider::GenerateSplitVcfs(const std::vector<SChrIdTuple>& a_rCommonChromosomes)
 {
+    GenerateTpCalledVcf(a_rCommonChromosomes);
+    GenerateTpBaseVcf(a_rCommonChromosomes);
+    GenerateFnVcf(a_rCommonChromosomes);
+    GenerateFpVcf(a_rCommonChromosomes);
+}
+
+void CSplitOutputProvider::GenerateTpBaseVcf(const std::vector<SChrIdTuple>& a_rCommonChromosomes)
+{
+    std::vector<SChrIdTuple> commonChromosomesOrdered(a_rCommonChromosomes);
+    std::sort(commonChromosomesOrdered.begin(), commonChromosomesOrdered.end(), [](const SChrIdTuple& t1, const SChrIdTuple& t2){ return t1.m_nBaseId < t2.m_nBaseId; });
+    
     std::string filePath = m_vcfsFolder + "/TPBase.vcf";
     m_TPBaseWriter.CreateVcf(filePath.c_str());
     
@@ -51,9 +59,9 @@ void CSplitOutputProvider::GenerateTpBaseVcf()
     FillHeader(&m_TPBaseWriter, true);
     
     //Process each chromosome
-    for(int k = 0; k < CHROMOSOME_COUNT; k++)
+    for(SChrIdTuple tuple : commonChromosomesOrdered)
     {
-        const std::vector<const COrientedVariant*> ovarList = m_pBestPaths[k].m_baseSemiPath.GetIncludedVariants();
+        const std::vector<const COrientedVariant*> ovarList = m_aBestPaths[tuple.m_nTupleIndex].m_baseSemiPath.GetIncludedVariants();
         AddRecords(&m_TPBaseWriter, ovarList);
     }
     
@@ -61,8 +69,11 @@ void CSplitOutputProvider::GenerateTpBaseVcf()
 }
 
 
-void CSplitOutputProvider::GenerateTpCalledVcf()
+void CSplitOutputProvider::GenerateTpCalledVcf(const std::vector<SChrIdTuple>& a_rCommonChromosomes)
 {
+    std::vector<SChrIdTuple> commonChromosomesOrdered(a_rCommonChromosomes);
+    std::sort(commonChromosomesOrdered.begin(), commonChromosomesOrdered.end(), [](const SChrIdTuple& t1, const SChrIdTuple& t2){ return t1.m_nBaseId < t2.m_nBaseId; });
+    
     std::string filePath = m_vcfsFolder + "/TPCalled.vcf";
     m_TPCalledWriter.CreateVcf(filePath.c_str());
     
@@ -70,17 +81,20 @@ void CSplitOutputProvider::GenerateTpCalledVcf()
     FillHeader(&m_TPCalledWriter, false);
     
     //Process each chromosome
-    for(int k = 0; k < CHROMOSOME_COUNT; k++)
+    for(SChrIdTuple tuple : commonChromosomesOrdered)
     {
-        const std::vector<const COrientedVariant*> ovarList = m_pBestPaths[k].m_calledSemiPath.GetIncludedVariants();
+        const std::vector<const COrientedVariant*> ovarList = m_aBestPaths[tuple.m_nTupleIndex].m_calledSemiPath.GetIncludedVariants();
         AddRecords(&m_TPCalledWriter, ovarList);
     }
     
     m_TPCalledWriter.CloseVcf();
 }
 
-void CSplitOutputProvider::GenerateFnVcf()
+void CSplitOutputProvider::GenerateFnVcf(const std::vector<SChrIdTuple>& a_rCommonChromosomes)
 {
+    std::vector<SChrIdTuple> commonChromosomesOrdered(a_rCommonChromosomes);
+    std::sort(commonChromosomesOrdered.begin(), commonChromosomesOrdered.end(), [](const SChrIdTuple& t1, const SChrIdTuple& t2){ return t1.m_nBaseId < t2.m_nBaseId; });
+
     std::string filePath = m_vcfsFolder + "/FN.vcf";
     m_FNWriter.CreateVcf(filePath.c_str());
     
@@ -88,17 +102,20 @@ void CSplitOutputProvider::GenerateFnVcf()
     FillHeader(&m_FNWriter, true);
     
     //Process each chromosome
-    for(int k = 0; k < CHROMOSOME_COUNT; k++)
+    for(SChrIdTuple tuple : commonChromosomesOrdered)
     {
-        const std::vector<const CVariant*> varList = m_pProvider->GetVariantList(eBASE, k, m_pBestPaths[k].m_baseSemiPath.GetExcluded());
+        const std::vector<const CVariant*> varList = m_pProvider->GetVariantList(eBASE, tuple.m_nBaseId, m_aBestPaths[tuple.m_nTupleIndex].m_baseSemiPath.GetExcluded());
         AddRecords(&m_FNWriter, varList);
     }
     
     m_FNWriter.CloseVcf();
 }
 
-void CSplitOutputProvider::GenerateFpVcf()
+void CSplitOutputProvider::GenerateFpVcf(const std::vector<SChrIdTuple>& a_rCommonChromosomes)
 {
+    std::vector<SChrIdTuple> commonChromosomesOrdered(a_rCommonChromosomes);
+    std::sort(commonChromosomesOrdered.begin(), commonChromosomesOrdered.end(), [](const SChrIdTuple& t1, const SChrIdTuple& t2){ return t1.m_nBaseId < t2.m_nBaseId; });
+
     std::string filePath = m_vcfsFolder + "/FP.vcf";
     m_FPWriter.CreateVcf(filePath.c_str());
     
@@ -106,9 +123,9 @@ void CSplitOutputProvider::GenerateFpVcf()
     FillHeader(&m_FPWriter, false);
     
     //Process each chromosome
-    for(int k = 0; k < CHROMOSOME_COUNT; k++)
+    for(SChrIdTuple tuple : commonChromosomesOrdered)
     {
-        const std::vector<const CVariant*> varList = m_pProvider->GetVariantList(eCALLED, k, m_pBestPaths[k].m_calledSemiPath.GetExcluded());
+        const std::vector<const CVariant*> varList = m_pProvider->GetVariantList(eCALLED, tuple.m_nCalledId, m_aBestPaths[tuple.m_nTupleIndex].m_calledSemiPath.GetExcluded());
         AddRecords(&m_FPWriter, varList);
     }
     
@@ -119,7 +136,7 @@ void CSplitOutputProvider::GenerateFpVcf()
 void CSplitOutputProvider::VariantToVcfRecord(const CVariant* a_pVariant, SVcfRecord& a_rOutputRec)
 {
     //Fill basic variant data
-    a_rOutputRec.m_nChrId = a_pVariant->m_nChrId;
+    a_rOutputRec.m_chrName = a_pVariant->m_chrName;
     a_rOutputRec.m_nPosition = a_pVariant->m_nOriginalPos;
     a_rOutputRec.m_alleles = a_pVariant->m_allelesStr;
     a_rOutputRec.m_aFilterString = a_pVariant->m_filterString;
@@ -177,32 +194,9 @@ void CSplitOutputProvider::FillHeader(CVcfWriter *a_pWriter, bool a_bIsBaseSide)
         a_pWriter->AddHeaderLine("##FILTER=<ID=" + filterNames[k] + ",Description=" + filterDescriptions[k] + ">");
     
     //ADD CONTIG IDs
-    a_pWriter->AddHeaderLine("##contig=<ID=chr1,length=249250621>");
-    a_pWriter->AddHeaderLine("##contig=<ID=chr2,length=243199373>");
-    a_pWriter->AddHeaderLine("##contig=<ID=chr3,length=198022430>");
-    a_pWriter->AddHeaderLine("##contig=<ID=chr4,length=191154276>");
-    a_pWriter->AddHeaderLine("##contig=<ID=chr5,length=180915260>");
-    a_pWriter->AddHeaderLine("##contig=<ID=chr6,length=171115067>");
-    a_pWriter->AddHeaderLine("##contig=<ID=chr7,length=159138663>");
-    a_pWriter->AddHeaderLine("##contig=<ID=chr8,length=146364022>");
-    a_pWriter->AddHeaderLine("##contig=<ID=chr9,length=141213431>");
-    a_pWriter->AddHeaderLine("##contig=<ID=chr10,length=135534747>");
-    a_pWriter->AddHeaderLine("##contig=<ID=chr11,length=135006516>");
-    a_pWriter->AddHeaderLine("##contig=<ID=chr12,length=133851895>");
-    a_pWriter->AddHeaderLine("##contig=<ID=chr13,length=115169878>");
-    a_pWriter->AddHeaderLine("##contig=<ID=chr14,length=107349540>");
-    a_pWriter->AddHeaderLine("##contig=<ID=chr15,length=102531392>");
-    a_pWriter->AddHeaderLine("##contig=<ID=chr16,length=90354753>");
-    a_pWriter->AddHeaderLine("##contig=<ID=chr17,length=81195210>");
-    a_pWriter->AddHeaderLine("##contig=<ID=chr18,length=78077248>");
-    a_pWriter->AddHeaderLine("##contig=<ID=chr19,length=59128983>");
-    a_pWriter->AddHeaderLine("##contig=<ID=chr20,length=63025520>");
-    a_pWriter->AddHeaderLine("##contig=<ID=chr21,length=48129895>");
-    a_pWriter->AddHeaderLine("##contig=<ID=chr22,length=51304566>");
-    a_pWriter->AddHeaderLine("##contig=<ID=chrM,length=16571>");
-    a_pWriter->AddHeaderLine("##contig=<ID=chrX,length=155270560>");
-    a_pWriter->AddHeaderLine("##contig=<ID=chrY,length=59373566>");
-    
+    for(int k = 0; k < m_contigs.size(); k++)
+        a_pWriter->AddHeaderLine("##contig=<ID=" + m_contigs[k].name + ",length=" + std::to_string(m_contigs[k].length) + ">");
+
     //ADD REQUIRED SAMPLES
     a_pWriter->AddSampleName("S");
     

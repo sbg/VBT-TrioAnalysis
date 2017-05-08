@@ -111,6 +111,7 @@
 		556D39841DD3AF2E00551040 /* libhts.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libhts.dylib; sourceTree = "<group>"; };
 		556D39861DD3AF2E00551040 /* htslib.pc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = htslib.pc; sourceTree = "<group>"; };
 		556D39CB1DD3AFAC00551040 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		557366F31EB8DAF9005F46C1 /* SChrIdTuple.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SChrIdTuple.h; path = DuoComparison/include/SChrIdTuple.h; sourceTree = SOURCE_ROOT; };
 		558A41731E92EDA900575FA6 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = SOURCE_ROOT; };
 		559BA2921E97D42F0018D734 /* CSplitOutputProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CSplitOutputProvider.h; path = DuoComparison/include/CSplitOutputProvider.h; sourceTree = SOURCE_ROOT; };
 		559BA2931E97D63F0018D734 /* CSplitOutputProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CSplitOutputProvider.cpp; path = DuoComparison/src/CSplitOutputProvider.cpp; sourceTree = SOURCE_ROOT; };
@@ -136,6 +137,7 @@
 		559BA2A91E982DFE0018D734 /* vcf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vcf.h; sourceTree = "<group>"; };
 		559BA2AA1E982DFE0018D734 /* vcf_sweep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vcf_sweep.h; sourceTree = "<group>"; };
 		559BA2AB1E982DFE0018D734 /* vcfutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vcfutils.h; sourceTree = "<group>"; };
+		55B3ED9A1EB7B8300096501D /* SChrIdTriplet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SChrIdTriplet.h; path = MendelianViolation/include/SChrIdTriplet.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -221,6 +223,7 @@
 				551661E71E82E582002436FA /* CVcfAnalyzer.h */,
 				551661E81E82E582002436FA /* SVariantSummary.h */,
 				559BA2921E97D42F0018D734 /* CSplitOutputProvider.h */,
+				557366F31EB8DAF9005F46C1 /* SChrIdTuple.h */,
 			);
 			name = Include;
 			sourceTree = "<group>";
@@ -297,6 +300,7 @@
 				551661F71E82E8DB002436FA /* EMendelianVcfName.h */,
 				550E1F5C1E89613200AEFB0B /* ENoCallMode.h */,
 				550E1F5E1E8ABC0100AEFB0B /* CMendelianResultLog.h */,
+				55B3ED9A1EB7B8300096501D /* SChrIdTriplet.h */,
 			);
 			name = include;
 			sourceTree = "<group>";

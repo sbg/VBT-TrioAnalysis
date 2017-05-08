@@ -57,7 +57,8 @@ bool CVcfReader::Open(const char * a_pFilename)
             SVcfContig contig;
             contig.name   = m_pHeader->id[BCF_DT_CTG][i].key;
             contig.length = m_pHeader->id[BCF_DT_CTG][i].val->info[0];
-            contigs_.push_back(contig);
+            m_contigs.push_back(contig);
+            m_chrIndexMap[contig.name] = i;
         }
     }
         
@@ -104,7 +105,7 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
     {
         a_pVariant->m_nId = a_nId;
         a_pVariant->m_chrName = m_pHeader->id[BCF_DT_CTG][m_pRecord->rid].key;
-        a_pVariant->m_nChrId = GetChromosomeNumber(a_pVariant->m_chrName);
+        a_pVariant->m_nChrId = m_chrIndexMap[m_pHeader->id[BCF_DT_CTG][m_pRecord->rid].key];
         
         //READ FILTER DATA
         bool isPassed = false;
@@ -388,9 +389,9 @@ void CVcfReader::GetSampleNames(std::vector<std::string>& a_pSampleNameList)
 
 int CVcfReader::GetContigId(std::string a_name) const
 {
-    for (unsigned int i = 0; i < contigs_.size(); ++i)
+    for (unsigned int i = 0; i < m_contigs.size(); ++i)
     {
-        if (contigs_[i].name.compare(a_name) == 0)
+        if (m_contigs[i].name.compare(a_name) == 0)
             return i;
     }
     return -1;
@@ -430,7 +431,7 @@ bool CVcfReader::HasRedundantFirstNucleotide() const
 
 const std::vector<SVcfContig>&  CVcfReader::GetContigs() const
 {
-    return contigs_;
+    return m_contigs;
 }
 
 void CVcfReader::GetFilterInfo(std::vector<std::string> &a_rFilterNames, std::vector<std::string> &a_rFilterDescriptions)

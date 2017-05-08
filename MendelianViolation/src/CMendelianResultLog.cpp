@@ -147,20 +147,23 @@ void CMendelianResultLog::WriteGenotypeRowSum(std::ofstream* a_pOutput, const st
 
 
 
-void CMendelianResultLog::LogBestPathStatistic(bool a_bIsFatherChild, int a_nChromosomeId, int a_nTpCalled, int a_nTpBaseline, int a_nFalsePositive, int a_nFalseNegative)
+void CMendelianResultLog::LogBestPathStatistic(bool a_bIsFatherChild, SChrIdTriplet a_triplet, int a_nTpCalled, int a_nTpBaseline, int a_nFalsePositive, int a_nFalseNegative)
 {
-    SMendelianBestPathLogEntry* entry;
+    SMendelianBestPathLogEntry entry;
+    
+    entry.m_nTpBase = a_nTpBaseline;
+    entry.m_nTpCalled = a_nTpCalled;
+    entry.m_nFn = a_nFalseNegative;
+    entry.m_nFP = a_nFalsePositive;
+    entry.m_bIsNull = false;
+    entry.m_chrName = a_triplet.m_chrName;
     
     if(true == a_bIsFatherChild)
-        entry = &m_aFatherChildLogEntries[a_nChromosomeId];
+        m_aFatherChildLogEntries.push_back(entry);
+
     else
-        entry = &m_aMotherChildLogEntries[a_nChromosomeId];
+        m_aMotherChildLogEntries.push_back(entry);
     
-    entry->m_nTpBase = a_nTpBaseline;
-    entry->m_nTpCalled = a_nTpCalled;
-    entry->m_nFn = a_nFalseNegative;
-    entry->m_nFP = a_nFalsePositive;
-    entry->m_bIsNull = false;
 }
 
 void CMendelianResultLog::LogDetailedReport(SMendelianDetailedLogEntry& a_rLogEntry)
@@ -178,12 +181,17 @@ void CMendelianResultLog::LogGenotypeMatrix(SMendelianDetailedLogGenotypes& a_rL
         }
 }
 
-void CMendelianResultLog::LogShortReport(int a_nChrId, int a_nSNPcompliant, int a_nSNPviolation, int a_nINDELcompliant, int a_nINDELviolation)
+void CMendelianResultLog::LogShortReport(std::string& a_rChrName, int a_nSNPcompliant, int a_nSNPviolation, int a_nINDELcompliant, int a_nINDELviolation)
 {
-    m_aShortLogEntries[a_nChrId].m_nSNPcompliant = a_nSNPcompliant;
-    m_aShortLogEntries[a_nChrId].m_nSNPviolation = a_nSNPviolation;
-    m_aShortLogEntries[a_nChrId].m_nINDELcompliant = a_nINDELcompliant;
-    m_aShortLogEntries[a_nChrId].m_nINDELviolation = a_nINDELviolation;
+    SMendelianShortLogEntry entry;
+    
+    entry.m_nSNPcompliant = a_nSNPcompliant;
+    entry.m_nSNPviolation = a_nSNPviolation;
+    entry.m_nINDELcompliant = a_nINDELcompliant;
+    entry.m_nINDELviolation = a_nINDELviolation;
+    entry.m_chrName = a_rChrName;
+    
+    m_aShortLogEntries.push_back(entry);
 }
 
 void CMendelianResultLog::WriteBestPathStatistics()
@@ -205,18 +213,17 @@ void CMendelianResultLog::WriteBestPathStatistics()
     outputLog << std::left << std::setw(15) << std::setfill(separator) << "F-measure" << std::endl;
     
     
-    for(int k = 0; k < CHROMOSOME_COUNT; k++)
+    for(int k = 0; k < (int)m_aFatherChildLogEntries.size(); k++)
     {
         if(m_aFatherChildLogEntries[k].m_bIsNull)
             continue;
         
-        std::string chrId = k < 22 ? "Chr" + std::to_string(k+1) : "ChrX";
         int TPbase = m_aFatherChildLogEntries[k].m_nTpBase;
         int TPcalled = m_aFatherChildLogEntries[k].m_nTpCalled;
         int FP = m_aFatherChildLogEntries[k].m_nFP;
         int FN = m_aFatherChildLogEntries[k].m_nFn;
         
-        outputLog << std::left << std::setw(10) << std::setfill(separator) << chrId;
+        outputLog << std::left << std::setw(10) << std::setfill(separator) << m_aFatherChildLogEntries[k].m_chrName;
         outputLog << std::left << std::setw(20) << std::setfill(separator) << TPcalled;
         outputLog << std::left << std::setw(20) << std::setfill(separator) << TPbase;
         outputLog << std::left << std::setw(15) << std::setfill(separator) << FP;
@@ -244,18 +251,17 @@ void CMendelianResultLog::WriteBestPathStatistics()
     outputLog << std::left << std::setw(15) << std::setfill(separator) << "Recall";
     outputLog << std::left << std::setw(15) << std::setfill(separator) << "F-measure" << std::endl;
     
-    for(int k = 0; k < CHROMOSOME_COUNT; k++)
+    for(int k = 0; k < (int)m_aMotherChildLogEntries.size(); k++)
     {
         if(m_aMotherChildLogEntries[k].m_bIsNull)
             continue;
         
-        std::string chrId = k < 22 ? "Chr" + std::to_string(k+1) : "ChrX";
         int TPbase = m_aMotherChildLogEntries[k].m_nTpBase;
         int TPcalled = m_aMotherChildLogEntries[k].m_nTpCalled;
         int FP = m_aMotherChildLogEntries[k].m_nFP;
         int FN = m_aMotherChildLogEntries[k].m_nFn;
         
-        outputLog << std::left << std::setw(10) << std::setfill(separator) << chrId;
+        outputLog << std::left << std::setw(10) << std::setfill(separator) << m_aMotherChildLogEntries[k].m_chrName;
         outputLog << std::left << std::setw(20) << std::setfill(separator) << TPcalled;
         outputLog << std::left << std::setw(20) << std::setfill(separator) << TPbase;
         outputLog << std::left << std::setw(15) << std::setfill(separator) << FP;
@@ -285,6 +291,10 @@ void CMendelianResultLog::WriteDetailedReportTable()
     std::string path = m_aLogDirectory + "/DetailedReportTable.txt";
     outputLog.open(path.c_str());
     
+    outputLog << "Filtered complex Child variant Count :" << m_nTotalNonAssessedVarCountChild << std::endl;
+    outputLog << "Filtered complex Father variant Count :" << m_nTotalNonAssessedVarCountFather << std::endl;
+    outputLog << "Filtered complex Mother variant Count :" << m_nTotalNonAssessedVarCountMother << std::endl;
+    outputLog << std::endl;
     outputLog << "Skipped Total Child  Variant Count [Complex Region]: " << m_nTotalSkippedCountChild << std::endl;
     outputLog << "Skipped Total Mother Variant Count [Complex Region]: " << m_nTotalSkippedCountMother << std::endl;
     outputLog << "Skipped Total Father Variant Count [Complex Region]: " << m_nTotalSkippedCountFather << std::endl;
@@ -449,6 +459,14 @@ void CMendelianResultLog::LogSkippedVariantCounts(int a_nChildSkipped, int a_nFa
     m_nTotalSkippedCountFather = a_nFatherSkipped;
     m_nTotalSkippedCountMother = a_nMotherSkipped;
 }
+
+void CMendelianResultLog::LogFilteredComplexVariantCounts(int a_nChildFiltered, int a_nFatherFiltered, int a_nMotherFiltered)
+{
+    m_nTotalNonAssessedVarCountChild = a_nChildFiltered;
+    m_nTotalNonAssessedVarCountFather = a_nFatherFiltered;
+    m_nTotalNonAssessedVarCountMother = a_nMotherFiltered;
+}
+
 
 
 

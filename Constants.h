@@ -10,7 +10,10 @@
 #define _CONSTANTS_H_
 
 //MAX UNIQUE CHROMOSOME COUNT IN GENOME SEQUENCE (CHR1:CHR22, CHRX, CHRY and CHRMT)
-const int CHROMOSOME_COUNT = 25;
+//const int CHROMOSOME_COUNT = 25;
+
+//MAX NUMBER OF THREAD COUNT
+const int MAX_THREAD_COUNT = 25;
 
 //LEAST NUMBER OF VARIANT REQUIRED TO PROCESS THE CHROMOSOME
 const int LEAST_VARIANT_THRESHOLD = 2;
@@ -22,7 +25,7 @@ const int DEFAULT_THREAD_COUNT = 2;
 const int DEFAULT_MAX_BP_LENGTH = 1000;
 
 //DEFAULT SIZE OF PATH SET (For Dynamic Programming result saving. This variable should be increased carefully since it is easy to exceed available memory)
-const int DEFAULT_MAX_PATH_SIZE = 150000;
+const int DEFAULT_MAX_PATH_SIZE = 50000;
 
 //DEFAULT SIZE OF ITERATION COUNT (For Dynamic Programming result saving. This variable should be increased carefully since it is easy to exceed available memory)
 const int DEFAULT_MAX_ITERATION_SIZE = 10000000;
