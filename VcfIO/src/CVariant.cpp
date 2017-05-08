@@ -9,6 +9,7 @@
 #include "CVariant.h"
 #include <iostream>
 #include <sstream>
+#include "Constants.h"
 
 
 CVariant::CVariant(): m_nVcfId(-1),
@@ -265,9 +266,9 @@ EVariantCategory CVariant::GetVariantCategory() const
     {
         int varLength = (int)std::max(alleles[0].length(), std::max(alleles[m_genotype[0]].length(), alleles[m_genotype[1]].length()));
 
-        if(varLength < 5)
+        if(varLength < SMALL_VARIANT_SIZE)
             return EVariantCategory::eINDEL_COMPLEX_SMALL;
-        else if(varLength < 15)
+        else if(varLength < MEDIUM_VARIANT_SIZE)
             return EVariantCategory::eINDEL_COMPLEX_MEDIUM;
         else
             return EVariantCategory::eINDEL_COMPLEX_LARGE;

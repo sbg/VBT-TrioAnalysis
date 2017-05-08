@@ -25,10 +25,15 @@ const int DEFAULT_THREAD_COUNT = 2;
 const int DEFAULT_MAX_BP_LENGTH = 1000;
 
 //DEFAULT SIZE OF PATH SET (For Dynamic Programming result saving. This variable should be increased carefully since it is easy to exceed available memory)
-const int DEFAULT_MAX_PATH_SIZE = 50000;
+const int DEFAULT_MAX_PATH_SIZE = 150000;
 
 //DEFAULT SIZE OF ITERATION COUNT (For Dynamic Programming result saving. This variable should be increased carefully since it is easy to exceed available memory)
 const int DEFAULT_MAX_ITERATION_SIZE = 10000000;
 
+//DEFAULT SIZE OF SMALL VARIANTS FOR MENDELIAN VIOLATION DETECTION
+const int SMALL_VARIANT_SIZE = 5;
+
+//DEFAULT SIZE OF MEDIUM VARIANTS FOR MENDELIAN VIOLATION DETECTION
+const int MEDIUM_VARIANT_SIZE = 15;
 
 #endif //_CONSTANTS_H_
