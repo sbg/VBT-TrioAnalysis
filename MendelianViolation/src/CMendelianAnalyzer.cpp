@@ -21,7 +21,7 @@ bool variantCompare(const CVariant* v1, const CVariant* v2) {return v1->m_nId < 
 //Checks if the given two range is overlapping
 bool isOverlap(int left1, int right1, int left2, int right2)
 {
-    return std::min(right1, right2) - std::max(left1, left2) >= 0;
+    return std::min(right1, right2) - std::max(left1, left2) > 0;
 }
 
 
@@ -72,7 +72,8 @@ void CMendelianAnalyzer::run(int argc, char **argv)
     std::cout << "Generating the output trio vcf..." << std::endl;
     
     //Initialize output writer
-    std::string trioPath = std::string(m_fatherChildConfig.m_pOutputDirectory) + "/trio.vcf";
+    std::string directory = std::string(m_fatherChildConfig.m_pOutputDirectory);
+    std::string trioPath = directory + (directory[directory.length()-1] != '/' ? "/trio.vcf" : "trio.vcf");
     m_trioWriter.SetTrioPath(trioPath);
     m_trioWriter.SetNoCallMode(m_noCallMode);
     m_trioWriter.SetResultLogPointer(&m_resultLog);
@@ -254,7 +255,6 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
         {
             m_motherChildConfig.m_nThreadCount = std::min(std::max(1, atoi(argv[it+1])), MAX_THREAD_COUNT);
             m_fatherChildConfig.m_nThreadCount = std::min(std::max(1, atoi(argv[it+1])), MAX_THREAD_COUNT);
-            it+=2;
         }
         
         else
@@ -600,7 +600,6 @@ void CMendelianAnalyzer::CheckFor00Child(SChrIdTriplet& a_rTriplet,
 
 }
 
-
 int CMendelianAnalyzer::AssignJobsToThreads(int a_nThreadCount)
 {
     //Get the list of chromosomes to be processed
@@ -805,11 +804,17 @@ void CMendelianAnalyzer::CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTr
         decParent[k] = true;
     }
     
-    
     //Check overlaps for child
     int varItr = 0;
     for(int k = 0; k < (int)a_rVariantList.size(); k++)
     {
+        
+        if(a_rVariantList[k]->m_nOriginalPos == 560521)
+        {
+            int asd=0;
+            asd++;
+        }
+        
         //Check if the variant is already marked
         if(a_checkSide == eMOTHER && m_aMotherDecisions[a_rTriplet.m_nTripleIndex][m_provider.Get0BasedVariantIndex(eMOTHER, a_rTriplet.m_nMid, a_rVariantList[k]->m_nId)] != eUnknown)
         {
@@ -823,31 +828,44 @@ void CMendelianAnalyzer::CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTr
             continue;
         }
 
-        
+        //If variant does not have 0 allele
         if(a_rVariantList[k]->m_genotype[0] != 0 && a_rVariantList[k]->m_genotype[1] != 0)
         {
             decChild[k] = false;
             continue;
         }
         
+        //Skip child variants until end position of child variant is more than our current Parent variant start position
         while(varItr <  (int)varListToCheckChild.size() && varListToCheckChild[varItr]->m_nEndPos < a_rVariantList[k]->m_nStartPos)
             varItr++;
     
-        if(varItr == (int)varListToCheckChild.size())
-            break;
-        
-        else if(isOverlap(a_rVariantList[k]->m_nStartPos, a_rVariantList[k]->m_nEndPos, varListToCheckChild[varItr]->m_nStartPos, varListToCheckChild[varItr]->m_nEndPos))
+        //Check all child variants that may have a possible overlap with current Parent variant
+        bool curDecision = true;
+        //We wont increase child iteration for the following loop. There may be another parent variant that covers same child variant
+        int counter = 0;
+        while(varItr+counter < (int)varListToCheckChild.size() && varListToCheckChild[varItr+counter]->m_nStartPos < a_rVariantList[k]->m_nEndPos)
         {
-            if(m_aChildDecisions[a_rTriplet.m_nTripleIndex][varItr] == eCompliant)
-                decChild[k] = true;
-            
-            else if(m_aChildDecisions[a_rTriplet.m_nTripleIndex][varItr] == eViolation)
-                decChild[k] = false;
-            
-            else if(varListToCheckChild[varItr]->m_genotype[0] != 0 && varListToCheckChild[varItr]->m_genotype[1] != 0)
-                decChild[k] = false;
-            
+            if(isOverlap(a_rVariantList[k]->m_nStartPos, a_rVariantList[k]->m_nEndPos, varListToCheckChild[varItr+counter]->m_nStartPos, varListToCheckChild[varItr+counter]->m_nEndPos))
+            {
+                if(m_aChildDecisions[a_rTriplet.m_nTripleIndex][varItr+counter] == eCompliant)
+                    curDecision = true;
+                
+                else if(m_aChildDecisions[a_rTriplet.m_nTripleIndex][varItr+counter] == eViolation)
+                {
+                    curDecision = false;
+                    break;
+                }
+                
+                else if(varListToCheckChild[varItr+counter]->m_genotype[0] != 0 && varListToCheckChild[varItr+counter]->m_genotype[1] != 0)
+                {
+                    decChild[k] = false;
+                    break;
+                }
+                
+            }
+            counter++;
         }
+        decChild[k] = curDecision;
     }
     
     
@@ -878,7 +896,7 @@ void CMendelianAnalyzer::CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTr
         while(varItr <  (int)varListToCheckParent.size() && varListToCheckParent[varItr]->m_nEndPos < a_rVariantList[k]->m_nStartPos)
             varItr++;
         
-        if(varItr == (int)a_rVariantList.size())
+        if(varItr == (int)varListToCheckParent.size())
             break;
         
         else if(isOverlap(a_rVariantList[k]->m_nStartPos, a_rVariantList[k]->m_nEndPos, varListToCheckParent[varItr]->m_nStartPos, varListToCheckParent[varItr]->m_nEndPos))

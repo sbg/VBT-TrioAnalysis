@@ -78,6 +78,9 @@ private:
     //Checks whether given variant is a structural variant type (A complex type)
     bool IsStructuralVariant(const CVariant& a_rVariant, int a_nMaxLength) const;
     
+    //Checks if the variant genotype is 0/0 (homref)
+    bool IsHomRef(const CVariant& a_rVariant) const;
+    
     //Fill Variant sets for parent and child
     void FillVariants();
     

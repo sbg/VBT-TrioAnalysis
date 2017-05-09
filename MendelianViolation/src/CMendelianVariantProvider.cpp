@@ -144,10 +144,13 @@ void CMendelianVariantProvider::FillVariants()
             std::cout << "Processing chromosome " << preChrId << " of Parent[FATHER] vcf" << std::endl;
         }
         
-        if(variant.m_nChrId < 8)
+        //if(variant.m_nChrId < 8)
+        //    continue;
+        //else if(variant.m_nChrId > 8)
+        //    break;
+        
+        else if(!variant.m_bIsNoCall && IsHomRef(variant))
             continue;
-        else if(variant.m_nChrId > 11)
-            break;
         
         else if(m_fatherChildConfig.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
             m_aFatherNotAssessedVariantList[variant.m_nChrId].push_back(variant);
@@ -181,10 +184,13 @@ void CMendelianVariantProvider::FillVariants()
             std::cout << "Processing chromosome " << preChrId << " of Parent[MOTHER] vcf" << std::endl;
         }
         
-        if(variant.m_nChrId < 8)
+        //if(variant.m_nChrId < 8)
+        //    continue;
+        //else if(variant.m_nChrId > 8)
+        //    break;
+        
+        else if(!variant.m_bIsNoCall &&  IsHomRef(variant))
             continue;
-        else if(variant.m_nChrId > 11)
-            break;
         
         else if(m_motherChildConfig.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
             m_aMotherNotAssessedVariantList[variant.m_nChrId].push_back(variant);
@@ -218,11 +224,13 @@ void CMendelianVariantProvider::FillVariants()
             std::cout << "Processing chromosome " << preChrId << " of child vcf" << std::endl;
         }
         
-        if(variant.m_nChrId < 8)
-            continue;
-        else if(variant.m_nChrId > 11)
-            break;
+        //if(variant.m_nChrId < 8)
+        //    continue;
+        //else if(variant.m_nChrId > 8)
+        //    break;
         
+        else if(!variant.m_bIsNoCall && IsHomRef(variant))
+            continue;
         else if(m_motherChildConfig.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
             m_aChildNotAssessedVariantList[variant.m_nChrId].push_back(variant);
         
@@ -341,6 +349,22 @@ bool CMendelianVariantProvider::IsStructuralVariant(const CVariant& a_rVariant, 
     return false;
 }
 
+bool CMendelianVariantProvider::IsHomRef(const CVariant& a_rVariant) const
+{
+    bool res = true;
+    
+    for(int k = 0; k < a_rVariant.m_nZygotCount; k++)
+    {
+        if(a_rVariant.m_genotype[k] != 0)
+        {
+            res = false;
+            break;
+        }
+    }
+    return res;
+}
+
+
 void CMendelianVariantProvider::SetCommonChromosomes()
 {
     int tripleIndex = 0;
@@ -372,6 +396,8 @@ void CMendelianVariantProvider::SetCommonChromosomes()
                 break;
         }
     }
+        
+    std::sort(m_aCommonChromosomes.begin(), m_aCommonChromosomes.end(), [](const SChrIdTriplet& t1, const SChrIdTriplet& t2){ return t1.m_nCid < t2.m_nCid; });
     
     //Clear redundant variants TODO: We can remove redundant variants. Following part of code should be arranged to eliminate unique chromosomes
 /*    for(int k = 0; k < m_aCommonChromosomes.size(); k++)

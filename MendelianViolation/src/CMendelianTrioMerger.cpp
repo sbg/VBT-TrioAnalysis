@@ -148,14 +148,10 @@ void CMendelianTrioMerger::GenerateTrioVcf(std::vector<SChrIdTriplet>& a_rCommon
     m_logEntry.clear();
     m_logGenotypes.clear();
     
-    std::vector<SChrIdTriplet> orderedCommonChromosomes(a_rCommonChromosomes);
-    
-    std::sort(orderedCommonChromosomes.begin(), orderedCommonChromosomes.end(), [](const SChrIdTriplet& a, const SChrIdTriplet& b) { return a.m_nCid < b.m_nCid;});
-    
-    for(int k = 0; k < (int)orderedCommonChromosomes.size(); k++)
+    for(int k = 0; k < (int)a_rCommonChromosomes.size(); k++)
     {
-        std::cout << "Writing chromosome " << orderedCommonChromosomes[k].m_chrName << std::endl;
-        AddRecords(orderedCommonChromosomes[k]);
+        std::cout << "Writing chromosome " << a_rCommonChromosomes[k].m_chrName << std::endl;
+        AddRecords(a_rCommonChromosomes[k]);
     }
     
     //Send the logs to the log class
@@ -408,7 +404,7 @@ void CMendelianTrioMerger::DoTripleMerge(SChrIdTriplet& a_rTriplet, int& a_nChil
     //Add non ref child alleles
     for(int k= 0; k < m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_nAlleleCount; k++)
     {
-        if(m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_genotype[k] != 0)
+        if(m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_genotype[k] > 0)
             alleles.push_back(m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->GetOriginalAlleleStr(k));
     }
     
@@ -474,8 +470,17 @@ void CMendelianTrioMerger::DoTripleMerge(SChrIdTriplet& a_rTriplet, int& a_nChil
     dataChild.m_nHaplotypeCount = m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_nZygotCount;
     dataChild.m_bIsPhased = m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_bIsPhased; // TODO: This should be altered
     dataChild.m_bIsNoCallVariant = m_noCallMode == ENoCallMode::eNone ? false : m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_bIsNoCall;
-    for(int k = 0; k < m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_nZygotCount; k++)
-        dataChild.m_aGenotype[k] = m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_genotype[k];
+    for(int k = 0; k < m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->m_nZygotCount; k++)
+    {
+        for(int m = 0; m < (int)alleles.size(); m++)
+        {
+            if(m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->GetOriginalAlleleStr(k) == alleles[m])
+            {
+                dataChild.m_aGenotype[k] = m;
+                break;
+            }
+        }
+    }
     
     //Push trip genotypes to the vcfrecord
     vcfrecord.m_aSampleData.push_back(dataMother);

@@ -60,7 +60,6 @@ private:
                             std::vector<const CVariant*>& a_rViolationList,
                             std::vector<const CVariant*>& a_rCompliantList);
     
-    
     //Check sync points which child excluded variant is 0/0. If that is playable for the both parent, we mark variants as compliant, violation otherwise
     void CheckFor00Child(SChrIdTriplet& a_rTriplet,
                          std::vector<const CVariant*>& a_rOvarList,

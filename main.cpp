@@ -39,7 +39,7 @@ int main (int argc, char** argv)
     else if(strcmp(argv[1], "varcomp") == 0)
     {
        CVcfAnalyzer analyzer;
-       analyzer.Run(20, argv);
+       analyzer.Run(argc, argv);
     }
     
     else

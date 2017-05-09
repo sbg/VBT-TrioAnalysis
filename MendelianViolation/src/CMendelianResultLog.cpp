@@ -199,7 +199,7 @@ void CMendelianResultLog::WriteBestPathStatistics()
     const char separator    = ' ';
     
     std::ofstream outputLog;
-    std::string path = m_aLogDirectory + "/BestPathLogs.txt";
+    std::string path = m_aLogDirectory + (m_aLogDirectory[m_aLogDirectory.length()-1] != '/' ? "/BestPathLogs.txt" : "BestPathLogs.txt");
     outputLog.open(path.c_str());
     
     outputLog << "====== FATHER CHILD COMPARISON ======" << std::endl;
