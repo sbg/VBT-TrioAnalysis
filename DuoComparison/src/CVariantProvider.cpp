@@ -234,7 +234,7 @@ void CVariantProvider::FillOrientedVariantLists()
     m_aCalledOrientedVariantList = std::vector<std::vector<COrientedVariant>>(m_calledVCF.GetContigs().size());
     
     
-    for(int i=0; i < m_aBaseOrientedVariantList.size(); i++)
+    for(int i=0; i < (int)m_aBaseOrientedVariantList.size(); i++)
     {
         for(int j=0; j < (int)m_aBaseVariantList[i].size(); j++)
         {
@@ -243,7 +243,7 @@ void CVariantProvider::FillOrientedVariantLists()
         }
     }
     
-    for(int i=0; i < m_aCalledOrientedVariantList.size(); i++)
+    for(int i=0; i < (int)m_aCalledOrientedVariantList.size(); i++)
     {
         for(int j=0; j < (int)m_aCalledVariantList[i].size(); j++)
         {

@@ -169,7 +169,7 @@ void CMendelianVariantProvider::FillVariants()
     id = 0;
 
     
-    for(int k = 0; k < m_FatherVcf.GetContigs().size(); k++)
+    for(int k = 0; k < (int)m_FatherVcf.GetContigs().size(); k++)
     {
         std::sort(m_aFatherNotAssessedVariantList[k].begin(), m_aFatherNotAssessedVariantList[k].end(), CompareVariants);
         std::sort(m_aFatherVariantList[k].begin(), m_aFatherVariantList[k].end(), CompareVariants);
@@ -209,7 +209,7 @@ void CMendelianVariantProvider::FillVariants()
     id = 0;
 
     
-    for(int k = 0; k < m_MotherVcf.GetContigs().size(); k++)
+    for(int k = 0; k < (int)m_MotherVcf.GetContigs().size(); k++)
     {
         std::sort(m_aMotherNotAssessedVariantList[k].begin(), m_aMotherNotAssessedVariantList[k].end(), CompareVariants);
         std::sort(m_aMotherVariantList[k].begin(), m_aMotherVariantList[k].end(), CompareVariants);
@@ -244,7 +244,7 @@ void CMendelianVariantProvider::FillVariants()
         }
     }
     
-    for(int k = 0; k < m_ChildVcf.GetContigs().size(); k++)
+    for(int k = 0; k < (int)m_ChildVcf.GetContigs().size(); k++)
     {
         std::sort(m_aChildNotAssessedVariantList[k].begin(), m_aChildNotAssessedVariantList[k].end(), CompareVariants);
         std::sort(m_aChildVariantList[k].begin(), m_aChildVariantList[k].end(), CompareVariants);
@@ -740,15 +740,15 @@ int CMendelianVariantProvider::GetNotAssessedVariantCount(EMendelianVcfName a_uF
     
     switch (a_uFrom) {
         case eMOTHER:
-            for(int k = 0; k < m_aMotherNotAssessedVariantList.size(); k++)
+            for(int k = 0; k < (int)m_aMotherNotAssessedVariantList.size(); k++)
                 skippedVariantCount += m_aMotherNotAssessedVariantList[k].size();
             break;
         case eFATHER:
-            for(int k = 0; k < m_aFatherNotAssessedVariantList.size(); k++)
+            for(int k = 0; k < (int)m_aFatherNotAssessedVariantList.size(); k++)
                 skippedVariantCount += m_aFatherNotAssessedVariantList[k].size();
             break;
         case eCHILD:
-            for(int k = 0; k < m_aChildNotAssessedVariantList.size(); k++)
+            for(int k = 0; k < (int)m_aChildNotAssessedVariantList.size(); k++)
                 skippedVariantCount += m_aChildNotAssessedVariantList[k].size();
             break;
         default:

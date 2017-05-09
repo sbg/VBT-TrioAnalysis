@@ -38,9 +38,6 @@ void CGa4ghOutputProvider::SetContigList(const std::vector<SVcfContig>& a_rConti
 void CGa4ghOutputProvider::GenerateGa4ghVcf(const std::vector<SChrIdTuple>& a_rCommonChromosomes)
 {
     
-    std::vector<SChrIdTuple> commonChromosomesSorted(a_rCommonChromosomes);
-    std::sort(commonChromosomesSorted.begin(), commonChromosomesSorted.end(), [](const SChrIdTuple& t1, const SChrIdTuple& t2){ return t1.m_nBaseId < t2.m_nBaseId; });
-    
     m_vcfWriter.CreateVcf(m_vcfPath.c_str());
     FillHeader();
     
@@ -72,7 +69,7 @@ void CGa4ghOutputProvider::FillHeader()
         m_vcfWriter.AddHeaderLine("##FILTER=<ID=" + filterNames[k] + ",Description=" + filterDescriptions[k] + ">");
     
     //ADD CONTIG IDs
-    for(int k = 0; k < m_contigs.size(); k++)
+    for(int k = 0; k < (int)m_contigs.size(); k++)
         m_vcfWriter.AddHeaderLine("##contig=<ID=" + m_contigs[k].name + ",length=" + std::to_string(m_contigs[k].length) + ">");
     
     //ADD REQUIRED SAMPLES

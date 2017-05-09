@@ -159,7 +159,7 @@ std::string CVariant::GetOriginalAlleleStr(int a_nAlleleIndex) const
         alleleList.push_back(alel);
     }
     
-    assert(a_nAlleleIndex < alleleList.size());
+    assert(a_nAlleleIndex < (int)alleleList.size());
     
     return alleleList[m_genotype[a_nAlleleIndex]];
 }

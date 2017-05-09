@@ -44,7 +44,7 @@ void CMendelianTrioMerger::SetDecisionsAndVariants(SChrIdTriplet& a_rTriplet, EM
             break;
     }
 
-    for(int k = 0; k < a_rVarList.size(); k++)
+    for(int k = 0; k < (int)a_rVarList.size(); k++)
     {
         if(a_rVarList[k]->m_variantStatus != eNOT_ASSESSED)
         {
@@ -94,7 +94,7 @@ void CMendelianTrioMerger::FillHeader()
 
     
     //ADD CONTIG IDs
-    for(int k = 0; k < m_contigs.size(); k++)
+    for(int k = 0; k < (int)m_contigs.size(); k++)
         m_vcfWriter.AddHeaderLine("##contig=<ID=" + m_contigs[k].name + ",length=" + std::to_string(m_contigs[k].length) + ">");
     
     //Instead of hardcoding we are reading contig info from input vcfs
