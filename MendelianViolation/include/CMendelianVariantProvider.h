@@ -89,7 +89,9 @@ private:
 
     //Fill Oriented variant sets for parent and child
     void FillAlleleMatchOrientedVariants(std::vector<SChrIdTriplet>& a_aCommonChromosomes);
-        
+    
+    static bool CompareVariants(const CVariant& var1, const CVariant& var2);
+    
     //VCF FILES FOR COMPARISON
     CVcfReader m_FatherVcf;
     CVcfReader m_MotherVcf;

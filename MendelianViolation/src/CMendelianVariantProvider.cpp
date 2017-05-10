@@ -110,7 +110,7 @@ bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildC
 }
 
 
-bool CompareVariants(const CVariant& var1, const CVariant& var2)
+bool CMendelianVariantProvider::CompareVariants(const CVariant& var1, const CVariant& var2)
 {
     if(var1.m_nStartPos != var2.m_nStartPos)
         return var1.m_nStartPos < var2.m_nStartPos;
