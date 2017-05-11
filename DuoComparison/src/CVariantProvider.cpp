@@ -99,6 +99,7 @@ bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
         return false;
     }
 
+    
     // OPEN FASTA FILE
     bIsSuccess = m_fastaParser.OpenFastaFile(a_rConfig.m_pFastaFileName);
     if(!bIsSuccess)
@@ -120,19 +121,19 @@ bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
     
         for(SChrIdTuple tuple : m_aCommonChrTupleList)
         {
-            if(m_aBaseVariantList[tuple.m_nBaseId].size() != 0 && m_aCalledVariantList[tuple.m_nCalledId].size() == 0)
+            if(m_aBaseVariantList[tuple.m_nBaseId].size() >= LEAST_VARIANT_THRESHOLD && m_aCalledVariantList[tuple.m_nCalledId].size() < LEAST_VARIANT_THRESHOLD)
             {
                 std::cout << "Called VCF does not contain Chromosome " << tuple.m_chrName << ".The chromosome will be filtered out from the comparison!" << std::endl;
                 m_aCalledVariantList[tuple.m_nCalledId].clear();
                 m_aCalledOrientedVariantList[tuple.m_nCalledId].clear();
             }
-            else if(m_aBaseVariantList[tuple.m_nBaseId].size() == 0 && m_aCalledVariantList[tuple.m_nCalledId].size() != 0)
+            else if(m_aBaseVariantList[tuple.m_nBaseId].size() < LEAST_VARIANT_THRESHOLD && m_aCalledVariantList[tuple.m_nCalledId].size() >= LEAST_VARIANT_THRESHOLD)
             {
                 std::cout << "Baseline VCF does not contain Chromosome " << tuple.m_chrName << ".The chromosome will be filtered out from the comparison!" << std::endl;
                 m_aBaseVariantList[tuple.m_nBaseId].clear();
                 m_aBaseOrientedVariantList[tuple.m_nBaseId].clear();
             }
-            else if(m_aBaseVariantList[tuple.m_nBaseId].size() != 0 && m_aCalledVariantList[tuple.m_nCalledId].size() != 0)
+            else if(m_aBaseVariantList[tuple.m_nBaseId].size() > LEAST_VARIANT_THRESHOLD && m_aCalledVariantList[tuple.m_nCalledId].size() > LEAST_VARIANT_THRESHOLD)
             {
                 //Read contig from FASTA file for the given chromosome
                 std::cout << "Reading reference of chromosome " << tuple.m_chrName << " from the FASTA file" << std::endl;
