@@ -145,6 +145,7 @@ void CSplitOutputProvider::VariantToVcfRecord(const CVariant* a_pVariant, SVcfRe
     SPerSampleData data;
     data.m_bIsPhased = a_pVariant->m_bIsPhased;
     data.m_nHaplotypeCount = a_pVariant->m_nZygotCount;
+    data.m_bIsNoCallVariant = a_pVariant->m_bIsNoCall;
     for(int k = 0; k < data.m_nHaplotypeCount; k++)
         data.m_aGenotype[k] = a_pVariant->m_genotype[k];
     

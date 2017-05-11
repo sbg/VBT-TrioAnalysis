@@ -72,8 +72,10 @@ class CVariantProvider
         //Checks whether given variant is a structural variant type (A complex type)
         bool IsStructuralVariant(const CVariant& a_rVariant, int a_nMaxLength) const;
     
-        //Push the variant to the variantlist in the order of starting point (ascending order)
-        void PushVariant(CVariant& a_rVariant, std::vector<CVariant>& a_rVecToPush);
+        static bool CompareVariants(const CVariant& var1, const CVariant& var2);
+
+        //Checks if the variant genotype is 0/0 (homref)
+        bool IsHomRef(const CVariant& a_rVariant) const;
     
         //VCF Readers
         CVcfReader m_baseVCF;

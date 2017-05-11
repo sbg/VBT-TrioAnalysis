@@ -63,47 +63,23 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "mendelian"
+            argument = "varcomp"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-father"
+            argument = "-base"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/ALL_filteredPedGraph_D1_D2_D3_9.31.cat.vcf.gz"
+            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/geno_auto_NA12878_91_92_nograph_gral0.9.31.cat.vcf.gz"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-child"
+            argument = "-called"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/ALL_filteredPedGraph_D1_D2_D3_9.31.cat.vcf.gz"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-mother"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/ALL_filteredPedGraph_D1_D2_D3_9.31.cat.vcf.gz"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-outDir"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VcfCompOutputMendelianMaria"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-filter"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "none"
+            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/geno_auto_NA12878_91_92_nograph_gral0.9.31.cat.vcf.gz"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -115,35 +91,27 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-sample-mother"
+            argument = "-filter"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "D3"
+            argument = "none"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-sample-father"
+            argument = "-sample-called"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "D2"
+            argument = "NA12878"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-sample-child"
+            argument = "-sample-base"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "D1"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-no-call"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "explicit"
+            argument = "NA12891"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -153,6 +121,114 @@
          <CommandLineArgument
             argument = "1"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-outDir"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/c1ms21p6h3qk/Desktop/splitTest2"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = ""
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "mendelian"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-father"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/auto_ALL_filteredPedGraph_D1_D2_D3_9.31.cat.vcf.gz"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-child"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/auto_ALL_filteredPedGraph_D1_D2_D3_9.31.cat.vcf.gz"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-mother"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/auto_ALL_filteredPedGraph_D1_D2_D3_9.31.cat.vcf.gz"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-outDir"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/c1ms21p6h3qk/Desktop/VcfCompOutputMendelianMaria"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-filter"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "none"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-ref"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/human_g1k_v37_decoy.fasta"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-ref-overlap"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-sample-mother"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "D3"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-sample-father"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "D2"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-sample-child"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "D1"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-no-call"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "explicit"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-thread-count"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "1"
+            isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
       <AdditionalOptions>

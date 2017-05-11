@@ -9,6 +9,7 @@
 #include "CVariantProvider.h"
 #include <iostream>
 #include "COrientedVariant.h"
+#include <algorithm>
 
 CVariantProvider::~CVariantProvider()
 {
@@ -39,6 +40,9 @@ void CVariantProvider::SetChromosomeIdTuples()
             }
         }
     }
+    
+    std::sort(m_aCommonChrTupleList.begin(), m_aCommonChrTupleList.end(), [](const SChrIdTuple& t1, const SChrIdTuple& t2){return t1.m_nBaseId < t2.m_nBaseId;});
+    
 }
 
 bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
@@ -95,7 +99,6 @@ bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
         return false;
     }
 
-    
     // OPEN FASTA FILE
     bIsSuccess = m_fastaParser.OpenFastaFile(a_rConfig.m_pFastaFileName);
     if(!bIsSuccess)
@@ -119,21 +122,21 @@ bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
         {
             if(m_aBaseVariantList[tuple.m_nBaseId].size() != 0 && m_aCalledVariantList[tuple.m_nCalledId].size() == 0)
             {
-                std::cout << "Called VCF does not contain Chromosome " << m_aCommonChrTupleList[tuple.m_nTupleIndex].m_chrName << ".The chromosome will be filtered out from the comparison!" << std::endl;
+                std::cout << "Called VCF does not contain Chromosome " << tuple.m_chrName << ".The chromosome will be filtered out from the comparison!" << std::endl;
                 m_aCalledVariantList[tuple.m_nCalledId].clear();
                 m_aCalledOrientedVariantList[tuple.m_nCalledId].clear();
             }
             else if(m_aBaseVariantList[tuple.m_nBaseId].size() == 0 && m_aCalledVariantList[tuple.m_nCalledId].size() != 0)
             {
-                std::cout << "Baseline VCF does not contain Chromosome " << m_aCommonChrTupleList[tuple.m_nTupleIndex].m_chrName << ".The chromosome will be filtered out from the comparison!" << std::endl;
+                std::cout << "Baseline VCF does not contain Chromosome " << tuple.m_chrName << ".The chromosome will be filtered out from the comparison!" << std::endl;
                 m_aBaseVariantList[tuple.m_nBaseId].clear();
                 m_aBaseOrientedVariantList[tuple.m_nBaseId].clear();
             }
             else if(m_aBaseVariantList[tuple.m_nBaseId].size() != 0 && m_aCalledVariantList[tuple.m_nCalledId].size() != 0)
             {
                 //Read contig from FASTA file for the given chromosome
-                std::cout << "Reading reference of chromosome " << m_aCommonChrTupleList[tuple.m_nTupleIndex].m_chrName << " from the FASTA file" << std::endl;
-                bool bIsSuccess2 = m_fastaParser.FetchNewChromosome(m_aCommonChrTupleList[tuple.m_nTupleIndex].m_chrName, m_aContigList[tuple.m_nTupleIndex]);
+                std::cout << "Reading reference of chromosome " << tuple.m_chrName << " from the FASTA file" << std::endl;
+                bool bIsSuccess2 = m_fastaParser.FetchNewChromosome(tuple.m_chrName, m_aContigList[tuple.m_nTupleIndex]);
                 if(!bIsSuccess2)
                 {
                     std::cerr << "Chromosome " << m_aCommonChrTupleList[tuple.m_nTupleIndex].m_chrName << "will be filtered out from the comparison since reference FASTA could not read or it does not contain given chromosome" << std::endl;
@@ -159,6 +162,16 @@ bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
     
 }
 
+bool CVariantProvider::CompareVariants(const CVariant& var1, const CVariant& var2)
+{
+    if(var1.m_nStartPos != var2.m_nStartPos)
+        return var1.m_nStartPos < var2.m_nStartPos;
+    else if(var1.m_nOriginalPos != var2.m_nOriginalPos)
+        return var1.m_nOriginalPos < var2.m_nOriginalPos;
+    else
+        return var1.m_nId < var2.m_nId;
+}
+
 
 void CVariantProvider::FillVariantLists()
 {
@@ -174,14 +187,14 @@ void CVariantProvider::FillVariantLists()
 
     while(m_baseVCF.GetNextRecord(&variant, id++, m_config))
     {
-        if(m_calledVCF.GetContigId(variant.m_chrName) == -1)
-            continue;
-        
         if(preChrId != variant.m_chrName)
         {
             preChrId = variant.m_chrName;
             std::cout << "Processing chromosome " << preChrId << " of base vcf" << std::endl;
         }
+        
+        else if(!variant.m_bIsNoCall && IsHomRef(variant))
+            continue;
         
         if(m_config.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
             m_aBaseNotAssessedVariantList[variant.m_nChrId].push_back(variant);
@@ -195,21 +208,28 @@ void CVariantProvider::FillVariantLists()
         else if(IsStructuralVariant(variant, m_config.m_nMaxVariantSize))
             m_aBaseNotAssessedVariantList[variant.m_nChrId].push_back(variant);
         else
-            PushVariant(variant, m_aBaseVariantList[variant.m_nChrId]);
+            m_aBaseVariantList[variant.m_nChrId].push_back(variant);
+    }
+    
+    for(int k = 0; k < (int)m_baseVCF.GetContigs().size(); k++)
+    {
+        std::sort(m_aBaseNotAssessedVariantList[k].begin(), m_aBaseNotAssessedVariantList[k].end(), CompareVariants);
+        std::sort(m_aBaseVariantList[k].begin(), m_aBaseVariantList[k].end(), CompareVariants);
     }
     
     preChrId = "";
     
     while(m_calledVCF.GetNextRecord(&variant, id++, m_config))
     {
-        if(m_baseVCF.GetContigId(variant.m_chrName) == -1)
-            continue;
         
         if(preChrId != variant.m_chrName)
         {
             preChrId = variant.m_chrName;
             std::cout << "Processing chromosome " << preChrId << " of called vcf" << std::endl;
         }
+        
+        else if(!variant.m_bIsNoCall && IsHomRef(variant))
+            continue;
         
         else if(m_config.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
             m_aCalledNotAssessedVariantList[variant.m_nChrId].push_back(variant);
@@ -223,8 +243,15 @@ void CVariantProvider::FillVariantLists()
         else if(IsStructuralVariant(variant, m_config.m_nMaxVariantSize))
             m_aCalledNotAssessedVariantList[variant.m_nChrId].push_back(variant);
         else
-            PushVariant(variant, m_aCalledVariantList[variant.m_nChrId]);
+            m_aCalledVariantList[variant.m_nChrId].push_back(variant);
     }
+    
+    for(int k = 0; k < (int)m_calledVCF.GetContigs().size(); k++)
+    {
+        std::sort(m_aCalledNotAssessedVariantList[k].begin(), m_aCalledNotAssessedVariantList[k].end(), CompareVariants);
+        std::sort(m_aCalledVariantList[k].begin(), m_aCalledVariantList[k].end(), CompareVariants);
+    }
+
 }
 
 void CVariantProvider::FillOrientedVariantLists()
@@ -407,45 +434,6 @@ bool CVariantProvider::IsStructuralVariant(const CVariant& a_rVariant, int a_nMa
     return false;
 }
 
-
-void CVariantProvider::PushVariant(CVariant& a_rVariant, std::vector<CVariant>& a_rVecToPush)
-{
-    int k = 0;
-    int size = static_cast<int>(a_rVecToPush.size())-1;
-    std::vector<CVariant>::iterator it;
-    
-    if(size == -1)
-    {
-        a_rVecToPush.push_back(a_rVariant);
-        return;
-    }
-    
-    while(k <= size && a_rVariant.GetStart() < a_rVecToPush[size-k].GetStart())
-        k++;
-    
-    if(a_rVariant.GetStart() == a_rVecToPush[size-k].GetStart())
-    {
-        if(a_rVariant.m_bIsFirstNucleotideTrimmed && !a_rVecToPush[size-k].m_bIsFirstNucleotideTrimmed)
-            k++;
-        
-        else if(a_rVariant.m_bIsFirstNucleotideTrimmed == a_rVecToPush[size-k].m_bIsFirstNucleotideTrimmed)
-        {
-            if(a_rVariant.GetEnd() < a_rVecToPush[size-k].GetEnd())
-                k++;
-        }
-        
-//        if(a_rVariant.GetEnd() == a_rVecToPush[size-k].GetEnd())
-//        {
-//            if(a_rVariant.m_alleles[0].m_sequence.length() < a_rVecToPush[size-k].m_alleles[0].m_sequence.length())
-//                k++;
-//        }
-    }
-    
-    it = a_rVecToPush.begin() + (size - k) + 1;
-    a_rVecToPush.insert(it, a_rVariant);
-}
-
-
 std::vector<SChrIdTuple>& CVariantProvider::GetChromosomeIdTuples()
 {
     return m_aCommonChrTupleList;
@@ -508,6 +496,22 @@ const std::vector<SVcfContig>& CVariantProvider::GetContigs() const
 {
     return m_calledVCF.GetContigs();
 }
+
+bool CVariantProvider::IsHomRef(const CVariant& a_rVariant) const
+{
+    bool res = true;
+    
+    for(int k = 0; k < a_rVariant.m_nZygotCount; k++)
+    {
+        if(a_rVariant.m_genotype[k] != 0)
+        {
+            res = false;
+            break;
+        }
+    }
+    return res;
+}
+
 
 
 
