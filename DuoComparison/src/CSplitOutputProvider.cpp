@@ -62,7 +62,9 @@ void CSplitOutputProvider::GenerateTpBaseVcf(const std::vector<SChrIdTuple>& a_r
     for(SChrIdTuple tuple : commonChromosomesOrdered)
     {
         const std::vector<const COrientedVariant*> ovarList = m_aBestPaths[tuple.m_nTupleIndex].m_baseSemiPath.GetIncludedVariants();
-        AddRecords(&m_TPBaseWriter, ovarList);
+        std::vector<const COrientedVariant*> sortedOvarList(ovarList);
+        std::sort(sortedOvarList.begin(), sortedOvarList.end(), [](const COrientedVariant* ovar1, const COrientedVariant* ovar2){return ovar1->GetVariant().m_nId < ovar2->GetVariant().m_nId;});
+        AddRecords(&m_TPBaseWriter, sortedOvarList);
     }
     
     m_TPBaseWriter.CloseVcf();
@@ -84,7 +86,9 @@ void CSplitOutputProvider::GenerateTpCalledVcf(const std::vector<SChrIdTuple>& a
     for(SChrIdTuple tuple : commonChromosomesOrdered)
     {
         const std::vector<const COrientedVariant*> ovarList = m_aBestPaths[tuple.m_nTupleIndex].m_calledSemiPath.GetIncludedVariants();
-        AddRecords(&m_TPCalledWriter, ovarList);
+        std::vector<const COrientedVariant*> sortedOvarList(ovarList);
+        std::sort(sortedOvarList.begin(), sortedOvarList.end(), [](const COrientedVariant* ovar1, const COrientedVariant* ovar2){return ovar1->GetVariant().m_nId < ovar2->GetVariant().m_nId;});
+        AddRecords(&m_TPCalledWriter, sortedOvarList);
     }
     
     m_TPCalledWriter.CloseVcf();
@@ -105,6 +109,8 @@ void CSplitOutputProvider::GenerateFnVcf(const std::vector<SChrIdTuple>& a_rComm
     for(SChrIdTuple tuple : commonChromosomesOrdered)
     {
         const std::vector<const CVariant*> varList = m_pProvider->GetVariantList(eBASE, tuple.m_nBaseId, m_aBestPaths[tuple.m_nTupleIndex].m_baseSemiPath.GetExcluded());
+        std::vector<const CVariant*> sortedVarList(varList);
+        std::sort(sortedVarList.begin(), sortedVarList.end(), [](const CVariant* pVar1, const CVariant* pVar2){return pVar1->m_nId < pVar2->m_nId;});
         AddRecords(&m_FNWriter, varList);
     }
     

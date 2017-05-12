@@ -90,6 +90,9 @@ class CPath
     //Add sync points to the sync point list
     void AddSyncPointList(std::vector<int>& a_rSyncPointArray);
     
+    //Sorts included variants (baseline and called) according to variant ids
+    void SortIncludedVariants();
+    
     //Semi path object for base 
     CSemiPath m_baseSemiPath;
     

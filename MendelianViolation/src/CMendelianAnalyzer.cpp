@@ -808,13 +808,6 @@ void CMendelianAnalyzer::CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTr
     int varItr = 0;
     for(int k = 0; k < (int)a_rVariantList.size(); k++)
     {
-        
-        if(a_rVariantList[k]->m_nOriginalPos == 560521)
-        {
-            int asd=0;
-            asd++;
-        }
-        
         //Check if the variant is already marked
         if(a_checkSide == eMOTHER && m_aMotherDecisions[a_rTriplet.m_nTripleIndex][m_provider.Get0BasedVariantIndex(eMOTHER, a_rTriplet.m_nMid, a_rVariantList[k]->m_nId)] != eUnknown)
         {
@@ -932,7 +925,13 @@ void CMendelianAnalyzer::MergeFunc(SChrIdTriplet& a_triplet)
     std::vector<const CVariant*> check00Child;
     std::vector<const CVariant*> childUniqueList;
     std::vector<const CVariant*> check00ChildGTMatched;
-
+    
+    //Sort variants according to variant ids
+    m_aBestPathsFatherChildGT[a_triplet.m_nTripleIndex].SortIncludedVariants();
+    m_aBestPathsFatherChildAM[a_triplet.m_nTripleIndex].SortIncludedVariants();
+    m_aBestPathsMotherChildGT[a_triplet.m_nTripleIndex].SortIncludedVariants();
+    m_aBestPathsMotherChildAM[a_triplet.m_nTripleIndex].SortIncludedVariants();
+    
     //Included lists of child
     CVariantIterator FatherChildVariants(m_aBestPathsFatherChildGT[a_triplet.m_nTripleIndex].m_calledSemiPath.GetIncludedVariants(),
                                          m_aBestPathsFatherChildAM[a_triplet.m_nTripleIndex].m_calledSemiPath.GetIncludedVariants());
@@ -1150,23 +1149,16 @@ void CMendelianAnalyzer::MergeFunc(SChrIdTriplet& a_triplet)
     for(int k = 0; k <  (int)childProcessedArray.size(); k++)
         childProcessedArray[k] = 0;
     
+    
     //Mark mendelian compliant vars as processed
-    for(int k = 0, m = 0; k < (int)childVariants.size() && m < (int)compliants.size(); k++)
+    for(int k = 0; k < (int)compliants.size(); k++)
     {
-        if(childVariants[k]->m_nId == compliants[m]->m_nId)
-        {
-            childProcessedArray[k]++;
-            m++;
-        }
+        childProcessedArray[compliants[k]->m_nId]++;
     }
     //Mark mendelian violation vars as processed
-    for(int k = 0, m = 0; k < (int)childVariants.size() && m < (int)violations.size(); k++)
+    for(int k = 0; k < (int)violations.size(); k++)
     {
-        if(childVariants[k]->m_nId == violations[m]->m_nId)
-        {
-            childProcessedArray[k]++;
-            m++;
-        }
+        childProcessedArray[violations[k]->m_nId]++;
     }
     
     for(int childItr = 0; childItr < (int)childProcessedArray.size(); childItr++)

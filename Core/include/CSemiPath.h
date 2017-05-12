@@ -102,6 +102,8 @@ class CSemiPath
     //Set the included variants
     void AddExcludedVariants(std::vector<int>& a_rExcludedVarList);
 
+    //Sorts included variants according to variant ids
+    void SortIncludedVariants();
     
     //[TEST Purpose]Print semipath
     void Print() const;

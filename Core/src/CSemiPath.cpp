@@ -10,6 +10,7 @@
 #include "CSemiPath.h"
 #include <cassert>
 #include <iostream>
+#include <algorithm>
 
 inline int max(int a, int b)
 {
@@ -239,6 +240,11 @@ void CSemiPath::AddExcludedVariants(std::vector<int> &a_rExcludedVarList)
     m_aExcludedVariants = a_rExcludedVarList;
 }
 
+void CSemiPath::SortIncludedVariants()
+{
+    std::sort(m_aIncludedVariants.begin(), m_aIncludedVariants.end(), [](const COrientedVariant* pOvar1, const COrientedVariant* pOvar2){return pOvar1->GetVariant().m_nId < pOvar2->GetVariant().m_nId;});
+}
+
 void CSemiPath::Print() const
 {
     std::cout<< "Pos:" << GetPosition() << " VarEnd Pos:" << GetVariantEndPosition() << " VarEnd Ind:" << GetVariantIndex() << std::endl;
@@ -252,11 +258,4 @@ void CSemiPath::Print() const
     std::cout<< "Haplotype B:" << std::endl;
     m_haplotypeB.Print();
 }
-
-
-
-
-
-
-
 

@@ -291,6 +291,13 @@ void CPath::AddSyncPointList(std::vector<int>& a_rSyncPointArray)
     m_aSyncPointList = a_rSyncPointArray;
 }
 
+void CPath::SortIncludedVariants()
+{
+    m_baseSemiPath.SortIncludedVariants();
+    m_calledSemiPath.SortIncludedVariants();
+}
+
+
 void CPath::Print() const
 {
     std::cout << "-----" << std::endl;
