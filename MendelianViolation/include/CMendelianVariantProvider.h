@@ -26,7 +26,10 @@ public:
     
     //Return all the variants belongs to given chromosome
     std::vector<const CVariant*> GetVariantList(EMendelianVcfName a_uFrom, int a_nChrNo) const;
-    
+
+    //Return all the variants belongs to given chromosome sorted by variant ids
+    std::vector<const CVariant*> GetSortedVariantList(EMendelianVcfName a_uFrom, int a_nChrNo) const;
+
     //Return all the variants belongs to given chromosome according to given index list
     std::vector<const CVariant*> GetVariantList(EMendelianVcfName a_uFrom, int a_nChrNo, const std::vector<int>& a_nIndexList) const;
 

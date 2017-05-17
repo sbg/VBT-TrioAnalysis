@@ -41,7 +41,6 @@ bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildC
         return false;
     }
 
-    
     //Open MOTHER vcf file
     bIsSuccessMother = m_MotherVcf.Open(a_rMotherChildConfig.m_pBaseVcfFileName);
     if(!bIsSuccessMother)
@@ -144,10 +143,10 @@ void CMendelianVariantProvider::FillVariants()
             std::cout << "Processing chromosome " << preChrId << " of Parent[FATHER] vcf" << std::endl;
         }
         
-        if(variant.m_nChrId > 0)
-            break;
-        //else if(variant.m_nChrId > 8)
+        //if(variant.m_nChrId > 4)
         //    break;
+        //else if(variant.m_nChrId < 3)
+        //    continue;
         
         else if(!variant.m_bIsNoCall && IsHomRef(variant))
             continue;
@@ -184,10 +183,10 @@ void CMendelianVariantProvider::FillVariants()
             std::cout << "Processing chromosome " << preChrId << " of Parent[MOTHER] vcf" << std::endl;
         }
         
-        if(variant.m_nChrId > 0)
-            break;
-        //else if(variant.m_nChrId > 8)
+        //if(variant.m_nChrId > 4)
         //    break;
+        //else if(variant.m_nChrId < 3)
+        //    continue;
         
         else if(!variant.m_bIsNoCall &&  IsHomRef(variant))
             continue;
@@ -224,10 +223,10 @@ void CMendelianVariantProvider::FillVariants()
             std::cout << "Processing chromosome " << preChrId << " of child vcf" << std::endl;
         }
         
-        if(variant.m_nChrId > 0)
-            break;
-        //else if(variant.m_nChrId > 8)
+        //if(variant.m_nChrId > 4)
         //    break;
+        //else if(variant.m_nChrId < 3)
+        //    continue;
         
         else if(!variant.m_bIsNoCall && IsHomRef(variant))
             continue;
@@ -467,6 +466,13 @@ std::vector<const CVariant*> CMendelianVariantProvider::GetVariantList(EMendelia
             break;
     }
     
+    return varList;
+}
+
+std::vector<const CVariant*> CMendelianVariantProvider::GetSortedVariantList(EMendelianVcfName a_uFrom, int a_nChrNo) const
+{
+    std::vector<const CVariant*> varList = GetVariantList(a_uFrom, a_nChrNo);
+    std::sort(varList.begin(), varList.end(), [](const CVariant* pVar1, const CVariant* pVar2){return pVar1->m_nId < pVar2->m_nId;});
     return varList;
 }
 

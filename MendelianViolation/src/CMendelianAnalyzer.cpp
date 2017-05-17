@@ -85,9 +85,9 @@ void CMendelianAnalyzer::run(int argc, char **argv)
     
     for(int k = 0; k < (int)chrIds.size(); k++)
     {
-        m_trioWriter.SetDecisionsAndVariants(chrIds[k], eCHILD,  m_aChildDecisions[chrIds[k].m_nTripleIndex], m_provider.GetVariantList(eCHILD, chrIds[k].m_nCid));
-        m_trioWriter.SetDecisionsAndVariants(chrIds[k], eMOTHER, m_aMotherDecisions[chrIds[k].m_nTripleIndex], m_provider.GetVariantList(eMOTHER, chrIds[k].m_nMid));
-        m_trioWriter.SetDecisionsAndVariants(chrIds[k], eFATHER, m_aFatherDecisions[chrIds[k].m_nTripleIndex], m_provider.GetVariantList(eFATHER, chrIds[k].m_nFid));
+        m_trioWriter.SetDecisionsAndVariants(chrIds[k], eCHILD,  m_aChildDecisions[chrIds[k].m_nTripleIndex], m_provider.GetSortedVariantList(eCHILD, chrIds[k].m_nCid));
+        m_trioWriter.SetDecisionsAndVariants(chrIds[k], eMOTHER, m_aMotherDecisions[chrIds[k].m_nTripleIndex], m_provider.GetSortedVariantList(eMOTHER, chrIds[k].m_nMid));
+        m_trioWriter.SetDecisionsAndVariants(chrIds[k], eFATHER, m_aFatherDecisions[chrIds[k].m_nTripleIndex], m_provider.GetSortedVariantList(eFATHER, chrIds[k].m_nFid));
     }
     
     //Generate trio output vcf from common chromosomes
@@ -1118,12 +1118,12 @@ void CMendelianAnalyzer::MergeFunc(SChrIdTriplet& a_triplet)
     //Check for 0/x child variant set at the mother side
     CheckFor0Path(a_triplet, false, check0atMotherSide, violationVarsFrom0CheckMother, compliantVarsFrom0CheckMother);
     
+    
     std::vector<const CVariant*> compliantVarsFrom00CheckGT;
     std::vector<const CVariant*> violationVarsFrom00CheckGT;
     
     //Check for 0/0 child variant set for both parent
     CheckFor00Child(a_triplet, check00ChildGTMatched, violationVarsFrom00CheckGT, compliantVarsFrom00CheckGT, true);
-
 
     //Gather all compliant variants of child we found so far
     compliants.insert(std::end(compliants), std::begin(MendelianCompliantVars), std::end(MendelianCompliantVars));
@@ -1141,24 +1141,22 @@ void CMendelianAnalyzer::MergeFunc(SChrIdTriplet& a_triplet)
     violations.insert(std::end(violations), std::begin(motherChildOnly), std::end(motherChildOnly));
     violations.insert(std::end(violations), std::begin(violationVarsFrom00CheckGT), std::end(violationVarsFrom00CheckGT));
     std::sort(violations.begin(), violations.end(), variantCompare);
-
     
     //Find Child Unique variants
-    std::vector<const CVariant*> childVariants = m_provider.GetVariantList(eCHILD, a_triplet.m_nCid);
+    std::vector<const CVariant*> childVariants = m_provider.GetSortedVariantList(eCHILD, a_triplet.m_nCid);
     std::vector<int>childProcessedArray(childVariants.size());
     for(int k = 0; k <  (int)childProcessedArray.size(); k++)
         childProcessedArray[k] = 0;
     
-    
     //Mark mendelian compliant vars as processed
     for(int k = 0; k < (int)compliants.size(); k++)
     {
-        childProcessedArray[compliants[k]->m_nId]++;
+        childProcessedArray[m_provider.Get0BasedVariantIndex(eCHILD, a_triplet.m_nCid, compliants[k]->m_nId)]++;
     }
     //Mark mendelian violation vars as processed
     for(int k = 0; k < (int)violations.size(); k++)
     {
-        childProcessedArray[violations[k]->m_nId]++;
+        childProcessedArray[m_provider.Get0BasedVariantIndex(eCHILD, a_triplet.m_nCid, violations[k]->m_nId)]++;
     }
     
     for(int childItr = 0; childItr < (int)childProcessedArray.size(); childItr++)
@@ -1191,24 +1189,29 @@ void CMendelianAnalyzer::MergeFunc(SChrIdTriplet& a_triplet)
     violations.insert(std::end(violations), std::begin(violationVarsFrom00Check), std::end(violationVarsFrom00Check));
     violations.insert(std::end(violations), std::begin(childUniqueList), std::end(childUniqueList));
     std::sort(violations.begin(), violations.end(), variantCompare);
-
     
     //We looked up all child variants. Now, we will look at parent variants where there is no corresponding child variant exist in the child.vcf (check for hidden 0/0 child variants)
 
     //Fill the child decision array
     std::vector<const CVariant*>::iterator compliantsIterator = compliants.begin();
     std::vector<const CVariant*>::iterator violationsIterator = violations.begin();
+    
+    int counterCompliant = 0;
+    int counterViolation = 0;
+    
     for(int k = 0; k < (int)childVariants.size(); k++)
     {
         if(compliantsIterator != compliants.end() && childVariants[k]->m_nId == (*compliantsIterator)->m_nId)
         {
             m_aChildDecisions[a_triplet.m_nTripleIndex][k] = EMendelianDecision::eCompliant;
             compliantsIterator++;
+            counterCompliant++;
         }
         else if(violationsIterator != violations.end() && childVariants[k]->m_nId == (*violationsIterator)->m_nId)
         {
             m_aChildDecisions[a_triplet.m_nTripleIndex][k] = EMendelianDecision::eViolation;
             violationsIterator++;
+            counterViolation++;
         }
         else
             m_aChildDecisions[a_triplet.m_nTripleIndex][k] = EMendelianDecision::eUnknown;
@@ -1234,8 +1237,7 @@ void CMendelianAnalyzer::MergeFunc(SChrIdTriplet& a_triplet)
     for(int k = 0; k < (int)fatherDecisions.size(); k++)
         m_aFatherDecisions[a_triplet.m_nTripleIndex][m_provider.Get0BasedVariantIndex(eFATHER, a_triplet.m_nFid, uniqueFatherVars[k]->m_nId)] = (fatherDecisions[k] ? eCompliant : eViolation);
     
-    
-    //If NoCall Mode Is Enabled, mark all decisions of nocall childs as NoCallChild and all nocall parents as NoCallParent
+    //If NoCall Mode Is not enabled, mark all decisions of nocall childs as NoCallChild and all nocall parents as NoCallParent
     if(m_noCallMode != eNone)
     {
         std::vector<const CVariant*> motherVariants = m_provider.GetVariantList(eMOTHER, a_triplet.m_nMid);

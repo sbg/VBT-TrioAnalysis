@@ -83,7 +83,7 @@ void CMendelianTrioMerger::FillHeader()
 {
     //INIT VCF HEADER
     m_vcfWriter.InitHeader();
-    m_vcfWriter.AddHeaderLine("##source= SBG Mendelian Comparison Tool Ver. 1.0 (Beta), 2017");
+    m_vcfWriter.AddHeaderLine("##source= VBT Mendelian Violation Tool Ver. 1.0 (Beta), 2017");
     
     //ADD MENDELIAN VIOLATION INFO TYPE
     m_vcfWriter.AddHeaderLine("##INFO=<ID=MD,Number=1,Type=Integer,Description=\"Mendelian Violation Decision. (0)-complex, (1)-compliant, (2)-violation (3)-NoCall Parent (4)-NoCall Child \">");
@@ -97,35 +97,6 @@ void CMendelianTrioMerger::FillHeader()
     for(int k = 0; k < (int)m_contigs.size(); k++)
         m_vcfWriter.AddHeaderLine("##contig=<ID=" + m_contigs[k].name + ",length=" + std::to_string(m_contigs[k].length) + ">");
     
-    //Instead of hardcoding we are reading contig info from input vcfs
-    /* [DEPRECATED]
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr1,length=249250621>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr2,length=243199373>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr3,length=198022430>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr4,length=191154276>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr5,length=180915260>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr6,length=171115067>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr7,length=159138663>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr8,length=146364022>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr9,length=141213431>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr10,length=135534747>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr11,length=135006516>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr12,length=133851895>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr13,length=115169878>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr14,length=107349540>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr15,length=102531392>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr16,length=90354753>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr17,length=81195210>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr18,length=78077248>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr19,length=59128983>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr20,length=63025520>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr21,length=48129895>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chr22,length=51304566>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chrM,length=16571>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chrX,length=155270560>");
-    m_vcfWriter.AddHeaderLine("##contig=<ID=chrY,length=59373566>");
-    */
-     
     //ADD REQUIRED SAMPLES
     m_vcfWriter.AddSampleName("MOTHER");
     m_vcfWriter.AddSampleName("FATHER");

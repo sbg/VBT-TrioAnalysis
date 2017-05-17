@@ -207,8 +207,8 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
                     minStart = std::min(minStart, static_cast<int>(a_pVariant->m_alleles[k].m_nStartPos));
                 }
             }
-            a_pVariant->m_nEndPos = maxEnd;
-            a_pVariant->m_nStartPos = minStart;
+            a_pVariant->m_nEndPos = maxEnd == -1 ? m_pRecord->pos : maxEnd;
+            a_pVariant->m_nStartPos = minStart == INT_MAX ? m_pRecord->pos : minStart;
         }
         else
         {
