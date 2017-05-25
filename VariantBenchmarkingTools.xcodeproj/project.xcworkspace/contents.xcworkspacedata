@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:VCFComparison.xcodeproj">
+      location = "self:/Users/c1ms21p6h3qk/Desktop/VBT/vbt/VariantBenchmarkingTools.xcodeproj">
    </FileRef>
 </Workspace>

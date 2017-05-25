@@ -17,7 +17,7 @@
                BlueprintIdentifier = "556D39751DD3AEA400551040"
                BuildableName = "VCFComparison"
                BlueprintName = "VCFComparison"
-               ReferencedContainer = "container:VCFComparison.xcodeproj">
+               ReferencedContainer = "container:VariantBenchmarkingTools.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,7 +35,7 @@
             BlueprintIdentifier = "556D39751DD3AEA400551040"
             BuildableName = "VCFComparison"
             BlueprintName = "VCFComparison"
-            ReferencedContainer = "container:VCFComparison.xcodeproj">
+            ReferencedContainer = "container:VariantBenchmarkingTools.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -58,7 +58,7 @@
             BlueprintIdentifier = "556D39751DD3AEA400551040"
             BuildableName = "VCFComparison"
             BlueprintName = "VCFComparison"
-            ReferencedContainer = "container:VCFComparison.xcodeproj">
+            ReferencedContainer = "container:VariantBenchmarkingTools.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
@@ -95,7 +95,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VcfCompOutputMendelianMaria/VBTmendelianAUTOSOME_NA12878_Ref_Overlap"
+            argument = "/Users/c1ms21p6h3qk/Desktop/VcfCompOutputMendelianMaria/VBTmendelianAUTOSOME_NA12878_Ref_Overlap2"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -175,7 +175,7 @@
             BlueprintIdentifier = "556D39751DD3AEA400551040"
             BuildableName = "VCFComparison"
             BlueprintName = "VCFComparison"
-            ReferencedContainer = "container:VCFComparison.xcodeproj">
+            ReferencedContainer = "container:VariantBenchmarkingTools.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
