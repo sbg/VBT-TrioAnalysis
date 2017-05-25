@@ -790,124 +790,147 @@ void CMendelianAnalyzer::ProcessChromosome(const std::vector<SChrIdTriplet>& a_n
 
 void CMendelianAnalyzer::CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTriplet& a_rTriplet, const std::vector<const CVariant*>& a_rVariantList, std::vector<bool>& a_rSideDecisions)
 {
-    
-    std::vector<const CVariant*> varListToCheckChild = m_provider.GetVariantList(eCHILD, a_rTriplet.m_nCid);;
+    std::vector<const CVariant*> varListToCheckChild = m_provider.GetVariantList(eCHILD, a_rTriplet.m_nCid);
     std::vector<const CVariant*> varListToCheckParent = a_checkSide == eMOTHER ? m_provider.GetVariantList(eFATHER, a_rTriplet.m_nFid) : m_provider.GetVariantList(eMOTHER, a_rTriplet.m_nMid);
+    std::vector<const CVariant*> varListToCheckSelf = a_checkSide == eFATHER ? m_provider.GetVariantList(eFATHER, a_rTriplet.m_nFid) : m_provider.GetVariantList(eMOTHER, a_rTriplet.m_nMid);
     
-    std::vector<bool> decChild(a_rVariantList.size());
-    std::vector<bool> decParent(a_rVariantList.size());
     
-    //initialize all variants as true at first. We will then eliminate those with overlapping non-0 variants.
-    for(int k = 0; k < (int)a_rVariantList.size(); k++)
-    {
-        decChild[k] = true;
-        decParent[k] = true;
-    }
+    int varItrChild = 0;
+    int varItrParent = 0;
+    int varItrSelf = 0;
     
-    //Check overlaps for child
-    int varItr = 0;
     for(int k = 0; k < (int)a_rVariantList.size(); k++)
     {
         //Check if the variant is already marked
         if(a_checkSide == eMOTHER && m_aMotherDecisions[a_rTriplet.m_nTripleIndex][m_provider.Get0BasedVariantIndex(eMOTHER, a_rTriplet.m_nMid, a_rVariantList[k]->m_nId)] != eUnknown)
         {
-            decChild[k] = m_aMotherDecisions[a_rTriplet.m_nTripleIndex][m_provider.Get0BasedVariantIndex(eMOTHER, a_rTriplet.m_nMid, a_rVariantList[k]->m_nId)] == eCompliant ? true : false;
+            a_rSideDecisions[k] = m_aMotherDecisions[a_rTriplet.m_nTripleIndex][m_provider.Get0BasedVariantIndex(eMOTHER, a_rTriplet.m_nMid, a_rVariantList[k]->m_nId)] == eCompliant ? true : false;
             continue;
         }
+        
         //Check if the variant is already marked
         else if(a_checkSide == eFATHER && m_aFatherDecisions[a_rTriplet.m_nTripleIndex][m_provider.Get0BasedVariantIndex(eFATHER, a_rTriplet.m_nFid, a_rVariantList[k]->m_nId)] != eUnknown)
         {
-            decChild[k] = m_aFatherDecisions[a_rTriplet.m_nTripleIndex][m_provider.Get0BasedVariantIndex(eFATHER, a_rTriplet.m_nFid, a_rVariantList[k]->m_nId)] == eCompliant ? true : false;
+            a_rSideDecisions[k] = m_aFatherDecisions[a_rTriplet.m_nTripleIndex][m_provider.Get0BasedVariantIndex(eFATHER, a_rTriplet.m_nFid, a_rVariantList[k]->m_nId)] == eCompliant ? true : false;
             continue;
         }
-
+        
         //If variant does not have 0 allele
-        if(a_rVariantList[k]->m_genotype[0] != 0 && a_rVariantList[k]->m_genotype[1] != 0)
+        else if(a_rVariantList[k]->m_genotype[0] != 0 && a_rVariantList[k]->m_genotype[1] != 0)
         {
-            decChild[k] = false;
+            a_rSideDecisions[k] = false;
             continue;
         }
         
         //Skip child variants until end position of child variant is more than our current Parent variant start position
-        while(varItr <  (int)varListToCheckChild.size() && varListToCheckChild[varItr]->m_nEndPos < a_rVariantList[k]->m_nStartPos)
-            varItr++;
-    
-        //Check all child variants that may have a possible overlap with current Parent variant
-        bool curDecision = true;
-        //We wont increase child iteration for the following loop. There may be another parent variant that covers same child variant
-        int counter = 0;
-        while(varItr+counter < (int)varListToCheckChild.size() && varListToCheckChild[varItr+counter]->m_nStartPos < a_rVariantList[k]->m_nEndPos)
-        {
-            if(isOverlap(a_rVariantList[k]->m_nStartPos, a_rVariantList[k]->m_nEndPos, varListToCheckChild[varItr+counter]->m_nStartPos, varListToCheckChild[varItr+counter]->m_nEndPos))
-            {
-                if(m_aChildDecisions[a_rTriplet.m_nTripleIndex][varItr+counter] == eCompliant)
-                    curDecision = true;
-                
-                else if(m_aChildDecisions[a_rTriplet.m_nTripleIndex][varItr+counter] == eViolation)
-                {
-                    curDecision = false;
-                    break;
-                }
-                
-                else if(varListToCheckChild[varItr+counter]->m_genotype[0] != 0 && varListToCheckChild[varItr+counter]->m_genotype[1] != 0)
-                {
-                    decChild[k] = false;
-                    break;
-                }
-                
-            }
-            counter++;
-        }
-        decChild[k] = curDecision;
-    }
-    
-    
-    //Check overlaps for other parent
-    varItr = 0;
-    for(int k = 0; k < (int)a_rVariantList.size(); k++)
-    {
-        //Check if the variant is already marked
-        if(a_checkSide == eMOTHER && m_aMotherDecisions[a_rTriplet.m_nTripleIndex][m_provider.Get0BasedVariantIndex(eMOTHER, a_rTriplet.m_nMid, a_rVariantList[k]->m_nId)] != eUnknown)
-        {
-            decParent[k] = m_aMotherDecisions[a_rTriplet.m_nTripleIndex][m_provider.Get0BasedVariantIndex(eMOTHER, a_rTriplet.m_nMid, a_rVariantList[k]->m_nId)] == eCompliant ? true : false;
-            continue;
-        }
-        //Check if the variant is already marked
-        else if(a_checkSide == eFATHER && m_aFatherDecisions[a_rTriplet.m_nTripleIndex][m_provider.Get0BasedVariantIndex(eFATHER, a_rTriplet.m_nFid, a_rVariantList[k]->m_nId)] != eUnknown)
-        {
-            decParent[k] = m_aFatherDecisions[a_rTriplet.m_nTripleIndex][m_provider.Get0BasedVariantIndex(eFATHER, a_rTriplet.m_nFid, a_rVariantList[k]->m_nId)] == eCompliant ? true : false;
-            continue;
-        }
-        
-        
-        if(a_rVariantList[k]->m_genotype[0] != 0 && a_rVariantList[k]->m_genotype[1] != 0)
-        {
-            decParent[k] = false;
-            continue;
-        }
-        
-        while(varItr <  (int)varListToCheckParent.size() && varListToCheckParent[varItr]->m_nEndPos < a_rVariantList[k]->m_nStartPos)
-            varItr++;
-        
-        if(varItr == (int)varListToCheckParent.size())
-            break;
-        
-        else if(isOverlap(a_rVariantList[k]->m_nStartPos, a_rVariantList[k]->m_nEndPos, varListToCheckParent[varItr]->m_nStartPos, varListToCheckParent[varItr]->m_nEndPos))
-        {
-            if(varListToCheckParent[varItr]->m_genotype[0] != 0 && varListToCheckParent[varItr]->m_genotype[1] != 0)
-            {
-                decParent[k] = false;
-            }
-        }
-    }
-    
-    //Output the final decision
-    for(int k = 0; k < (int)a_rVariantList.size(); k++)
-    {
-        a_rSideDecisions[k] = decChild[k] && decParent[k];
-    }
-}
+        while(varItrChild <  (int)varListToCheckChild.size() && varListToCheckChild[varItrChild]->m_nEndPos < a_rVariantList[k]->m_nStartPos)
+            varItrChild++;
 
+        //Skip parent variants until end position of child variant is more than our current Parent variant start position
+        while(varItrParent <  (int)varListToCheckParent.size() && varListToCheckParent[varItrParent]->m_nEndPos < a_rVariantList[k]->m_nStartPos)
+            varItrParent++;
+
+        
+        //Skip parent variants until end position of child variant is more than our current Parent variant start position
+        while(varItrSelf <  (int)varListToCheckSelf.size() && varListToCheckSelf[varItrSelf]->m_nEndPos < a_rVariantList[k]->m_nStartPos)
+            varItrSelf++;
+
+        
+        int counterChild = 0;
+        int counterParent = 0;
+        int counterSelf = 0;
+        
+        std::vector<const CVariant*> childSideMatches;
+        std::vector<const CVariant*> parentSideMatches;
+        std::vector<const CVariant*> selfSideMatches;
+        
+        //Get All overlapping variants in child side
+        while(varItrChild + counterChild < (int)varListToCheckChild.size() && varListToCheckChild[varItrChild+counterChild]->m_nStartPos < a_rVariantList[k]->m_nEndPos)
+        {
+            if(isOverlap(a_rVariantList[k]->m_nStartPos, a_rVariantList[k]->m_nEndPos, varListToCheckChild[varItrChild+counterChild]->m_nStartPos, varListToCheckChild[varItrChild+counterChild]->m_nEndPos))
+                childSideMatches.push_back(varListToCheckChild[varItrChild+counterChild]);
+            counterChild++;
+        }
+        
+        //Get All overlapping variants in other parent side
+        while(varItrParent + counterParent < (int)varListToCheckParent.size() && varListToCheckParent[varItrParent+counterParent]->m_nStartPos < a_rVariantList[k]->m_nEndPos)
+        {
+            if(isOverlap(a_rVariantList[k]->m_nStartPos, a_rVariantList[k]->m_nEndPos, varListToCheckParent[varItrParent+counterParent]->m_nStartPos, varListToCheckParent[varItrParent+counterParent]->m_nEndPos))
+                parentSideMatches.push_back(varListToCheckParent[varItrParent+counterParent]);
+            counterParent++;
+        }
+
+        //Get All overlapping variants in self side
+        while(varItrSelf + counterSelf < (int)varListToCheckSelf.size() && varListToCheckSelf[varItrSelf+counterSelf]->m_nStartPos < a_rVariantList[k]->m_nEndPos)
+        {
+            if(isOverlap(a_rVariantList[k]->m_nStartPos, a_rVariantList[k]->m_nEndPos, varListToCheckSelf[varItrSelf+counterSelf]->m_nStartPos, varListToCheckSelf[varItrSelf+counterSelf]->m_nEndPos))
+                selfSideMatches.push_back(varListToCheckSelf[varItrSelf+counterSelf]);
+            counterSelf++;
+        }
+
+        bool selfCheck = true;
+        bool parentCheck = true;
+        bool childCheck = true;
+        
+        //=====STEP 1: Check self side=====
+        if(selfSideMatches.size() > 2)
+            selfCheck = false;
+        //check if all variants is 0/x form
+        for(int m=0; m < selfSideMatches.size(); m++)
+        {
+            if(selfSideMatches[m]->m_genotype[0] != 0 && selfSideMatches[m]->m_genotype[1] != 0)
+            {
+                selfCheck = false;
+                break;
+            }
+        }
+        
+        //===== STEP 2: Check the other Parent Side =======
+        for(int m=0; m < parentSideMatches.size(); m++)
+        {
+            if((a_checkSide == eFATHER && m_aMotherDecisions[a_rTriplet.m_nTripleIndex][varItrParent+m] == eViolation)
+               ||
+               (a_checkSide == eMOTHER && m_aFatherDecisions[a_rTriplet.m_nTripleIndex][varItrParent+m] == eViolation))
+            {
+                parentCheck = false;
+                break;
+            }
+            
+            else if(parentSideMatches[m]->m_nOriginalPos == a_rVariantList[k]->m_nOriginalPos && parentSideMatches[m]->m_genotype[0] != 0 && parentSideMatches[m]->m_genotype[1] != 0)
+            {
+                parentCheck = false;
+                break;
+            }
+        }
+        
+        //===== STEP 3: Check child Side =========
+        for(int m=0; m < childSideMatches.size(); m++)
+        {
+            if(m_aChildDecisions[a_rTriplet.m_nTripleIndex][varItrChild+m] == eCompliant)
+            {
+                childCheck = true;
+                continue;
+            }
+            
+            else if(m_aChildDecisions[a_rTriplet.m_nTripleIndex][varItrChild+m] == eViolation)
+            {
+                childCheck = false;
+                break;
+            }
+
+            else if(childSideMatches[m]->m_genotype[0] != 0 && childSideMatches[m]->m_genotype[1] != 0)
+            {
+                childCheck = false;
+                break;
+            }
+        }
+        
+        a_rSideDecisions[k] = parentCheck && selfCheck && childCheck;
+        
+        
+    }
+    
+}
 
 void CMendelianAnalyzer::MergeFunc(SChrIdTriplet& a_triplet)
 {
