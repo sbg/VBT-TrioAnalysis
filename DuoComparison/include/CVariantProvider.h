@@ -20,6 +20,7 @@ class CVariantProvider
     public:
         //Destructor
         ~CVariantProvider();
+        CVariantProvider();
     
         //Initialize the VCF readers for base and called vcf file
         bool InitializeReaders(const SConfig& a_rConfig);
@@ -94,6 +95,7 @@ class CVariantProvider
     
         //THESE TWO LIST STORES WHILE VARIANT ORIENTATIONS PERFORMING ALLELE MATCH OPERATION AFTER GT MATCHING
         //List that store the base Oriented variant tuples (Allele match homozygous variants)
+        bool m_bIsHomozygousOvarListInitialized;
         std::vector<std::vector<COrientedVariant>> m_aBaseHomozygousOrientedVariantList;
         //List that store the called Oriented variant tuples (Allele match homozygous variants)
         std::vector<std::vector<COrientedVariant>> m_aCalledHomozygousOrientedVariantList;

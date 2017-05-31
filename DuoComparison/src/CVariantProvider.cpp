@@ -11,6 +11,11 @@
 #include "COrientedVariant.h"
 #include <algorithm>
 
+CVariantProvider::CVariantProvider()
+{
+    m_bIsHomozygousOvarListInitialized = false;
+}
+
 CVariantProvider::~CVariantProvider()
 {
     for(int k= 0; k < (int)m_aContigList.size(); k++)
@@ -284,8 +289,12 @@ void CVariantProvider::FillOrientedVariantLists()
 void CVariantProvider::FillAlleleMatchVariantList(SChrIdTuple& a_tuple, std::vector<const CVariant*>& a_rBaseVariants, std::vector<const CVariant*>& a_rCalledVariants)
 {
     //Initialize HomozygousOrientedVariantLists
-    m_aBaseHomozygousOrientedVariantList = std::vector<std::vector<COrientedVariant>>(m_baseVCF.GetContigs().size());
-    m_aCalledHomozygousOrientedVariantList = std::vector<std::vector<COrientedVariant>>(m_calledVCF.GetContigs().size());
+    if(false == m_bIsHomozygousOvarListInitialized)
+    {
+        m_aBaseHomozygousOrientedVariantList = std::vector<std::vector<COrientedVariant>>(m_baseVCF.GetContigs().size());
+        m_aCalledHomozygousOrientedVariantList = std::vector<std::vector<COrientedVariant>>(m_calledVCF.GetContigs().size());
+        m_bIsHomozygousOvarListInitialized = true;
+    }
     
     for(int j=0; j < (int)a_rBaseVariants.size(); j++)
     {
