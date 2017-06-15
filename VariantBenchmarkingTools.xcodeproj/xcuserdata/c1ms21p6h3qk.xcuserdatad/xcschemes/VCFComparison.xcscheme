@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "556D39751DD3AEA400551040"
-               BuildableName = "VCFComparison"
+               BuildableName = "VariantBenchmarkingTools"
                BlueprintName = "VCFComparison"
                ReferencedContainer = "container:VariantBenchmarkingTools.xcodeproj">
             </BuildableReference>
@@ -33,7 +33,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "556D39751DD3AEA400551040"
-            BuildableName = "VCFComparison"
+            BuildableName = "VariantBenchmarkingTools"
             BlueprintName = "VCFComparison"
             ReferencedContainer = "container:VariantBenchmarkingTools.xcodeproj">
          </BuildableReference>
@@ -56,7 +56,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "556D39751DD3AEA400551040"
-            BuildableName = "VCFComparison"
+            BuildableName = "VariantBenchmarkingTools"
             BlueprintName = "VCFComparison"
             ReferencedContainer = "container:VariantBenchmarkingTools.xcodeproj">
          </BuildableReference>
@@ -67,11 +67,15 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "varcomp"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-father"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/geno_auto_NA12878_91_92_nograph_gral0.9.31.cat.vcf"
+            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/HG001_trio_SNPS_new.vcf.gz"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -79,7 +83,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/geno_auto_NA12878_91_92_nograph_gral0.9.31.cat.vcf"
+            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/HG001_trio_SNPS_new.vcf.gz"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -87,7 +91,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/geno_auto_NA12878_91_92_nograph_gral0.9.31.cat.vcf"
+            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/HG001_trio_SNPS_new.vcf.gz"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -95,8 +99,12 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VcfCompOutputMendelianMaria/VBTmendelianAUTOSOME_NA12878_Ref_Overlap2"
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/CEU_SNPonly"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/NullHypo_PG_NA12878"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-filter"
@@ -113,6 +121,10 @@
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/human_g1k_v37_decoy.fasta"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/ucsc.hg19.fasta"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-sample-mother"
@@ -158,6 +170,22 @@
             argument = "--ref-overlap"
             isEnabled = "YES">
          </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-base"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/c1ms21p6h3qk/Desktop/RTG/rtg-core/Inputs/NA12878_all.vcf.gz"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-called"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/c1ms21p6h3qk/Desktop/RTG/rtg-core/Inputs/NA12878_all.vcf.gz"
+            isEnabled = "NO">
+         </CommandLineArgument>
       </CommandLineArguments>
       <AdditionalOptions>
       </AdditionalOptions>
@@ -173,7 +201,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "556D39751DD3AEA400551040"
-            BuildableName = "VCFComparison"
+            BuildableName = "VariantBenchmarkingTools"
             BlueprintName = "VCFComparison"
             ReferencedContainer = "container:VariantBenchmarkingTools.xcodeproj">
          </BuildableReference>
