@@ -199,7 +199,7 @@ void CVariantProvider::FillVariantLists()
             std::cout << "Processing chromosome " << preChrId << " of base vcf" << std::endl;
         }
         
-        else if(!variant.m_bIsNoCall && IsHomRef(variant))
+        if(!variant.m_bIsNoCall && IsHomRef(variant))
             continue;
         
         if(m_config.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
@@ -234,7 +234,7 @@ void CVariantProvider::FillVariantLists()
             std::cout << "Processing chromosome " << preChrId << " of called vcf" << std::endl;
         }
         
-        else if(!variant.m_bIsNoCall && IsHomRef(variant))
+        if(!variant.m_bIsNoCall && IsHomRef(variant))
             continue;
         
         else if(m_config.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
