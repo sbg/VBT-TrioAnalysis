@@ -59,13 +59,33 @@ void CResultLog::WriteStatistics(int a_nMode)
             
             outputLog << m_aResultEntries[k].m_chrName << "\t" << TPcalled << "\t" << TPbase << "\t" << FP << "\t" << FN;
             
-            double Precision = static_cast<double>(TPbase) / static_cast<double>(TPbase + FP);
+            double Precision = static_cast<double>(TPcalled) / static_cast<double>(TPcalled + FP);
             double Recall = static_cast<double>(TPbase) / static_cast<double>(TPbase + FN);
             double Fmeasure = Precision + Recall == 0.0 ? 0.0 : (2.0 * Precision * Recall) / (Precision + Recall);
         
             outputLog.precision(4);
             outputLog << "\t" << Precision << "\t" << Recall << "\t" << Fmeasure << std::endl;
         }
+        
+        int TPbaseTotal = 0;
+        int TPcalledTotal = 0;
+        int FPTotal = 0;
+        int FNTotal = 0;
+        
+        for(int k = 0; k < (int)m_aResultEntries.size(); k++)
+        {
+            TPbaseTotal += m_aResultEntries[k].m_nTpBase;
+            TPcalledTotal += m_aResultEntries[k].m_nTpCalled;
+            FPTotal += m_aResultEntries[k].m_nFp;
+            FNTotal += m_aResultEntries[k].m_nFn;
+        }
+        
+        double Precision = static_cast<double>(TPcalledTotal) / static_cast<double>(TPcalledTotal + FPTotal);
+        double Recall = static_cast<double>(TPbaseTotal) / static_cast<double>(TPbaseTotal + FNTotal);
+        double Fmeasure = Precision + Recall == 0.0 ? 0.0 : (2.0 * Precision * Recall) / (Precision + Recall);
+        outputLog << "TOTAL" << "\t" << TPcalledTotal << "\t" << TPbaseTotal << "\t" << FPTotal << "\t" << FNTotal;
+        outputLog.precision(4);
+        outputLog << "\t" << Precision << "\t" << Recall << "\t" << Fmeasure << std::endl;
     }
     
     if(a_nMode == 2)
@@ -89,28 +109,34 @@ void CResultLog::WriteStatistics(int a_nMode)
             
             outputLog << m_aResultEntries[k].m_chrName << "\t" << TPcalled << "\t" << TPbase << "\t" << FP << "\t" << FN;
             
-            double Precision = static_cast<double>(TPbase) / static_cast<double>(TPbase + FP);
+            double Precision = static_cast<double>(TPcalled) / static_cast<double>(TPcalled + FP);
             double Recall = static_cast<double>(TPbase) / static_cast<double>(TPbase + FN);
             double Fmeasure = Precision + Recall == 0.0 ? 0.0 : (2.0 * Precision * Recall) / (Precision + Recall);
             
             outputLog.precision(4);
             outputLog << "\t" << Precision << "\t" << Recall << "\t" << Fmeasure << std::endl;
         }
-    }
-    
-    if(a_nMode == 2)
-    {
-        int totalBaseTP = 0;
-        for(int k= 0; k < (int)m_aResultEntries.size(); k++)
-            totalBaseTP += m_aResultEntries[k].m_nTpBase;
         
-        int totalCalledTP = 0;
-        for(int k= 0; k < (int)m_aResultEntries.size(); k++)
-            totalCalledTP += m_aResultEntries[k].m_nTpCalled;
+        int TPbaseTotal = 0;
+        int TPcalledTotal = 0;
+        int FPTotal = 0;
+        int FNTotal = 0;
         
-        outputLog << std::endl << std::endl;
-        outputLog << "Total TP Base :" << totalBaseTP << std::endl;
-        outputLog << "Total TP Called:" << totalCalledTP << std::endl;
+        for(int k = 0; k < (int)m_aResultEntries.size(); k++)
+        {
+            TPbaseTotal += m_aResultEntries[k].m_nTpBase;
+            TPcalledTotal += m_aResultEntries[k].m_nTpCalled;
+            FPTotal += m_aResultEntries[k].m_nFp;
+            FNTotal += m_aResultEntries[k].m_nFn;
+        }
+        
+        double Precision = static_cast<double>(TPcalledTotal) / static_cast<double>(TPcalledTotal + FPTotal);
+        double Recall = static_cast<double>(TPbaseTotal) / static_cast<double>(TPbaseTotal + FNTotal);
+        double Fmeasure = Precision + Recall == 0.0 ? 0.0 : (2.0 * Precision * Recall) / (Precision + Recall);
+        outputLog << "TOTAL" << "\t" << TPcalledTotal << "\t" << TPbaseTotal << "\t" << FPTotal << "\t" << FNTotal;
+        outputLog.precision(4);
+        outputLog << "\t" << Precision << "\t" << Recall << "\t" << Fmeasure << std::endl;
+        
     }
     
     outputLog.close();
