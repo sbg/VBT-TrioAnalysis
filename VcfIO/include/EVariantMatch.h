@@ -14,7 +14,8 @@ enum EVariantMatch
     eGENOTYPE_MATCH,
     eALLELE_MATCH,
     eNO_MATCH,
-    eNOT_ASSESSED
+    eNOT_ASSESSED,
+    eCOMPLEX_SKIPPED
 };
 
 #endif // _E_VARIANT_MATCH_H_
