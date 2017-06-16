@@ -609,6 +609,9 @@ void CMendelianVariantProvider::SetVariantStatus(const std::vector<const CVarian
 {
     for(const CVariant* pVar : a_rVariantList)
     {
+        if(pVar->m_variantStatus == eCOMPLEX_SKIPPED)
+            continue;
+        
         if(a_status == eGENOTYPE_MATCH)
             pVar->m_variantStatus = a_status;
         else if(a_status == eALLELE_MATCH && pVar->m_variantStatus != eGENOTYPE_MATCH)
@@ -625,6 +628,9 @@ void CMendelianVariantProvider::SetVariantStatus(const std::vector<const COrient
 {
     for(const COrientedVariant* pOVar : a_rVariantList)
     {
+        if(pOVar->GetVariant().m_variantStatus == eCOMPLEX_SKIPPED)
+            continue;
+        
         if(a_status == eGENOTYPE_MATCH)
             pOVar->GetVariant().m_variantStatus = a_status;
         else if(a_status == eALLELE_MATCH && pOVar->GetVariant().m_variantStatus != eGENOTYPE_MATCH)
@@ -683,7 +689,7 @@ int CMendelianVariantProvider::GetSkippedVariantCount(EMendelianVcfName a_uFrom)
         {
             for(CVariant var : m_aFatherVariantList[k])
             {
-                if(var.m_variantStatus == eNOT_ASSESSED)
+                if(var.m_variantStatus == eCOMPLEX_SKIPPED)
                     totalCount++;
             }
         }
@@ -695,7 +701,7 @@ int CMendelianVariantProvider::GetSkippedVariantCount(EMendelianVcfName a_uFrom)
         {
             for(CVariant var : m_aMotherVariantList[k])
             {
-                if(var.m_variantStatus == eNOT_ASSESSED)
+                if(var.m_variantStatus == eCOMPLEX_SKIPPED)
                     totalCount++;
             }
         }
@@ -708,7 +714,7 @@ int CMendelianVariantProvider::GetSkippedVariantCount(EMendelianVcfName a_uFrom)
         {
             for(CVariant var : m_aChildVariantList[k])
             {
-                if(var.m_variantStatus == eNOT_ASSESSED)
+                if(var.m_variantStatus == eCOMPLEX_SKIPPED)
                     totalCount++;
             }
         }

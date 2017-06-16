@@ -46,11 +46,11 @@ void CMendelianTrioMerger::SetDecisionsAndVariants(SChrIdTriplet& a_rTriplet, EM
 
     for(int k = 0; k < (int)a_rVarList.size(); k++)
     {
-        if(a_rVarList[k]->m_variantStatus != eNOT_ASSESSED)
-        {
+        //if(a_rVarList[k]->m_variantStatus != eNOT_ASSESSED)
+        //{
             pDecisionList->push_back(a_rDecisionList[k]);
             pVarList->push_back(a_rVarList[k]);
-        }
+        //}
     }
 }
 
@@ -160,6 +160,14 @@ void CMendelianTrioMerger::AddRecords(SChrIdTriplet& a_rTriplet)
                                                                m_aChildVariants[a_rTriplet.m_nCid][childItr],
                                                                m_aChildDecisions[a_rTriplet.m_nTripleIndex][childItr]);
             
+            if(decision == eSkipped)
+            {
+                fatherItr++;
+                motherItr++;
+                childItr++;
+                continue;
+            }
+            
             //Register the line
             EVariantCategory category = RegisterMergedLine(m_aChildVariants[a_rTriplet.m_nCid][childItr], decision);
             
@@ -181,6 +189,12 @@ void CMendelianTrioMerger::AddRecords(SChrIdTriplet& a_rTriplet)
             {
                 EMendelianDecision decision = GetMendelianDecision(0, m_aFatherVariants[a_rTriplet.m_nFid][fatherItr], 0, m_aFatherDecisions[a_rTriplet.m_nTripleIndex][fatherItr]);
                 
+                if(decision == eSkipped)
+                {
+                    fatherItr++;
+                    continue;
+                }
+                
                 //Register the line
                 EVariantCategory category = RegisterMergedLine(m_aFatherVariants[a_rTriplet.m_nFid][fatherItr], decision);
 
@@ -195,6 +209,13 @@ void CMendelianTrioMerger::AddRecords(SChrIdTriplet& a_rTriplet)
             {
                 EMendelianDecision decision = GetMendelianDecision(m_aMotherVariants[a_rTriplet.m_nMid][motherItr], 0, m_aChildVariants[a_rTriplet.m_nCid][childItr], m_aChildDecisions[a_rTriplet.m_nTripleIndex][childItr]);
 
+                if(decision == eSkipped)
+                {
+                    motherItr++;
+                    childItr++;
+                    continue;
+                }
+                
                 //Register the line
                 EVariantCategory category = RegisterMergedLine(m_aChildVariants[a_rTriplet.m_nCid][childItr], decision);
 
@@ -218,6 +239,12 @@ void CMendelianTrioMerger::AddRecords(SChrIdTriplet& a_rTriplet)
             {
                 EMendelianDecision decision = GetMendelianDecision(m_aMotherVariants[a_rTriplet.m_nMid][motherItr], 0, 0, m_aMotherDecisions[a_rTriplet.m_nTripleIndex][motherItr]);
                 
+                if(decision == eSkipped)
+                {
+                    motherItr++;
+                    continue;
+                }
+                
                 //Register the line
                 EVariantCategory category = RegisterMergedLine(m_aMotherVariants[a_rTriplet.m_nMid][motherItr], decision);
 
@@ -233,6 +260,13 @@ void CMendelianTrioMerger::AddRecords(SChrIdTriplet& a_rTriplet)
             {
                 EMendelianDecision decision = GetMendelianDecision(0, m_aFatherVariants[a_rTriplet.m_nFid][fatherItr] , m_aChildVariants[a_rTriplet.m_nCid][childItr], m_aChildDecisions[a_rTriplet.m_nTripleIndex][childItr]);
 
+                if(decision == eSkipped)
+                {
+                    fatherItr++;
+                    childItr++;
+                    continue;
+                }
+                
                 //Register the line
                 EVariantCategory category = RegisterMergedLine(m_aChildVariants[a_rTriplet.m_nCid][childItr], decision);
                 
@@ -261,6 +295,12 @@ void CMendelianTrioMerger::AddRecords(SChrIdTriplet& a_rTriplet)
             {
                 EMendelianDecision decision = GetMendelianDecision(0, 0, m_aChildVariants[a_rTriplet.m_nCid][childItr], m_aChildDecisions[a_rTriplet.m_nTripleIndex][childItr]);
                 
+                if(decision == eSkipped)
+                {
+                    childItr++;
+                    continue;
+                }
+                
                 //Register the line
                 EVariantCategory category = RegisterMergedLine(m_aChildVariants[a_rTriplet.m_nCid][childItr], decision);
                 
@@ -276,7 +316,14 @@ void CMendelianTrioMerger::AddRecords(SChrIdTriplet& a_rTriplet)
             {
                 EMendelianDecision decision;
                 
-                if(m_noCallMode == ENoCallMode::eImplicitNoCall)
+                if(m_aFatherVariants[a_rTriplet.m_nFid][fatherItr]->m_variantStatus == eCOMPLEX_SKIPPED || m_aMotherVariants[a_rTriplet.m_nMid][motherItr]->m_variantStatus == eCOMPLEX_SKIPPED)
+                {
+                    fatherItr++;
+                    motherItr++;
+                    decision = eSkipped;
+                    continue;
+                }
+                else if(m_noCallMode == ENoCallMode::eImplicitNoCall)
                     decision = eNoCallChild;
                 else if(m_noCallMode == ENoCallMode::eExplicitNoCall && (m_aFatherDecisions[a_rTriplet.m_nTripleIndex][fatherItr] == eNoCallParent || m_aMotherDecisions[a_rTriplet.m_nTripleIndex][motherItr] == eNoCallParent))
                     decision = eNoCallParent;
@@ -758,8 +805,15 @@ EVariantCategory CMendelianTrioMerger::RegisterMergedLine(const CVariant* a_pVar
 EMendelianDecision CMendelianTrioMerger::GetMendelianDecision(const CVariant* a_pVarMother, const CVariant* a_pVarFather, const CVariant* a_pVarChild, EMendelianDecision a_initDecision)
 {
     EMendelianDecision decision;
-
-    if(m_noCallMode == ENoCallMode::eImplicitNoCall)
+    
+    if(a_pVarMother != 0 && a_pVarMother->m_variantStatus == eCOMPLEX_SKIPPED)
+        decision = eSkipped;
+    else if(a_pVarFather != 0 && a_pVarFather->m_variantStatus == eCOMPLEX_SKIPPED)
+        decision = eSkipped;
+    else if(a_pVarChild != 0 && a_pVarChild->m_variantStatus == eCOMPLEX_SKIPPED)
+        decision = eSkipped;
+    
+    else if(m_noCallMode == ENoCallMode::eImplicitNoCall)
     {
         if(a_pVarChild == 0 || a_pVarChild->m_bIsNoCall)
             decision = EMendelianDecision::eNoCallChild;

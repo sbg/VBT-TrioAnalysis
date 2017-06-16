@@ -15,7 +15,8 @@ enum EMendelianDecision
     eCompliant = 1,
     eViolation = 2,
     eNoCallParent = 3,
-    eNoCallChild = 4
+    eNoCallChild = 4,
+    eSkipped = 5
 };
 
 #endif // _E_MENDELIAN_DECISION_H_
