@@ -46,11 +46,8 @@ void CMendelianTrioMerger::SetDecisionsAndVariants(SChrIdTriplet& a_rTriplet, EM
 
     for(int k = 0; k < (int)a_rVarList.size(); k++)
     {
-        //if(a_rVarList[k]->m_variantStatus != eNOT_ASSESSED)
-        //{
-            pDecisionList->push_back(a_rDecisionList[k]);
-            pVarList->push_back(a_rVarList[k]);
-        //}
+        pDecisionList->push_back(a_rDecisionList[k]);
+        pVarList->push_back(a_rVarList[k]);
     }
 }
 
