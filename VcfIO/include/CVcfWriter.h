@@ -41,6 +41,8 @@ struct SPerSampleData
 
 struct SVcfRecord
 {
+    //Boundaries of Vcf record for overlapping variant calculation
+    int left,right;
     //Position of the variant (0 based)
     int m_nPosition;
     //Quality of the variant

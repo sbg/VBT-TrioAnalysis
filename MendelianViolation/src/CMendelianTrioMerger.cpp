@@ -9,7 +9,13 @@
 #include "CMendelianTrioMerger.h"
 #include <algorithm>
 #include <iostream>
+#include <sstream>
 
+//Checks if the given two range is overlapping
+bool IsOverlap(SVcfRecord& rec1, SVcfRecord& rec2)
+{
+    return std::min(rec1.right, rec2.right) - std::max(rec1.left, rec2.left) > 0;
+}
 
 void CMendelianTrioMerger::SetTrioPath(const std::string& a_nTrioPath)
 {
@@ -133,6 +139,11 @@ void CMendelianTrioMerger::GenerateTrioVcf(std::vector<SChrIdTriplet>& a_rCommon
 
 void CMendelianTrioMerger::AddRecords(SChrIdTriplet& a_rTriplet)
 {
+    std::vector<SVcfRecord> recordList;
+    std::vector<EVariantCategory> recordCategoryList;
+    std::vector<EMendelianDecision> recordDecisionList;
+    
+    
     
     int childItr = 0, motherItr = 0, fatherItr = 0;
     
@@ -164,18 +175,11 @@ void CMendelianTrioMerger::AddRecords(SChrIdTriplet& a_rTriplet)
                 childItr++;
                 continue;
             }
+
+            recordDecisionList.push_back(decision);
+            recordCategoryList.push_back(m_aChildVariants[a_rTriplet.m_nCid][childItr]->GetVariantCategory());
             
-            //Register the line
-            EVariantCategory category = RegisterMergedLine(m_aChildVariants[a_rTriplet.m_nCid][childItr], decision);
-            
-            //Register the genotypes at the 27x27 genotype matrix
-            RegisterGenotype(m_aMotherVariants[a_rTriplet.m_nMid][motherItr],
-                             m_aFatherVariants[a_rTriplet.m_nFid][fatherItr],
-                             m_aChildVariants[a_rTriplet.m_nCid][childItr],
-                             decision,
-                             category);
-            
-            DoTripleMerge(a_rTriplet, childItr, fatherItr, motherItr, decision);
+            DoTripleMerge(a_rTriplet, childItr, fatherItr, motherItr, decision, recordList);
             continue;
         }
         
@@ -192,13 +196,10 @@ void CMendelianTrioMerger::AddRecords(SChrIdTriplet& a_rTriplet)
                     continue;
                 }
                 
-                //Register the line
-                EVariantCategory category = RegisterMergedLine(m_aFatherVariants[a_rTriplet.m_nFid][fatherItr], decision);
-
-                //Register the genotypes at the 27x27 genotype matrix
-                RegisterGenotype(0, m_aFatherVariants[a_rTriplet.m_nFid][fatherItr], 0, decision, category);
+                recordDecisionList.push_back(decision);
+                recordCategoryList.push_back(m_aFatherVariants[a_rTriplet.m_nFid][fatherItr]->GetVariantCategory());
                 
-                DoSingleVar(a_rTriplet, fatherItr, eFATHER, decision);
+                DoSingleVar(a_rTriplet, fatherItr, eFATHER, decision, recordList);
                 
             }
             //DO MOTHER CHILD MERGE
@@ -213,17 +214,10 @@ void CMendelianTrioMerger::AddRecords(SChrIdTriplet& a_rTriplet)
                     continue;
                 }
                 
-                //Register the line
-                EVariantCategory category = RegisterMergedLine(m_aChildVariants[a_rTriplet.m_nCid][childItr], decision);
-
-                //Register the genotypes at the 27x27 genotype matrix
-                RegisterGenotype(m_aMotherVariants[a_rTriplet.m_nMid][motherItr],
-                                 0,
-                                 m_aChildVariants[a_rTriplet.m_nCid][childItr],
-                                 decision,
-                                 category);
+                recordDecisionList.push_back(decision);
+                recordCategoryList.push_back(m_aChildVariants[a_rTriplet.m_nCid][childItr]->GetVariantCategory());
                 
-                DoDoubleMerge(a_rTriplet, motherItr, childItr, eMOTHER, eCHILD, decision);
+                DoDoubleMerge(a_rTriplet, motherItr, childItr, eMOTHER, eCHILD, decision, recordList);
                 
             }
             continue;
@@ -242,14 +236,10 @@ void CMendelianTrioMerger::AddRecords(SChrIdTriplet& a_rTriplet)
                     continue;
                 }
                 
-                //Register the line
-                EVariantCategory category = RegisterMergedLine(m_aMotherVariants[a_rTriplet.m_nMid][motherItr], decision);
-
-                //Register the genotypes at the 27x27 genotype matrix
-                RegisterGenotype(m_aMotherVariants[a_rTriplet.m_nMid][motherItr], 0, 0, decision, category);
+                recordDecisionList.push_back(decision);
+                recordCategoryList.push_back(m_aMotherVariants[a_rTriplet.m_nMid][motherItr]->GetVariantCategory());
                 
-                
-                DoSingleVar(a_rTriplet, motherItr, eMOTHER, decision);
+                DoSingleVar(a_rTriplet, motherItr, eMOTHER, decision, recordList);
                 
             }
             //DO FATHER CHILD MERGE
@@ -264,14 +254,10 @@ void CMendelianTrioMerger::AddRecords(SChrIdTriplet& a_rTriplet)
                     continue;
                 }
                 
-                //Register the line
-                EVariantCategory category = RegisterMergedLine(m_aChildVariants[a_rTriplet.m_nCid][childItr], decision);
-                
-                //Register the genotypes at the 27x27 genotype matrix
-                RegisterGenotype(0, m_aFatherVariants[a_rTriplet.m_nFid][fatherItr] , m_aChildVariants[a_rTriplet.m_nCid][childItr], decision, category);
-                
+                recordDecisionList.push_back(decision);
+                recordCategoryList.push_back(m_aChildVariants[a_rTriplet.m_nCid][childItr]->GetVariantCategory());
     
-                DoDoubleMerge(a_rTriplet, fatherItr, childItr, eFATHER, eCHILD, decision);
+                DoDoubleMerge(a_rTriplet, fatherItr, childItr, eFATHER, eCHILD, decision, recordList);
                 
             }
             
@@ -298,14 +284,10 @@ void CMendelianTrioMerger::AddRecords(SChrIdTriplet& a_rTriplet)
                     continue;
                 }
                 
-                //Register the line
-                EVariantCategory category = RegisterMergedLine(m_aChildVariants[a_rTriplet.m_nCid][childItr], decision);
+                recordDecisionList.push_back(decision);
+                recordCategoryList.push_back(m_aChildVariants[a_rTriplet.m_nCid][childItr]->GetVariantCategory());
                 
-                //Register the genotypes at the 27x27 genotype matrix
-                RegisterGenotype(0, 0, m_aChildVariants[a_rTriplet.m_nCid][childItr], decision, category);
-                
-                
-                DoSingleVar(a_rTriplet, childItr, eCHILD, decision);
+                DoSingleVar(a_rTriplet, childItr, eCHILD, decision, recordList);
             }
             
             //DO MOTHER FATHER MERGE
@@ -333,13 +315,10 @@ void CMendelianTrioMerger::AddRecords(SChrIdTriplet& a_rTriplet)
                 else
                     decision = eUnknown;
                 
-                //Register the line
-                EVariantCategory category = RegisterMergedLine(m_aMotherVariants[a_rTriplet.m_nMid][motherItr], decision);
+                recordDecisionList.push_back(decision);
+                recordCategoryList.push_back(m_aFatherVariants[a_rTriplet.m_nFid][fatherItr]->GetVariantCategory());
                 
-                //Register the genotypes at the 27x27 genotype matrix
-                RegisterGenotype(m_aMotherVariants[a_rTriplet.m_nMid][motherItr], m_aFatherVariants[a_rTriplet.m_nFid][fatherItr], 0, decision, category);
-                
-                DoDoubleMerge(a_rTriplet, motherItr, fatherItr, eMOTHER, eFATHER, decision);
+                DoDoubleMerge(a_rTriplet, motherItr, fatherItr, eMOTHER, eFATHER, decision, recordList);
                 
             }
             continue;
@@ -356,41 +335,43 @@ void CMendelianTrioMerger::AddRecords(SChrIdTriplet& a_rTriplet)
             {
                 EMendelianDecision decision = m_noCallMode == ENoCallMode::eImplicitNoCall ? EMendelianDecision::eNoCallChild : m_aMotherDecisions[a_rTriplet.m_nTripleIndex][motherItr];
                 
-                //Register the line
-                EVariantCategory category = RegisterMergedLine(m_aMotherVariants[a_rTriplet.m_nMid][motherItr], decision);
+                recordDecisionList.push_back(decision);
+                recordCategoryList.push_back(m_aMotherVariants[a_rTriplet.m_nMid][motherItr]->GetVariantCategory());
                 
-                //Register the genotypes at the 27x27 genotype matrix
-                RegisterGenotype(m_aMotherVariants[a_rTriplet.m_nMid][motherItr], 0, 0, decision, category);
-                
-                DoSingleVar(a_rTriplet, motherItr, eMOTHER, decision);
+                DoSingleVar(a_rTriplet, motherItr, eMOTHER, decision, recordList);
             }
             else if(fatherPos <= motherPos && fatherPos <= childPos)
             {
                 EMendelianDecision decision = m_noCallMode == ENoCallMode::eImplicitNoCall ? EMendelianDecision::eNoCallChild : m_aFatherDecisions[a_rTriplet.m_nTripleIndex][fatherItr];
                 
-                //Register the line
-                EVariantCategory category = RegisterMergedLine(m_aFatherVariants[a_rTriplet.m_nFid][fatherItr], decision);
-                
-                //Register the genotypes at the 27x27 genotype matrix
-                RegisterGenotype(0, m_aFatherVariants[a_rTriplet.m_nFid][fatherItr], 0, decision, category);
-                
-                DoSingleVar(a_rTriplet, fatherItr, eFATHER, decision);
+                recordDecisionList.push_back(decision);
+                recordCategoryList.push_back(m_aFatherVariants[a_rTriplet.m_nFid][fatherItr]->GetVariantCategory());
+
+                DoSingleVar(a_rTriplet, fatherItr, eFATHER, decision, recordList);
 
             }
             else
             {
                 EMendelianDecision decision = m_noCallMode == ENoCallMode::eImplicitNoCall ? EMendelianDecision::eNoCallParent : m_aChildDecisions[a_rTriplet.m_nTripleIndex][childItr];
 
-                //Register the line
-                EVariantCategory category = RegisterMergedLine(m_aChildVariants[a_rTriplet.m_nCid][childItr], decision);
-                
-                //Register the genotypes at the 27x27 genotype matrix
-                RegisterGenotype(0, 0, m_aChildVariants[a_rTriplet.m_nCid][childItr], decision, category);
+                recordDecisionList.push_back(decision);
+                recordCategoryList.push_back(m_aChildVariants[a_rTriplet.m_nCid][childItr]->GetVariantCategory());
 
-                DoSingleVar(a_rTriplet, childItr, eCHILD, decision);
+                DoSingleVar(a_rTriplet, childItr, eCHILD, decision, recordList);
             }
         }
     
+    }
+    
+    //Update records for overlapping regions
+    ProcessRefOverlappedRegions(recordList, recordDecisionList);
+    
+    //Write the final updated variants to output vcf and logs to the report table
+    for(int k = 0; k < recordList.size(); k++)
+    {
+        m_vcfWriter.AddMendelianRecord(recordList[k]);
+        RegisterMergedLine(recordDecisionList[k], recordCategoryList[k]);
+        RegisterGenotype(recordList[k], recordCategoryList[k], recordDecisionList[k]);
     }
 }
 
@@ -403,13 +384,15 @@ bool CMendelianTrioMerger::IsMerge(const CVariant* a_pVar1, const CVariant* a_pV
         return false;
 }
 
-void CMendelianTrioMerger::DoTripleMerge(SChrIdTriplet& a_rTriplet, int& a_nChildItr, int& a_nFatherItr, int& a_nMotherItr, EMendelianDecision a_decision)
+void CMendelianTrioMerger::DoTripleMerge(SChrIdTriplet& a_rTriplet, int& a_nChildItr, int& a_nFatherItr, int& a_nMotherItr, EMendelianDecision a_decision, std::vector<SVcfRecord>& a_rRecordList)
 {
     SVcfRecord vcfrecord;
     
     vcfrecord.m_nPosition = m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_nOriginalPos;
     vcfrecord.m_chrName = m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_chrName;
     vcfrecord.m_mendelianDecision = std::to_string(a_decision);
+    vcfrecord.left = m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_nStartPos;
+    vcfrecord.right = m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_nEndPos;
     
     std::vector<std::string> alleles;
     
@@ -503,7 +486,8 @@ void CMendelianTrioMerger::DoTripleMerge(SChrIdTriplet& a_rTriplet, int& a_nChil
     vcfrecord.m_aSampleData.push_back(dataChild);
     
     //Add record to the trio
-    m_vcfWriter.AddMendelianRecord(vcfrecord);
+    //m_vcfWriter.AddMendelianRecord(vcfrecord);
+    a_rRecordList.push_back(vcfrecord);
     
     a_nChildItr++;
     a_nFatherItr++;
@@ -511,7 +495,12 @@ void CMendelianTrioMerger::DoTripleMerge(SChrIdTriplet& a_rTriplet, int& a_nChil
 }
 
 
-void CMendelianTrioMerger::DoDoubleMerge(SChrIdTriplet& a_rTriplet, int& a_nItr1, int& a_nItr2, EMendelianVcfName a_name1, EMendelianVcfName a_name2, EMendelianDecision a_decision)
+void CMendelianTrioMerger::DoDoubleMerge(SChrIdTriplet& a_rTriplet,
+                                         int& a_nItr1, int& a_nItr2,
+                                         EMendelianVcfName a_name1,
+                                         EMendelianVcfName a_name2,
+                                         EMendelianDecision a_decision,
+                                         std::vector<SVcfRecord>& a_rRecordList)
 {
     const CVariant* pVarMother = (a_name1 == eMOTHER) ? m_aMotherVariants[a_rTriplet.m_nMid][a_nItr1] : ((a_name2 == eMOTHER) ? m_aMotherVariants[a_rTriplet.m_nMid][a_nItr2] : NULL);
     const CVariant* pVarFather = (a_name1 == eFATHER) ? m_aFatherVariants[a_rTriplet.m_nFid][a_nItr1] : ((a_name2 == eFATHER) ? m_aFatherVariants[a_rTriplet.m_nFid][a_nItr2] : NULL);
@@ -522,7 +511,9 @@ void CMendelianTrioMerger::DoDoubleMerge(SChrIdTriplet& a_rTriplet, int& a_nItr1
     vcfrecord.m_nPosition = (pVarChild != NULL) ? pVarChild->m_nOriginalPos : pVarMother->m_nOriginalPos;
     vcfrecord.m_chrName = (pVarChild != NULL) ? pVarChild->m_chrName : pVarMother->m_chrName;
     vcfrecord.m_mendelianDecision = std::to_string(a_decision);
-    
+    vcfrecord.left = (pVarChild != NULL) ? pVarChild->m_nStartPos : pVarMother->m_nStartPos;
+    vcfrecord.right = (pVarChild != NULL) ? pVarChild->m_nEndPos : pVarMother->m_nEndPos;
+
     //Fill the alleles part according to trio
     std::vector<std::string> alleles;
     
@@ -662,7 +653,8 @@ void CMendelianTrioMerger::DoDoubleMerge(SChrIdTriplet& a_rTriplet, int& a_nItr1
     vcfrecord.m_aSampleData.push_back(dataChild);
     
     //Add record to the trio
-    m_vcfWriter.AddMendelianRecord(vcfrecord);
+    //m_vcfWriter.AddMendelianRecord(vcfrecord);
+    a_rRecordList.push_back(vcfrecord);
     
     //Increment counters
     a_nItr1++;
@@ -671,7 +663,11 @@ void CMendelianTrioMerger::DoDoubleMerge(SChrIdTriplet& a_rTriplet, int& a_nItr1
 }
 
 
-void CMendelianTrioMerger::DoSingleVar(SChrIdTriplet& a_rTriplet, int& a_nItr, EMendelianVcfName a_name, EMendelianDecision a_decision)
+void CMendelianTrioMerger::DoSingleVar(SChrIdTriplet& a_rTriplet,
+                                       int& a_nItr,
+                                       EMendelianVcfName a_name,
+                                       EMendelianDecision a_decision,
+                                       std::vector<SVcfRecord>& a_rRecordList)
 {
     const CVariant* pVariant = (a_name == eMOTHER) ? m_aMotherVariants[a_rTriplet.m_nMid][a_nItr] : ((a_name == eFATHER) ? m_aFatherVariants[a_rTriplet.m_nFid][a_nItr] : m_aChildVariants[a_rTriplet.m_nCid][a_nItr]);
     
@@ -681,6 +677,8 @@ void CMendelianTrioMerger::DoSingleVar(SChrIdTriplet& a_rTriplet, int& a_nItr, E
     vcfrecord.m_chrName = pVariant->m_chrName;
     vcfrecord.m_mendelianDecision = std::to_string(a_decision);
     vcfrecord.m_alleles = pVariant->m_allelesStr;
+    vcfrecord.left = pVariant->m_nStartPos;
+    vcfrecord.right = pVariant->m_nEndPos;
     
     SPerSampleData dataMother;
     SPerSampleData dataFather;
@@ -744,22 +742,21 @@ void CMendelianTrioMerger::DoSingleVar(SChrIdTriplet& a_rTriplet, int& a_nItr, E
     vcfrecord.m_aSampleData.push_back(dataChild);
     
     //Add record to the trio
-    m_vcfWriter.AddMendelianRecord(vcfrecord);
+    //m_vcfWriter.AddMendelianRecord(vcfrecord);
+    a_rRecordList.push_back(vcfrecord);
     
     //Increment the counter
     a_nItr++;
     
 }
 
-EVariantCategory CMendelianTrioMerger::RegisterMergedLine(const CVariant* a_pVariant, EMendelianDecision a_decision)
+void CMendelianTrioMerger::RegisterMergedLine(EMendelianDecision a_decision, EVariantCategory a_category)
 {
     //Ignore the complex types
     if(a_decision == EMendelianDecision::eUnknown)
-        return EVariantCategory::eNONE;
+        return;
     
-    EVariantCategory category = a_pVariant->GetVariantCategory();
-    
-    switch (category)
+    switch (a_category)
     {
         case EVariantCategory::eSNP:
             m_logEntry.m_nSNP[a_decision-1]++;
@@ -796,7 +793,6 @@ EVariantCategory CMendelianTrioMerger::RegisterMergedLine(const CVariant* a_pVar
             break;
     }
     
-    return category;
 }
 
 EMendelianDecision CMendelianTrioMerger::GetMendelianDecision(const CVariant* a_pVarMother, const CVariant* a_pVarFather, const CVariant* a_pVarChild, EMendelianDecision a_initDecision)
@@ -843,43 +839,131 @@ EMendelianDecision CMendelianTrioMerger::GetMendelianDecision(const CVariant* a_
 }
 
 
-void CMendelianTrioMerger::RegisterGenotype(const CVariant* a_pMother,
-                                            const CVariant* a_pFather,
-                                            const CVariant* a_pChild,
-                                            EMendelianDecision a_decision,
-                                            EVariantCategory a_category)
+void CMendelianTrioMerger::RegisterGenotype(const SVcfRecord& a_rRecord, EVariantCategory a_uCategory, EMendelianDecision a_uDecision)
 {
-    if(a_category == EVariantCategory::eNONE)
+ 
+    if(a_uCategory == EVariantCategory::eNONE)
         return;
     
-    bool bIsMotherMultiAllelic = a_pMother == 0 ? false : !(a_pMother->m_genotype[0] < 2 && a_pMother->m_genotype[1] < 2);
-    bool bIsFatherMultiAllelic = a_pFather == 0 ? false : !(a_pFather->m_genotype[0] < 2 && a_pFather->m_genotype[1] < 2);
-    bool bIsChildMultiAllelic = a_pChild == 0 ? false   : !(a_pChild->m_genotype[0]  < 2 && a_pChild->m_genotype[1]  < 2);
+    bool bIsMotherMultiAllelic = !(a_rRecord.m_aSampleData[0].m_aGenotype[0] < 2 && a_rRecord.m_aSampleData[0].m_aGenotype[1] < 2);
+    bool bIsFatherMultiAllelic = !(a_rRecord.m_aSampleData[1].m_aGenotype[0] < 2 && a_rRecord.m_aSampleData[1].m_aGenotype[1] < 2);
+    bool bIsChildMultiAllelic =  !(a_rRecord.m_aSampleData[2].m_aGenotype[0] < 2 && a_rRecord.m_aSampleData[2].m_aGenotype[1] < 2);
     
-    int motherGT = a_pMother == 0 ? 0 : a_pMother->m_genotype[0] + a_pMother->m_genotype[1];
-    int fatherGT = a_pFather == 0 ? 0 : a_pFather->m_genotype[0] + a_pFather->m_genotype[1];
-    int childGT = a_pChild == 0 ? 0   : a_pChild->m_genotype[0]  + a_pChild->m_genotype[1];
+    
+    int motherGT = a_rRecord.m_aSampleData[0].m_aGenotype[0] + a_rRecord.m_aSampleData[0].m_aGenotype[1];
+    int fatherGT = a_rRecord.m_aSampleData[1].m_aGenotype[0] + a_rRecord.m_aSampleData[1].m_aGenotype[1];
+    int childGT  = a_rRecord.m_aSampleData[2].m_aGenotype[0] + a_rRecord.m_aSampleData[2].m_aGenotype[1];
     
     int columnNo = motherGT * 9 + fatherGT * 3 + childGT;
-
-    if(a_decision == EMendelianDecision::eCompliant)
+    
+    if(a_uDecision == EMendelianDecision::eCompliant)
     {
         if(bIsMotherMultiAllelic || bIsFatherMultiAllelic || bIsChildMultiAllelic)
-            m_logGenotypes.genotypesCompliant[static_cast<int>(a_category)][27]++;
+            m_logGenotypes.genotypesCompliant[static_cast<int>(a_uCategory)][27]++;
         else
-            m_logGenotypes.genotypesCompliant[static_cast<int>(a_category)][columnNo]++;
+            m_logGenotypes.genotypesCompliant[static_cast<int>(a_uCategory)][columnNo]++;
         
     }
-            
-    if(a_decision == EMendelianDecision::eViolation)
+    
+    if(a_uDecision == EMendelianDecision::eViolation)
     {
         if(bIsMotherMultiAllelic || bIsFatherMultiAllelic || bIsChildMultiAllelic)
-            m_logGenotypes.genotypesViolation[static_cast<int>(a_category)][27]++;
+            m_logGenotypes.genotypesViolation[static_cast<int>(a_uCategory)][27]++;
         else
-            m_logGenotypes.genotypesViolation[static_cast<int>(a_category)][columnNo]++;
+            m_logGenotypes.genotypesViolation[static_cast<int>(a_uCategory)][columnNo]++;
     }
     
 }
+
+
+
+void CMendelianTrioMerger::ProcessRefOverlappedRegions(std::vector<SVcfRecord>&  a_rRecordList, std::vector<EMendelianDecision>& a_rRecordDecisionList)
+{
+
+    int itr = 0;
+    
+    while(itr < a_rRecordList.size())
+    {
+        //Check if the vcf record is No call
+        if(a_rRecordList[itr].m_mendelianDecision == "3" || a_rRecordList[itr].m_mendelianDecision == "4")
+        {
+            std::string decision = a_rRecordList[itr].m_mendelianDecision;
+            
+            //Go Backward and use a second iterator
+            int itr2 = itr-1;
+            while(itr2 >= 0)
+            {
+                if(IsOverlap(a_rRecordList[itr], a_rRecordList[itr2]))
+                {
+                    a_rRecordDecisionList[itr2] = static_cast<EMendelianDecision>(std::stoi(decision));
+                    a_rRecordList[itr2].m_mendelianDecision = decision;
+                    itr2--;
+                }
+                else
+                    break;
+            }
+            
+            //Go Forward
+            itr2 = itr;
+            itr++;
+            while(itr < a_rRecordList.size())
+            {
+                if(IsOverlap(a_rRecordList[itr2], a_rRecordList[itr]))
+                {
+                    if(a_rRecordList[itr].m_mendelianDecision != "4")
+                    {
+                        a_rRecordDecisionList[itr] = static_cast<EMendelianDecision>(std::stoi(decision));
+                        a_rRecordList[itr].m_mendelianDecision = decision;
+                    }
+                    itr++;
+                }
+                else
+                    break;
+            }
+        }
+        
+        //Check if the vcf record is Violation
+        else if(a_rRecordList[itr].m_mendelianDecision == "2")
+        {
+            //Go Backward and use a second iterator
+            int itr2 = itr-1;
+            while(itr2 >= 0)
+            {
+                if(IsOverlap(a_rRecordList[itr], a_rRecordList[itr2]))
+                {
+                    a_rRecordList[itr2].m_mendelianDecision = "2";
+                    a_rRecordDecisionList[itr2] = static_cast<EMendelianDecision>(EMendelianDecision::eViolation);
+                    itr2--;
+                }
+                else
+                    break;
+            }
+            
+            //Go Forward
+            itr2 = itr;
+            itr++;
+            while(itr < a_rRecordList.size())
+            {
+                if(IsOverlap(a_rRecordList[itr2], a_rRecordList[itr]))
+                {
+                    a_rRecordList[itr].m_mendelianDecision = "2";
+                    a_rRecordDecisionList[itr] = static_cast<EMendelianDecision>(EMendelianDecision::eViolation);
+                    itr++;
+                }
+                else
+                    break;
+            }
+            
+        
+        }
+        
+        else
+            itr++;
+        
+    }
+    
+}
+
 
 
 

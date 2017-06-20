@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include "CMendelianVariantProvider.h"
+#include "CSimplePEDParser.h"
 #include <iostream>
 
 bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildConfig, const SConfig& a_rMotherChildConfig)
@@ -20,12 +21,36 @@ bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildC
     m_motherChildConfig = a_rMotherChildConfig;
     m_fatherChildConfig = a_rFatherChildConfig;
     
+    //This vector will be used if the program initialized with a PED file
+    CSimplePEDParser pedParser;
+    std::vector<std::string> parentChildSampleIds;
+    
+    if(true == m_motherChildConfig.m_bInitializeFromPED)
+    {
+        pedParser.ParsePedigree(m_motherChildConfig.m_pPedigreeFileName);
+    }
+    
     //Open FATHER vcf file
     bIsSuccessFather = m_FatherVcf.Open(a_rFatherChildConfig.m_pBaseVcfFileName);
     if(!bIsSuccessFather)
         std::cerr << "Father VCF file is unable to open!: " << a_rFatherChildConfig.m_pBaseVcfFileName << std::endl;
     
     //Set sample name of FATHER
+    else if(true == m_fatherChildConfig.m_bInitializeFromPED)
+    {
+        std::vector<std::string> sampleNames;
+        m_FatherVcf.GetSampleNames(sampleNames);
+        if(sampleNames.size() != 3)
+        {
+            std::cerr << "Input vcf is not a trio!" << std::endl;
+            return false;
+        }
+        //Fill the MFC ids for 1 time
+        parentChildSampleIds = pedParser.GetIdsMFC(sampleNames[0], sampleNames[1], sampleNames[2]);
+        
+        //Select the second index
+        m_FatherVcf.SelectSample(parentChildSampleIds[1]);
+    }
     else if (true == m_fatherChildConfig.m_bBaseSampleEnabled)
         m_FatherVcf.SelectSample(m_fatherChildConfig.m_pBaseSample);
     else
@@ -47,6 +72,8 @@ bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildC
         std::cerr << "Mother VCF file is unable to open!: " << a_rMotherChildConfig.m_pBaseVcfFileName << std::endl;
     
     //Set sample name of MOTHER
+    else if(m_motherChildConfig.m_bInitializeFromPED)
+        m_MotherVcf.SelectSample(parentChildSampleIds[0]);
     else if (true == m_motherChildConfig.m_bBaseSampleEnabled)
         m_MotherVcf.SelectSample(m_motherChildConfig.m_pBaseSample);
     else
@@ -62,13 +89,14 @@ bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildC
         return false;
     }
 
-    
     //Open CHILD vcf file
     bIsSuccessChild = m_ChildVcf.Open(a_rFatherChildConfig.m_pCalledVcfFileName);
     if(!bIsSuccessChild)
         std::cerr << "Child VCF file is unable to open!: " << a_rFatherChildConfig.m_pCalledVcfFileName << std::endl;
     
     //Set sample name of CHILD
+    else if(m_motherChildConfig.m_bInitializeFromPED)
+        m_ChildVcf.SelectSample(parentChildSampleIds[2]);
     else if (true == m_fatherChildConfig.m_bCalledSampleEnabled)
         m_ChildVcf.SelectSample(m_fatherChildConfig.m_pCalledSample);
     else

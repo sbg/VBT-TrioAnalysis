@@ -56,19 +56,36 @@ private:
     bool IsMerge(const CVariant* a_pVar1, const CVariant* a_pVar2);
     
     //Merge 3 variant to single vcf record
-    void DoTripleMerge(SChrIdTriplet& a_rTriplet, int& a_nChildItr, int& a_nFatherItr, int& a_nMotherItr, EMendelianDecision a_decision);
+    void DoTripleMerge(SChrIdTriplet& a_rTriplet,
+                       int& a_nChildItr,
+                       int& a_nFatherItr,
+                       int& a_nMotherItr,
+                       EMendelianDecision a_decision,
+                       std::vector<SVcfRecord>& a_rRecordList);
 
     //Merge 2 variant to single vcf record
-    void DoDoubleMerge(SChrIdTriplet& a_rTriplet, int& a_nItr1, int& a_nItr2, EMendelianVcfName a_name1, EMendelianVcfName a_name2, EMendelianDecision a_decision);
+    void DoDoubleMerge(SChrIdTriplet& a_rTriplet,
+                       int& a_nItr1,
+                       int& a_nItr2,
+                       EMendelianVcfName a_name1,
+                       EMendelianVcfName a_name2,
+                       EMendelianDecision a_decision,
+                       std::vector<SVcfRecord>& a_rRecordList);
  
     //Write single variant to vcf record
-    void DoSingleVar(SChrIdTriplet& a_rTriplet, int& a_nItr, EMendelianVcfName a_name, EMendelianDecision a_decision);
+    void DoSingleVar(SChrIdTriplet& a_rTriplet,
+                     int& a_nItr,
+                     EMendelianVcfName a_name,
+                     EMendelianDecision a_decision,
+                     std::vector<SVcfRecord>& a_rRecordList);
     
     //Decide the mendelian type of the given three variant in a row
     EMendelianDecision GetMendelianDecision(const CVariant* a_pVarMother, const CVariant* a_pVarFather, const CVariant* a_pVarChild, EMendelianDecision a_initDecision);
     
     //Register a line of merged vcf to the detailed report table [updates m_logEntry]
-    EVariantCategory RegisterMergedLine(const CVariant* a_pVariant, EMendelianDecision a_decision);
+    //EVariantCategory RegisterMergedLine(const CVariant* a_pVariant, EMendelianDecision a_decision);
+    void RegisterMergedLine(EMendelianDecision a_decision, EVariantCategory a_category);
+    
     
     //Register the genotype of merged vcf to genotype table [updates m_logGenotypes]
     void RegisterGenotype(const CVariant* a_pMother,
@@ -76,6 +93,13 @@ private:
                           const CVariant* a_pChild,
                           EMendelianDecision a_initDecision,
                           EVariantCategory a_category);
+    
+    //Register the genotype of merged vcf record to genotype table [updates m_logGenotypes]
+    void RegisterGenotype(const SVcfRecord& a_rRecord, EVariantCategory a_uCategory, EMendelianDecision a_uDecision);
+    
+    //For the given recordList
+    void ProcessRefOverlappedRegions(std::vector<SVcfRecord>&  a_rRecordList, std::vector<EMendelianDecision>& a_rRecordDecisionList);
+    
     
     //Vcf writer instance
     CVcfWriter m_vcfWriter;

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		550759BA1EF96C4600780569 /* CSimplePEDParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 550759B91EF96C4600780569 /* CSimplePEDParser.cpp */; };
 		550E1F601E8ABE8B00AEFB0B /* CMendelianResultLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 550E1F5F1E8ABE8B00AEFB0B /* CMendelianResultLog.cpp */; };
 		551661C91E82C51B002436FA /* CFastaParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 551661C61E82C51B002436FA /* CFastaParser.cpp */; };
 		551661CA1E82C51B002436FA /* CVcfReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 551661C71E82C51B002436FA /* CVcfReader.cpp */; };
@@ -51,6 +52,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		550759B81EF96A8B00780569 /* CSimplePEDParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CSimplePEDParser.h; path = VcfIO/include/CSimplePEDParser.h; sourceTree = SOURCE_ROOT; };
+		550759B91EF96C4600780569 /* CSimplePEDParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CSimplePEDParser.cpp; path = VcfIO/src/CSimplePEDParser.cpp; sourceTree = SOURCE_ROOT; };
 		550E1F5C1E89613200AEFB0B /* ENoCallMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ENoCallMode.h; path = MendelianViolation/include/ENoCallMode.h; sourceTree = SOURCE_ROOT; };
 		550E1F5D1E8AA33400AEFB0B /* CResultLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CResultLog.h; path = DuoComparison/include/CResultLog.h; sourceTree = SOURCE_ROOT; };
 		550E1F5E1E8ABC0100AEFB0B /* CMendelianResultLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CMendelianResultLog.h; path = MendelianViolation/include/CMendelianResultLog.h; sourceTree = SOURCE_ROOT; };
@@ -251,6 +254,7 @@
 				551661C41E82C4D0002436FA /* EVcfName.h */,
 				551661C51E82C4D0002436FA /* SConfig.h */,
 				550E1F611E8AF9CB00AEFB0B /* EVariantCategory.h */,
+				550759B81EF96A8B00780569 /* CSimplePEDParser.h */,
 			);
 			name = Include;
 			sourceTree = "<group>";
@@ -262,6 +266,7 @@
 				551661C61E82C51B002436FA /* CFastaParser.cpp */,
 				551661C71E82C51B002436FA /* CVcfReader.cpp */,
 				551661C81E82C51B002436FA /* CVcfWriter.cpp */,
+				550759B91EF96C4600780569 /* CSimplePEDParser.cpp */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -506,6 +511,7 @@
 				551661CA1E82C51B002436FA /* CVcfReader.cpp in Sources */,
 				551661E01E82C967002436FA /* CPathReplay.cpp in Sources */,
 				5516621D1E82F271002436FA /* main.cpp in Sources */,
+				550759BA1EF96C4600780569 /* CSimplePEDParser.cpp in Sources */,
 				551661E11E82C967002436FA /* CPathSet.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

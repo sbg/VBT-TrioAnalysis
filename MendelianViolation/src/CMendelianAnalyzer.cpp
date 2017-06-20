@@ -126,6 +126,7 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
     const char* PARAM_CHILD = "-child";
     const char* PARAM_REFERENCE = "-ref";
     const char* PARAM_FILTER = "-filter";
+    const char* PARAM_PEDIGREE = "-pedigree";
     
     const char* PARAM_SAMPLE_FATHER = "-sample-father";
     const char* PARAM_SAMPLE_MOTHER = "-sample-mother";
@@ -185,6 +186,14 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
             m_motherChildConfig.m_pOutputDirectory = argv[it+1];
             m_fatherChildConfig.m_pOutputDirectory = argv[it+1];
             bOutputDirSet = true;
+        }
+
+        else if(0 == strcmp(argv[it], PARAM_PEDIGREE))
+        {
+            m_motherChildConfig.m_pPedigreeFileName = argv[it+1];
+            m_motherChildConfig.m_bInitializeFromPED = true;
+            m_fatherChildConfig.m_pPedigreeFileName = argv[it+1];
+            m_motherChildConfig.m_bInitializeFromPED = true;
         }
         
         else if(0 == strcmp(argv[it], PARAM_REF_OVERLAP))
@@ -1337,6 +1346,7 @@ void CMendelianAnalyzer::PrintHelp() const
     std::cout << "-child <child_vcf_path>      [Required.Add child VCF file.]" << std::endl;
     std::cout << "-ref <reference_fasta_path>  [Required.Add reference FASTA file]" << std::endl;
     std::cout << "-outDir <output_directory>   [Required.Add output directory]" << std::endl;
+    std::cout << "-pedigree <PED_file_path>    [Optional.Indentifies parent-child indexes from given PED file" << std::endl;
     std::cout << "-no-call <no_call_mode>      [Optional. Decides what to do with no call variants. There are 3 modes:" << std::endl;
     std::cout << "\t" << "implicit : mark boths implicit and explicit no call variant as NoCall" << std::endl;
     std::cout << "\t" << "explicit : mark explicit no call variants only as NoCall. Implicit no call variants will be treated as 0/0" << std::endl;
