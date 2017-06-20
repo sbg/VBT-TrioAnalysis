@@ -22,6 +22,10 @@ struct SConfig
     //Fasta file
     const char* m_pFastaFileName;
     
+    //PED file
+    const char* m_pPedigreeFileName;
+    bool m_bInitializeFromPED = false;
+    
     //Output Directory
     const char* m_pOutputDirectory;
     
