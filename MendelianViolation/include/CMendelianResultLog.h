@@ -94,7 +94,7 @@ public:
     void WriteBestPathStatistics();
     
     //Write Detailed report (Extended statistic of each variant group) to the detailedLog.txt
-    void WriteDetailedReportTable();
+    void WriteDetailedReportTable(const std::string& a_rFileName);
     
     //Write a summary report to the shortLog.txt
     void WriteShortReportTable();

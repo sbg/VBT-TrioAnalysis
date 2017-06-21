@@ -283,12 +283,12 @@ void CMendelianResultLog::WriteBestPathStatistics()
     outputLog.close();
 }
 
-void CMendelianResultLog::WriteDetailedReportTable()
+void CMendelianResultLog::WriteDetailedReportTable(const std::string& a_rFileName)
 {
     const char separator    = ' ';
     
     std::ofstream outputLog;
-    std::string path = m_aLogDirectory + "/DetailedReportTable.txt";
+    std::string path = m_aLogDirectory + "/" + a_rFileName;
     outputLog.open(path.c_str());
     
     outputLog << "Filtered complex Child variant Count :" << m_nTotalNonAssessedVarCountChild << std::endl;
