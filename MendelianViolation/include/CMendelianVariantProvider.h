@@ -93,6 +93,9 @@ private:
     //Fill Oriented variant sets for parent and child
     void FillAlleleMatchOrientedVariants(std::vector<SChrIdTriplet>& a_aCommonChromosomes);
     
+    //If a variant is mark as non-asssesed for one sample, clear the variants at same position in the other 2 sample
+    void RemoveNonAssessedSites();
+    
     static bool CompareVariants(const CVariant& var1, const CVariant& var2);
     
     //VCF FILES FOR COMPARISON
@@ -139,6 +142,10 @@ private:
     CFastaParser m_fastaParser;
     std::vector<SChrIdTriplet> m_aCommonChromosomes;
     
+    //Variant counts contains asterisk which will are eliminated from comparison
+    int m_nMotherAsteriskCount;
+    int m_nFatherAsteriskCount;
+    int m_nChildAsteriskCount;
 };
 
 #endif //_C_MENDELIAN_VARIANT_PROVIDER_H_

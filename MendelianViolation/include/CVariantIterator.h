@@ -36,11 +36,23 @@ public:
     {
         const COrientedVariant* toRet;
         
-        if(it_IncludedAM == m_aIncludedAM.end() || (it_IncludedGT != m_aIncludedGT.end() && (*it_IncludedGT)->GetVariant().GetOriginalPos() < (*it_IncludedAM)->GetVariant().GetOriginalPos()))
+        if(it_IncludedAM == m_aIncludedAM.end())
         {
             toRet = *it_IncludedGT;
             it_IncludedGT++;
         }
+        
+        else if(it_IncludedGT != m_aIncludedGT.end() && (*it_IncludedGT)->GetVariant().GetOriginalPos() < (*it_IncludedAM)->GetVariant().GetOriginalPos())
+        {
+            toRet = *it_IncludedGT;
+            it_IncludedGT++;
+        }
+        
+        else if(it_IncludedGT != m_aIncludedGT.end() && (*it_IncludedGT)->GetVariant().GetOriginalPos() == (*it_IncludedAM)->GetVariant().GetOriginalPos())
+        {
+            toRet = (*it_IncludedGT)->GetVariant().m_nId < (*it_IncludedAM)->GetVariant().m_nId ? *(it_IncludedGT++) : *(it_IncludedAM++);
+        }
+        
         else
         {
             toRet = *it_IncludedAM;

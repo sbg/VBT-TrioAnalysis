@@ -137,7 +137,7 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
     const char* PARAM_PLATFORM = "--platform-mode";
     const char* PARAM_THREAD_COUNT = "-thread-count";
     const char* PARAM_NO_CALL = "-no-call";
-    
+        
     bool bFatherSet = false;
     bool bMotherSet = false;
     bool bChildSet = false;
@@ -193,7 +193,7 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
             m_motherChildConfig.m_pPedigreeFileName = argv[it+1];
             m_motherChildConfig.m_bInitializeFromPED = true;
             m_fatherChildConfig.m_pPedigreeFileName = argv[it+1];
-            m_motherChildConfig.m_bInitializeFromPED = true;
+            m_fatherChildConfig.m_bInitializeFromPED = true;
         }
         
         else if(0 == strcmp(argv[it], PARAM_REF_OVERLAP))

@@ -75,31 +75,43 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/HG001_trio_SNPS_new.vcf.gz"
+            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/autoOnly_joint_D1D2D3_noGraphAlign_9.31.cat.intersect.HG002_lowConf.vcf"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/HG001_trio_SNPS_new.vcf.gz"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-child"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/HG001_trio_SNPS_new.vcf.gz"
+            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/autoOnly_joint_D1D2D3_noGraphAlign_9.31.cat.intersect.HG002_lowConf.vcf"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/HG001_trio_SNPS_new.vcf.gz"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-mother"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/HG001_trio_SNPS_new.vcf.gz"
+            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/autoOnly_joint_D1D2D3_noGraphAlign_9.31.cat.intersect.HG002_lowConf.vcf"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/HG001_trio_SNPS_new.vcf.gz"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-outDir"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/CEU_SNPonly"
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -127,28 +139,36 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-sample-mother"
+            argument = "-pedigree"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/D1D2D3_trio.ped"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-sample-mother"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "NA12892"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-sample-father"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "NA12891"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-sample-child"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "NA12878"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-no-call"

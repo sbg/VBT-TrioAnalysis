@@ -124,13 +124,15 @@ bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildC
 
         //Get the common chromosome ids and clear the uncommon variants from provider
         SetCommonChromosomes();
+        
+        //Filter NonAssessed variants coming from dependent sites. Update the variant ids
+        //RemoveNonAssessedSites();
 
         //Fill the oriented variants of 3 vcf for genotype matching
         FillGenotypeMatchOrientedVariants(m_aCommonChromosomes);
         
         //Fill the oriented variants of 3 vcf for allele matching
         FillAlleleMatchOrientedVariants(m_aCommonChromosomes);
-        
     }
 
     return bIsSuccessChild && bIsSuccessMother && bIsSuccessFather && bIsSuccessFasta;
@@ -162,6 +164,11 @@ void CMendelianVariantProvider::FillVariants()
     m_aMotherNotAssessedVariantList = std::vector<std::vector<CVariant>>(m_MotherVcf.GetContigs().size());
     m_aChildNotAssessedVariantList = std::vector<std::vector<CVariant>>(m_ChildVcf.GetContigs().size());
     
+    //TODO : this will be replaced ??
+    m_nMotherAsteriskCount = 0;
+    m_nFatherAsteriskCount = 0;
+    m_nChildAsteriskCount  = 0;
+    
     //READ VARIANTS OF FATHER
     while(m_FatherVcf.GetNextRecord(&variant, id, m_fatherChildConfig))
     {
@@ -171,13 +178,20 @@ void CMendelianVariantProvider::FillVariants()
             std::cout << "Processing chromosome " << preChrId << " of Parent[FATHER] vcf" << std::endl;
         }
         
-        //if(variant.m_nChrId > 10)
+        //if(variant.m_nChrId > 2)
         //    break;
-        //else if(variant.m_nChrId < 3)
+        //else if(variant.m_nChrId < 2)
         //    continue;
         
-        else if(!variant.m_bIsNoCall && IsHomRef(variant))
+        if(!variant.m_bIsNoCall && IsHomRef(variant))
             continue;
+        
+        std::size_t found = variant.m_allelesStr.find('*');
+        if (found!=std::string::npos)
+        {
+            m_nFatherAsteriskCount++;
+            continue;
+        }
         
         else if(m_fatherChildConfig.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
             m_aFatherNotAssessedVariantList[variant.m_nChrId].push_back(variant);
@@ -211,13 +225,20 @@ void CMendelianVariantProvider::FillVariants()
             std::cout << "Processing chromosome " << preChrId << " of Parent[MOTHER] vcf" << std::endl;
         }
         
-        //if(variant.m_nChrId > 10)
+        //if(variant.m_nChrId > 2)
         //    break;
-        //else if(variant.m_nChrId < 3)
+        //else if(variant.m_nChrId < 2)
         //    continue;
         
-        else if(!variant.m_bIsNoCall &&  IsHomRef(variant))
+        if(!variant.m_bIsNoCall &&  IsHomRef(variant))
             continue;
+        
+        std::size_t found = variant.m_allelesStr.find('*');
+        if (found!=std::string::npos)
+        {
+            m_nMotherAsteriskCount++;
+            continue;
+        }
         
         else if(m_motherChildConfig.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
             m_aMotherNotAssessedVariantList[variant.m_nChrId].push_back(variant);
@@ -251,13 +272,21 @@ void CMendelianVariantProvider::FillVariants()
             std::cout << "Processing chromosome " << preChrId << " of child vcf" << std::endl;
         }
         
-        //if(variant.m_nChrId > 10)
+        //if(variant.m_nChrId > 2)
         //    break;
-        //else if(variant.m_nChrId < 3)
+        //else if(variant.m_nChrId < 2)
         //    continue;
         
-        else if(!variant.m_bIsNoCall && IsHomRef(variant))
+        if(!variant.m_bIsNoCall && IsHomRef(variant))
             continue;
+        
+        std::size_t found = variant.m_allelesStr.find('*');
+        if (found!=std::string::npos)
+        {
+            m_nChildAsteriskCount++;
+            continue;
+        }
+        
         else if(m_motherChildConfig.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
             m_aChildNotAssessedVariantList[variant.m_nChrId].push_back(variant);
         
@@ -782,14 +811,17 @@ int CMendelianVariantProvider::GetNotAssessedVariantCount(EMendelianVcfName a_uF
         case eMOTHER:
             for(int k = 0; k < (int)m_aMotherNotAssessedVariantList.size(); k++)
                 skippedVariantCount += m_aMotherNotAssessedVariantList[k].size();
+            skippedVariantCount += m_nMotherAsteriskCount;
             break;
         case eFATHER:
             for(int k = 0; k < (int)m_aFatherNotAssessedVariantList.size(); k++)
                 skippedVariantCount += m_aFatherNotAssessedVariantList[k].size();
+            skippedVariantCount += m_nFatherAsteriskCount;
             break;
         case eCHILD:
             for(int k = 0; k < (int)m_aChildNotAssessedVariantList.size(); k++)
                 skippedVariantCount += m_aChildNotAssessedVariantList[k].size();
+            skippedVariantCount += m_nChildAsteriskCount;
             break;
         default:
             break;
@@ -799,7 +831,88 @@ int CMendelianVariantProvider::GetNotAssessedVariantCount(EMendelianVcfName a_uF
 }
 
 
+void CMendelianVariantProvider::RemoveNonAssessedSites()
+{
+    int motherId = 0;
+    int fatherId = 0;
+    int childId = 0;
+    
+    for(int k = 0; k < m_aCommonChromosomes.size(); k++)
+    {
+        SChrIdTriplet triplet = m_aCommonChromosomes[k];
+        
+        std::vector<int> mergedSorted_NA_VariantPositions;
+        
+        for(CVariant var : m_aFatherNotAssessedVariantList[triplet.m_nFid])
+            mergedSorted_NA_VariantPositions.push_back(var.m_nOriginalPos);
+        for(CVariant var : m_aMotherNotAssessedVariantList[triplet.m_nMid])
+            mergedSorted_NA_VariantPositions.push_back(var.m_nOriginalPos);
+        for(CVariant var : m_aChildNotAssessedVariantList[triplet.m_nCid])
+            mergedSorted_NA_VariantPositions.push_back(var.m_nOriginalPos);
 
+        //Sort positions and remove duplicates
+        std::sort(mergedSorted_NA_VariantPositions.begin(), mergedSorted_NA_VariantPositions.end());
+        std::vector<int>::iterator it;
+        it = std::unique (mergedSorted_NA_VariantPositions.begin(), mergedSorted_NA_VariantPositions.end());
+        mergedSorted_NA_VariantPositions.resize(std::distance(mergedSorted_NA_VariantPositions.begin(),it));
+        
+        int naItr = 0;
+        
+        //Remove dependent non-assessed sites from father side
+        for(auto varItr = m_aFatherVariantList[triplet.m_nFid].begin(); varItr != m_aFatherVariantList[triplet.m_nFid].end();)
+        {
+            while(naItr != mergedSorted_NA_VariantPositions.size() && mergedSorted_NA_VariantPositions[naItr] < varItr->m_nOriginalPos)
+                naItr++;
+            
+            if(varItr->m_nOriginalPos == mergedSorted_NA_VariantPositions[naItr])
+                m_aFatherVariantList[triplet.m_nFid].erase(varItr);
+            
+            else
+            {
+                varItr->m_nId = fatherId++;
+                varItr++;
+            }
+        }
+        
+        naItr = 0;
+        //Remove dependent non-assessed sites from mother side
+        for(auto varItr = m_aMotherVariantList[triplet.m_nMid].begin(); varItr != m_aMotherVariantList[triplet.m_nMid].end();)
+        {
+            while(naItr != mergedSorted_NA_VariantPositions.size() && mergedSorted_NA_VariantPositions[naItr] < varItr->m_nOriginalPos)
+                naItr++;
+            
+            if(varItr->m_nOriginalPos == mergedSorted_NA_VariantPositions[naItr])
+                m_aMotherVariantList[triplet.m_nMid].erase(varItr);
+            
+            else
+            {
+                varItr->m_nId = motherId++;
+                varItr++;
+            }
+        }
+        
+        naItr = 0;
+        //Remove dependent non-assessed sites from child side
+        for(auto varItr = m_aChildVariantList[triplet.m_nCid].begin(); varItr != m_aChildVariantList[triplet.m_nCid].end();)
+        {
+            while(naItr != mergedSorted_NA_VariantPositions.size() && mergedSorted_NA_VariantPositions[naItr] < varItr->m_nOriginalPos)
+                naItr++;
+            
+            if(varItr->m_nOriginalPos == mergedSorted_NA_VariantPositions[naItr])
+                m_aChildVariantList[triplet.m_nCid].erase(varItr);
+            
+            else
+            {
+                varItr->m_nId = childId++;
+                varItr++;
+            }
+        }
+        
+    }
+    
+    
+
+}
 
 
 

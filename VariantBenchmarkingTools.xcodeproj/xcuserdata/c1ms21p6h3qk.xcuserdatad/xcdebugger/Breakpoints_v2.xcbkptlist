@@ -342,11 +342,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
-            timestampString = "517433523.900789"
+            timestampString = "519678562.439501"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "821"
-            endingLineNumber = "821"
+            startingLineNumber = "830"
+            endingLineNumber = "830"
             landmarkName = "CMendelianAnalyzer::CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTriplet&amp; a_rTriplet, const std::vector&lt;const CVariant*&gt;&amp; a_rVariantList, std::vector&lt;bool&gt;&amp; a_rSideDecisions)"
             landmarkType = "7">
          </BreakpointContent>
@@ -374,11 +374,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
-            timestampString = "516030117.989084"
+            timestampString = "519678562.439501"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "605"
-            endingLineNumber = "605"
+            startingLineNumber = "614"
+            endingLineNumber = "614"
             landmarkName = "CMendelianAnalyzer::AssignJobsToThreads(int a_nThreadCount)"
             landmarkType = "7">
          </BreakpointContent>
@@ -406,11 +406,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
-            timestampString = "516030117.989084"
+            timestampString = "519678562.439501"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "634"
-            endingLineNumber = "634"
+            startingLineNumber = "643"
+            endingLineNumber = "643"
             landmarkName = "CMendelianAnalyzer::AssignJobsToThreads(int a_nThreadCount)"
             landmarkType = "7">
          </BreakpointContent>
@@ -566,11 +566,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
-            timestampString = "515957963.965897"
+            timestampString = "519678562.439501"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "191"
-            endingLineNumber = "191"
+            startingLineNumber = "200"
+            endingLineNumber = "200"
             landmarkName = "CMendelianAnalyzer::ReadParameters(int argc, char **argv)"
             landmarkType = "7">
          </BreakpointContent>
@@ -630,11 +630,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
-            timestampString = "516222485.305806"
+            timestampString = "519678562.439501"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "782"
-            endingLineNumber = "782"
+            startingLineNumber = "791"
+            endingLineNumber = "791"
             landmarkName = "CMendelianAnalyzer::ProcessChromosome(const std::vector&lt;SChrIdTriplet&gt;&amp; a_nChromosomeIds)"
             landmarkType = "7">
          </BreakpointContent>
@@ -646,11 +646,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
-            timestampString = "517433523.900789"
+            timestampString = "519678562.439501"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "822"
-            endingLineNumber = "822"
+            startingLineNumber = "831"
+            endingLineNumber = "831"
             landmarkName = "CMendelianAnalyzer::CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTriplet&amp; a_rTriplet, const std::vector&lt;const CVariant*&gt;&amp; a_rVariantList, std::vector&lt;bool&gt;&amp; a_rSideDecisions)"
             landmarkType = "7">
          </BreakpointContent>
@@ -662,11 +662,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
-            timestampString = "517433523.900789"
+            timestampString = "519768760.703044"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "983"
-            endingLineNumber = "983"
+            startingLineNumber = "992"
+            endingLineNumber = "992"
             landmarkName = "CMendelianAnalyzer::MergeFunc(SChrIdTriplet&amp; a_triplet)"
             landmarkType = "7">
          </BreakpointContent>
@@ -678,11 +678,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
-            timestampString = "517433523.900789"
+            timestampString = "519768760.703044"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1053"
-            endingLineNumber = "1053"
+            startingLineNumber = "1062"
+            endingLineNumber = "1062"
             landmarkName = "CMendelianAnalyzer::MergeFunc(SChrIdTriplet&amp; a_triplet)"
             landmarkType = "7">
          </BreakpointContent>
@@ -694,11 +694,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
-            timestampString = "517433523.900789"
+            timestampString = "519768760.703044"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1090"
-            endingLineNumber = "1090"
+            startingLineNumber = "1099"
+            endingLineNumber = "1099"
             landmarkName = "CMendelianAnalyzer::MergeFunc(SChrIdTriplet&amp; a_triplet)"
             landmarkType = "7">
          </BreakpointContent>
@@ -710,11 +710,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
-            timestampString = "517433523.900789"
+            timestampString = "519768760.703044"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1095"
-            endingLineNumber = "1095"
+            startingLineNumber = "1104"
+            endingLineNumber = "1104"
             landmarkName = "CMendelianAnalyzer::MergeFunc(SChrIdTriplet&amp; a_triplet)"
             landmarkType = "7">
          </BreakpointContent>
@@ -726,11 +726,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
-            timestampString = "517433523.900789"
+            timestampString = "519768760.703044"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1100"
-            endingLineNumber = "1100"
+            startingLineNumber = "1109"
+            endingLineNumber = "1109"
             landmarkName = "CMendelianAnalyzer::MergeFunc(SChrIdTriplet&amp; a_triplet)"
             landmarkType = "7">
          </BreakpointContent>
@@ -742,11 +742,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
-            timestampString = "517433523.900789"
+            timestampString = "519768760.703044"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1122"
-            endingLineNumber = "1122"
+            startingLineNumber = "1131"
+            endingLineNumber = "1131"
             landmarkName = "CMendelianAnalyzer::MergeFunc(SChrIdTriplet&amp; a_triplet)"
             landmarkType = "7">
          </BreakpointContent>
@@ -758,11 +758,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
-            timestampString = "517433523.900789"
+            timestampString = "519768760.703044"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1211"
-            endingLineNumber = "1211"
+            startingLineNumber = "1220"
+            endingLineNumber = "1220"
             landmarkName = "CMendelianAnalyzer::MergeFunc(SChrIdTriplet&amp; a_triplet)"
             landmarkType = "7">
          </BreakpointContent>
@@ -774,11 +774,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
-            timestampString = "517433523.900789"
+            timestampString = "519768760.703044"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1187"
-            endingLineNumber = "1187"
+            startingLineNumber = "1196"
+            endingLineNumber = "1196"
             landmarkName = "CMendelianAnalyzer::MergeFunc(SChrIdTriplet&amp; a_triplet)"
             landmarkType = "7">
          </BreakpointContent>
@@ -790,11 +790,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
-            timestampString = "517433523.900789"
+            timestampString = "519768760.703044"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1148"
-            endingLineNumber = "1148"
+            startingLineNumber = "1157"
+            endingLineNumber = "1157"
             landmarkName = "CMendelianAnalyzer::MergeFunc(SChrIdTriplet&amp; a_triplet)"
             landmarkType = "7">
          </BreakpointContent>
@@ -806,11 +806,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
-            timestampString = "517433523.900789"
+            timestampString = "519768760.703044"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1141"
-            endingLineNumber = "1141"
+            startingLineNumber = "1150"
+            endingLineNumber = "1150"
             landmarkName = "CMendelianAnalyzer::MergeFunc(SChrIdTriplet&amp; a_triplet)"
             landmarkType = "7">
          </BreakpointContent>
@@ -854,11 +854,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
-            timestampString = "517433523.900789"
+            timestampString = "519768760.703044"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1165"
-            endingLineNumber = "1165"
+            startingLineNumber = "1174"
+            endingLineNumber = "1174"
             landmarkName = "CMendelianAnalyzer::MergeFunc(SChrIdTriplet&amp; a_triplet)"
             landmarkType = "7">
          </BreakpointContent>
@@ -870,11 +870,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
-            timestampString = "517433523.900789"
+            timestampString = "519768760.703044"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1160"
-            endingLineNumber = "1160"
+            startingLineNumber = "1169"
+            endingLineNumber = "1169"
             landmarkName = "CMendelianAnalyzer::MergeFunc(SChrIdTriplet&amp; a_triplet)"
             landmarkType = "7">
          </BreakpointContent>
@@ -886,11 +886,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
-            timestampString = "517433523.900789"
+            timestampString = "519678562.439501"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "802"
-            endingLineNumber = "802"
+            startingLineNumber = "811"
+            endingLineNumber = "811"
             landmarkName = "CMendelianAnalyzer::CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTriplet&amp; a_rTriplet, const std::vector&lt;const CVariant*&gt;&amp; a_rVariantList, std::vector&lt;bool&gt;&amp; a_rSideDecisions)"
             landmarkType = "7">
          </BreakpointContent>
@@ -902,11 +902,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
-            timestampString = "517429371.215257"
+            timestampString = "519678562.439501"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "635"
-            endingLineNumber = "635"
+            startingLineNumber = "644"
+            endingLineNumber = "644"
             landmarkName = "CMendelianAnalyzer::AssignJobsToThreads(int a_nThreadCount)"
             landmarkType = "7">
          </BreakpointContent>
@@ -918,11 +918,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
-            timestampString = "517429555.096938"
+            timestampString = "519678562.439501"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "649"
-            endingLineNumber = "649"
+            startingLineNumber = "658"
+            endingLineNumber = "658"
             landmarkName = "CMendelianAnalyzer::ProcessChromosome(const std::vector&lt;SChrIdTriplet&gt;&amp; a_nChromosomeIds)"
             landmarkType = "7">
             <Locations>
@@ -966,11 +966,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
-            timestampString = "517429701.876449"
+            timestampString = "519678562.439501"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "654"
-            endingLineNumber = "654"
+            startingLineNumber = "663"
+            endingLineNumber = "663"
             landmarkName = "CMendelianAnalyzer::ProcessChromosome(const std::vector&lt;SChrIdTriplet&gt;&amp; a_nChromosomeIds)"
             landmarkType = "7">
          </BreakpointContent>
@@ -982,11 +982,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
-            timestampString = "517429703.558707"
+            timestampString = "519678562.439501"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "653"
-            endingLineNumber = "653"
+            startingLineNumber = "662"
+            endingLineNumber = "662"
             landmarkName = "CMendelianAnalyzer::ProcessChromosome(const std::vector&lt;SChrIdTriplet&gt;&amp; a_nChromosomeIds)"
             landmarkType = "7">
          </BreakpointContent>
@@ -998,11 +998,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
-            timestampString = "517429908.342912"
+            timestampString = "519678562.439501"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "761"
-            endingLineNumber = "761"
+            startingLineNumber = "770"
+            endingLineNumber = "770"
             landmarkName = "CMendelianAnalyzer::ProcessChromosome(const std::vector&lt;SChrIdTriplet&gt;&amp; a_nChromosomeIds)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1068,6 +1068,198 @@
             startingLineNumber = "231"
             endingLineNumber = "231"
             landmarkName = "CVariantProvider::FillVariantLists()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MendelianViolation/src/CMendelianVariantProvider.cpp"
+            timestampString = "519760548.842133"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "825"
+            endingLineNumber = "825"
+            landmarkName = "CMendelianVariantProvider::RemoveNonAssessedSites()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MendelianViolation/src/CMendelianVariantProvider.cpp"
+            timestampString = "519683631.03996"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "30"
+            endingLineNumber = "30"
+            landmarkName = "CMendelianVariantProvider::InitializeReaders(const SConfig &amp;a_rFatherChildConfig, const SConfig&amp; a_rMotherChildConfig)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
+            timestampString = "519683704.675088"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "249"
+            endingLineNumber = "249"
+            landmarkName = "CMendelianAnalyzer::ReadParameters(int argc, char **argv)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MendelianViolation/src/CMendelianVariantProvider.cpp"
+            timestampString = "519760548.842133"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "837"
+            endingLineNumber = "837"
+            landmarkName = "CMendelianVariantProvider::RemoveNonAssessedSites()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MendelianViolation/src/CMendelianVariantProvider.cpp"
+            timestampString = "519760548.842133"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "851"
+            endingLineNumber = "851"
+            landmarkName = "CMendelianVariantProvider::RemoveNonAssessedSites()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
+            timestampString = "519685719.905488"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "69"
+            endingLineNumber = "69"
+            landmarkName = "CMendelianAnalyzer::run(int argc, char **argv)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
+            timestampString = "519768760.703044"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1175"
+            endingLineNumber = "1175"
+            landmarkName = "CMendelianAnalyzer::MergeFunc(SChrIdTriplet&amp; a_triplet)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
+            timestampString = "519768760.703044"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1165"
+            endingLineNumber = "1165"
+            landmarkName = "CMendelianAnalyzer::MergeFunc(SChrIdTriplet&amp; a_triplet)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
+            timestampString = "519768760.703044"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "984"
+            endingLineNumber = "984"
+            landmarkName = "CMendelianAnalyzer::MergeFunc(SChrIdTriplet&amp; a_triplet)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
+            timestampString = "519768760.703044"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "986"
+            endingLineNumber = "986"
+            landmarkName = "CMendelianAnalyzer::MergeFunc(SChrIdTriplet&amp; a_triplet)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
+            timestampString = "519767731.723615"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "981"
+            endingLineNumber = "981"
+            landmarkName = "CMendelianAnalyzer::MergeFunc(SChrIdTriplet&amp; a_triplet)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
+            timestampString = "519768760.703044"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "982"
+            endingLineNumber = "982"
+            landmarkName = "CMendelianAnalyzer::MergeFunc(SChrIdTriplet&amp; a_triplet)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
