@@ -218,6 +218,10 @@
             argument = "/Users/c1ms21p6h3qk/Desktop/RTG/rtg-core/Inputs/NA12878_all.vcf.gz"
             isEnabled = "NO">
          </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--autosome-only"
+            isEnabled = "YES">
+         </CommandLineArgument>
       </CommandLineArguments>
       <AdditionalOptions>
       </AdditionalOptions>

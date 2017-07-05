@@ -53,6 +53,40 @@ void CSimplePEDParser::ParsePedigree(const std::string& a_rPedFilePath)
     }
 }
 
+
+std::vector<std::string> CSimplePEDParser::GetIdsMFC(const std::vector<std::string> motherList,
+                                                     const std::vector<std::string> fatherList,
+                                                     const std::vector<std::string> childList)
+{
+    for (auto it = m_familyMap.begin(); it != m_familyMap.end(); ++it )
+    {
+        for(int k = 0; k < childList.size(); k++)
+        {
+            for(int m = 0; m < it->second.size(); m++)
+            {
+                if(it->second[m].m_id == childList[k])
+                {
+                    auto fatherItr = std::find(fatherList.begin(), fatherList.end(), it->second[m].m_fatherId);
+                    auto motherItr = std::find(motherList.begin(), motherList.end(), it->second[m].m_motherId);
+                    if(fatherItr != fatherList.end() && motherItr != motherList.end())
+                    {
+                        std::vector<std::string> res;
+                        res.push_back(it->second[m].m_motherId);
+                        res.push_back(it->second[m].m_fatherId);
+                        res.push_back(it->second[m].m_id);
+                        return res;
+                    }
+                }
+            }
+        }
+
+    }
+
+    std::cerr << "Parents and Child could not be identified from given pedigree file." << std::endl;
+    std::vector<std::string> res;
+    return res;
+}
+
 std::vector<std::string> CSimplePEDParser::GetIdsMFC(const std::string& id1, const std::string& id2, const std::string& id3)
 {
     for (auto it = m_familyMap.begin(); it != m_familyMap.end(); ++it )

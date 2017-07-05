@@ -31,6 +31,10 @@ public:
     
     //Searches family map for provided 3 person ids and identift mother, father and child ids in order. Returns an empty vector if it could not identify
     std::vector<std::string> GetIdsMFC(const std::string& id1, const std::string& id2, const std::string& id3);
+    std::vector<std::string> GetIdsMFC(const std::vector<std::string> motherList,
+                                       const std::vector<std::string> fatherList,
+                                       const std::vector<std::string> childList);
+
     
 private:
     

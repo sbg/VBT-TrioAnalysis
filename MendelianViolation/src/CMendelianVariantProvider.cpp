@@ -10,6 +10,7 @@
 #include "CMendelianVariantProvider.h"
 #include "CSimplePEDParser.h"
 #include <iostream>
+#include <sstream>
 
 bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildConfig, const SConfig& a_rMotherChildConfig)
 {
@@ -25,91 +26,96 @@ bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildC
     CSimplePEDParser pedParser;
     std::vector<std::string> parentChildSampleIds;
     
-    if(true == m_motherChildConfig.m_bInitializeFromPED)
-    {
-        pedParser.ParsePedigree(m_motherChildConfig.m_pPedigreeFileName);
-    }
-    
     //Open FATHER vcf file
     bIsSuccessFather = m_FatherVcf.Open(a_rFatherChildConfig.m_pBaseVcfFileName);
     if(!bIsSuccessFather)
         std::cerr << "Father VCF file is unable to open!: " << a_rFatherChildConfig.m_pBaseVcfFileName << std::endl;
-    
-    //Set sample name of FATHER
-    else if(true == m_fatherChildConfig.m_bInitializeFromPED)
-    {
-        std::vector<std::string> sampleNames;
-        m_FatherVcf.GetSampleNames(sampleNames);
-        if(sampleNames.size() != 3)
-        {
-            std::cerr << "Input vcf is not a trio!" << std::endl;
-            return false;
-        }
-        //Fill the MFC ids for 1 time
-        parentChildSampleIds = pedParser.GetIdsMFC(sampleNames[0], sampleNames[1], sampleNames[2]);
-        
-        //Select the second index
-        m_FatherVcf.SelectSample(parentChildSampleIds[1]);
-    }
-    else if (true == m_fatherChildConfig.m_bBaseSampleEnabled)
-        m_FatherVcf.SelectSample(m_fatherChildConfig.m_pBaseSample);
-    else
-    {
-        std::vector<std::string> sampleNames;
-        m_FatherVcf.GetSampleNames(sampleNames);
-        bIsSuccessFather = m_FatherVcf.SelectSample(sampleNames[0]);
-    }
-    
-    if(!bIsSuccessFather)
-    {
-        std::cerr << "Father Sample name is incorrect!" << std::endl;
-        return false;
-    }
-
+   
     //Open MOTHER vcf file
     bIsSuccessMother = m_MotherVcf.Open(a_rMotherChildConfig.m_pBaseVcfFileName);
     if(!bIsSuccessMother)
         std::cerr << "Mother VCF file is unable to open!: " << a_rMotherChildConfig.m_pBaseVcfFileName << std::endl;
     
-    //Set sample name of MOTHER
-    else if(m_motherChildConfig.m_bInitializeFromPED)
-        m_MotherVcf.SelectSample(parentChildSampleIds[0]);
-    else if (true == m_motherChildConfig.m_bBaseSampleEnabled)
-        m_MotherVcf.SelectSample(m_motherChildConfig.m_pBaseSample);
-    else
-    {
-        std::vector<std::string> sampleNames;
-        m_MotherVcf.GetSampleNames(sampleNames);
-        bIsSuccessMother = m_MotherVcf.SelectSample(sampleNames[0]);
-    }
-    
-    if(!bIsSuccessMother)
-    {
-        std::cerr << "Mother Sample name is incorrect!" << std::endl;
-        return false;
-    }
-
     //Open CHILD vcf file
     bIsSuccessChild = m_ChildVcf.Open(a_rFatherChildConfig.m_pCalledVcfFileName);
     if(!bIsSuccessChild)
         std::cerr << "Child VCF file is unable to open!: " << a_rFatherChildConfig.m_pCalledVcfFileName << std::endl;
     
-    //Set sample name of CHILD
-    else if(m_motherChildConfig.m_bInitializeFromPED)
+    
+    if(!bIsSuccessChild || !bIsSuccessFather || !bIsSuccessMother)
+        return false;
+    
+    
+    //Set Sample name from PED file
+    if(true == m_motherChildConfig.m_bInitializeFromPED)
+    {
+        pedParser.ParsePedigree(m_motherChildConfig.m_pPedigreeFileName);
+        std::vector<std::string> sampleNamesChild;
+        std::vector<std::string> sampleNamesMother;
+        std::vector<std::string> sampleNamesFather;
+
+        m_FatherVcf.GetSampleNames(sampleNamesFather);
+        m_MotherVcf.GetSampleNames(sampleNamesMother);
+        m_ChildVcf.GetSampleNames(sampleNamesChild);
+        
+        //Fill the MFC ids
+        parentChildSampleIds = pedParser.GetIdsMFC(sampleNamesMother, sampleNamesFather, sampleNamesChild);
+        if(parentChildSampleIds.size() != 3)
+            return false;
+        
+        m_MotherVcf.SelectSample(parentChildSampleIds[0]);
+        m_FatherVcf.SelectSample(parentChildSampleIds[1]);
         m_ChildVcf.SelectSample(parentChildSampleIds[2]);
-    else if (true == m_fatherChildConfig.m_bCalledSampleEnabled)
-        m_ChildVcf.SelectSample(m_fatherChildConfig.m_pCalledSample);
+    }
     else
     {
-        std::vector<std::string> sampleNames;
-        m_ChildVcf.GetSampleNames(sampleNames);
-        bIsSuccessChild = m_ChildVcf.SelectSample(sampleNames[0]);
-    }
-    
-    if(!bIsSuccessChild)
-    {
-        std::cerr << "Child Sample name is incorrect!" << std::endl;
-        return false;
+        //Set sample name of FATHER
+        if (true == m_fatherChildConfig.m_bBaseSampleEnabled)
+            m_FatherVcf.SelectSample(m_fatherChildConfig.m_pBaseSample);
+        else
+        {
+            std::vector<std::string> sampleNames;
+            m_FatherVcf.GetSampleNames(sampleNames);
+            bIsSuccessFather = m_FatherVcf.SelectSample(sampleNames[0]);
+        }
+        
+        if(!bIsSuccessFather)
+        {
+            std::cerr << "Father Sample name is incorrect!" << std::endl;
+            return false;
+        }
+
+        //Set sample name of MOTHER
+        if (true == m_motherChildConfig.m_bBaseSampleEnabled)
+            m_MotherVcf.SelectSample(m_motherChildConfig.m_pBaseSample);
+        else
+        {
+            std::vector<std::string> sampleNames;
+            m_MotherVcf.GetSampleNames(sampleNames);
+            bIsSuccessMother = m_MotherVcf.SelectSample(sampleNames[0]);
+        }
+        
+        if(!bIsSuccessMother)
+        {
+            std::cerr << "Mother Sample name is incorrect!" << std::endl;
+            return false;
+        }
+
+        //Set sample name of CHILD
+        if (true == m_fatherChildConfig.m_bCalledSampleEnabled)
+            m_ChildVcf.SelectSample(m_fatherChildConfig.m_pCalledSample);
+        else
+        {
+            std::vector<std::string> sampleNames;
+            m_ChildVcf.GetSampleNames(sampleNames);
+            bIsSuccessChild = m_ChildVcf.SelectSample(sampleNames[0]);
+        }
+        
+        if(!bIsSuccessChild)
+        {
+            std::cerr << "Child Sample name is incorrect!" << std::endl;
+            return false;
+        }
     }
 
     // OPEN FASTA FILE
@@ -226,7 +232,7 @@ void CMendelianVariantProvider::FillVariants()
         }
         
         //if(variant.m_nChrId > 2)
-        //    break;
+         //   break;
         //else if(variant.m_nChrId < 2)
         //    continue;
         
@@ -421,6 +427,36 @@ bool CMendelianVariantProvider::IsHomRef(const CVariant& a_rVariant) const
 }
 
 
+bool IsAutosome(const std::string& a_rChrName)
+{
+    std::stringstream convertor;
+    int chrNumber;
+    
+    if(a_rChrName.length() > 3)
+    {
+        convertor << a_rChrName.substr(3);
+        convertor >> chrNumber;
+        
+        if(convertor.fail())
+            return false;
+        else if(chrNumber > 0 && chrNumber < 23)
+            return true;
+    }
+    
+    else
+    {
+        convertor << a_rChrName;
+        convertor >> chrNumber;
+        
+        if(convertor.fail())
+            return false;
+        else if(chrNumber > 0 && chrNumber < 23)
+            return true;
+    }
+    
+    return false;
+}
+
 void CMendelianVariantProvider::SetCommonChromosomes()
 {
     int tripleIndex = 0;
@@ -441,6 +477,9 @@ void CMendelianVariantProvider::SetCommonChromosomes()
                        &&
                        m_aMotherVariantList[motherItr->second].size() > LEAST_VARIANT_THRESHOLD)
                     {
+                        if(m_motherChildConfig.m_bAutosomeOnly && !IsAutosome(motherItr->first))
+                            continue;
+                        
                         m_aCommonChromosomes.push_back(SChrIdTriplet(motherItr->second, fatherItr->second, childItr->second, motherItr->first, tripleIndex++));
                         isFound = true;
                         break;

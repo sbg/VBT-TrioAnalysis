@@ -27,7 +27,7 @@ bool isOverlap(int left1, int right1, int left2, int right2)
 
 CMendelianAnalyzer::CMendelianAnalyzer()
 {
-    m_noCallMode = ENoCallMode::eNone;
+    m_noCallMode = ENoCallMode::eExplicitNoCall;
 }
 
 void CMendelianAnalyzer::run(int argc, char **argv)
@@ -141,6 +141,8 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
     const char* PARAM_OUTPUT_VCF_NAME = "-out-vcf-name";
     const char* PARAM_OUTPUT_LOG_NAME = "-out-log-name";
     
+    const char* PARAM_AUTOSOME_ONLY = "--autosome-only";
+    
     bool bFatherSet = false;
     bool bMotherSet = false;
     bool bChildSet = false;
@@ -233,6 +235,13 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
                 m_noCallMode = ENoCallMode::eImplicitNoCall;
             else
                 m_noCallMode = ENoCallMode::eNone;
+        }
+        
+        else if(0 == strcmp(argv[it], PARAM_AUTOSOME_ONLY))
+        {
+            m_motherChildConfig.m_bAutosomeOnly = true;
+            m_fatherChildConfig.m_bAutosomeOnly = true;
+            it--;
         }
         
         else if(0 == strcmp(argv[it], PARAM_OUTPUT_VCF_NAME))

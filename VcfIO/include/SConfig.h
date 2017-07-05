@@ -59,6 +59,9 @@ struct SConfig
     //Name of the called sample to be selected
     const char* m_pCalledSample;
     
+    //If set true, check only autosomes
+    bool m_bAutosomeOnly = false;
+    
     //Process only SNPs when true
     bool m_bSNPOnly = false;
     
