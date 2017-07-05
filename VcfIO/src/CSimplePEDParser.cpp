@@ -9,6 +9,7 @@
 #include "CSimplePEDParser.h"
 #include <fstream>
 #include <sstream>
+#include <algorithm>
 #include <iostream>
 
 void CSimplePEDParser::ParsePedigree(const std::string& a_rPedFilePath)
