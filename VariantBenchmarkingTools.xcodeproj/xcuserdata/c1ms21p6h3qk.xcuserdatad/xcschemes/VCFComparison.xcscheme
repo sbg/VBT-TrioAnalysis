@@ -75,7 +75,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/autoOnly_joint_D1D2D3_noGraphAlign_9.31.cat.intersect.HG002_lowConf.vcf"
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest2/autoOnly_sortedAJtrio_jointCalledFB_Novoalign.vcf"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -87,7 +87,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/autoOnly_joint_D1D2D3_noGraphAlign_9.31.cat.intersect.HG002_lowConf.vcf"
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest2/autoOnly_sortedAJtrio_jointCalledFB_Novoalign.vcf"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -99,7 +99,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/autoOnly_joint_D1D2D3_noGraphAlign_9.31.cat.intersect.HG002_lowConf.vcf"
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest2/autoOnly_sortedAJtrio_jointCalledFB_Novoalign.vcf"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -111,7 +111,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest"
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest2"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -143,11 +143,15 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/D1D2D3_trio.ped"
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest2/D1D2D3_trio_novoalign.ped"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-sample-mother"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "D3"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
@@ -156,6 +160,10 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-sample-father"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "D2"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
@@ -168,6 +176,10 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "NA12878"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "D1"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
