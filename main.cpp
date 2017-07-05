@@ -28,9 +28,11 @@ int main (int argc, char** argv)
         std::cerr << "./vbt varcomp [PARAMETERS]" << std::endl;
         std::cerr << "./vbt mendelian [PARAMETERS]" << std::endl;
         std::cerr << "Please type ./vbt <select_feature> --help for short info about the parameter structure." << std::endl;
+        
+        return -1;
     }
     
-    if(strcmp(argv[1], "mendelian") == 0)
+    else if(strcmp(argv[1], "mendelian") == 0)
     {
        CMendelianAnalyzer mendelianAnalyzer;
        mendelianAnalyzer.run(argc, argv);
@@ -48,7 +50,11 @@ int main (int argc, char** argv)
         std::cerr << "./vbt varcomp [PARAMETERS]" << std::endl;
         std::cerr << "./vbt mendelian [PARAMETERS]" << std::endl;
         std::cerr << "Please type ./vbt <select_feature> --help for short info about the parameter structure." << std::endl;
+        
+        return -1;
     }
+    
+    return 0;
 }
 
 
