@@ -151,7 +151,7 @@ SAllele CVariant::GetAllele(int a_nAlleleId) const
 
 std::string CVariant::GetOriginalAlleleStr(int a_nAlleleIndex) const
 {
-    if(a_nAlleleIndex == 0 || m_bIsNoCall == true)
+    if(m_bIsNoCall == true)
         return "";
     
     std::vector<std::string> alleleList;
