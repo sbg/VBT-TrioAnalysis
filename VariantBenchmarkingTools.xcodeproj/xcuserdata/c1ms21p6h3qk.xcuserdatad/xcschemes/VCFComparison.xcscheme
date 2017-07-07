@@ -132,11 +132,11 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-pedigree"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest4/AJ_bwaOnly.ped"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-no-call"
@@ -176,6 +176,14 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--autosome-only"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-bed"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest4/autosomeOnly_hg_g1k_v37.bed"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

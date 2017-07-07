@@ -87,6 +87,9 @@ private:
     //Fill Variant sets for parent and child
     void FillVariants();
     
+    //Fill Variant sets for parent and child using a BED file
+    void FillVariantsFromBED();
+    
     //Fill Oriented variant sets for parent and child
     void FillGenotypeMatchOrientedVariants(std::vector<SChrIdTriplet>& a_aCommonChromosomes);
 

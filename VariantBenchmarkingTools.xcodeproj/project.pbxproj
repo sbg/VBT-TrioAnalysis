@@ -37,6 +37,7 @@
 		556D39CC1DD3AFAC00551040 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 556D39CB1DD3AFAC00551040 /* libz.tbd */; };
 		558A41741E92EDA900575FA6 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 558A41731E92EDA900575FA6 /* Makefile */; };
 		559BA2941E97D63F0018D734 /* CSplitOutputProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 559BA2931E97D63F0018D734 /* CSplitOutputProvider.cpp */; };
+		55DE31921F1012F1009D385D /* CSimpleBEDParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55DE31911F1012F1009D385D /* CSimpleBEDParser.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -141,6 +142,8 @@
 		559BA2AA1E982DFE0018D734 /* vcf_sweep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vcf_sweep.h; sourceTree = "<group>"; };
 		559BA2AB1E982DFE0018D734 /* vcfutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vcfutils.h; sourceTree = "<group>"; };
 		55B3ED9A1EB7B8300096501D /* SChrIdTriplet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SChrIdTriplet.h; path = MendelianViolation/include/SChrIdTriplet.h; sourceTree = SOURCE_ROOT; };
+		55DE31901F101038009D385D /* CSimpleBEDParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CSimpleBEDParser.h; path = VcfIO/include/CSimpleBEDParser.h; sourceTree = SOURCE_ROOT; };
+		55DE31911F1012F1009D385D /* CSimpleBEDParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CSimpleBEDParser.cpp; path = VcfIO/src/CSimpleBEDParser.cpp; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -255,6 +258,7 @@
 				551661C51E82C4D0002436FA /* SConfig.h */,
 				550E1F611E8AF9CB00AEFB0B /* EVariantCategory.h */,
 				550759B81EF96A8B00780569 /* CSimplePEDParser.h */,
+				55DE31901F101038009D385D /* CSimpleBEDParser.h */,
 			);
 			name = Include;
 			sourceTree = "<group>";
@@ -267,6 +271,7 @@
 				551661C71E82C51B002436FA /* CVcfReader.cpp */,
 				551661C81E82C51B002436FA /* CVcfWriter.cpp */,
 				550759B91EF96C4600780569 /* CSimplePEDParser.cpp */,
+				55DE31911F1012F1009D385D /* CSimpleBEDParser.cpp */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -502,6 +507,7 @@
 				551661FD1E82E8EB002436FA /* CMendelianTrioMerger.cpp in Sources */,
 				551661FC1E82E8EB002436FA /* CMendelianAnalyzer.cpp in Sources */,
 				551661FF1E82E8EB002436FA /* COverlappingVariantEliminator.cpp in Sources */,
+				55DE31921F1012F1009D385D /* CSimpleBEDParser.cpp in Sources */,
 				551661E21E82C967002436FA /* CSemiPath.cpp in Sources */,
 				551661DD1E82C967002436FA /* CHaplotypeSequence.cpp in Sources */,
 				551661DF1E82C967002436FA /* CPath.cpp in Sources */,

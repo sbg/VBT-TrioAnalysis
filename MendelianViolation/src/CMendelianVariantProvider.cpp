@@ -9,6 +9,7 @@
 #include <algorithm>
 #include "CMendelianVariantProvider.h"
 #include "CSimplePEDParser.h"
+#include "CSimpleBEDParser.h"
 #include <iostream>
 #include <sstream>
 
@@ -126,8 +127,11 @@ bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildC
     if(bIsSuccessChild && bIsSuccessMother && bIsSuccessFather && bIsSuccessFasta)
     {
         //Fill the variants of 3 vcf file
-        FillVariants();
-
+        if(m_motherChildConfig.m_bInitializeFromBed)
+            FillVariantsFromBED();
+        else
+            FillVariants();
+        
         //Get the common chromosome ids and clear the uncommon variants from provider
         SetCommonChromosomes();
         
@@ -154,6 +158,203 @@ bool CMendelianVariantProvider::CompareVariants(const CVariant& var1, const CVar
     else
         return var1.m_nId < var2.m_nId;
 }
+
+void CMendelianVariantProvider::FillVariantsFromBED()
+{
+    CSimpleBEDParser bedParser;
+    bedParser.InitBEDFile(m_motherChildConfig.m_pBedFileName);
+
+    SBedRegion bedRegion;
+    bool hasNextRegion = bedParser.GetNextRegion(bedRegion);
+    
+    //There is no region in BED file
+    if(false == hasNextRegion)
+        return;
+    
+    CVariant variant;
+    int id = 0;
+    std::string preChrId = "";
+    
+    //initialize variant lists
+    m_aFatherVariantList = std::vector<std::vector<CVariant>>(m_FatherVcf.GetContigs().size());
+    m_aMotherVariantList = std::vector<std::vector<CVariant>>(m_MotherVcf.GetContigs().size());
+    m_aChildVariantList = std::vector<std::vector<CVariant>>(m_ChildVcf.GetContigs().size());
+    m_aFatherNotAssessedVariantList = std::vector<std::vector<CVariant>>(m_FatherVcf.GetContigs().size());
+    m_aMotherNotAssessedVariantList = std::vector<std::vector<CVariant>>(m_MotherVcf.GetContigs().size());
+    m_aChildNotAssessedVariantList = std::vector<std::vector<CVariant>>(m_ChildVcf.GetContigs().size());
+    
+    //TODO : this will be replaced ??
+    m_nMotherAsteriskCount = 0;
+    m_nFatherAsteriskCount = 0;
+    m_nChildAsteriskCount  = 0;
+    
+    //READ VARIANTS OF FATHER
+    while(m_FatherVcf.GetNextRecord(&variant, id, m_fatherChildConfig))
+    {
+        if(preChrId != variant.m_chrName)
+        {
+            preChrId = variant.m_chrName;
+            std::cout << "Reading chromosome " << preChrId << " of Parent[FATHER] vcf" << std::endl;
+        }
+
+        //Pass to the next region
+        if(bedRegion.m_chrName == variant.m_chrName && variant.m_nStartPos > bedRegion.m_nEndPos)
+        {
+            hasNextRegion = bedParser.GetNextRegion(bedRegion);
+            if(false == hasNextRegion)
+                break;
+        }
+        
+        //Variant Could not pass from BED region
+        if(bedRegion.m_chrName != variant.m_chrName || std::min(bedRegion.m_nEndPos, variant.m_nEndPos) - std::max(bedRegion.m_nStartPos, variant.m_nStartPos) <= 0)
+            continue;
+        
+        if(!variant.m_bIsNoCall && IsHomRef(variant))
+            continue;
+        
+        std::size_t found = variant.m_allelesStr.find('*');
+        if (found!=std::string::npos)
+        {
+            m_nFatherAsteriskCount++;
+            continue;
+        }
+        
+        else if(m_fatherChildConfig.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
+            m_aFatherNotAssessedVariantList[variant.m_nChrId].push_back(variant);
+        
+        else if(IsStructuralVariant(variant, m_fatherChildConfig.m_nMaxVariantSize))
+            m_aFatherNotAssessedVariantList[variant.m_nChrId].push_back(variant);
+        
+        else
+        {
+            m_aFatherVariantList[variant.m_nChrId].push_back(variant);
+            id++;
+        }
+    }
+    
+    preChrId = "";
+    id = 0;
+    bedParser.ResetIterator();
+    bedParser.GetNextRegion(bedRegion);
+    
+    
+    for(int k = 0; k < (int)m_FatherVcf.GetContigs().size(); k++)
+    {
+        std::sort(m_aFatherNotAssessedVariantList[k].begin(), m_aFatherNotAssessedVariantList[k].end(), CompareVariants);
+        std::sort(m_aFatherVariantList[k].begin(), m_aFatherVariantList[k].end(), CompareVariants);
+    }
+    
+    //READ VARIANTS OF MOTHER
+    while(m_MotherVcf.GetNextRecord(&variant, id, m_motherChildConfig))
+    {
+        if(preChrId != variant.m_chrName)
+        {
+            preChrId = variant.m_chrName;
+            std::cout << "Reading chromosome " << preChrId << " of Parent[MOTHER] vcf" << std::endl;
+        }
+        
+        //Pass to the next region
+        if(bedRegion.m_chrName == variant.m_chrName && variant.m_nStartPos > bedRegion.m_nEndPos)
+        {
+            hasNextRegion = bedParser.GetNextRegion(bedRegion);
+            if(false == hasNextRegion)
+                break;
+        }
+        
+        //Variant Could not pass from BED region
+        if(bedRegion.m_chrName != variant.m_chrName || std::min(bedRegion.m_nEndPos, variant.m_nEndPos) - std::max(bedRegion.m_nStartPos, variant.m_nStartPos) <= 0)
+            continue;
+        
+        if(!variant.m_bIsNoCall &&  IsHomRef(variant))
+            continue;
+        
+        std::size_t found = variant.m_allelesStr.find('*');
+        if (found!=std::string::npos)
+        {
+            m_nMotherAsteriskCount++;
+            continue;
+        }
+        
+        else if(m_motherChildConfig.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
+            m_aMotherNotAssessedVariantList[variant.m_nChrId].push_back(variant);
+        
+        else if(IsStructuralVariant(variant, m_motherChildConfig.m_nMaxVariantSize))
+            m_aMotherNotAssessedVariantList[variant.m_nChrId].push_back(variant);
+        
+        else
+        {
+            m_aMotherVariantList[variant.m_nChrId].push_back(variant);
+            id++;
+        }
+    }
+    
+    preChrId = "";
+    id = 0;
+    bedParser.ResetIterator();
+    bedParser.GetNextRegion(bedRegion);
+    
+    
+    for(int k = 0; k < (int)m_MotherVcf.GetContigs().size(); k++)
+    {
+        std::sort(m_aMotherNotAssessedVariantList[k].begin(), m_aMotherNotAssessedVariantList[k].end(), CompareVariants);
+        std::sort(m_aMotherVariantList[k].begin(), m_aMotherVariantList[k].end(), CompareVariants);
+    }
+    
+    //READ VARIANTS OF CHILD
+    while(m_ChildVcf.GetNextRecord(&variant, id, m_motherChildConfig))
+    {
+        if(preChrId != variant.m_chrName)
+        {
+            preChrId = variant.m_chrName;
+            std::cout << "Reading chromosome " << preChrId << " of child vcf" << std::endl;
+        }
+
+        //Pass to the next region
+        if(bedRegion.m_chrName == variant.m_chrName && variant.m_nStartPos > bedRegion.m_nEndPos)
+        {
+            hasNextRegion = bedParser.GetNextRegion(bedRegion);
+            if(false == hasNextRegion)
+                break;
+        }
+        
+        //Variant Could not pass from BED region
+        if(bedRegion.m_chrName != variant.m_chrName || std::min(bedRegion.m_nEndPos, variant.m_nEndPos) - std::max(bedRegion.m_nStartPos, variant.m_nStartPos) <= 0)
+            continue;
+
+        if(!variant.m_bIsNoCall && IsHomRef(variant))
+            continue;
+        
+        std::size_t found = variant.m_allelesStr.find('*');
+        if (found!=std::string::npos)
+        {
+            m_nChildAsteriskCount++;
+            continue;
+        }
+        
+        else if(m_motherChildConfig.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
+            m_aChildNotAssessedVariantList[variant.m_nChrId].push_back(variant);
+        
+        else if(IsStructuralVariant(variant, m_motherChildConfig.m_nMaxVariantSize))
+            m_aChildNotAssessedVariantList[variant.m_nChrId].push_back(variant);
+        
+        else
+        {
+            m_aChildVariantList[variant.m_nChrId].push_back(variant);
+            id++;
+        }
+    }
+    
+    for(int k = 0; k < (int)m_ChildVcf.GetContigs().size(); k++)
+    {
+        std::sort(m_aChildNotAssessedVariantList[k].begin(), m_aChildNotAssessedVariantList[k].end(), CompareVariants);
+        std::sort(m_aChildVariantList[k].begin(), m_aChildVariantList[k].end(), CompareVariants);
+    }
+    
+   
+    
+
+}
+
 
 void CMendelianVariantProvider::FillVariants()
 {
@@ -184,8 +385,8 @@ void CMendelianVariantProvider::FillVariants()
             std::cout << "Processing chromosome " << preChrId << " of Parent[FATHER] vcf" << std::endl;
         }
         
-        //if(variant.m_nChrId > 2)
-        //    break;
+        if(variant.m_nChrId > 0)
+            break;
         //else if(variant.m_nChrId < 20)
         //    continue;
         
@@ -231,8 +432,8 @@ void CMendelianVariantProvider::FillVariants()
             std::cout << "Processing chromosome " << preChrId << " of Parent[MOTHER] vcf" << std::endl;
         }
         
-        //if(variant.m_nChrId > 2)
-        //    break;
+        if(variant.m_nChrId > 0)
+            break;
         //else if(variant.m_nChrId < 20)
         //    continue;
         
@@ -278,8 +479,8 @@ void CMendelianVariantProvider::FillVariants()
             std::cout << "Processing chromosome " << preChrId << " of child vcf" << std::endl;
         }
         
-        //if(variant.m_nChrId > 2)
-        //    break;
+        if(variant.m_nChrId > 0)
+            break;
         //else if(variant.m_nChrId < 20)
         //    continue;
         

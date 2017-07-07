@@ -26,6 +26,10 @@ struct SConfig
     const char* m_pPedigreeFileName;
     bool m_bInitializeFromPED = false;
     
+    //BED file
+    const char* m_pBedFileName;
+    bool m_bInitializeFromBed = false;
+    
     //Output Directory
     const char* m_pOutputDirectory;
     

@@ -128,6 +128,7 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
     const char* PARAM_REFERENCE = "-ref";
     const char* PARAM_FILTER = "-filter";
     const char* PARAM_PEDIGREE = "-pedigree";
+    const char* PARAM_BED = "-bed";
     
     const char* PARAM_SAMPLE_FATHER = "-sample-father";
     const char* PARAM_SAMPLE_MOTHER = "-sample-mother";
@@ -200,6 +201,14 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
             m_motherChildConfig.m_bInitializeFromPED = true;
             m_fatherChildConfig.m_pPedigreeFileName = argv[it+1];
             m_fatherChildConfig.m_bInitializeFromPED = true;
+        }
+        
+        else if(0 == strcmp(argv[it], PARAM_BED))
+        {
+            m_motherChildConfig.m_bInitializeFromBed = true;
+            m_motherChildConfig.m_pBedFileName = argv[it+1];
+            m_fatherChildConfig.m_bInitializeFromBed = true;
+            m_fatherChildConfig.m_pBedFileName = argv[it+1];
         }
         
         else if(0 == strcmp(argv[it], PARAM_REF_OVERLAP))
