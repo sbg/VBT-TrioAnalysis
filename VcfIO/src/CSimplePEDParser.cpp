@@ -21,6 +21,10 @@ void CSimplePEDParser::ParsePedigree(const std::string& a_rPedFilePath)
     std::string pedRecord;
     while (std::getline(pedFile, pedRecord))
     {
+        //Ignore comment Line
+        if(pedRecord[0] == '#')
+            continue;
+        
         std::stringstream ss(pedRecord);
         
         SPerson person;
