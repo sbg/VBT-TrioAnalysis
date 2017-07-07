@@ -75,7 +75,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest2/autoOnly_sortedAJtrio_jointCalledFB_Novoalign.vcf"
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest4/HG003.vcf"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -87,7 +87,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest2/autoOnly_sortedAJtrio_jointCalledFB_Novoalign.vcf"
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest4/HG002.vcf"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -99,7 +99,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest2/autoOnly_sortedAJtrio_jointCalledFB_Novoalign.vcf"
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest4/HG004.vcf"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -111,12 +111,8 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest2"
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest4"
             isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/NullHypo_PG_NA12878"
-            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-filter"
@@ -135,52 +131,12 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/ucsc.hg19.fasta"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
             argument = "-pedigree"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest2/D1D2D3_trio_novoalign.ped"
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest4/AJ_bwaOnly.ped"
             isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-sample-mother"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "D3"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "NA12892"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-sample-father"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "D2"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "NA12891"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-sample-child"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "NA12878"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "D1"
-            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-no-call"

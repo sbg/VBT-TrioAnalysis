@@ -30,7 +30,7 @@ CMendelianAnalyzer::CMendelianAnalyzer()
     m_noCallMode = ENoCallMode::eExplicitNoCall;
 }
 
-void CMendelianAnalyzer::run(int argc, char **argv)
+int CMendelianAnalyzer::run(int argc, char **argv)
 {
     std::time_t start, start1;
     double duration;
@@ -39,7 +39,7 @@ void CMendelianAnalyzer::run(int argc, char **argv)
     bool isSuccess = ReadParameters(argc, argv);
     
     if(!isSuccess)
-        return;
+        return -1;
     
     start = std::time(0);
     
@@ -47,7 +47,7 @@ void CMendelianAnalyzer::run(int argc, char **argv)
     isSuccess = m_provider.InitializeReaders(m_fatherChildConfig, m_motherChildConfig);
     
     if(!isSuccess)
-        return;
+        return -1;
 
     duration = std::difftime(std::time(0), start);
     std::cout << "Vcf and fasta Parser read completed in " << duration << " secs" << std::endl;
@@ -114,7 +114,8 @@ void CMendelianAnalyzer::run(int argc, char **argv)
     std::cout << "Processing Chromosomes completed in " << duration << " secs" << std::endl;
     duration = std::difftime(std::time(0), start);
     std::cout << "Total execution time is " << duration << " secs" << std::endl;
-
+    
+    return 0;
 }
 
 bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
@@ -360,36 +361,38 @@ void CMendelianAnalyzer::GetSyncPointList(SChrIdTriplet& a_rTriplet, bool a_bIsF
 
     for(int k = 0; k < (int)pPath->m_aSyncPointList.size(); k++)
     {
-        CSyncPoint sPoint;
-        sPoint.m_nStartPosition = k > 0 ? pPath->m_aSyncPointList[k-1] : 0;
-        sPoint.m_nEndPosition = pPath->m_aSyncPointList[k];
-        sPoint.m_nIndex = k;
+        CSyncPoint ssPoint;
+        ssPoint.m_nStartPosition = k > 0 ? pPath->m_aSyncPointList[k-1] : 0;
+        ssPoint.m_nEndPosition = pPath->m_aSyncPointList[k];
+        ssPoint.m_nIndex = k;
         
         while(baseIncludedItr < (int)pBaseIncluded.size() && pBaseIncluded[baseIncludedItr]->GetStartPos() <= pPath->m_aSyncPointList[k])
         {
-            sPoint.m_baseVariantsIncluded.push_back(pBaseIncluded[baseIncludedItr]);
+            const COrientedVariant* pOvar = pBaseIncluded[baseIncludedItr];
+            ssPoint.m_baseVariantsIncluded.push_back(pOvar);
             baseIncludedItr++;
         }
 
         while(calledIncludedItr < (int)pCalledIncluded.size() && pCalledIncluded[calledIncludedItr]->GetStartPos() <= pPath->m_aSyncPointList[k])
         {
-            sPoint.m_calledVariantsIncluded.push_back(pCalledIncluded[calledIncludedItr]);
+            const COrientedVariant* pOvar = pCalledIncluded[calledIncludedItr];
+            ssPoint.m_calledVariantsIncluded.push_back(pOvar);
             calledIncludedItr++;
         }
         
         while(baseExcludedItr < (int)pBaseExcluded.size() && pBaseExcluded[baseExcludedItr]->m_nStartPos <= pPath->m_aSyncPointList[k])
         {
-            sPoint.m_baseVariantsExcluded.push_back(pBaseExcluded[baseExcludedItr]);
+            ssPoint.m_baseVariantsExcluded.push_back(pBaseExcluded[baseExcludedItr]);
             baseExcludedItr++;
         }
         
         while(calledExcludedItr < (int)pCalledExcluded.size() && pCalledExcluded[calledExcludedItr]->m_nStartPos <= pPath->m_aSyncPointList[k])
         {
-            sPoint.m_calledVariantsExcluded.push_back(pCalledExcluded[calledExcludedItr]);
+            ssPoint.m_calledVariantsExcluded.push_back(pCalledExcluded[calledExcludedItr]);
             calledExcludedItr++;
         }
         
-        a_rSyncPointList.push_back(sPoint);
+        a_rSyncPointList.push_back(ssPoint);
     }
     
     //Add Remaining variants to the last syncPoint
@@ -834,6 +837,8 @@ void CMendelianAnalyzer::CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTr
     
     for(int k = 0; k < (int)a_rVariantList.size(); k++)
     {
+        int index = m_provider.Get0BasedVariantIndex(eFATHER, a_rTriplet.m_nFid, a_rVariantList[k]->m_nId);
+        
         //Check if the variant is already marked
         if(a_checkSide == eMOTHER && m_aMotherDecisions[a_rTriplet.m_nTripleIndex][m_provider.Get0BasedVariantIndex(eMOTHER, a_rTriplet.m_nMid, a_rVariantList[k]->m_nId)] != eUnknown)
         {
@@ -1179,7 +1184,7 @@ void CMendelianAnalyzer::MergeFunc(SChrIdTriplet& a_triplet)
     std::vector<const CVariant*> violationVarsFrom00CheckGT;
     
     //Check for 0/0 child variant set for both parent
-    CheckFor00Child(a_triplet, check00ChildGTMatched, violationVarsFrom00CheckGT, compliantVarsFrom00CheckGT, true);
+    //CheckFor00Child(a_triplet, check00ChildGTMatched, violationVarsFrom00CheckGT, compliantVarsFrom00CheckGT, true);
 
     //Gather all compliant variants of child we found so far
     compliants.insert(std::end(compliants), std::begin(MendelianCompliantVars), std::end(MendelianCompliantVars));

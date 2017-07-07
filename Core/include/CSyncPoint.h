@@ -17,6 +17,24 @@ class CSyncPoint
     
 public:
     
+    CSyncPoint(const CSyncPoint& rhs)
+    {
+        m_nIndex = rhs.m_nIndex;
+        m_nStartPosition = rhs.m_nStartPosition;
+        m_nEndPosition = rhs.m_nEndPosition;
+        m_baseVariantsExcluded = std::vector<const CVariant*>(rhs.m_baseVariantsExcluded);
+        m_calledVariantsExcluded = std::vector<const CVariant*>(rhs.m_calledVariantsExcluded);
+        m_baseVariantsIncluded = std::vector<const COrientedVariant*>(rhs.m_baseVariantsIncluded);
+        m_calledVariantsIncluded = std::vector<const COrientedVariant*>(rhs.m_calledVariantsIncluded);
+    }
+    
+    CSyncPoint()
+    {
+        m_nIndex = -1;
+        m_nStartPosition = -1;
+        m_nEndPosition = -1;
+    }
+    
     //Index of the sync point
     int m_nIndex;
     

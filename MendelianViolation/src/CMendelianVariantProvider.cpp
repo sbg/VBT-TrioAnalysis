@@ -186,7 +186,7 @@ void CMendelianVariantProvider::FillVariants()
         
         //if(variant.m_nChrId > 2)
         //    break;
-        //else if(variant.m_nChrId < 2)
+        //else if(variant.m_nChrId < 20)
         //    continue;
         
         if(!variant.m_bIsNoCall && IsHomRef(variant))
@@ -232,8 +232,8 @@ void CMendelianVariantProvider::FillVariants()
         }
         
         //if(variant.m_nChrId > 2)
-         //   break;
-        //else if(variant.m_nChrId < 2)
+        //    break;
+        //else if(variant.m_nChrId < 20)
         //    continue;
         
         if(!variant.m_bIsNoCall &&  IsHomRef(variant))
@@ -280,7 +280,7 @@ void CMendelianVariantProvider::FillVariants()
         
         //if(variant.m_nChrId > 2)
         //    break;
-        //else if(variant.m_nChrId < 2)
+        //else if(variant.m_nChrId < 20)
         //    continue;
         
         if(!variant.m_bIsNoCall && IsHomRef(variant))

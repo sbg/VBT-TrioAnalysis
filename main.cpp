@@ -22,6 +22,8 @@
 
 int main (int argc, char** argv)
 {
+    int successNo = 0;
+    
     if(argc == 1)
     {
         std::cerr << "You have not entered an input.Please try either following:" << std::endl;
@@ -35,7 +37,7 @@ int main (int argc, char** argv)
     else if(strcmp(argv[1], "mendelian") == 0)
     {
        CMendelianAnalyzer mendelianAnalyzer;
-       mendelianAnalyzer.run(argc, argv);
+       successNo = mendelianAnalyzer.run(argc, argv);
     }
     
     else if(strcmp(argv[1], "varcomp") == 0)
@@ -54,7 +56,7 @@ int main (int argc, char** argv)
         return -1;
     }
     
-    return 0;
+    return successNo;
 }
 
 
