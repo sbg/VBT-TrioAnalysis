@@ -384,6 +384,8 @@ void CMendelianResultLog::WriteShortReportTable()
     std::string path = m_aLogDirectory + "/ShortReportTable.txt";
     outputLog.open(path.c_str());
     
+    outputLog << "Note: This file only contains violation/consistent variant count of child variants. Hom-ref child sites are not included" << std::endl << std::endl;
+    
     outputLog << "+" << std::left << std::setw(57) << std::setfill('-') << "-" << "+" << std::endl;
     
     outputLog << "|" << std::left << std::setw(25) << std::setfill(separator) << "VARIANT TYPES";
