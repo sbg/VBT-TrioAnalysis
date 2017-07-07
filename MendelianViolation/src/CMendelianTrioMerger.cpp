@@ -399,27 +399,31 @@ void CMendelianTrioMerger::DoTripleMerge(SChrIdTriplet& a_rTriplet, int& a_nChil
     //Push reference sequence
     alleles.push_back(m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_refSequence);
     
-    //Add non ref child alleles
+    //Add different child alleles
     for(int k= 0; k < m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_nAlleleCount; k++)
     {
-        if(m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_genotype[k] > 0)
-            alleles.push_back(m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->GetOriginalAlleleStr(k));
+        std::string childAllele = m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->GetOriginalAlleleStr(k);
+        if(childAllele != "" && std::find(alleles.begin(), alleles.end(), childAllele) == alleles.end())
+            alleles.push_back(childAllele);
     }
     
     //Add different mother alleles
     for(int k= 0; k < m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->m_nAlleleCount; k++)
     {
-        if(std::find(alleles.begin(), alleles.end(), m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->GetOriginalAlleleStr(k)) == alleles.end())
-            alleles.push_back(m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->GetOriginalAlleleStr(k));
+        std::string motherAllele = m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->GetOriginalAlleleStr(k);
+        if(motherAllele != "" && std::find(alleles.begin(), alleles.end(), motherAllele) == alleles.end())
+            alleles.push_back(motherAllele);
     }
     
     //Add different father alleles
     for(int k= 0; k < m_aFatherVariants[a_rTriplet.m_nFid][a_nFatherItr]->m_nAlleleCount; k++)
     {
-        if(std::find(alleles.begin(), alleles.end(), m_aFatherVariants[a_rTriplet.m_nFid][a_nFatherItr]->GetOriginalAlleleStr(k)) == alleles.end())
-            alleles.push_back(m_aFatherVariants[a_rTriplet.m_nFid][a_nFatherItr]->GetOriginalAlleleStr(k));
+        std::string fatherAllele = m_aFatherVariants[a_rTriplet.m_nFid][a_nFatherItr]->GetOriginalAlleleStr(k);
+        if(fatherAllele != "" && std::find(alleles.begin(), alleles.end(), fatherAllele) == alleles.end())
+            alleles.push_back(fatherAllele);
     }
     
+    //Generate final allele string
     std::string alleleString = "";
     for(int k=0; k < (int)alleles.size(); k++)
     {
@@ -529,8 +533,9 @@ void CMendelianTrioMerger::DoDoubleMerge(SChrIdTriplet& a_rTriplet,
     {
         for(int k= 0; k < pVarChild->m_nAlleleCount; k++)
         {
-            if(std::find(alleles.begin(), alleles.end(), pVarChild->GetOriginalAlleleStr(k)) == alleles.end())
-                alleles.push_back(pVarChild->GetOriginalAlleleStr(k));
+            std::string childAllele = pVarChild->GetOriginalAlleleStr(k);
+            if(childAllele != "" && std::find(alleles.begin(), alleles.end(), childAllele) == alleles.end())
+                alleles.push_back(childAllele);
         }
     }
     
@@ -539,8 +544,9 @@ void CMendelianTrioMerger::DoDoubleMerge(SChrIdTriplet& a_rTriplet,
     {
         for(int k= 0; k < pVarMother->m_nAlleleCount; k++)
         {
-            if(std::find(alleles.begin(), alleles.end(), pVarMother->GetOriginalAlleleStr(k)) == alleles.end())
-                alleles.push_back(pVarMother->GetOriginalAlleleStr(k));
+            std::string motherAllele = pVarMother->GetOriginalAlleleStr(k);
+            if(motherAllele != "" && std::find(alleles.begin(), alleles.end(), motherAllele) == alleles.end())
+                alleles.push_back(motherAllele);
         }
     }
     
@@ -549,8 +555,9 @@ void CMendelianTrioMerger::DoDoubleMerge(SChrIdTriplet& a_rTriplet,
     {
         for(int k= 0; k < pVarFather->m_nAlleleCount; k++)
         {
-            if(std::find(alleles.begin(), alleles.end(), pVarFather->GetOriginalAlleleStr(k)) == alleles.end())
-                alleles.push_back(pVarFather->GetOriginalAlleleStr(k));
+            std::string fatherAllele = pVarFather->GetOriginalAlleleStr(k);
+            if(fatherAllele != "" && std::find(alleles.begin(), alleles.end(), fatherAllele) == alleles.end())
+                alleles.push_back(fatherAllele);
         }
     }
     
