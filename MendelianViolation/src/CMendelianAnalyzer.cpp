@@ -73,7 +73,7 @@ int CMendelianAnalyzer::run(int argc, char **argv)
     
     //Initialize output writer
     std::string directory = std::string(m_fatherChildConfig.m_pOutputDirectory);
-    std::string trioPath = directory + (directory[directory.length()-1] != '/' ? "/" + std::string(m_fatherChildConfig.m_output_vcf_name) : std::string(m_fatherChildConfig.m_output_vcf_name));
+    std::string trioPath = directory + (directory[directory.length()-1] != '/' ? "/" + std::string(m_fatherChildConfig.m_output_prefix) + "_trio.vcf" : std::string(m_fatherChildConfig.m_output_prefix) + "_trio.vcf");
     m_trioWriter.SetTrioPath(trioPath);
     m_trioWriter.SetNoCallMode(m_noCallMode);
     m_trioWriter.SetResultLogPointer(&m_resultLog);
@@ -106,9 +106,10 @@ int CMendelianAnalyzer::run(int argc, char **argv)
     
     //Write results to log file
     m_resultLog.SetLogDirectory(m_fatherChildConfig.m_pOutputDirectory);
-    m_resultLog.WriteBestPathStatistics();
-    m_resultLog.WriteDetailedReportTable(m_fatherChildConfig.m_output_log_name);
-    m_resultLog.WriteShortReportTable();
+    m_resultLog.WriteBestPathStatistics(m_fatherChildConfig.m_output_prefix);
+    m_resultLog.WriteDetailedReportTable(m_fatherChildConfig.m_output_prefix);
+    m_resultLog.WriteDetailedReportTabDelimited(m_fatherChildConfig.m_output_prefix);
+    m_resultLog.WriteShortReportTable(m_fatherChildConfig.m_output_prefix);
     
     duration = std::difftime(std::time(0), start1);
     std::cout << "Processing Chromosomes completed in " << duration << " secs" << std::endl;
@@ -140,8 +141,7 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
     const char* PARAM_THREAD_COUNT = "-thread-count";
     const char* PARAM_NO_CALL = "-no-call";
     
-    const char* PARAM_OUTPUT_VCF_NAME = "-out-vcf-name";
-    const char* PARAM_OUTPUT_LOG_NAME = "-out-log-name";
+    const char* PARAM_OUTPUT_PREFIX = "-out-prefix";
     
     const char* PARAM_AUTOSOME_ONLY = "--autosome-only";
     
@@ -254,16 +254,10 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
             it--;
         }
         
-        else if(0 == strcmp(argv[it], PARAM_OUTPUT_VCF_NAME))
+        else if(0 == strcmp(argv[it], PARAM_OUTPUT_PREFIX))
         {
-            m_motherChildConfig.m_output_vcf_name = argv[it+1];
-            m_fatherChildConfig.m_output_vcf_name = argv[it+1];
-        }
-        
-        else if(0 == strcmp(argv[it], PARAM_OUTPUT_LOG_NAME))
-        {
-            m_motherChildConfig.m_output_log_name = argv[it+1];
-            m_fatherChildConfig.m_output_log_name = argv[it+1];
+            m_motherChildConfig.m_output_prefix = argv[it+1];
+            m_fatherChildConfig.m_output_prefix = argv[it+1];
         }
         
         else if(0 == strcmp(argv[it], PARAM_SAMPLE_FATHER))
