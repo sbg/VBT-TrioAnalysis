@@ -91,13 +91,16 @@ public:
     void LogFilteredComplexVariantCounts(int a_nChildFiltered, int a_nFatherFiltered, int a_nMotherFiltered);
     
     //Write Statistic of parent-child comparison from Best Path Algorithm
-    void WriteBestPathStatistics();
+    void WriteBestPathStatistics(const std::string& a_rPrefixName);
     
     //Write Detailed report (Extended statistic of each variant group) to the detailedLog.txt
-    void WriteDetailedReportTable(const std::string& a_rFileName);
+    void WriteDetailedReportTable(const std::string& a_rPrefixName);
+    
+    //Write Detailed report in TSV format
+    void WriteDetailedReportTabDelimited(const std::string& a_rPrefixName);
     
     //Write a summary report to the shortLog.txt
-    void WriteShortReportTable();
+    void WriteShortReportTable(const std::string& a_rPrefixName);
 
 private:
     

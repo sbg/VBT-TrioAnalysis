@@ -194,12 +194,12 @@ void CMendelianResultLog::LogShortReport(std::string& a_rChrName, int a_nSNPcomp
     m_aShortLogEntries.push_back(entry);
 }
 
-void CMendelianResultLog::WriteBestPathStatistics()
+void CMendelianResultLog::WriteBestPathStatistics(const std::string& a_rPrefixName)
 {
     const char separator    = ' ';
     
     std::ofstream outputLog;
-    std::string path = m_aLogDirectory + (m_aLogDirectory[m_aLogDirectory.length()-1] != '/' ? "/BestPathLogs.txt" : "BestPathLogs.txt");
+    std::string path = m_aLogDirectory + (m_aLogDirectory[m_aLogDirectory.length()-1] != '/' ? "/" + a_rPrefixName + "_BestPathLogs.txt" : a_rPrefixName + "_BestPathLogs.txt");
     outputLog.open(path.c_str());
     
     outputLog << "====== FATHER CHILD COMPARISON ======" << std::endl;
@@ -283,12 +283,12 @@ void CMendelianResultLog::WriteBestPathStatistics()
     outputLog.close();
 }
 
-void CMendelianResultLog::WriteDetailedReportTable(const std::string& a_rFileName)
+void CMendelianResultLog::WriteDetailedReportTable(const std::string& a_rPrefixName)
 {
     const char separator    = ' ';
     
     std::ofstream outputLog;
-    std::string path = m_aLogDirectory + "/" + a_rFileName;
+    std::string path = m_aLogDirectory + (m_aLogDirectory[m_aLogDirectory.length()-1] != '/' ? "/" + a_rPrefixName + "_DetailedLogs.txt" : a_rPrefixName + "_DetailedLogs.txt");
     outputLog.open(path.c_str());
     
     outputLog << "Filtered complex Child variant Count :" << m_nTotalNonAssessedVarCountChild << std::endl;
@@ -375,13 +375,56 @@ void CMendelianResultLog::WriteDetailedReportTable(const std::string& a_rFileNam
 
 }
 
+void CMendelianResultLog::WriteDetailedReportTabDelimited(const std::string& a_rPrefixName)
+{
+    std::ofstream outputTSV;
+    std::string path = m_aLogDirectory + (m_aLogDirectory[m_aLogDirectory.length()-1] != '/' ? "/" + a_rPrefixName + "_tab_delim_detailed_log.tsv" : "_tab_delim_detailed_log.tsv");
+    outputTSV.open(path);
+    
+    outputTSV << "VAR_CATEGORY" << '\t' << "COMPLIANT" << '\t' << "VIOLATION" << '\t' << "NO-CALL_PARENT" << '\t' << "NO-CALL_CHILD" << std::endl;
+    outputTSV << "SNP" << '\t' << m_DetailedLogEntries.m_nSNP[0] << '\t' << m_DetailedLogEntries.m_nSNP[1] << '\t'
+              << m_DetailedLogEntries.m_nSNP[2] << '\t' << m_DetailedLogEntries.m_nSNP[3] << '\t' << std::endl;
+    outputTSV << "INSERT(<=5)" << '\t'<< m_DetailedLogEntries.m_nInsertSmall[0] << '\t' << m_DetailedLogEntries.m_nInsertSmall[1] << '\t'
+              << m_DetailedLogEntries.m_nInsertSmall[2] << '\t' << m_DetailedLogEntries.m_nInsertSmall[3] << '\t' << std::endl;
+    outputTSV << "INSERT(6-15)" << '\t'<< m_DetailedLogEntries.m_nInsertMedium[0] << '\t' << m_DetailedLogEntries.m_nInsertMedium[1] << '\t'
+              << m_DetailedLogEntries.m_nInsertMedium[2] << '\t' << m_DetailedLogEntries.m_nInsertMedium[3] << '\t' << std::endl;
+    outputTSV << "INSERT(>=15)" << '\t'<< m_DetailedLogEntries.m_nInsertLarge[0] << '\t' << m_DetailedLogEntries.m_nInsertLarge[1] << '\t'
+              << m_DetailedLogEntries.m_nInsertLarge[2] << '\t' << m_DetailedLogEntries.m_nInsertLarge[3] << '\t' << std::endl;
+    outputTSV << "DELETE(<=5)" << '\t'<< m_DetailedLogEntries.m_nDeleteSmall[0] << '\t' << m_DetailedLogEntries.m_nDeleteSmall[1] << '\t'
+              << m_DetailedLogEntries.m_nDeleteSmall[2] << '\t' << m_DetailedLogEntries.m_nDeleteSmall[3] << '\t' << std::endl;
+    outputTSV << "DELETE(6-15)" << '\t'<< m_DetailedLogEntries.m_nDeleteMedium[0] << '\t' << m_DetailedLogEntries.m_nDeleteMedium[1] << '\t'
+              << m_DetailedLogEntries.m_nDeleteMedium[2] << '\t' << m_DetailedLogEntries.m_nDeleteMedium[3] << '\t' << std::endl;
+    outputTSV << "DELETE(>=15)" << '\t'<< m_DetailedLogEntries.m_nDeleteLarge[0] << '\t' << m_DetailedLogEntries.m_nDeleteLarge[1] << '\t'
+              << m_DetailedLogEntries.m_nDeleteLarge[2] << '\t' << m_DetailedLogEntries.m_nDeleteLarge[3] << '\t' << std::endl;
+    outputTSV << "COMPLEX(<=5)" << '\t'<< m_DetailedLogEntries.m_nComplexSmall[0] << '\t' << m_DetailedLogEntries.m_nComplexSmall[1] << '\t'
+              << m_DetailedLogEntries.m_nComplexSmall[2] << '\t' << m_DetailedLogEntries.m_nComplexSmall[3] << '\t' << std::endl;
+    outputTSV << "COMPLEX(6-15)" << '\t'<< m_DetailedLogEntries.m_nComplexMedium[0] << '\t' << m_DetailedLogEntries.m_nComplexMedium[1] << '\t'
+              << m_DetailedLogEntries.m_nComplexMedium[2] << '\t' << m_DetailedLogEntries.m_nComplexMedium[3] << '\t' << std::endl;
+    outputTSV << "COMPLEX(>=15)" << '\t'<< m_DetailedLogEntries.m_nComplexLarge[0] << '\t' << m_DetailedLogEntries.m_nComplexLarge[1] << '\t'
+              << m_DetailedLogEntries.m_nComplexLarge[2] << '\t' << m_DetailedLogEntries.m_nComplexLarge[3] << '\t' << std::endl;
+    
+    int compliantTotal[4] = {0, 0 ,0, 0};
+    for(int k = 0; k < 4 ; k++)
+    {
+        compliantTotal[k] = m_DetailedLogEntries.m_nSNP[k];
+        compliantTotal[k] += m_DetailedLogEntries.m_nInsertSmall[k] + m_DetailedLogEntries.m_nInsertMedium[k] + m_DetailedLogEntries.m_nInsertLarge[k];
+        compliantTotal[k] += m_DetailedLogEntries.m_nDeleteSmall[k] + m_DetailedLogEntries.m_nDeleteMedium[k] + m_DetailedLogEntries.m_nDeleteLarge[k];
+        compliantTotal[k] += m_DetailedLogEntries.m_nComplexSmall[k] + m_DetailedLogEntries.m_nComplexMedium[k] + m_DetailedLogEntries.m_nComplexLarge[k];
+    }
+    
+    outputTSV << "TOTAL" << '\t' << compliantTotal[0] << '\t' << compliantTotal[1] << '\t' << compliantTotal[2] << '\t' << compliantTotal[3] << '\t' << std::endl;
 
-void CMendelianResultLog::WriteShortReportTable()
+    outputTSV.close();
+}
+
+
+
+void CMendelianResultLog::WriteShortReportTable(const std::string& a_rPrefixName)
 {
     const char separator    = ' ';
     
     std::ofstream outputLog;
-    std::string path = m_aLogDirectory + "/ShortReportTable.txt";
+    std::string path = m_aLogDirectory + (m_aLogDirectory[m_aLogDirectory.length()-1] != '/' ? "/" + a_rPrefixName + "_ChildReportLog.txt" : a_rPrefixName + "_ChildReportLog.txt");
     outputLog.open(path.c_str());
     
     outputLog << "Note: This file only contains violation/consistent variant count of child variants. Hom-ref child sites are not included" << std::endl << std::endl;
