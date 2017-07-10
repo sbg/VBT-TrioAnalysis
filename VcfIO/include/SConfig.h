@@ -44,9 +44,8 @@ struct SConfig
     //Filter name (Filter variants according to filter column)
     const char* m_pFilterName = "PASS";
    
-    //VBT mendelian mode output names
-    const char* m_output_vcf_name = "VBT_mendelian_output.vcf";
-    const char* m_output_log_name = "VBT_mendelian_output_detailedLog.txt";
+    //VBT mendelian mode PREFIX
+    const char* m_output_prefix = "out";
     
     //If Quality threshold is enabled
     bool m_bIsQualityThresholdEnabled = false;
