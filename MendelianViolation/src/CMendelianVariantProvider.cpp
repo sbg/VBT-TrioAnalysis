@@ -198,7 +198,9 @@ void CMendelianVariantProvider::FillVariantsFromBED()
         }
 
         //Pass to the next region
-        if(bedRegion.m_chrName == variant.m_chrName && variant.m_nStartPos > bedRegion.m_nEndPos)
+        if((bedRegion.m_chrName == variant.m_chrName && variant.m_nStartPos > bedRegion.m_nEndPos)
+            ||
+            m_FatherVcf.m_chrIndexMap[variant.m_chrName] > m_FatherVcf.m_chrIndexMap[bedRegion.m_chrName])
         {
             hasNextRegion = bedParser.GetNextRegion(bedRegion);
             if(false == hasNextRegion)
@@ -254,7 +256,9 @@ void CMendelianVariantProvider::FillVariantsFromBED()
         }
         
         //Pass to the next region
-        if(bedRegion.m_chrName == variant.m_chrName && variant.m_nStartPos > bedRegion.m_nEndPos)
+        if((bedRegion.m_chrName == variant.m_chrName && variant.m_nStartPos > bedRegion.m_nEndPos)
+           ||
+           m_MotherVcf.m_chrIndexMap[variant.m_chrName] > m_MotherVcf.m_chrIndexMap[bedRegion.m_chrName])
         {
             hasNextRegion = bedParser.GetNextRegion(bedRegion);
             if(false == hasNextRegion)
@@ -310,7 +314,9 @@ void CMendelianVariantProvider::FillVariantsFromBED()
         }
 
         //Pass to the next region
-        if(bedRegion.m_chrName == variant.m_chrName && variant.m_nStartPos > bedRegion.m_nEndPos)
+        if((bedRegion.m_chrName == variant.m_chrName && variant.m_nStartPos > bedRegion.m_nEndPos)
+           ||
+           m_ChildVcf.m_chrIndexMap[variant.m_chrName] > m_ChildVcf.m_chrIndexMap[bedRegion.m_chrName])
         {
             hasNextRegion = bedParser.GetNextRegion(bedRegion);
             if(false == hasNextRegion)
@@ -385,11 +391,6 @@ void CMendelianVariantProvider::FillVariants()
             std::cout << "Processing chromosome " << preChrId << " of Parent[FATHER] vcf" << std::endl;
         }
         
-        if(variant.m_nChrId > 0)
-            break;
-        //else if(variant.m_nChrId < 20)
-        //    continue;
-        
         if(!variant.m_bIsNoCall && IsHomRef(variant))
             continue;
         
@@ -432,11 +433,6 @@ void CMendelianVariantProvider::FillVariants()
             std::cout << "Processing chromosome " << preChrId << " of Parent[MOTHER] vcf" << std::endl;
         }
         
-        if(variant.m_nChrId > 0)
-            break;
-        //else if(variant.m_nChrId < 20)
-        //    continue;
-        
         if(!variant.m_bIsNoCall &&  IsHomRef(variant))
             continue;
         
@@ -478,11 +474,6 @@ void CMendelianVariantProvider::FillVariants()
             preChrId = variant.m_chrName;
             std::cout << "Processing chromosome " << preChrId << " of child vcf" << std::endl;
         }
-        
-        if(variant.m_nChrId > 0)
-            break;
-        //else if(variant.m_nChrId < 20)
-        //    continue;
         
         if(!variant.m_bIsNoCall && IsHomRef(variant))
             continue;
