@@ -24,6 +24,9 @@ int main (int argc, char** argv)
 {
     int successNo = 0;
     
+    std::cout << "Docker image of this copy is :  vbtapp:v5.35" << std::endl;
+    std::cerr << "Docker image of this copy is :  vbtapp:v5.35" << std::endl;
+    
     if(argc == 1)
     {
         std::cerr << "You have not entered an input.Please try either following:" << std::endl;
