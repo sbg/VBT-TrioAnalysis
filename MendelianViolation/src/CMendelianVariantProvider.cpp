@@ -624,7 +624,7 @@ bool IsAutosome(const std::string& a_rChrName)
     std::stringstream convertor;
     int chrNumber;
     
-    if(a_rChrName.length() > 3)
+    if(a_rChrName.length() > 3 && a_rChrName.substr(0,3) == "chr")
     {
         convertor << a_rChrName.substr(3);
         convertor >> chrNumber;
