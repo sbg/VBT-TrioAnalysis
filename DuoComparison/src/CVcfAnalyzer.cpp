@@ -30,7 +30,6 @@ void CVcfAnalyzer::Run(int argc, char** argv)
     std::cout << "MaxPath: " << m_config.m_nMaxPathSize << std::endl;
     std::cout << "MaxIteration: " << m_config.m_nMaxIterationCount << std::endl;
 
-    
     start = std::time(0);
     
     //Initialize Variant providers which contains VCF and FASTA files
@@ -57,7 +56,18 @@ void CVcfAnalyzer::Run(int argc, char** argv)
         outputprovider.SetBestPaths(m_aBestPaths);
         outputprovider.SetContigList(m_provider.GetContigs());
         outputprovider.GenerateSplitVcfs(m_provider.GetChromosomeIdTuples());
+        
+        std::vector<SChrIdTuple> chromosomeListToProcess = m_provider.GetChromosomeIdTuples();
+        m_resultLogger.OpenSyncPointFile(std::string(m_config.m_pOutputDirectory) + "/SyncPointList.txt");
+        for(int k = 0; k < chromosomeListToProcess.size(); k++)
+        {
+            std::vector<CSyncPoint> syncPointList;
+            CalculateSyncPointList(chromosomeListToProcess[k], syncPointList);
+            m_resultLogger.WriteSyncPointList(chromosomeListToProcess[k].m_chrName, syncPointList);
+        }
+        m_resultLogger.CloseSyncPointFile();
     }
+    
     else
     {
         std::cout << "Generating Outputs [GA4GH MODE]..." << std::endl;
@@ -78,7 +88,6 @@ void CVcfAnalyzer::Run(int argc, char** argv)
     duration = std::difftime(std::time(0), start);
     std::cout << "Total execution time is " << duration << " secs" << std::endl;
 }
-
 
 int CVcfAnalyzer::AssignJobsToThreads(int a_nThreadCount)
 {
@@ -112,7 +121,6 @@ int CVcfAnalyzer::AssignJobsToThreads(int a_nThreadCount)
             m_pThreadPool[k] = std::thread(&CVcfAnalyzer::ThreadFunctionSPLIT, this, chromosomeLists[k], m_config.m_bIsGenotypeMatch);
         else
             m_pThreadPool[k] = std::thread(&CVcfAnalyzer::ThreadFunctionGA4GH, this, chromosomeLists[k]);
-           
     }
     
     for(int k = 0; k < exactThreadCount; k++)
@@ -259,6 +267,88 @@ void CVcfAnalyzer::ThreadFunctionSPLIT(std::vector<SChrIdTuple> a_aTuples, bool 
     }
 }
 
+void CVcfAnalyzer::CalculateSyncPointList(const SChrIdTuple& a_rTuple, std::vector<CSyncPoint>& a_rSyncPointList)
+{
+    std::vector<const COrientedVariant*> pBaseIncluded = m_aBestPaths[a_rTuple.m_nTupleIndex].m_baseSemiPath.GetIncludedVariants();
+    std::vector<const COrientedVariant*> pCalledIncluded = m_aBestPaths[a_rTuple.m_nTupleIndex].m_calledSemiPath.GetIncludedVariants();;
+    
+    std::vector<const CVariant*> pBaseExcluded = m_provider.GetVariantList(eBASE, a_rTuple.m_nBaseId, m_aBestPaths[a_rTuple.m_nTupleIndex].m_baseSemiPath.GetExcluded());
+    std::vector<const CVariant*> pCalledExcluded = m_provider.GetVariantList(eCALLED, a_rTuple.m_nCalledId, m_aBestPaths[a_rTuple.m_nTupleIndex].m_calledSemiPath.GetExcluded());
+    
+    CPath *pPath = &m_aBestPaths[a_rTuple.m_nTupleIndex];
+    
+    int baseIncludedItr = 0;
+    int baseExcludedItr = 0;
+    int calledIncludedItr = 0;
+    int calledExcludedItr = 0;
+
+    for(int k = 0; k < (int)pPath->m_aSyncPointList.size(); k++)
+    {
+        CSyncPoint ssPoint;
+        ssPoint.m_nStartPosition = k > 0 ? pPath->m_aSyncPointList[k-1] : 0;
+        ssPoint.m_nEndPosition = pPath->m_aSyncPointList[k];
+        ssPoint.m_nIndex = k;
+        
+        while(baseIncludedItr < (int)pBaseIncluded.size() && pBaseIncluded[baseIncludedItr]->GetStartPos() <= pPath->m_aSyncPointList[k])
+        {
+            const COrientedVariant* pOvar = pBaseIncluded[baseIncludedItr];
+            ssPoint.m_baseVariantsIncluded.push_back(pOvar);
+            baseIncludedItr++;
+        }
+        
+        while(calledIncludedItr < (int)pCalledIncluded.size() && pCalledIncluded[calledIncludedItr]->GetStartPos() <= pPath->m_aSyncPointList[k])
+        {
+            const COrientedVariant* pOvar = pCalledIncluded[calledIncludedItr];
+            ssPoint.m_calledVariantsIncluded.push_back(pOvar);
+            calledIncludedItr++;
+        }
+        
+        while(baseExcludedItr < (int)pBaseExcluded.size() && pBaseExcluded[baseExcludedItr]->m_nStartPos <= pPath->m_aSyncPointList[k])
+        {
+            ssPoint.m_baseVariantsExcluded.push_back(pBaseExcluded[baseExcludedItr]);
+            baseExcludedItr++;
+        }
+        
+        while(calledExcludedItr < (int)pCalledExcluded.size() && pCalledExcluded[calledExcludedItr]->m_nStartPos <= pPath->m_aSyncPointList[k])
+        {
+            ssPoint.m_calledVariantsExcluded.push_back(pCalledExcluded[calledExcludedItr]);
+            calledExcludedItr++;
+        }
+        
+        a_rSyncPointList.push_back(ssPoint);
+    }
+    
+    //Add Remaining variants to the last syncPoint
+    CSyncPoint sPoint;
+    sPoint.m_nStartPosition = pPath->m_aSyncPointList[pPath->m_aSyncPointList.size()-1];
+    sPoint.m_nEndPosition = INT_MAX;
+    sPoint.m_nIndex = static_cast<int>(pPath->m_aSyncPointList.size()-1);
+    
+    while(baseIncludedItr < (int)pBaseIncluded.size() && pBaseIncluded[baseIncludedItr]->GetStartPos() <= sPoint.m_nEndPosition)
+    {
+        sPoint.m_baseVariantsIncluded.push_back(pBaseIncluded[baseIncludedItr]);
+        baseIncludedItr++;
+    }
+    while(calledIncludedItr < (int)pCalledIncluded.size() && pCalledIncluded[calledIncludedItr]->GetStartPos() <= sPoint.m_nEndPosition)
+    {
+        sPoint.m_calledVariantsIncluded.push_back(pCalledIncluded[calledIncludedItr]);
+        calledIncludedItr++;
+    }
+    
+    while(baseExcludedItr < (int)pBaseExcluded.size() && pBaseExcluded[baseExcludedItr]->m_nStartPos <= sPoint.m_nEndPosition)
+    {
+        sPoint.m_baseVariantsExcluded.push_back(pBaseExcluded[baseExcludedItr]);
+        baseExcludedItr++;
+    }
+    
+    while(calledExcludedItr < (int)pCalledExcluded.size() && pCalledExcluded[calledExcludedItr]->m_nStartPos <= sPoint.m_nEndPosition)
+    {
+        sPoint.m_calledVariantsExcluded.push_back(pCalledExcluded[calledExcludedItr]);
+        calledExcludedItr++;
+    }
+    a_rSyncPointList.push_back(sPoint);
+    
+}
 
 
 void CVcfAnalyzer::PrintVariants(std::string a_outputDirectory, std::string a_FileName, const std::vector<const COrientedVariant*>& a_rOvarList) const

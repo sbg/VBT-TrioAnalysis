@@ -64,19 +64,19 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "mendelian"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "varcomp"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-father"
+            argument = "varcomp"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-father"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest4/HG003.vcf"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/HG001_trio_SNPS_new.vcf.gz"
@@ -84,11 +84,11 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-child"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest4/HG002.vcf"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/HG001_trio_SNPS_new.vcf.gz"
@@ -96,11 +96,11 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-mother"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest4/HG004.vcf"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/HG001_trio_SNPS_new.vcf.gz"
@@ -111,7 +111,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest4"
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/SyncPointTest_78_92"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -140,11 +140,11 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-no-call"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "explicit"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-thread-count"
@@ -160,31 +160,43 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-base"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/RTG/rtg-core/Inputs/NA12878_all.vcf.gz"
-            isEnabled = "NO">
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest5/FreeBayes_Normalized_NA12892DUP.vcf"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-called"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/RTG/rtg-core/Inputs/NA12878_all.vcf.gz"
-            isEnabled = "NO">
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest5/FreeBayes_Normalized_NA12878DUP.vcf"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--allele-match"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--autosome-only"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-bed"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest4/autosomeOnly_hg_g1k_v37.bed"
-            isEnabled = "YES">
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-out-prefix"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "HG002_DENEME"
+            isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
       <AdditionalOptions>

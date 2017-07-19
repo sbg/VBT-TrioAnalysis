@@ -44,6 +44,9 @@ private:
     //Function that process chromosome in bulk for GA4GH mode (process both genotype and allele matches)
     void ThreadFunctionGA4GH(std::vector<SChrIdTuple> a_aTuples);
 
+    //Calculate the syncronization point list for the given tuple
+    void CalculateSyncPointList(const SChrIdTuple& a_rTuple, std::vector<CSyncPoint>& a_rSyncPointList);
+    
     
     void PrintVariants(std::string a_outputDirectory, std::string a_FileName, const std::vector<const COrientedVariant*>& a_rOvarList) const;
     void PrintVariants(std::string a_outputDirectory, std::string a_FileName, const std::vector<const CVariant*>& a_rVarList) const;

@@ -10,7 +10,7 @@
 #define _C_SYNC_POINT_H_
 
 #include "CVariant.h"
-
+#include "COrientedVariant.h"
 
 class CSyncPoint
 {

@@ -143,6 +143,23 @@ void CResultLog::WriteStatistics(int a_nMode)
 }
 
 
+void CResultLog::OpenSyncPointFile(const std::string& a_rFilePath)
+{
+    m_syncPointFile.open(a_rFilePath);
+}
+
+void CResultLog::CloseSyncPointFile()
+{
+    m_syncPointFile.close();
+}
+
+//Write SyncPointList to a file
+void CResultLog::WriteSyncPointList(const std::string& a_rChrName, const std::vector<CSyncPoint>& a_rSyncPointList)
+{
+    for(CSyncPoint point : a_rSyncPointList)
+         m_syncPointFile << a_rChrName << " " << point.m_nStartPosition << " " << point.m_nEndPosition << std::endl;
+}
+
 
 
 

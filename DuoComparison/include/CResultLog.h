@@ -12,6 +12,8 @@
 #include <string>
 #include "Constants.h"
 #include <vector>
+#include "CSyncPoint.h"
+#include <fstream>
 
 struct SLogEntry
 {
@@ -39,6 +41,13 @@ public:
     //Write the results in log.txt file
     //@ a_nMode: 0 - SPLIT (genotype match)   1 - SPLIT (allele match) s 2 - GA4GH
     void WriteStatistics(int a_nMode);
+    
+    //Open/Close SyncPoint File
+    void OpenSyncPointFile(const std::string& a_rFilePath);
+    void CloseSyncPointFile();
+    
+    //Write SyncPointList to a file
+    void WriteSyncPointList(const std::string& a_rChrName, const std::vector<CSyncPoint>& a_rSyncPointList);
         
 private:
     
@@ -46,6 +55,9 @@ private:
     std::vector<SLogEntry> m_aResultEntries;
         
     std::string m_aLogPath;
+    
+    std::ofstream m_syncPointFile;
+    
 };
 
 
