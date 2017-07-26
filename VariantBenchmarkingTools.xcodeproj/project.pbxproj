@@ -25,7 +25,6 @@
 		551661FC1E82E8EB002436FA /* CMendelianAnalyzer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 551661F81E82E8EB002436FA /* CMendelianAnalyzer.cpp */; };
 		551661FD1E82E8EB002436FA /* CMendelianTrioMerger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 551661F91E82E8EB002436FA /* CMendelianTrioMerger.cpp */; };
 		551661FE1E82E8EB002436FA /* CMendelianVariantProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 551661FA1E82E8EB002436FA /* CMendelianVariantProvider.cpp */; };
-		551661FF1E82E8EB002436FA /* COverlappingVariantEliminator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 551661FB1E82E8EB002436FA /* COverlappingVariantEliminator.cpp */; };
 		551662191E82EBC5002436FA /* CVariant.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 551662181E82EBC5002436FA /* CVariant.cpp */; };
 		5516621D1E82F271002436FA /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5516621B1E82F271002436FA /* main.cpp */; };
 		5516621E1E82F271002436FA /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5516621C1E82F271002436FA /* test.cpp */; };
@@ -93,13 +92,11 @@
 		551661F21E82E8DB002436FA /* CMendelianAnalyzer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CMendelianAnalyzer.h; path = MendelianViolation/include/CMendelianAnalyzer.h; sourceTree = SOURCE_ROOT; };
 		551661F31E82E8DB002436FA /* CMendelianTrioMerger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CMendelianTrioMerger.h; path = MendelianViolation/include/CMendelianTrioMerger.h; sourceTree = SOURCE_ROOT; };
 		551661F41E82E8DB002436FA /* CMendelianVariantProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CMendelianVariantProvider.h; path = MendelianViolation/include/CMendelianVariantProvider.h; sourceTree = SOURCE_ROOT; };
-		551661F51E82E8DB002436FA /* COverlappingVariantEliminator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = COverlappingVariantEliminator.h; path = MendelianViolation/include/COverlappingVariantEliminator.h; sourceTree = SOURCE_ROOT; };
 		551661F61E82E8DB002436FA /* EMendelianDecision.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EMendelianDecision.h; path = MendelianViolation/include/EMendelianDecision.h; sourceTree = SOURCE_ROOT; };
 		551661F71E82E8DB002436FA /* EMendelianVcfName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EMendelianVcfName.h; path = MendelianViolation/include/EMendelianVcfName.h; sourceTree = SOURCE_ROOT; };
 		551661F81E82E8EB002436FA /* CMendelianAnalyzer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CMendelianAnalyzer.cpp; path = MendelianViolation/src/CMendelianAnalyzer.cpp; sourceTree = SOURCE_ROOT; };
 		551661F91E82E8EB002436FA /* CMendelianTrioMerger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CMendelianTrioMerger.cpp; path = MendelianViolation/src/CMendelianTrioMerger.cpp; sourceTree = SOURCE_ROOT; };
 		551661FA1E82E8EB002436FA /* CMendelianVariantProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CMendelianVariantProvider.cpp; path = MendelianViolation/src/CMendelianVariantProvider.cpp; sourceTree = SOURCE_ROOT; };
-		551661FB1E82E8EB002436FA /* COverlappingVariantEliminator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = COverlappingVariantEliminator.cpp; path = MendelianViolation/src/COverlappingVariantEliminator.cpp; sourceTree = SOURCE_ROOT; };
 		551662001E82E934002436FA /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = SOURCE_ROOT; };
 		551662171E82EBB9002436FA /* CVariant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CVariant.h; path = VcfIO/include/CVariant.h; sourceTree = SOURCE_ROOT; };
 		551662181E82EBC5002436FA /* CVariant.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CVariant.cpp; path = VcfIO/src/CVariant.cpp; sourceTree = SOURCE_ROOT; };
@@ -292,7 +289,6 @@
 				551661F81E82E8EB002436FA /* CMendelianAnalyzer.cpp */,
 				551661F91E82E8EB002436FA /* CMendelianTrioMerger.cpp */,
 				551661FA1E82E8EB002436FA /* CMendelianVariantProvider.cpp */,
-				551661FB1E82E8EB002436FA /* COverlappingVariantEliminator.cpp */,
 				550E1F5F1E8ABE8B00AEFB0B /* CMendelianResultLog.cpp */,
 			);
 			name = src;
@@ -305,7 +301,6 @@
 				551661F21E82E8DB002436FA /* CMendelianAnalyzer.h */,
 				551661F31E82E8DB002436FA /* CMendelianTrioMerger.h */,
 				551661F41E82E8DB002436FA /* CMendelianVariantProvider.h */,
-				551661F51E82E8DB002436FA /* COverlappingVariantEliminator.h */,
 				551661F61E82E8DB002436FA /* EMendelianDecision.h */,
 				551661F71E82E8DB002436FA /* EMendelianVcfName.h */,
 				550E1F5C1E89613200AEFB0B /* ENoCallMode.h */,
@@ -506,7 +501,6 @@
 				551661DE1E82C967002436FA /* COrientedVariant.cpp in Sources */,
 				551661FD1E82E8EB002436FA /* CMendelianTrioMerger.cpp in Sources */,
 				551661FC1E82E8EB002436FA /* CMendelianAnalyzer.cpp in Sources */,
-				551661FF1E82E8EB002436FA /* COverlappingVariantEliminator.cpp in Sources */,
 				55DE31921F1012F1009D385D /* CSimpleBEDParser.cpp in Sources */,
 				551661E21E82C967002436FA /* CSemiPath.cpp in Sources */,
 				551661DD1E82C967002436FA /* CHaplotypeSequence.cpp in Sources */,

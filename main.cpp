@@ -10,8 +10,6 @@
 #include "CMendelianAnalyzer.h"
 #include <string>
 
-#include "COverlappingVariantEliminator.h"
-
 //void testGa4ghOutput();
 //void testRefOverlapOutput(int argc, char** argv);
 //void compareTrimmedVariables();
@@ -24,8 +22,8 @@ int main (int argc, char** argv)
 {
     int successNo = 0;
     
-    std::cout << "Docker image of this copy is :  vbtapp:v5.35" << std::endl;
-    std::cerr << "Docker image of this copy is :  vbtapp:v5.35" << std::endl;
+    std::cout << "Docker image of this copy is :  vbtapp:v5.36" << std::endl;
+    std::cerr << "Docker image of this copy is :  vbtapp:v5.36" << std::endl;
     
     if(argc == 1)
     {
