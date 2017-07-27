@@ -208,7 +208,7 @@ void CMendelianVariantProvider::FillVariantsFromBED()
         }
         
         //Variant Could not pass from BED region
-        if(bedRegion.m_chrName != variant.m_chrName || std::min(bedRegion.m_nEndPos, variant.m_nEndPos) - std::max(bedRegion.m_nStartPos, variant.m_nStartPos) < 0)
+        if(bedRegion.m_chrName != variant.m_chrName || std::min(bedRegion.m_nEndPos, variant.m_nOriginalPos + static_cast<int>(variant.m_refSequence.length())) - std::max(bedRegion.m_nStartPos, variant.m_nOriginalPos) < 0)
             continue;
         
         if(!variant.m_bIsNoCall && IsHomRef(variant))
