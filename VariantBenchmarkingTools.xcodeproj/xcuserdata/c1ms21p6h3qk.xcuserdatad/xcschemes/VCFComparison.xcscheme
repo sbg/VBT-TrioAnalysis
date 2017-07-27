@@ -64,19 +64,19 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "mendelian"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "varcomp"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-father"
+            argument = "varcomp"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest4/HG003.vcf"
-            isEnabled = "NO">
+            argument = "-father"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/VBTultimateTest/FreeBayes_Normalized_Trio_CEU_Auto_trio.vcf"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/HG001_trio_SNPS_new.vcf.gz"
@@ -84,11 +84,11 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-child"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest4/HG002.vcf"
-            isEnabled = "NO">
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/VBTultimateTest/FreeBayes_Normalized_Trio_CEU_Auto_trio.vcf"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/HG001_trio_SNPS_new.vcf.gz"
@@ -96,11 +96,11 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-mother"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest4/HG004.vcf"
-            isEnabled = "NO">
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/VBTultimateTest/FreeBayes_Normalized_Trio_CEU_Auto_trio.vcf"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/HG001_trio_SNPS_new.vcf.gz"
@@ -111,7 +111,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/SyncPointTest_78_92"
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest6"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -132,11 +132,11 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-pedigree"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest4/AJ_bwaOnly.ped"
-            isEnabled = "NO">
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest6/MFC.ped"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-no-call"
@@ -160,23 +160,23 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-base"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest5/FreeBayes_Normalized_NA12892DUP.vcf"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-called"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest5/FreeBayes_Normalized_NA12878DUP.vcf"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--allele-match"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--autosome-only"
@@ -184,19 +184,19 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-bed"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest4/autosomeOnly_hg_g1k_v37.bed"
-            isEnabled = "NO">
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest6/chr1.bed"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-out-prefix"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "HG002_DENEME"
-            isEnabled = "NO">
+            argument = "CEU_FreeBayes_UnAssignedCorrection"
+            isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
       <AdditionalOptions>

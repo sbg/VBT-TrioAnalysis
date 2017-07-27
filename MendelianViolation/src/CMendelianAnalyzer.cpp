@@ -973,6 +973,62 @@ void CMendelianAnalyzer::CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTr
     
 }
 
+void CMendelianAnalyzer::AssignDecisionToParentVars(EMendelianVcfName a_checkSide, SChrIdTriplet& a_rTriplet, std::vector<EMendelianDecision>& a_rParentDecisions, std::vector<EMendelianDecision>& a_rChildDecisions)
+{
+    std::vector<const CVariant*> varListToCheckParent = a_checkSide == eMOTHER ? m_provider.GetVariantList(eMOTHER, a_rTriplet.m_nMid) : m_provider.GetVariantList(eFATHER, a_rTriplet.m_nFid);
+ 
+    assert(varListToCheckParent.size() == a_rParentDecisions.size());
+    
+    //Get sync point list
+    std::vector<CSyncPoint> aSyncPointList;
+    bool bIsFatherChild = a_checkSide == eFATHER ? true : false;
+    GetSyncPointList(a_rTriplet, bIsFatherChild, aSyncPointList);
+    
+    //Iterator to synchronization point list
+    int itrSyncPList = 0;
+    
+    for(int k = 0; k < varListToCheckParent.size(); k++)
+    {
+        //Skipped assigned variants
+        if(a_rParentDecisions[k] != eUnknown)
+            continue;
+        
+        //Skip irrelevant sync points
+        while(itrSyncPList < aSyncPointList.size() && aSyncPointList[itrSyncPList].m_nEndPosition <= varListToCheckParent[k]->m_nStartPos)
+            itrSyncPList++;
+        
+        //Terminate if the sync point list is ended
+        if(itrSyncPList == aSyncPointList.size())
+            break;
+        
+        bool bIsViolationFound = false;
+        
+        for(int m = 0; m < aSyncPointList[itrSyncPList].m_calledVariantsIncluded.size(); m++)
+        {
+            if(a_rChildDecisions[m_provider.Get0BasedVariantIndex(eCHILD, a_rTriplet.m_nCid, aSyncPointList[itrSyncPList].m_calledVariantsIncluded[m]->GetVariant().m_nId)] == eViolation)
+            {
+                a_rParentDecisions[k] = eViolation;
+                bIsViolationFound = true;
+                break;
+            }
+        }
+
+        for(int m = 0; m < aSyncPointList[itrSyncPList].m_calledVariantsExcluded.size(); m++)
+        {
+            if(a_rChildDecisions[m_provider.Get0BasedVariantIndex(eCHILD, a_rTriplet.m_nCid, aSyncPointList[itrSyncPList].m_calledVariantsExcluded[m]->m_nId)] == eViolation)
+            {
+                a_rParentDecisions[k] = eViolation;
+                bIsViolationFound = true;
+                break;
+            }
+        }
+        
+        if(!bIsViolationFound)
+            a_rParentDecisions[k] = eCompliant;
+    }
+}
+
+
 void CMendelianAnalyzer::MergeFunc(SChrIdTriplet& a_triplet)
 {
     std::vector<const CVariant*> compliants;
@@ -1325,6 +1381,10 @@ void CMendelianAnalyzer::MergeFunc(SChrIdTriplet& a_triplet)
                 m_aChildDecisions[a_triplet.m_nTripleIndex][k] = eNoCallChild;
         }
     }
+    
+    //Assign the remaining unassigned parent variants
+    AssignDecisionToParentVars(eMOTHER, a_triplet, m_aMotherDecisions[a_triplet.m_nTripleIndex], m_aChildDecisions[a_triplet.m_nTripleIndex]);
+    AssignDecisionToParentVars(eFATHER, a_triplet, m_aFatherDecisions[a_triplet.m_nTripleIndex], m_aChildDecisions[a_triplet.m_nTripleIndex]);
     
     ReportChildChromosomeData(a_triplet, compliants, violations);
     

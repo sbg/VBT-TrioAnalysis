@@ -53,6 +53,9 @@ private:
     //Check each unique vars and seek for 0 path at the requested side and fills the a_rSideDecisionList
     void CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTriplet& a_rTriplet, const std::vector<const CVariant*>& a_rVariantList, std::vector<bool>& a_rSideDecisions);
     
+    //Check each parent variant and assign all unassigned parent variants as violation or consistent
+    void AssignDecisionToParentVars(EMendelianVcfName a_checkSide, SChrIdTriplet& a_rTriplet, std::vector<EMendelianDecision>& a_rParentDecisions, std::vector<EMendelianDecision>& a_rChildDecisions);
+    
     //Check sync points which child excluded contains 0 Allele variant. If that 0 allele is playable for the parent, we mark variants as compliant, violation otherwise
     void CheckFor0PathFor00(SChrIdTriplet& a_rTriplet,
                             bool a_bIsFatherChild,
