@@ -1281,13 +1281,13 @@ void CMendelianAnalyzer::MergeFunc(SChrIdTriplet& a_triplet)
             m_aChildDecisions[a_triplet.m_nTripleIndex][k] = EMendelianDecision::eUnknown;
     }
     
-    //Mother Checks
+    //Excluded Mother variant Check - If we can find 0/0 hidden child site correspond to mother variant
     std::vector<const CVariant*> uniqueMotherVars = m_provider.GetVariantList(m_provider.GetVariantList(eMOTHER, a_triplet.m_nMid,  m_aBestPathsMotherChildGT[a_triplet.m_nTripleIndex].m_baseSemiPath.GetExcluded()),
                                                                               m_aBestPathsMotherChildAM[a_triplet.m_nTripleIndex].m_baseSemiPath.GetExcluded());
     std::vector<bool> motherDecisions(uniqueMotherVars.size());
     CheckUniqueVars(eMOTHER, a_triplet, uniqueMotherVars, motherDecisions);
     
-    //Father Checks
+    //Excluded Father variant Check - If we can find 0/0 hidden child site correspond to father variant
     std::vector<const CVariant*> uniqueFatherVars = m_provider.GetVariantList(m_provider.GetVariantList(eFATHER, a_triplet.m_nFid,  m_aBestPathsFatherChildGT[a_triplet.m_nTripleIndex].m_baseSemiPath.GetExcluded()),
                                                                               m_aBestPathsFatherChildAM[a_triplet.m_nTripleIndex].m_baseSemiPath.GetExcluded());
     std::vector<bool> fatherDecisions(uniqueFatherVars.size());
