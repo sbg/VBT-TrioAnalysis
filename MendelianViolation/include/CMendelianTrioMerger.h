@@ -97,9 +97,8 @@ private:
     //Register the genotype of merged vcf record to genotype table [updates m_logGenotypes]
     void RegisterGenotype(const SVcfRecord& a_rRecord, EVariantCategory a_uCategory, EMendelianDecision a_uDecision);
     
-    //For the given recordList
+    //For the given recordList unify the overlapping variant decisions
     void ProcessRefOverlappedRegions(std::vector<SVcfRecord>&  a_rRecordList, std::vector<EMendelianDecision>& a_rRecordDecisionList);
-    
     
     //Vcf writer instance
     CVcfWriter m_vcfWriter;
