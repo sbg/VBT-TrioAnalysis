@@ -120,14 +120,14 @@ int CPath::AddVariant(CPathContainer *a_pPathList,
         const COrientedVariant* Ovar2 = a_pOVariantList[2* a_nVariantIndex + 1];
         
         // Create a new path that excludes this variant
-        a_pPathList[pathCount].m_pPath = isInSync ? std::shared_ptr<CPath>(new CPath(*this, m_calledSemiPath.GetPosition())) : std::shared_ptr<CPath>(new CPath(*this));
+        a_pPathList[pathCount].m_pPath = isInSync ? std::shared_ptr<CPath>(new CPath(*this, m_calledSemiPath.GetPosition()+1)) : std::shared_ptr<CPath>(new CPath(*this));
         a_pPathList[pathCount].m_pPath->Exclude(a_nVcfName, *pNextVariant, a_nVariantIndex);
         pathCount++;
         
         // Create new paths that includes this variant in the possible phases
         if (!pNextVariant->IsHeterozygous())
         {
-            a_pPathList[pathCount].m_pPath = isInSync ? std::shared_ptr<CPath>(new CPath(*this, m_calledSemiPath.GetPosition())) : std::shared_ptr<CPath>(new CPath(*this));
+            a_pPathList[pathCount].m_pPath = isInSync ? std::shared_ptr<CPath>(new CPath(*this, m_calledSemiPath.GetPosition()+1)) : std::shared_ptr<CPath>(new CPath(*this));
             const CSemiPath* p = a_nVcfName == eBASE ? &a_pPathList[pathCount].m_pPath->m_baseSemiPath : &a_pPathList[pathCount].m_pPath->m_calledSemiPath;
             //Make sure variant is not overlap with the previous one
             if(p->IsNew(*Ovar1))
@@ -140,7 +140,7 @@ int CPath::AddVariant(CPathContainer *a_pPathList,
         else
         {
             //Include with ordered genotype
-            a_pPathList[pathCount].m_pPath =  isInSync ? std::shared_ptr<CPath>(new CPath(*this, m_calledSemiPath.GetPosition())) : std::shared_ptr<CPath>(new CPath(*this));
+            a_pPathList[pathCount].m_pPath =  isInSync ? std::shared_ptr<CPath>(new CPath(*this, m_calledSemiPath.GetPosition()+1)) : std::shared_ptr<CPath>(new CPath(*this));
             CSemiPath* p = a_nVcfName == eBASE ? &a_pPathList[pathCount].m_pPath->m_baseSemiPath : &a_pPathList[pathCount].m_pPath->m_calledSemiPath;
             //Make sure variant is not overlap with the previous one
             if(p->IsNew(*Ovar1))
@@ -149,7 +149,7 @@ int CPath::AddVariant(CPathContainer *a_pPathList,
                 pathCount++;
             }
             //Include with unordered genotype
-            a_pPathList[pathCount].m_pPath =  isInSync ? std::shared_ptr<CPath>(new CPath(*this, m_calledSemiPath.GetPosition())) : std::shared_ptr<CPath>(new CPath(*this));
+            a_pPathList[pathCount].m_pPath =  isInSync ? std::shared_ptr<CPath>(new CPath(*this, m_calledSemiPath.GetPosition()+1)) : std::shared_ptr<CPath>(new CPath(*this));
             p = a_nVcfName == eBASE ? &a_pPathList[pathCount].m_pPath->m_baseSemiPath : &a_pPathList[pathCount].m_pPath->m_calledSemiPath;
             //Make sure variant is not overlap with the previous one
             if(p->IsNew(*Ovar2))
@@ -167,7 +167,7 @@ int CPath::AddVariant(CPathContainer *a_pPathList,
         const COrientedVariant* Ovars[] = {a_pOVariantList[2* a_nVariantIndex], a_pOVariantList[2* a_nVariantIndex + 1]};
         
         // Create a path extension that excludes this variant
-        a_pPathList[pathCount].m_pPath = std::shared_ptr<CPath>(new CPath(*this, m_calledSemiPath.GetPosition()));
+        a_pPathList[pathCount].m_pPath = std::shared_ptr<CPath>(new CPath(*this, m_calledSemiPath.GetPosition()+1));
         a_pPathList[pathCount].m_pPath->Exclude(a_nVcfName, *pNextVariant, a_nVariantIndex);
         pathCount++;
         
@@ -175,7 +175,7 @@ int CPath::AddVariant(CPathContainer *a_pPathList,
         {
             if(pNextVariant->m_genotype[k] != 0)
             {
-                a_pPathList[pathCount].m_pPath = isInSync ? std::shared_ptr<CPath>(new CPath(*this, m_calledSemiPath.GetPosition())) : std::shared_ptr<CPath>(new CPath(*this));
+                a_pPathList[pathCount].m_pPath = isInSync ? std::shared_ptr<CPath>(new CPath(*this, m_calledSemiPath.GetPosition()+1)) : std::shared_ptr<CPath>(new CPath(*this));
                 const CSemiPath* p = a_nVcfName == eBASE ? &a_pPathList[pathCount].m_pPath->m_baseSemiPath : &a_pPathList[pathCount].m_pPath->m_calledSemiPath;
                 //Make sure variant is not overlap with the previous one
                 if(p->IsNew(*Ovars[k]))
