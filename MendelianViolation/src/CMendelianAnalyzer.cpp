@@ -21,7 +21,11 @@ bool variantCompare(const CVariant* v1, const CVariant* v2) {return v1->m_nId < 
 //Checks if the given two range is overlapping
 bool isOverlap(int left1, int right1, int left2, int right2)
 {
-    return std::min(right1, right2) - std::max(left1, left2) > 0;
+    //If the interval length is 0 (eg. 974791-974791) we need to check if the boundaries matches
+    if(right1-left1 == 0 || right2-left2 == 0)
+        return left1==left2 || right1 == right2;
+    else
+        return std::min(right1, right2) - std::max(left1, left2) > 0;
 }
 
 
@@ -330,11 +334,13 @@ void CMendelianAnalyzer::GetSyncPointList(SChrIdTriplet& a_rTriplet, bool a_bIsF
     std::vector<const CVariant*> pCalledExcluded;
     
     CPath *pPath;
+    CPath *pPathSync;
 
     if(a_bIsGT == false)
     {
         pPath = a_bIsFatherChild ? &m_aBestPathsFatherChildAM[a_rTriplet.m_nTripleIndex] : &m_aBestPathsMotherChildAM[a_rTriplet.m_nTripleIndex];
         CPath *pPathGT = a_bIsFatherChild ? &m_aBestPathsFatherChildGT[a_rTriplet.m_nTripleIndex] : &m_aBestPathsMotherChildGT[a_rTriplet.m_nTripleIndex];
+        pPathSync = pPathGT;
         
         std::vector<const CVariant*> excludedVarsBase = m_provider.GetVariantList(a_bIsFatherChild ? eFATHER : eMOTHER, a_bIsFatherChild ? a_rTriplet.m_nFid : a_rTriplet.m_nMid, pPathGT->m_baseSemiPath.GetExcluded());
         std::vector<const CVariant*> excludedVarsCalled = m_provider.GetVariantList(eCHILD, a_rTriplet.m_nCid, pPathGT->m_calledSemiPath.GetExcluded());
@@ -348,6 +354,7 @@ void CMendelianAnalyzer::GetSyncPointList(SChrIdTriplet& a_rTriplet, bool a_bIsF
     else
     {
         pPath = a_bIsFatherChild ? &m_aBestPathsFatherChildGT[a_rTriplet.m_nTripleIndex] : &m_aBestPathsMotherChildGT[a_rTriplet.m_nTripleIndex];
+        pPathSync = pPath;
         
         pBaseIncluded = pPath->m_baseSemiPath.GetIncludedVariants();
         pCalledIncluded = pPath->m_calledSemiPath.GetIncludedVariants();
@@ -362,34 +369,35 @@ void CMendelianAnalyzer::GetSyncPointList(SChrIdTriplet& a_rTriplet, bool a_bIsF
     int calledIncludedItr = 0;
     int calledExcludedItr = 0;
 
-    for(int k = 0; k < (int)pPath->m_aSyncPointList.size(); k++)
+    for(int k = 0; k < (int)pPathSync->m_aSyncPointList.size(); k++)
     {
         CSyncPoint ssPoint;
-        ssPoint.m_nStartPosition = k > 0 ? pPath->m_aSyncPointList[k-1] : 0;
-        ssPoint.m_nEndPosition = pPath->m_aSyncPointList[k];
+        ssPoint.m_nStartPosition = k > 0 ? pPathSync->m_aSyncPointList[k-1] : 0;
+        ssPoint.m_nEndPosition = pPathSync->m_aSyncPointList[k];
         ssPoint.m_nIndex = k;
+        int bound = ssPoint.m_nStartPosition == ssPoint.m_nEndPosition ? 1 : 0;
         
-        while(baseIncludedItr < (int)pBaseIncluded.size() && pBaseIncluded[baseIncludedItr]->GetStartPos() <= pPath->m_aSyncPointList[k])
+        while(baseIncludedItr < (int)pBaseIncluded.size() && pBaseIncluded[baseIncludedItr]->GetStartPos() < (pPathSync->m_aSyncPointList[k] + bound))
         {
             const COrientedVariant* pOvar = pBaseIncluded[baseIncludedItr];
             ssPoint.m_baseVariantsIncluded.push_back(pOvar);
             baseIncludedItr++;
         }
 
-        while(calledIncludedItr < (int)pCalledIncluded.size() && pCalledIncluded[calledIncludedItr]->GetStartPos() <= pPath->m_aSyncPointList[k])
+        while(calledIncludedItr < (int)pCalledIncluded.size() && pCalledIncluded[calledIncludedItr]->GetStartPos() < (pPathSync->m_aSyncPointList[k] + bound))
         {
             const COrientedVariant* pOvar = pCalledIncluded[calledIncludedItr];
             ssPoint.m_calledVariantsIncluded.push_back(pOvar);
             calledIncludedItr++;
         }
         
-        while(baseExcludedItr < (int)pBaseExcluded.size() && pBaseExcluded[baseExcludedItr]->m_nStartPos <= pPath->m_aSyncPointList[k])
+        while(baseExcludedItr < (int)pBaseExcluded.size() && pBaseExcluded[baseExcludedItr]->m_nStartPos < (pPathSync->m_aSyncPointList[k] + bound))
         {
             ssPoint.m_baseVariantsExcluded.push_back(pBaseExcluded[baseExcludedItr]);
             baseExcludedItr++;
         }
         
-        while(calledExcludedItr < (int)pCalledExcluded.size() && pCalledExcluded[calledExcludedItr]->m_nStartPos <= pPath->m_aSyncPointList[k])
+        while(calledExcludedItr < (int)pCalledExcluded.size() && pCalledExcluded[calledExcludedItr]->m_nStartPos < (pPathSync->m_aSyncPointList[k] + bound))
         {
             ssPoint.m_calledVariantsExcluded.push_back(pCalledExcluded[calledExcludedItr]);
             calledExcludedItr++;
@@ -400,9 +408,9 @@ void CMendelianAnalyzer::GetSyncPointList(SChrIdTriplet& a_rTriplet, bool a_bIsF
     
     //Add Remaining variants to the last syncPoint
     CSyncPoint sPoint;
-    sPoint.m_nStartPosition = pPath->m_aSyncPointList[pPath->m_aSyncPointList.size()-1];
+    sPoint.m_nStartPosition = pPathSync->m_aSyncPointList[pPathSync->m_aSyncPointList.size()-1];
     sPoint.m_nEndPosition = INT_MAX;
-    sPoint.m_nIndex = static_cast<int>(pPath->m_aSyncPointList.size()-1);
+    sPoint.m_nIndex = static_cast<int>(pPathSync->m_aSyncPointList.size()-1);
     
     while(baseIncludedItr < (int)pBaseIncluded.size() && pBaseIncluded[baseIncludedItr]->GetStartPos() <= sPoint.m_nEndPosition)
     {
@@ -516,7 +524,6 @@ void CMendelianAnalyzer::CheckFor0Path(SChrIdTriplet& a_rTriplet,
     int varlistItr = 0;
     for(int k = 0; k < (int)a_rSyncPointList.size() && varlistItr < (int)a_pVarList.size(); k++)
     {
-        
         //If we check that syncpoint
         bool bDoCheck = false;
         std::vector<const CVariant*> tmpVarList;
