@@ -22,8 +22,8 @@ int main (int argc, char** argv)
 {
     int successNo = 0;
     
-    std::cout << "Docker image of this copy is :  vbtapp:v5.37" << std::endl;
-    std::cerr << "Docker image of this copy is :  vbtapp:v5.37" << std::endl;
+    std::cout << "Docker image of this copy is :  vbtapp:v5.38" << std::endl;
+    std::cerr << "Docker image of this copy is :  vbtapp:v5.38" << std::endl;
     
     if(argc == 1)
     {

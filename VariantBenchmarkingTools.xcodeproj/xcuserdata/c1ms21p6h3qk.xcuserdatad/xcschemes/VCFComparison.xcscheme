@@ -139,22 +139,6 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-no-call"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "explicit"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-thread-count"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "1"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
             argument = "--ref-overlap"
             isEnabled = "YES">
          </CommandLineArgument>
@@ -163,7 +147,7 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest5/FreeBayes_Normalized_NA12892DUP.vcf"
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest5/FreeBayes_Normalized_NA12891DUP.vcf"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
@@ -180,7 +164,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--autosome-only"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-bed"
@@ -195,7 +179,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "CEU_FreeBayes_UnAssignedCorrection"
+            argument = "CEU_FreeBayes_UnAssignedCorrectionUpdated"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

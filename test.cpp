@@ -37,7 +37,6 @@ void testGa4ghOutput()
     vcfeval.SelectSample("TRUTH");
     sbg.SelectSample("TRUTH");
     
-    
     bool valExistsSBG = sbg.GetNextRecord(&variantSbg, id, config);
     bool valExistsVCFEVAL = vcfeval.GetNextRecord(&variantVcfEval, id, config);
     
