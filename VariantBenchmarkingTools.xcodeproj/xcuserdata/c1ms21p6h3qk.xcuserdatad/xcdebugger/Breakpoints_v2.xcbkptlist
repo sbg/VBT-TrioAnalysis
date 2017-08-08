@@ -90,11 +90,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "main.cpp"
-            timestampString = "522786589.112664"
+            timestampString = "523912597.884064"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "100"
-            endingLineNumber = "100">
+            startingLineNumber = "84"
+            endingLineNumber = "84">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -152,11 +152,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "main.cpp"
-            timestampString = "522786589.112664"
+            timestampString = "523912597.884064"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "101"
-            endingLineNumber = "101">
+            startingLineNumber = "85"
+            endingLineNumber = "85">
             <Locations>
                <Location
                   shouldBeEnabled = "No"
@@ -390,11 +390,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "main.cpp"
-            timestampString = "522786589.112664"
+            timestampString = "523912597.884064"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "44"
-            endingLineNumber = "44"
+            startingLineNumber = "28"
+            endingLineNumber = "28"
             landmarkName = "main (int argc, char** argv)"
             landmarkType = "9">
          </BreakpointContent>
@@ -502,11 +502,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "main.cpp"
-            timestampString = "522786589.112664"
+            timestampString = "523912597.884064"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "37"
-            endingLineNumber = "37"
+            startingLineNumber = "21"
+            endingLineNumber = "21"
             landmarkName = "main (int argc, char** argv)"
             landmarkType = "9">
          </BreakpointContent>
@@ -630,11 +630,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianTrioMerger.cpp"
-            timestampString = "519589633.828668"
+            timestampString = "523920684.616417"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "147"
-            endingLineNumber = "147"
+            startingLineNumber = "151"
+            endingLineNumber = "151"
             landmarkName = "CMendelianTrioMerger::AddRecords(SChrIdTriplet&amp; a_rTriplet)"
             landmarkType = "7">
          </BreakpointContent>
@@ -646,11 +646,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianTrioMerger.cpp"
-            timestampString = "519589633.828668"
+            timestampString = "523920684.616417"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "128"
-            endingLineNumber = "128"
+            startingLineNumber = "132"
+            endingLineNumber = "132"
             landmarkName = "CMendelianTrioMerger::GenerateTrioVcf(std::vector&lt;SChrIdTriplet&gt;&amp; a_rCommonChromosomes)"
             landmarkType = "7">
          </BreakpointContent>
@@ -682,9 +682,7 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "692"
-            endingLineNumber = "692"
-            landmarkName = "CMendelianAnalyzer::AssignJobsToThreads(int a_nThreadCount)"
-            landmarkType = "7">
+            endingLineNumber = "692">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -998,11 +996,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianTrioMerger.cpp"
-            timestampString = "521132548.598953"
+            timestampString = "523920684.616417"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "367"
-            endingLineNumber = "367"
+            startingLineNumber = "371"
+            endingLineNumber = "371"
             landmarkName = "CMendelianTrioMerger::AddRecords(SChrIdTriplet&amp; a_rTriplet)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1014,11 +1012,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "main.cpp"
-            timestampString = "522786589.112664"
+            timestampString = "523912597.884064"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "57"
-            endingLineNumber = "57"
+            startingLineNumber = "41"
+            endingLineNumber = "41"
             landmarkName = "main (int argc, char** argv)"
             landmarkType = "9">
          </BreakpointContent>
@@ -1030,11 +1028,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianTrioMerger.cpp"
-            timestampString = "521148980.591009"
+            timestampString = "523920684.616417"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "150"
-            endingLineNumber = "150"
+            startingLineNumber = "154"
+            endingLineNumber = "154"
             landmarkName = "CMendelianTrioMerger::AddRecords(SChrIdTriplet&amp; a_rTriplet)"
             landmarkType = "7">
          </BreakpointContent>

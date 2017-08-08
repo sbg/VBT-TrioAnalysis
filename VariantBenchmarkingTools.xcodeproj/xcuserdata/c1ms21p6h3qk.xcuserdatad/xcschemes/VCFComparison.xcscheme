@@ -75,43 +75,31 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/VBTultimateTest/FreeBayes_Normalized_Trio_CEU_Auto_trio.vcf"
+            argument = "/Users/c1ms21p6h3qk/Desktop/CEU_PED_Input/filtered_trio_CEU_PEDgraph_merged.vcf"
             isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/HG001_trio_SNPS_new.vcf.gz"
-            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-child"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/VBTultimateTest/FreeBayes_Normalized_Trio_CEU_Auto_trio.vcf"
+            argument = "/Users/c1ms21p6h3qk/Desktop/CEU_PED_Input/filtered_trio_CEU_PEDgraph_merged.vcf"
             isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/HG001_trio_SNPS_new.vcf.gz"
-            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-mother"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/VBTultimateTest/FreeBayes_Normalized_Trio_CEU_Auto_trio.vcf"
+            argument = "/Users/c1ms21p6h3qk/Desktop/CEU_PED_Input/filtered_trio_CEU_PEDgraph_merged.vcf"
             isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/MendelianInput/HG001_trio_SNPS_new.vcf.gz"
-            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-outDir"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest6"
+            argument = "/Users/c1ms21p6h3qk/Desktop/CEU_PED_Input/"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -135,7 +123,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest6/MFC.ped"
+            argument = "/Users/c1ms21p6h3qk/Desktop/CEU_PED_Input/CEUTrio_graphs.ped"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -179,7 +167,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "CEU_FreeBayes_UnAssignedCorrectionUpdated"
+            argument = "VBT_CEU_PED_OverlapFix"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
