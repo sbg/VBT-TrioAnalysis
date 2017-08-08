@@ -14,7 +14,11 @@
 //Checks if the given two range is overlapping
 bool IsOverlap(SVcfRecord& rec1, SVcfRecord& rec2)
 {
-    return std::min(rec1.right, rec2.right) - std::max(rec1.left, rec2.left) > 0;
+    //If the interval length is 0 (eg. 974791-974791) we need to check if the boundaries matches
+    if(rec1.right - rec1.left == 0 || rec2.right - rec2.left == 0)
+        return std::min(rec1.right, rec2.right) - std::max(rec1.left, rec2.left) >= 0;
+    else
+        return std::min(rec1.right, rec2.right) - std::max(rec1.left, rec2.left) > 0;
 }
 
 void CMendelianTrioMerger::SetTrioPath(const std::string& a_nTrioPath)
@@ -490,7 +494,6 @@ void CMendelianTrioMerger::DoTripleMerge(SChrIdTriplet& a_rTriplet, int& a_nChil
     vcfrecord.m_aSampleData.push_back(dataChild);
     
     //Add record to the trio
-    //m_vcfWriter.AddMendelianRecord(vcfrecord);
     a_rRecordList.push_back(vcfrecord);
     
     a_nChildItr++;
@@ -660,7 +663,6 @@ void CMendelianTrioMerger::DoDoubleMerge(SChrIdTriplet& a_rTriplet,
     vcfrecord.m_aSampleData.push_back(dataChild);
     
     //Add record to the trio
-    //m_vcfWriter.AddMendelianRecord(vcfrecord);
     a_rRecordList.push_back(vcfrecord);
     
     //Increment counters
@@ -749,7 +751,6 @@ void CMendelianTrioMerger::DoSingleVar(SChrIdTriplet& a_rTriplet,
     vcfrecord.m_aSampleData.push_back(dataChild);
     
     //Add record to the trio
-    //m_vcfWriter.AddMendelianRecord(vcfrecord);
     a_rRecordList.push_back(vcfrecord);
     
     //Increment the counter
@@ -884,91 +885,137 @@ void CMendelianTrioMerger::RegisterGenotype(const SVcfRecord& a_rRecord, EVarian
 
 
 
+//void CMendelianTrioMerger::ProcessRefOverlappedRegions(std::vector<SVcfRecord>&  a_rRecordList, std::vector<EMendelianDecision>& a_rRecordDecisionList)
+//{
+//
+//    int itr = 0;
+//    
+//    while(itr < a_rRecordList.size())
+//    {
+//        //Check if the vcf record is No call
+//        if(a_rRecordList[itr].m_mendelianDecision == "3" || a_rRecordList[itr].m_mendelianDecision == "4")
+//        {
+//            std::string decision = a_rRecordList[itr].m_mendelianDecision;
+//            
+//            //Go Backward and use a second iterator
+//            int itr2 = itr-1;
+//            while(itr2 >= 0)
+//            {
+//                if(IsOverlap(a_rRecordList[itr], a_rRecordList[itr2]))
+//                {
+//                    a_rRecordDecisionList[itr2] = static_cast<EMendelianDecision>(std::stoi(decision));
+//                    a_rRecordList[itr2].m_mendelianDecision = decision;
+//                    itr2--;
+//                }
+//                else
+//                    break;
+//            }
+//            
+//            //Go Forward
+//            itr2 = itr;
+//            itr++;
+//            while(itr < a_rRecordList.size())
+//            {
+//                if(IsOverlap(a_rRecordList[itr2], a_rRecordList[itr]))
+//                {
+//                    if(a_rRecordList[itr].m_mendelianDecision != "4")
+//                    {
+//                        a_rRecordDecisionList[itr] = static_cast<EMendelianDecision>(std::stoi(decision));
+//                        a_rRecordList[itr].m_mendelianDecision = decision;
+//                    }
+//                    itr++;
+//                }
+//                else
+//                    break;
+//            }
+//        }
+//        
+//        //Check if the vcf record is Violation
+//        else if(a_rRecordList[itr].m_mendelianDecision == "2")
+//        {
+//            //Go Backward and use a second iterator
+//            int itr2 = itr-1;
+//            while(itr2 >= 0)
+//            {
+//                if(IsOverlap(a_rRecordList[itr], a_rRecordList[itr2]))
+//                {
+//                    a_rRecordList[itr2].m_mendelianDecision = "2";
+//                    a_rRecordDecisionList[itr2] = static_cast<EMendelianDecision>(EMendelianDecision::eViolation);
+//                    itr2--;
+//                }
+//                else
+//                    break;
+//            }
+//            
+//            //Go Forward
+//            itr2 = itr;
+//            itr++;
+//            while(itr < a_rRecordList.size())
+//            {
+//                if(IsOverlap(a_rRecordList[itr2], a_rRecordList[itr]))
+//                {
+//                    a_rRecordList[itr].m_mendelianDecision = "2";
+//                    a_rRecordDecisionList[itr] = static_cast<EMendelianDecision>(EMendelianDecision::eViolation);
+//                    itr++;
+//                }
+//                else
+//                    break;
+//            }
+//            
+//        
+//        }
+//        
+//        else
+//            itr++;
+//        
+//    }
+//    
+//}
+
 void CMendelianTrioMerger::ProcessRefOverlappedRegions(std::vector<SVcfRecord>&  a_rRecordList, std::vector<EMendelianDecision>& a_rRecordDecisionList)
 {
 
-    int itr = 0;
+    int recordItr = 0;
+    std::string curVariantDecision;
     
-    while(itr < a_rRecordList.size())
+    while(recordItr < a_rRecordList.size())
     {
-        //Check if the vcf record is No call
-        if(a_rRecordList[itr].m_mendelianDecision == "3" || a_rRecordList[itr].m_mendelianDecision == "4")
+        curVariantDecision = a_rRecordList[recordItr].m_mendelianDecision;
+        
+        //Skip consistent and unknown variants
+        if(curVariantDecision != "1" && curVariantDecision != "0")
         {
-            std::string decision = a_rRecordList[itr].m_mendelianDecision;
-            
             //Go Backward and use a second iterator
-            int itr2 = itr-1;
-            while(itr2 >= 0)
+            int temporaryItr = recordItr-1;
+            while(temporaryItr >= 0)
             {
-                if(IsOverlap(a_rRecordList[itr], a_rRecordList[itr2]))
+                if(IsOverlap(a_rRecordList[recordItr], a_rRecordList[temporaryItr]))
                 {
-                    a_rRecordDecisionList[itr2] = static_cast<EMendelianDecision>(std::stoi(decision));
-                    a_rRecordList[itr2].m_mendelianDecision = decision;
-                    itr2--;
+                    a_rRecordDecisionList[temporaryItr] = static_cast<EMendelianDecision>(std::stoi(curVariantDecision));
+                    a_rRecordList[temporaryItr].m_mendelianDecision = curVariantDecision;
+                    temporaryItr--;
                 }
                 else
                     break;
             }
             
-            //Go Forward
-            itr2 = itr;
-            itr++;
-            while(itr < a_rRecordList.size())
+            //Go Forward with second iterator
+            temporaryItr = recordItr + 1;
+            while(recordItr < a_rRecordList.size())
             {
-                if(IsOverlap(a_rRecordList[itr2], a_rRecordList[itr]))
+                if(IsOverlap(a_rRecordList[recordItr], a_rRecordList[temporaryItr]))
                 {
-                    if(a_rRecordList[itr].m_mendelianDecision != "4")
-                    {
-                        a_rRecordDecisionList[itr] = static_cast<EMendelianDecision>(std::stoi(decision));
-                        a_rRecordList[itr].m_mendelianDecision = decision;
-                    }
-                    itr++;
+                    a_rRecordDecisionList[temporaryItr] = static_cast<EMendelianDecision>(std::stoi(curVariantDecision));
+                    a_rRecordList[temporaryItr].m_mendelianDecision = curVariantDecision;
+                    temporaryItr++;
                 }
                 else
                     break;
             }
         }
         
-        //Check if the vcf record is Violation
-        else if(a_rRecordList[itr].m_mendelianDecision == "2")
-        {
-            //Go Backward and use a second iterator
-            int itr2 = itr-1;
-            while(itr2 >= 0)
-            {
-                if(IsOverlap(a_rRecordList[itr], a_rRecordList[itr2]))
-                {
-                    a_rRecordList[itr2].m_mendelianDecision = "2";
-                    a_rRecordDecisionList[itr2] = static_cast<EMendelianDecision>(EMendelianDecision::eViolation);
-                    itr2--;
-                }
-                else
-                    break;
-            }
-            
-            //Go Forward
-            itr2 = itr;
-            itr++;
-            while(itr < a_rRecordList.size())
-            {
-                if(IsOverlap(a_rRecordList[itr2], a_rRecordList[itr]))
-                {
-                    a_rRecordList[itr].m_mendelianDecision = "2";
-                    a_rRecordDecisionList[itr] = static_cast<EMendelianDecision>(EMendelianDecision::eViolation);
-                    itr++;
-                }
-                else
-                    break;
-            }
-            
-        
-        }
-        
-        else
-            itr++;
-        
+        recordItr++;
     }
-    
 }
 
 
