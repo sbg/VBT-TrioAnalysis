@@ -30,8 +30,8 @@ OBJECTSDUO := $(subst $(SRCDUO), $(BUILDDIR), $(SOURCESDUO:.cpp=.o))
 OBJECTSTRIO := $(subst $(SRCTRIO), $(BUILDDIR), $(SOURCESTRIO:.cpp=.o))
 OBJECTSVCFIO := $(subst $(SRCVCFIO), $(BUILDDIR), $(SOURCESVCFIO:.cpp=.o))
 
-OBJECTS := $(OBJECTSCORE) $(OBJECTSDUO) $(OBJECTSTRIO) $(OBJECTSVCFIO) $(BUILDDIR)/main.o $(BUILDDIR)/test.o
-SOURCES := $(SOURCESCORE) $(SOURCESDUO) $(SOURCESTRIO) $(SOURCESVCFIO) main.cpp test.cpp
+OBJECTS := $(OBJECTSCORE) $(OBJECTSDUO) $(OBJECTSTRIO) $(OBJECTSVCFIO) $(BUILDDIR)/main.o
+SOURCES := $(SOURCESCORE) $(SOURCESDUO) $(SOURCESTRIO) $(SOURCESVCFIO) main.cpp
 
 all: $(TARGET)
 	@echo "SUCCESSFULLY COMPILED!!"
@@ -64,11 +64,6 @@ $(BUILDDIR)/main.o: main.cpp
 	@mkdir -p $(BUILDDIR)
 	@echo " MAIN: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
  
-$(BUILDDIR)/test.o: test.cpp
-	@mkdir -p $(BUILDDIR)
-	@echo " TEST: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@ 
-
-
 clean:
 	@echo " Cleaning..."; 
 	@echo " $(RM) -r $(BUILDDIR) $(TARGET)"; $(RM) -r $(BUILDDIR) $(TARGET)

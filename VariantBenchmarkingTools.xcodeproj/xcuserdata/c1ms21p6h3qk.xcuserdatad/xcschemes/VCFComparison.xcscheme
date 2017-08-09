@@ -75,7 +75,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/CEU_PED_Input/filtered_trio_CEU_PEDgraph_merged.vcf"
+            argument = "/Users/c1ms21p6h3qk/Desktop/CEU_FreeBayes_Normalized_VBT/CEU_BWA_FreeBayes_Normalized.merged.vcf"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -83,7 +83,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/CEU_PED_Input/filtered_trio_CEU_PEDgraph_merged.vcf"
+            argument = "/Users/c1ms21p6h3qk/Desktop/CEU_FreeBayes_Normalized_VBT/CEU_BWA_FreeBayes_Normalized.merged.vcf"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -91,7 +91,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/CEU_PED_Input/filtered_trio_CEU_PEDgraph_merged.vcf"
+            argument = "/Users/c1ms21p6h3qk/Desktop/CEU_FreeBayes_Normalized_VBT/CEU_BWA_FreeBayes_Normalized.merged.vcf"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -99,7 +99,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/CEU_PED_Input/"
+            argument = "/Users/c1ms21p6h3qk/Desktop/CEU_FreeBayes_Normalized_VBT"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -156,18 +156,18 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-bed"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest6/chr1.bed"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-out-prefix"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "VBT_CEU_PED_OverlapFix"
+            argument = "VBT_FreeBayes_Normalized"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

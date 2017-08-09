@@ -55,9 +55,11 @@ int CMendelianAnalyzer::run(int argc, char **argv)
 
     duration = std::difftime(std::time(0), start);
     std::cout << "Vcf and fasta Parser read completed in " << duration << " secs" << std::endl;
+    std::cerr << "[stderr] Vcf and fasta Parser read completed in " << duration << " secs" << std::endl;
     start1 = std::time(0);
     
     std::cout << "Running best path algorithm pipeline for each chromosome..." << std::endl;
+    std::cerr << "[stderr] Running best path algorithm pipeline for each chromosome..." << std::endl;
     
     //Run duo comparison engine on parallel
     int threadCount = AssignJobsToThreads(m_fatherChildConfig.m_nThreadCount);
@@ -67,6 +69,7 @@ int CMendelianAnalyzer::run(int argc, char **argv)
     
     
     std::cout << "Evaluating mendelian consistency of variants..." << std::endl;
+    std::cerr << "[stderr] Evaluating mendelian consistency of variants..." << std::endl;
     
     //Perform merge process
     std::vector<SChrIdTriplet> chrIds = m_provider.GetCommonChromosomes();
@@ -74,6 +77,7 @@ int CMendelianAnalyzer::run(int argc, char **argv)
         MergeFunc(chrIds[k]);
     
     std::cout << "Generating the output trio vcf..." << std::endl;
+    std::cerr << "[stderr] Generating the output trio vcf..." << std::endl;
     
     //Initialize output writer
     std::string directory = std::string(m_fatherChildConfig.m_pOutputDirectory);
@@ -99,6 +103,7 @@ int CMendelianAnalyzer::run(int argc, char **argv)
     
     
     std::cout << "Generating detailed output logs.." << std::endl;
+    std::cerr << "[stderr] Generating detailed output logs.." << std::endl;
     
     m_resultLog.LogSkippedVariantCounts(m_provider.GetSkippedVariantCount(eCHILD),
                                         m_provider.GetSkippedVariantCount(eFATHER),
@@ -117,8 +122,10 @@ int CMendelianAnalyzer::run(int argc, char **argv)
     
     duration = std::difftime(std::time(0), start1);
     std::cout << "Processing Chromosomes completed in " << duration << " secs" << std::endl;
+    std::cerr << "[stderr] Processing Chromosomes completed in " << duration << " secs" << std::endl;
     duration = std::difftime(std::time(0), start);
     std::cout << "Total execution time is " << duration << " secs" << std::endl;
+    std::cerr << "[stderr] Total execution time is " << duration << " secs" << std::endl;
     
     return 0;
 }
