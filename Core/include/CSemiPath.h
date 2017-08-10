@@ -14,6 +14,9 @@
 #include "EVcfName.h"
 #include <vector>
 
+namespace core
+{
+
 class CSemiPath
 {
     public:
@@ -130,5 +133,6 @@ class CSemiPath
 
 };
 
+}
 
 #endif // _C_SEMI_PATH_H_

@@ -35,6 +35,7 @@
 		556D39CC1DD3AFAC00551040 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 556D39CB1DD3AFAC00551040 /* libz.tbd */; };
 		558A41741E92EDA900575FA6 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 558A41731E92EDA900575FA6 /* Makefile */; };
 		559BA2941E97D63F0018D734 /* CSplitOutputProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 559BA2931E97D63F0018D734 /* CSplitOutputProvider.cpp */; };
+		55BDF86F1F3CEC470095669B /* CGraphVcfAnalyzer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55BDF86E1F3CEC470095669B /* CGraphVcfAnalyzer.cpp */; };
 		55DE31921F1012F1009D385D /* CSimpleBEDParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55DE31911F1012F1009D385D /* CSimpleBEDParser.cpp */; };
 /* End PBXBuildFile section */
 
@@ -137,6 +138,8 @@
 		559BA2AA1E982DFE0018D734 /* vcf_sweep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vcf_sweep.h; sourceTree = "<group>"; };
 		559BA2AB1E982DFE0018D734 /* vcfutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vcfutils.h; sourceTree = "<group>"; };
 		55B3ED9A1EB7B8300096501D /* SChrIdTriplet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SChrIdTriplet.h; path = MendelianViolation/include/SChrIdTriplet.h; sourceTree = SOURCE_ROOT; };
+		55BDF86C1F3CEC470095669B /* CGraphVcfAnalyzer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGraphVcfAnalyzer.h; sourceTree = "<group>"; };
+		55BDF86E1F3CEC470095669B /* CGraphVcfAnalyzer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CGraphVcfAnalyzer.cpp; sourceTree = "<group>"; };
 		55DE31901F101038009D385D /* CSimpleBEDParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CSimpleBEDParser.h; path = VcfIO/include/CSimpleBEDParser.h; sourceTree = SOURCE_ROOT; };
 		55DE31911F1012F1009D385D /* CSimpleBEDParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CSimpleBEDParser.cpp; path = VcfIO/src/CSimpleBEDParser.cpp; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -366,6 +369,7 @@
 				551661B01E82BD39002436FA /* Core */,
 				551661B41E82C02B002436FA /* DuoComparison */,
 				551661BA1E82C230002436FA /* MendelianViolation */,
+				55BDF8651F3CEAE30095669B /* GraphComparison */,
 			);
 			name = VariantBenchmarkingTools;
 			path = VCFComparison;
@@ -428,6 +432,33 @@
 			path = htslib;
 			sourceTree = SOURCE_ROOT;
 		};
+		55BDF8651F3CEAE30095669B /* GraphComparison */ = {
+			isa = PBXGroup;
+			children = (
+				55BDF86B1F3CEC470095669B /* include */,
+				55BDF86D1F3CEC470095669B /* src */,
+			);
+			name = GraphComparison;
+			sourceTree = "<group>";
+		};
+		55BDF86B1F3CEC470095669B /* include */ = {
+			isa = PBXGroup;
+			children = (
+				55BDF86C1F3CEC470095669B /* CGraphVcfAnalyzer.h */,
+			);
+			name = include;
+			path = GraphComparison/include;
+			sourceTree = SOURCE_ROOT;
+		};
+		55BDF86D1F3CEC470095669B /* src */ = {
+			isa = PBXGroup;
+			children = (
+				55BDF86E1F3CEC470095669B /* CGraphVcfAnalyzer.cpp */,
+			);
+			name = src;
+			path = GraphComparison/src;
+			sourceTree = SOURCE_ROOT;
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -485,6 +516,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55BDF86F1F3CEC470095669B /* CGraphVcfAnalyzer.cpp in Sources */,
 				558A41741E92EDA900575FA6 /* Makefile in Sources */,
 				551661CB1E82C51B002436FA /* CVcfWriter.cpp in Sources */,
 				553B0F861E36A2FE00E7186C /* README.md in Sources */,

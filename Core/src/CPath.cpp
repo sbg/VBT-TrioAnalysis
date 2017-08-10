@@ -11,6 +11,9 @@
 #include <iostream>
 #include <memory>
 
+using namespace core;
+
+
 CPath::CPath()
 {}
 

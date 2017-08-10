@@ -18,7 +18,7 @@ void CGa4ghOutputProvider::SetVariantProvider(CVariantProvider* a_pProvider)
     m_pVariantProvider = a_pProvider;
 }
 
-void CGa4ghOutputProvider::SetBestPaths(std::vector<CPath>& a_rBestPathList, std::vector<CPath>& a_rBestAlleleMatchPathList)
+void CGa4ghOutputProvider::SetBestPaths(std::vector<core::CPath>& a_rBestPathList, std::vector<core::CPath>& a_rBestAlleleMatchPathList)
 {
     m_aBestPaths = a_rBestPathList;
     m_aBestAlleleMatchPaths = a_rBestAlleleMatchPathList;
@@ -80,14 +80,14 @@ void CGa4ghOutputProvider::FillHeader()
     m_vcfWriter.WriteHeaderToVcf();
 }
 
-void CGa4ghOutputProvider::AddRecords(const CPath& a_rBestPath, const CPath& a_rBestAlleleMatchPath, SChrIdTuple a_rTuple)
+void CGa4ghOutputProvider::AddRecords(const core::CPath& a_rBestPath, const core::CPath& a_rBestAlleleMatchPath, SChrIdTuple a_rTuple)
 {
     //Best Path included/excluded variants
     std::vector<const CVariant*> excludedVarsBase = m_pVariantProvider->GetVariantList(eBASE, a_rTuple.m_nBaseId, a_rBestPath.m_baseSemiPath.GetExcluded());
     std::vector<const CVariant*> excludedVarsCall = m_pVariantProvider->GetVariantList(eCALLED, a_rTuple.m_nCalledId, a_rBestPath.m_calledSemiPath.GetExcluded());
     
-    std::vector<const COrientedVariant*> includedVarsBase = a_rBestPath.m_baseSemiPath.GetIncludedVariants();
-    std::vector<const COrientedVariant*> includedVarsCall = a_rBestPath.m_calledSemiPath.GetIncludedVariants();
+    std::vector<const core::COrientedVariant*> includedVarsBase = a_rBestPath.m_baseSemiPath.GetIncludedVariants();
+    std::vector<const core::COrientedVariant*> includedVarsCall = a_rBestPath.m_calledSemiPath.GetIncludedVariants();
     
     //Not Asessed variants
     std::vector<CVariant>& notAssessedBase = m_pVariantProvider->GetNotAssessedVariantList(eBASE, a_rTuple.m_nBaseId);

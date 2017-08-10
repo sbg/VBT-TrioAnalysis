@@ -45,10 +45,10 @@ private:
     void ThreadFunctionGA4GH(std::vector<SChrIdTuple> a_aTuples);
 
     //Calculate the syncronization point list for the given tuple
-    void CalculateSyncPointList(const SChrIdTuple& a_rTuple, std::vector<CSyncPoint>& a_rSyncPointList);
+    void CalculateSyncPointList(const SChrIdTuple& a_rTuple, std::vector<core::CSyncPoint>& a_rSyncPointList);
     
     
-    void PrintVariants(std::string a_outputDirectory, std::string a_FileName, const std::vector<const COrientedVariant*>& a_rOvarList) const;
+    void PrintVariants(std::string a_outputDirectory, std::string a_FileName, const std::vector<const core::COrientedVariant*>& a_rOvarList) const;
     void PrintVariants(std::string a_outputDirectory, std::string a_FileName, const std::vector<const CVariant*>& a_rVarList) const;
     
     
@@ -62,10 +62,10 @@ private:
     CVariantProvider m_provider;
     
     //Best Paths written by each thread for each unique chromosome exists
-    std::vector<CPath> m_aBestPaths;
+    std::vector<core::CPath> m_aBestPaths;
     
     //Best Paths written by each thread to find Allele matches for each unique chromosome exists
-    std::vector<CPath> m_aBestPathsAllele;
+    std::vector<core::CPath> m_aBestPathsAllele;
     
     //Thread pool we have for multitasking by per chromosome
     std::thread *m_pThreadPool;

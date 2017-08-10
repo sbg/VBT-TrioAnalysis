@@ -40,7 +40,7 @@ private:
     void MergeFunc(SChrIdTriplet& a_rTriplet);
     
     //Return the syncpointlist for given comparison. Writes to the last parameter
-    void GetSyncPointList(SChrIdTriplet& a_rTriplet, bool a_bIsFatherChild, std::vector<CSyncPoint>& a_rSyncPointList, bool a_bIsGT = false);
+    void GetSyncPointList(SChrIdTriplet& a_rTriplet, bool a_bIsFatherChild, std::vector<core::CSyncPoint>& a_rSyncPointList, bool a_bIsGT = false);
     
     //Check sync points which child excluded contains 0 Allele variant. If that 0 allele is playable for the parent, we mark variants as compliant, violation otherwise
     void CheckFor0Path(SChrIdTriplet& a_rTriplet,
@@ -101,12 +101,12 @@ private:
     CMendelianResultLog m_resultLog;
     
     //Best Paths written by each thread for each unique chromosome exists [Between father and child]
-    std::vector<CPath> m_aBestPathsFatherChildGT;
-    std::vector<CPath> m_aBestPathsFatherChildAM;
+    std::vector<core::CPath> m_aBestPathsFatherChildGT;
+    std::vector<core::CPath> m_aBestPathsFatherChildAM;
 
     //Best Paths written by each thread for each unique chromosome exists [Between mother and child]
-    std::vector<CPath> m_aBestPathsMotherChildGT;
-    std::vector<CPath> m_aBestPathsMotherChildAM;
+    std::vector<core::CPath> m_aBestPathsMotherChildGT;
+    std::vector<core::CPath> m_aBestPathsMotherChildAM;
     
     //Menndelian compliant/violation decision of each child variant
     std::vector<std::vector<EMendelianDecision>> m_aChildDecisions;

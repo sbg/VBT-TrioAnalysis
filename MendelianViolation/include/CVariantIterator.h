@@ -18,7 +18,7 @@ class CVariantIterator
 {
 public:
     
-    CVariantIterator(const std::vector<const COrientedVariant*>& includedGT, const std::vector<const COrientedVariant*>& includedAM)
+    CVariantIterator(const std::vector<const core::COrientedVariant*>& includedGT, const std::vector<const core::COrientedVariant*>& includedAM)
     : m_aIncludedGT(includedGT),
     m_aIncludedAM(includedAM)
     {
@@ -32,9 +32,9 @@ public:
         return hasNext;
     }
     
-    const COrientedVariant* Next()
+    const core::COrientedVariant* Next()
     {
-        const COrientedVariant* toRet;
+        const core::COrientedVariant* toRet;
         
         if(it_IncludedAM == m_aIncludedAM.end())
         {
@@ -64,11 +64,11 @@ public:
     
 private:
     
-    std::vector<const COrientedVariant*>::const_iterator it_IncludedGT;
-    std::vector<const COrientedVariant*>::const_iterator it_IncludedAM;
+    std::vector<const core::COrientedVariant*>::const_iterator it_IncludedGT;
+    std::vector<const core::COrientedVariant*>::const_iterator it_IncludedAM;
     
-    const std::vector<const COrientedVariant*>& m_aIncludedGT;
-    const std::vector<const COrientedVariant*>& m_aIncludedAM;
+    const std::vector<const core::COrientedVariant*>& m_aIncludedGT;
+    const std::vector<const core::COrientedVariant*>& m_aIncludedAM;
     
 };
 

@@ -13,6 +13,7 @@
 #include <cassert>
 #include "CPath.h"
 
+using namespace core;
 
 CPathReplay::CPathReplay(std::vector<const CVariant*>& a_aVarListBase,
             std::vector<const CVariant*>& a_aVarListCalled,

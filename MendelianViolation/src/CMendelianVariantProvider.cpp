@@ -510,34 +510,34 @@ void CMendelianVariantProvider::FillVariants()
 void CMendelianVariantProvider::FillGenotypeMatchOrientedVariants(std::vector<SChrIdTriplet>& a_aCommonChromosomes)
 {
     //INITIALIZE ORIENTED VARIANT LISTS
-    m_aFatherOrientedVariantList = std::vector<std::vector<COrientedVariant>>(m_FatherVcf.GetContigs().size());
-    m_aMotherOrientedVariantList = std::vector<std::vector<COrientedVariant>>(m_MotherVcf.GetContigs().size());
-    m_aChildOrientedVariantList = std::vector<std::vector<COrientedVariant>>(m_ChildVcf.GetContigs().size());
+    m_aFatherOrientedVariantList = std::vector<std::vector<core::COrientedVariant>>(m_FatherVcf.GetContigs().size());
+    m_aMotherOrientedVariantList = std::vector<std::vector<core::COrientedVariant>>(m_MotherVcf.GetContigs().size());
+    m_aChildOrientedVariantList = std::vector<std::vector<core::COrientedVariant>>(m_ChildVcf.GetContigs().size());
     
     for(int i=0; i < (int)a_aCommonChromosomes.size(); i++)
     {
         //GENERATE FATHER ORIENTED VARS
-        m_aFatherOrientedVariantList[a_aCommonChromosomes[i].m_nFid] = std::vector<COrientedVariant>(m_aFatherVariantList[a_aCommonChromosomes[i].m_nFid].size() * 2);
+        m_aFatherOrientedVariantList[a_aCommonChromosomes[i].m_nFid] = std::vector<core::COrientedVariant>(m_aFatherVariantList[a_aCommonChromosomes[i].m_nFid].size() * 2);
         for(int j=0, k=0; j < (int)m_aFatherVariantList[a_aCommonChromosomes[i].m_nFid].size(); j++, k+=2)
         {
-            m_aFatherOrientedVariantList[a_aCommonChromosomes[i].m_nFid][k] = COrientedVariant(m_aFatherVariantList[a_aCommonChromosomes[i].m_nFid][j], true);
-            m_aFatherOrientedVariantList[a_aCommonChromosomes[i].m_nFid][k+1] = COrientedVariant(m_aFatherVariantList[a_aCommonChromosomes[i].m_nFid][j], false);
+            m_aFatherOrientedVariantList[a_aCommonChromosomes[i].m_nFid][k] = core::COrientedVariant(m_aFatherVariantList[a_aCommonChromosomes[i].m_nFid][j], true);
+            m_aFatherOrientedVariantList[a_aCommonChromosomes[i].m_nFid][k+1] = core::COrientedVariant(m_aFatherVariantList[a_aCommonChromosomes[i].m_nFid][j], false);
         }
         
         //GENERATE CHILD ORIENTED VARS
-        m_aChildOrientedVariantList[a_aCommonChromosomes[i].m_nCid] = std::vector<COrientedVariant>(m_aChildVariantList[a_aCommonChromosomes[i].m_nCid].size() * 2);
+        m_aChildOrientedVariantList[a_aCommonChromosomes[i].m_nCid] = std::vector<core::COrientedVariant>(m_aChildVariantList[a_aCommonChromosomes[i].m_nCid].size() * 2);
         for(int j=0, k=0; j < (int)m_aChildVariantList[a_aCommonChromosomes[i].m_nCid].size(); j++,k+=2)
         {
-            m_aChildOrientedVariantList[a_aCommonChromosomes[i].m_nCid][k] = COrientedVariant(m_aChildVariantList[a_aCommonChromosomes[i].m_nCid][j], true);
-            m_aChildOrientedVariantList[a_aCommonChromosomes[i].m_nCid][k+1] = COrientedVariant(m_aChildVariantList[a_aCommonChromosomes[i].m_nCid][j], false);
+            m_aChildOrientedVariantList[a_aCommonChromosomes[i].m_nCid][k] = core::COrientedVariant(m_aChildVariantList[a_aCommonChromosomes[i].m_nCid][j], true);
+            m_aChildOrientedVariantList[a_aCommonChromosomes[i].m_nCid][k+1] = core::COrientedVariant(m_aChildVariantList[a_aCommonChromosomes[i].m_nCid][j], false);
         }
         
         //GENERATE MOTHER ORIENTED VARS
-        m_aMotherOrientedVariantList[a_aCommonChromosomes[i].m_nMid] = std::vector<COrientedVariant>(m_aMotherVariantList[a_aCommonChromosomes[i].m_nMid].size() * 2);
+        m_aMotherOrientedVariantList[a_aCommonChromosomes[i].m_nMid] = std::vector<core::COrientedVariant>(m_aMotherVariantList[a_aCommonChromosomes[i].m_nMid].size() * 2);
         for(int j=0, k=0; j < (int)m_aMotherVariantList[a_aCommonChromosomes[i].m_nMid].size(); j++, k+=2)
         {
-            m_aMotherOrientedVariantList[a_aCommonChromosomes[i].m_nMid][k] = COrientedVariant(m_aMotherVariantList[a_aCommonChromosomes[i].m_nMid][j], true);
-            m_aMotherOrientedVariantList[a_aCommonChromosomes[i].m_nMid][k+1] = COrientedVariant(m_aMotherVariantList[a_aCommonChromosomes[i].m_nMid][j], false);
+            m_aMotherOrientedVariantList[a_aCommonChromosomes[i].m_nMid][k] = core::COrientedVariant(m_aMotherVariantList[a_aCommonChromosomes[i].m_nMid][j], true);
+            m_aMotherOrientedVariantList[a_aCommonChromosomes[i].m_nMid][k+1] = core::COrientedVariant(m_aMotherVariantList[a_aCommonChromosomes[i].m_nMid][j], false);
         }
     }
 }
@@ -545,34 +545,34 @@ void CMendelianVariantProvider::FillGenotypeMatchOrientedVariants(std::vector<SC
 void CMendelianVariantProvider::FillAlleleMatchOrientedVariants(std::vector<SChrIdTriplet>& a_aCommonChromosomes)
 {
     //INITIALIZE ORIENTED VARIANT LISTS
-    m_aFatherAlleleMatchOrientedVariantList = std::vector<std::vector<COrientedVariant>>(m_FatherVcf.GetContigs().size());
-    m_aMotherAlleleMatchOrientedVariantList = std::vector<std::vector<COrientedVariant>>(m_MotherVcf.GetContigs().size());
-    m_aChildAlleleMatchOrientedVariantList = std::vector<std::vector<COrientedVariant>>(m_ChildVcf.GetContigs().size());
+    m_aFatherAlleleMatchOrientedVariantList = std::vector<std::vector<core::COrientedVariant>>(m_FatherVcf.GetContigs().size());
+    m_aMotherAlleleMatchOrientedVariantList = std::vector<std::vector<core::COrientedVariant>>(m_MotherVcf.GetContigs().size());
+    m_aChildAlleleMatchOrientedVariantList = std::vector<std::vector<core::COrientedVariant>>(m_ChildVcf.GetContigs().size());
 
     for(int i=0; i < (int)a_aCommonChromosomes.size(); i++)
     {
         //GENERATE FATHER ORIENTED VARS
-        m_aFatherAlleleMatchOrientedVariantList[a_aCommonChromosomes[i].m_nFid] = std::vector<COrientedVariant>(m_aFatherVariantList[a_aCommonChromosomes[i].m_nFid].size() * 2);
+        m_aFatherAlleleMatchOrientedVariantList[a_aCommonChromosomes[i].m_nFid] = std::vector<core::COrientedVariant>(m_aFatherVariantList[a_aCommonChromosomes[i].m_nFid].size() * 2);
         for(int j=0, k=0; j < (int)m_aFatherVariantList[a_aCommonChromosomes[i].m_nFid].size(); j++, k+=2)
         {
-            m_aFatherAlleleMatchOrientedVariantList[a_aCommonChromosomes[i].m_nFid][k] = COrientedVariant(m_aFatherVariantList[a_aCommonChromosomes[i].m_nFid][j], 0);
-            m_aFatherAlleleMatchOrientedVariantList[a_aCommonChromosomes[i].m_nFid][k+1] = COrientedVariant(m_aFatherVariantList[a_aCommonChromosomes[i].m_nFid][j], 1);
+            m_aFatherAlleleMatchOrientedVariantList[a_aCommonChromosomes[i].m_nFid][k] = core::COrientedVariant(m_aFatherVariantList[a_aCommonChromosomes[i].m_nFid][j], 0);
+            m_aFatherAlleleMatchOrientedVariantList[a_aCommonChromosomes[i].m_nFid][k+1] = core::COrientedVariant(m_aFatherVariantList[a_aCommonChromosomes[i].m_nFid][j], 1);
         }
         
         //GENERATE CHILD ORIENTED VARS
-        m_aChildAlleleMatchOrientedVariantList[a_aCommonChromosomes[i].m_nFid] = std::vector<COrientedVariant>(m_aChildVariantList[a_aCommonChromosomes[i].m_nFid].size() * 2);
+        m_aChildAlleleMatchOrientedVariantList[a_aCommonChromosomes[i].m_nFid] = std::vector<core::COrientedVariant>(m_aChildVariantList[a_aCommonChromosomes[i].m_nFid].size() * 2);
         for(int j=0, k=0; j < (int)m_aChildVariantList[a_aCommonChromosomes[i].m_nFid].size(); j++,k+=2)
         {
-            m_aChildAlleleMatchOrientedVariantList[a_aCommonChromosomes[i].m_nFid][k] = COrientedVariant(m_aChildVariantList[a_aCommonChromosomes[i].m_nFid][j], 0);
-            m_aChildAlleleMatchOrientedVariantList[a_aCommonChromosomes[i].m_nFid][k+1] = COrientedVariant(m_aChildVariantList[a_aCommonChromosomes[i].m_nFid][j], 1);
+            m_aChildAlleleMatchOrientedVariantList[a_aCommonChromosomes[i].m_nFid][k] = core::COrientedVariant(m_aChildVariantList[a_aCommonChromosomes[i].m_nFid][j], 0);
+            m_aChildAlleleMatchOrientedVariantList[a_aCommonChromosomes[i].m_nFid][k+1] = core::COrientedVariant(m_aChildVariantList[a_aCommonChromosomes[i].m_nFid][j], 1);
         }
         
         //GENERATE MOTHER ORIENTED VARS
-        m_aMotherAlleleMatchOrientedVariantList[a_aCommonChromosomes[i].m_nFid] = std::vector<COrientedVariant>(m_aMotherVariantList[a_aCommonChromosomes[i].m_nFid].size() * 2);
+        m_aMotherAlleleMatchOrientedVariantList[a_aCommonChromosomes[i].m_nFid] = std::vector<core::COrientedVariant>(m_aMotherVariantList[a_aCommonChromosomes[i].m_nFid].size() * 2);
         for(int j=0, k=0; j < (int)m_aMotherVariantList[a_aCommonChromosomes[i].m_nFid].size(); j++, k+=2)
         {
-            m_aMotherAlleleMatchOrientedVariantList[a_aCommonChromosomes[i].m_nFid][k] = COrientedVariant(m_aMotherVariantList[a_aCommonChromosomes[i].m_nFid][j], 0);
-            m_aMotherAlleleMatchOrientedVariantList[a_aCommonChromosomes[i].m_nFid][k+1] = COrientedVariant(m_aMotherVariantList[a_aCommonChromosomes[i].m_nFid][j], 1);
+            m_aMotherAlleleMatchOrientedVariantList[a_aCommonChromosomes[i].m_nFid][k] = core::COrientedVariant(m_aMotherVariantList[a_aCommonChromosomes[i].m_nFid][j], 0);
+            m_aMotherAlleleMatchOrientedVariantList[a_aCommonChromosomes[i].m_nFid][k+1] = core::COrientedVariant(m_aMotherVariantList[a_aCommonChromosomes[i].m_nFid][j], 1);
         }
     }
 }
@@ -764,9 +764,9 @@ std::vector<const CVariant*> CMendelianVariantProvider::GetSortedVariantList(EMe
     return varList;
 }
 
-std::vector<const COrientedVariant*> CMendelianVariantProvider::GetOrientedVariantList(EMendelianVcfName a_uFrom, int a_nChrNo, bool a_bIsAlleleMatch) const
+std::vector<const core::COrientedVariant*> CMendelianVariantProvider::GetOrientedVariantList(EMendelianVcfName a_uFrom, int a_nChrNo, bool a_bIsAlleleMatch) const
 {
-    std::vector<const COrientedVariant*> ovarList;
+    std::vector<const core::COrientedVariant*> ovarList;
     
     if(false == a_bIsAlleleMatch)
     {
@@ -815,9 +815,9 @@ std::vector<const COrientedVariant*> CMendelianVariantProvider::GetOrientedVaria
     return ovarList;
 }
 
-std::vector<const COrientedVariant*> CMendelianVariantProvider::GetOrientedVariantList(EMendelianVcfName a_uFrom, int a_nChrNo, bool a_bIsAlleleMatch, const std::vector<int>& a_nIndexList) const
+std::vector<const core::COrientedVariant*> CMendelianVariantProvider::GetOrientedVariantList(EMendelianVcfName a_uFrom, int a_nChrNo, bool a_bIsAlleleMatch, const std::vector<int>& a_nIndexList) const
 {
-    std::vector<const COrientedVariant*> ovarList;
+    std::vector<const core::COrientedVariant*> ovarList;
 
     if(false == a_bIsAlleleMatch)
     {
@@ -912,9 +912,9 @@ void CMendelianVariantProvider::SetVariantStatus(const std::vector<const CVarian
 }
 
 
-void CMendelianVariantProvider::SetVariantStatus(const std::vector<const COrientedVariant*>& a_rVariantList, EVariantMatch a_status) const
+void CMendelianVariantProvider::SetVariantStatus(const std::vector<const core::COrientedVariant*>& a_rVariantList, EVariantMatch a_status) const
 {
-    for(const COrientedVariant* pOVar : a_rVariantList)
+    for(const core::COrientedVariant* pOVar : a_rVariantList)
     {
         if(pOVar->GetVariant().m_variantStatus == eCOMPLEX_SKIPPED)
             continue;

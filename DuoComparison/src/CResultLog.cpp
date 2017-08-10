@@ -154,9 +154,9 @@ void CResultLog::CloseSyncPointFile()
 }
 
 //Write SyncPointList to a file
-void CResultLog::WriteSyncPointList(const std::string& a_rChrName, const std::vector<CSyncPoint>& a_rSyncPointList)
+void CResultLog::WriteSyncPointList(const std::string& a_rChrName, const std::vector<core::CSyncPoint>& a_rSyncPointList)
 {
-    for(CSyncPoint point : a_rSyncPointList)
+    for(core::CSyncPoint point : a_rSyncPointList)
          m_syncPointFile << a_rChrName << " " << point.m_nStartPosition << " " << point.m_nEndPosition << std::endl;
 }
 

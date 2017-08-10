@@ -22,7 +22,7 @@ void CSplitOutputProvider::SetVariantProvider(CVariantProvider* a_pProvider)
     m_pProvider = a_pProvider;
 }
 
-void CSplitOutputProvider::SetBestPaths(std::vector<CPath>& a_rBestPathList)
+void CSplitOutputProvider::SetBestPaths(std::vector<core::CPath>& a_rBestPathList)
 {
     m_aBestPaths = a_rBestPathList;
 }
@@ -61,9 +61,9 @@ void CSplitOutputProvider::GenerateTpBaseVcf(const std::vector<SChrIdTuple>& a_r
     //Process each chromosome
     for(SChrIdTuple tuple : commonChromosomesOrdered)
     {
-        const std::vector<const COrientedVariant*> ovarList = m_aBestPaths[tuple.m_nTupleIndex].m_baseSemiPath.GetIncludedVariants();
-        std::vector<const COrientedVariant*> sortedOvarList(ovarList);
-        std::sort(sortedOvarList.begin(), sortedOvarList.end(), [](const COrientedVariant* ovar1, const COrientedVariant* ovar2){return ovar1->GetVariant().m_nId < ovar2->GetVariant().m_nId;});
+        const std::vector<const core::COrientedVariant*> ovarList = m_aBestPaths[tuple.m_nTupleIndex].m_baseSemiPath.GetIncludedVariants();
+        std::vector<const core::COrientedVariant*> sortedOvarList(ovarList);
+        std::sort(sortedOvarList.begin(), sortedOvarList.end(), [](const core::COrientedVariant* ovar1, const core::COrientedVariant* ovar2){return ovar1->GetVariant().m_nId < ovar2->GetVariant().m_nId;});
         AddRecords(&m_TPBaseWriter, sortedOvarList);
     }
     
@@ -85,9 +85,9 @@ void CSplitOutputProvider::GenerateTpCalledVcf(const std::vector<SChrIdTuple>& a
     //Process each chromosome
     for(SChrIdTuple tuple : commonChromosomesOrdered)
     {
-        const std::vector<const COrientedVariant*> ovarList = m_aBestPaths[tuple.m_nTupleIndex].m_calledSemiPath.GetIncludedVariants();
-        std::vector<const COrientedVariant*> sortedOvarList(ovarList);
-        std::sort(sortedOvarList.begin(), sortedOvarList.end(), [](const COrientedVariant* ovar1, const COrientedVariant* ovar2){return ovar1->GetVariant().m_nId < ovar2->GetVariant().m_nId;});
+        const std::vector<const core::COrientedVariant*> ovarList = m_aBestPaths[tuple.m_nTupleIndex].m_calledSemiPath.GetIncludedVariants();
+        std::vector<const core::COrientedVariant*> sortedOvarList(ovarList);
+        std::sort(sortedOvarList.begin(), sortedOvarList.end(), [](const core::COrientedVariant* ovar1, const core::COrientedVariant* ovar2){return ovar1->GetVariant().m_nId < ovar2->GetVariant().m_nId;});
         AddRecords(&m_TPCalledWriter, sortedOvarList);
     }
     
@@ -159,9 +159,9 @@ void CSplitOutputProvider::VariantToVcfRecord(const CVariant* a_pVariant, SVcfRe
 }
 
 
-void CSplitOutputProvider::AddRecords(CVcfWriter* a_pWriter, const std::vector<const COrientedVariant*>& a_pOvarList)
+void CSplitOutputProvider::AddRecords(CVcfWriter* a_pWriter, const std::vector<const core::COrientedVariant*>& a_pOvarList)
 {
-    for(const COrientedVariant* pOvar : a_pOvarList)
+    for(const core::COrientedVariant* pOvar : a_pOvarList)
     {
         SVcfRecord record;
         VariantToVcfRecord(&pOvar->GetVariant(), record);

@@ -10,6 +10,9 @@
 #include "COrientedVariant.h"
 #include <iostream>
 
+using namespace core;
+
+
 COrientedVariant::COrientedVariant()
 {
     m_nAlleleIndex = -1;

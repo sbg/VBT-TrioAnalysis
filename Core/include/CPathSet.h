@@ -9,6 +9,9 @@
 #include "CPath.h"
 #include <set>
 
+namespace core
+{
+
 class CPathSet
 {
   public:
@@ -43,5 +46,7 @@ class CPathSet
     std::set<CPathContainer> m_set;
 
 };
+
+}
 
 #endif //_C_PATH_SET_H_

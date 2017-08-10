@@ -219,7 +219,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "167"
             endingLineNumber = "167"
-            landmarkName = "CSplitOutputProvider::AddRecords(CVcfWriter* a_pWriter, const std::vector&lt;const COrientedVariant*&gt;&amp; a_pOvarList)"
+            landmarkName = "CSplitOutputProvider::AddRecords(CVcfWriter* a_pWriter, const std::vector&lt;const core::COrientedVariant*&gt;&amp; a_pOvarList)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -310,11 +310,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Core/src/CPathReplay.cpp"
-            timestampString = "513870393.060274"
+            timestampString = "524090682.247781"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "56"
-            endingLineNumber = "56"
+            startingLineNumber = "57"
+            endingLineNumber = "57"
             landmarkName = "CPathReplay::FindBestPath(SContig a_contig, bool a_bIsGenotypeMatch)"
             landmarkType = "7">
          </BreakpointContent>
@@ -587,7 +587,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "839"
             endingLineNumber = "839"
-            landmarkName = "CMendelianAnalyzer::CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTriplet&amp; a_rTriplet, const std::vector&lt;const CVariant*&gt;&amp; a_rVariantList, std::vector&lt;bool&gt;&amp; a_rSideDecisions)"
+            landmarkName = "CMendelianAnalyzer::ProcessChromosome(const std::vector&lt;SChrIdTriplet&gt;&amp; a_nChromosomeIds)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -630,11 +630,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianTrioMerger.cpp"
-            timestampString = "523920684.616417"
+            timestampString = "524087082.400796"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "151"
-            endingLineNumber = "151"
+            startingLineNumber = "152"
+            endingLineNumber = "152"
             landmarkName = "CMendelianTrioMerger::AddRecords(SChrIdTriplet&amp; a_rTriplet)"
             landmarkType = "7">
          </BreakpointContent>
@@ -646,11 +646,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianTrioMerger.cpp"
-            timestampString = "523920684.616417"
+            timestampString = "524087082.400796"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "132"
-            endingLineNumber = "132"
+            startingLineNumber = "133"
+            endingLineNumber = "133"
             landmarkName = "CMendelianTrioMerger::GenerateTrioVcf(std::vector&lt;SChrIdTriplet&gt;&amp; a_rCommonChromosomes)"
             landmarkType = "7">
          </BreakpointContent>
@@ -682,7 +682,9 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "692"
-            endingLineNumber = "692">
+            endingLineNumber = "692"
+            landmarkName = "CMendelianAnalyzer::AssignJobsToThreads(int a_nThreadCount)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -996,11 +998,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianTrioMerger.cpp"
-            timestampString = "523920684.616417"
+            timestampString = "524087082.400796"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "371"
-            endingLineNumber = "371"
+            startingLineNumber = "374"
+            endingLineNumber = "374"
             landmarkName = "CMendelianTrioMerger::AddRecords(SChrIdTriplet&amp; a_rTriplet)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1028,11 +1030,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MendelianViolation/src/CMendelianTrioMerger.cpp"
-            timestampString = "523920684.616417"
+            timestampString = "524087082.400796"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "154"
-            endingLineNumber = "154"
+            startingLineNumber = "155"
+            endingLineNumber = "155"
             landmarkName = "CMendelianTrioMerger::AddRecords(SChrIdTriplet&amp; a_rTriplet)"
             landmarkType = "7">
          </BreakpointContent>

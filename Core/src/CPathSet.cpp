@@ -9,6 +9,8 @@
 #include "CPathSet.h"
 #include <iostream>
 
+using namespace core;
+
 CPathSet::CPathSet()
 {
 }

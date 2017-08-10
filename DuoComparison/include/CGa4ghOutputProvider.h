@@ -13,8 +13,12 @@
 #include "CVcfReader.h"
 #include "SChrIdTuple.h"
 
+namespace core
+{
 class CPath;
+}
 class CVariantProvider;
+
 
 class CGa4ghOutputProvider
 {
@@ -25,7 +29,7 @@ public:
     void SetVariantProvider(CVariantProvider* a_pProvider);
     
     //Set access to best path list
-    void SetBestPaths(std::vector<CPath>& a_rBestPathList, std::vector<CPath>& a_rBestAlleleMatchPathList);
+    void SetBestPaths(std::vector<core::CPath>& a_rBestPathList, std::vector<core::CPath>& a_rBestAlleleMatchPathList);
     
     //Set the output vcf path
     void SetVcfPath(const std::string& a_rVcfPath);
@@ -45,7 +49,7 @@ private:
     void FillHeader();
     
     //Add records of best path to the vcf file (Contain single chromosome)
-    void AddRecords(const CPath& a_rBestPath, const CPath& a_rBestAlleleMatchPath, SChrIdTuple a_rTuple);
+    void AddRecords(const core::CPath& a_rBestPath, const core::CPath& a_rBestAlleleMatchPath, SChrIdTuple a_rTuple);
 
     //Return true if base and called variants can be merged
     bool CanMerge(const CVariant* a_pVariantBase, const CVariant* a_pVariantCalled) const;
@@ -74,8 +78,8 @@ private:
     CVariantProvider* m_pVariantProvider;
     
     //Pointer to the best path list
-    std::vector<CPath> m_aBestPaths;
-    std::vector<CPath> m_aBestAlleleMatchPaths;
+    std::vector<core::CPath> m_aBestPaths;
+    std::vector<core::CPath> m_aBestAlleleMatchPaths;
     
     //Path of the vcf file to be generated
     std::string m_vcfPath;

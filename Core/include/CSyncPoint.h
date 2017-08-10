@@ -12,6 +12,9 @@
 #include "CVariant.h"
 #include "COrientedVariant.h"
 
+namespace core
+{
+
 class CSyncPoint
 {
     
@@ -54,7 +57,7 @@ public:
     
 };
 
-
+}
 
 
 #endif // _C_SYNC_POINT_H_

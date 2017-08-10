@@ -332,21 +332,21 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
     
 }
 
-void CMendelianAnalyzer::GetSyncPointList(SChrIdTriplet& a_rTriplet, bool a_bIsFatherChild, std::vector<CSyncPoint>& a_rSyncPointList, bool a_bIsGT)
+void CMendelianAnalyzer::GetSyncPointList(SChrIdTriplet& a_rTriplet, bool a_bIsFatherChild, std::vector<core::CSyncPoint>& a_rSyncPointList, bool a_bIsGT)
 {
-    std::vector<const COrientedVariant*> pBaseIncluded;
-    std::vector<const COrientedVariant*> pCalledIncluded;
+    std::vector<const core::COrientedVariant*> pBaseIncluded;
+    std::vector<const core::COrientedVariant*> pCalledIncluded;
     
     std::vector<const CVariant*> pBaseExcluded;
     std::vector<const CVariant*> pCalledExcluded;
     
-    CPath *pPath;
-    CPath *pPathSync;
+    core::CPath *pPath;
+    core::CPath *pPathSync;
 
     if(a_bIsGT == false)
     {
         pPath = a_bIsFatherChild ? &m_aBestPathsFatherChildAM[a_rTriplet.m_nTripleIndex] : &m_aBestPathsMotherChildAM[a_rTriplet.m_nTripleIndex];
-        CPath *pPathGT = a_bIsFatherChild ? &m_aBestPathsFatherChildGT[a_rTriplet.m_nTripleIndex] : &m_aBestPathsMotherChildGT[a_rTriplet.m_nTripleIndex];
+        core::CPath *pPathGT = a_bIsFatherChild ? &m_aBestPathsFatherChildGT[a_rTriplet.m_nTripleIndex] : &m_aBestPathsMotherChildGT[a_rTriplet.m_nTripleIndex];
         pPathSync = pPathGT;
         
         std::vector<const CVariant*> excludedVarsBase = m_provider.GetVariantList(a_bIsFatherChild ? eFATHER : eMOTHER, a_bIsFatherChild ? a_rTriplet.m_nFid : a_rTriplet.m_nMid, pPathGT->m_baseSemiPath.GetExcluded());
@@ -378,7 +378,7 @@ void CMendelianAnalyzer::GetSyncPointList(SChrIdTriplet& a_rTriplet, bool a_bIsF
 
     for(int k = 0; k < (int)pPathSync->m_aSyncPointList.size(); k++)
     {
-        CSyncPoint ssPoint;
+        core::CSyncPoint ssPoint;
         ssPoint.m_nStartPosition = k > 0 ? pPathSync->m_aSyncPointList[k-1] : 0;
         ssPoint.m_nEndPosition = pPathSync->m_aSyncPointList[k];
         ssPoint.m_nIndex = k;
@@ -386,14 +386,14 @@ void CMendelianAnalyzer::GetSyncPointList(SChrIdTriplet& a_rTriplet, bool a_bIsF
         
         while(baseIncludedItr < (int)pBaseIncluded.size() && pBaseIncluded[baseIncludedItr]->GetStartPos() < (pPathSync->m_aSyncPointList[k] + bound))
         {
-            const COrientedVariant* pOvar = pBaseIncluded[baseIncludedItr];
+            const core::COrientedVariant* pOvar = pBaseIncluded[baseIncludedItr];
             ssPoint.m_baseVariantsIncluded.push_back(pOvar);
             baseIncludedItr++;
         }
 
         while(calledIncludedItr < (int)pCalledIncluded.size() && pCalledIncluded[calledIncludedItr]->GetStartPos() < (pPathSync->m_aSyncPointList[k] + bound))
         {
-            const COrientedVariant* pOvar = pCalledIncluded[calledIncludedItr];
+            const core::COrientedVariant* pOvar = pCalledIncluded[calledIncludedItr];
             ssPoint.m_calledVariantsIncluded.push_back(pOvar);
             calledIncludedItr++;
         }
@@ -414,7 +414,7 @@ void CMendelianAnalyzer::GetSyncPointList(SChrIdTriplet& a_rTriplet, bool a_bIsF
     }
     
     //Add Remaining variants to the last syncPoint
-    CSyncPoint sPoint;
+    core::CSyncPoint sPoint;
     sPoint.m_nStartPosition = pPathSync->m_aSyncPointList[pPathSync->m_aSyncPointList.size()-1];
     sPoint.m_nEndPosition = INT_MAX;
     sPoint.m_nIndex = static_cast<int>(pPathSync->m_aSyncPointList.size()-1);
@@ -452,7 +452,7 @@ void CMendelianAnalyzer::CheckFor0PathFor00(SChrIdTriplet& a_rTriplet,
                                             std::vector<const CVariant*>& a_rCompliantList)
 {
     //Get sync point list
-    std::vector<CSyncPoint> a_rSyncPointList;
+    std::vector<core::CSyncPoint> a_rSyncPointList;
     GetSyncPointList(a_rTriplet, a_bIsFatherChild, a_rSyncPointList, true);
     
     int varlistItr = 0;
@@ -524,7 +524,7 @@ void CMendelianAnalyzer::CheckFor0Path(SChrIdTriplet& a_rTriplet,
 {
     
     //Get sync point list
-    std::vector<CSyncPoint> a_rSyncPointList;
+    std::vector<core::CSyncPoint> a_rSyncPointList;
     GetSyncPointList(a_rTriplet, a_bIsFatherChild, a_rSyncPointList);
     
     
@@ -659,10 +659,10 @@ int CMendelianAnalyzer::AssignJobsToThreads(int a_nThreadCount)
     std::vector<SChrIdTriplet> chromosomeListToProcess = m_provider.GetCommonChromosomes();
 
     //Initialize best path vectors
-    m_aBestPathsFatherChildGT = std::vector<CPath>(m_provider.GetCommonChromosomes().size());
-    m_aBestPathsMotherChildGT = std::vector<CPath>(m_provider.GetCommonChromosomes().size());
-    m_aBestPathsFatherChildAM = std::vector<CPath>(m_provider.GetCommonChromosomes().size());
-    m_aBestPathsMotherChildAM = std::vector<CPath>(m_provider.GetCommonChromosomes().size());
+    m_aBestPathsFatherChildGT = std::vector<core::CPath>(m_provider.GetCommonChromosomes().size());
+    m_aBestPathsMotherChildGT = std::vector<core::CPath>(m_provider.GetCommonChromosomes().size());
+    m_aBestPathsFatherChildAM = std::vector<core::CPath>(m_provider.GetCommonChromosomes().size());
+    m_aBestPathsMotherChildAM = std::vector<core::CPath>(m_provider.GetCommonChromosomes().size());
 
     //Initialize decision vectors
     m_aChildDecisions = std::vector<std::vector<EMendelianDecision>>(m_provider.GetCommonChromosomes().size());
@@ -708,9 +708,9 @@ void CMendelianAnalyzer::ProcessChromosome(const std::vector<SChrIdTriplet>& a_n
         std::vector<const CVariant*> varListChild = m_provider.GetVariantList(eCHILD, triplet.m_nCid);
         
         //Get oriented variant list of parent-child for given chromosome
-        std::vector<const COrientedVariant*> ovarListGTFather = m_provider.GetOrientedVariantList(eFATHER, triplet.m_nFid);
-        std::vector<const COrientedVariant*> ovarListGTMother = m_provider.GetOrientedVariantList(eMOTHER, triplet.m_nMid);
-        std::vector<const COrientedVariant*> ovarListGTChild = m_provider.GetOrientedVariantList(eCHILD, triplet.m_nCid);
+        std::vector<const core::COrientedVariant*> ovarListGTFather = m_provider.GetOrientedVariantList(eFATHER, triplet.m_nFid);
+        std::vector<const core::COrientedVariant*> ovarListGTMother = m_provider.GetOrientedVariantList(eMOTHER, triplet.m_nMid);
+        std::vector<const core::COrientedVariant*> ovarListGTChild = m_provider.GetOrientedVariantList(eCHILD, triplet.m_nCid);
 
         //Get the chromosome ref seq
         SContig ctg;
@@ -719,33 +719,33 @@ void CMendelianAnalyzer::ProcessChromosome(const std::vector<SChrIdTriplet>& a_n
         // === PROCESS FATHER-CHILD ===
         
         //Create path replay for parent child;
-        CPathReplay replayFatherChildGT(varListFather, varListChild, ovarListGTFather, ovarListGTChild);
+        core::CPathReplay replayFatherChildGT(varListFather, varListChild, ovarListGTFather, ovarListGTChild);
         
         //Find Best Path Father-Child GT Match
         m_aBestPathsFatherChildGT[triplet.m_nTripleIndex] = replayFatherChildGT.FindBestPath(ctg, true);
         
         //Genotype Match variants
-        const std::vector<const COrientedVariant*>& includedVarsChildGT = m_aBestPathsFatherChildGT[triplet.m_nTripleIndex].m_calledSemiPath.GetIncludedVariants();
-        const std::vector<const COrientedVariant*>& includedVarsFatherGT = m_aBestPathsFatherChildGT[triplet.m_nTripleIndex].m_baseSemiPath.GetIncludedVariants();
+        const std::vector<const core::COrientedVariant*>& includedVarsChildGT = m_aBestPathsFatherChildGT[triplet.m_nTripleIndex].m_calledSemiPath.GetIncludedVariants();
+        const std::vector<const core::COrientedVariant*>& includedVarsFatherGT = m_aBestPathsFatherChildGT[triplet.m_nTripleIndex].m_baseSemiPath.GetIncludedVariants();
         
         //Variants that will be passed for allele match check
         std::vector<const CVariant*> excludedVarsFather = m_provider.GetVariantList(eFATHER, triplet.m_nFid, m_aBestPathsFatherChildGT[triplet.m_nTripleIndex].m_baseSemiPath.GetExcluded());
         std::vector<const CVariant*> excludedVarsChild = m_provider.GetVariantList(eCHILD, triplet.m_nCid,m_aBestPathsFatherChildGT[triplet.m_nTripleIndex].m_calledSemiPath.GetExcluded());
         
         //Allele Match oriented variants
-        std::vector<const COrientedVariant*> ovarListAMFather = m_provider.GetOrientedVariantList(eFATHER, triplet.m_nFid, true, m_aBestPathsFatherChildGT[triplet.m_nTripleIndex].m_baseSemiPath.GetExcluded());
-        std::vector<const COrientedVariant*> ovarListAMChildFC = m_provider.GetOrientedVariantList(eCHILD, triplet.m_nCid, true, m_aBestPathsFatherChildGT[triplet.m_nTripleIndex].m_calledSemiPath.GetExcluded());
+        std::vector<const core::COrientedVariant*> ovarListAMFather = m_provider.GetOrientedVariantList(eFATHER, triplet.m_nFid, true, m_aBestPathsFatherChildGT[triplet.m_nTripleIndex].m_baseSemiPath.GetExcluded());
+        std::vector<const core::COrientedVariant*> ovarListAMChildFC = m_provider.GetOrientedVariantList(eCHILD, triplet.m_nCid, true, m_aBestPathsFatherChildGT[triplet.m_nTripleIndex].m_calledSemiPath.GetExcluded());
         
         //Clear Father child replay object
         replayFatherChildGT.Clear();
         
         //Change the variant list to process
-        CPathReplay replayFatherChildAM(excludedVarsFather, excludedVarsChild, ovarListAMFather, ovarListAMChildFC);
+        core::CPathReplay replayFatherChildAM(excludedVarsFather, excludedVarsChild, ovarListAMFather, ovarListAMChildFC);
         
         //Find Best Path Father-Child AM Match
         m_aBestPathsFatherChildAM[triplet.m_nTripleIndex] = replayFatherChildAM.FindBestPath(ctg, false);
-        const std::vector<const COrientedVariant*>& includedVarsChildAM = m_aBestPathsFatherChildAM[triplet.m_nTripleIndex].m_calledSemiPath.GetIncludedVariants();
-        const std::vector<const COrientedVariant*>& includedVarsFatherAM = m_aBestPathsFatherChildAM[triplet.m_nTripleIndex].m_baseSemiPath.GetIncludedVariants();
+        const std::vector<const core::COrientedVariant*>& includedVarsChildAM = m_aBestPathsFatherChildAM[triplet.m_nTripleIndex].m_calledSemiPath.GetIncludedVariants();
+        const std::vector<const core::COrientedVariant*>& includedVarsFatherAM = m_aBestPathsFatherChildAM[triplet.m_nTripleIndex].m_baseSemiPath.GetIncludedVariants();
 
         const std::vector<const CVariant*> excludedVarsChildFC = m_provider.GetVariantList(excludedVarsChild, m_aBestPathsFatherChildAM[triplet.m_nTripleIndex].m_calledSemiPath.GetExcluded());
         const std::vector<const CVariant*> excludedVarsFatherFC = m_provider.GetVariantList(excludedVarsFather, m_aBestPathsFatherChildAM[triplet.m_nTripleIndex].m_baseSemiPath.GetExcluded());
@@ -766,31 +766,31 @@ void CMendelianAnalyzer::ProcessChromosome(const std::vector<SChrIdTriplet>& a_n
         // === PROCESS MOTHER-CHILD ===
      
         //Create path replay for parent child;
-        CPathReplay replayMotherChildGT(varListMother, varListChild, ovarListGTMother, ovarListGTChild);
+        core::CPathReplay replayMotherChildGT(varListMother, varListChild, ovarListGTMother, ovarListGTChild);
         
         //Find Best Path Father-Child GT Match
         m_aBestPathsMotherChildGT[triplet.m_nTripleIndex] = replayMotherChildGT.FindBestPath(ctg, true);
         
         //Genotype Match variants
-        const std::vector<const COrientedVariant*>& includedVarsChildGTMC = m_aBestPathsMotherChildGT[triplet.m_nTripleIndex].m_calledSemiPath.GetIncludedVariants();
-        const std::vector<const COrientedVariant*>& includedVarsMotherGT = m_aBestPathsMotherChildGT[triplet.m_nTripleIndex].m_baseSemiPath.GetIncludedVariants();
+        const std::vector<const core::COrientedVariant*>& includedVarsChildGTMC = m_aBestPathsMotherChildGT[triplet.m_nTripleIndex].m_calledSemiPath.GetIncludedVariants();
+        const std::vector<const core::COrientedVariant*>& includedVarsMotherGT = m_aBestPathsMotherChildGT[triplet.m_nTripleIndex].m_baseSemiPath.GetIncludedVariants();
         
         //Variants that will be passed for allele match check
         std::vector<const CVariant*> excludedVarsMother = m_provider.GetVariantList(eMOTHER, triplet.m_nMid, m_aBestPathsMotherChildGT[triplet.m_nTripleIndex].m_baseSemiPath.GetExcluded());
         std::vector<const CVariant*> excludedVarsChild2 = m_provider.GetVariantList(eCHILD, triplet.m_nCid,m_aBestPathsMotherChildGT[triplet.m_nTripleIndex].m_calledSemiPath.GetExcluded());
         
-        std::vector<const COrientedVariant*> ovarListAMMother = m_provider.GetOrientedVariantList(eMOTHER, triplet.m_nMid, true, m_aBestPathsMotherChildGT[triplet.m_nTripleIndex].m_baseSemiPath.GetExcluded());
-        std::vector<const COrientedVariant*> ovarListAMChildMC = m_provider.GetOrientedVariantList(eCHILD, triplet.m_nCid, true, m_aBestPathsMotherChildGT[triplet.m_nTripleIndex].m_calledSemiPath.GetExcluded());
+        std::vector<const core::COrientedVariant*> ovarListAMMother = m_provider.GetOrientedVariantList(eMOTHER, triplet.m_nMid, true, m_aBestPathsMotherChildGT[triplet.m_nTripleIndex].m_baseSemiPath.GetExcluded());
+        std::vector<const core::COrientedVariant*> ovarListAMChildMC = m_provider.GetOrientedVariantList(eCHILD, triplet.m_nCid, true, m_aBestPathsMotherChildGT[triplet.m_nTripleIndex].m_calledSemiPath.GetExcluded());
         
         //Clear Mother child replay object
         replayMotherChildGT.Clear();
         //Change the variant list to process
-        CPathReplay replayMotherChildAM(excludedVarsMother, excludedVarsChild2, ovarListAMMother, ovarListAMChildMC);
+        core::CPathReplay replayMotherChildAM(excludedVarsMother, excludedVarsChild2, ovarListAMMother, ovarListAMChildMC);
         
         //Find Best Path Mother-Child AM Match
         m_aBestPathsMotherChildAM[triplet.m_nTripleIndex] = replayMotherChildAM.FindBestPath(ctg, false);
-        const std::vector<const COrientedVariant*>& includedVarsChildAMMC = m_aBestPathsMotherChildAM[triplet.m_nTripleIndex].m_calledSemiPath.GetIncludedVariants();
-        const std::vector<const COrientedVariant*>& includedVarsMotherAM = m_aBestPathsMotherChildAM[triplet.m_nTripleIndex].m_baseSemiPath.GetIncludedVariants();
+        const std::vector<const core::COrientedVariant*>& includedVarsChildAMMC = m_aBestPathsMotherChildAM[triplet.m_nTripleIndex].m_calledSemiPath.GetIncludedVariants();
+        const std::vector<const core::COrientedVariant*>& includedVarsMotherAM = m_aBestPathsMotherChildAM[triplet.m_nTripleIndex].m_baseSemiPath.GetIncludedVariants();
 
         const std::vector<const CVariant*> excludedVarsChildMC = m_provider.GetVariantList(excludedVarsChild2, m_aBestPathsMotherChildAM[triplet.m_nTripleIndex].m_calledSemiPath.GetExcluded());
         const std::vector<const CVariant*> excludedVarsMotherMC = m_provider.GetVariantList(excludedVarsMother, m_aBestPathsMotherChildAM[triplet.m_nTripleIndex].m_baseSemiPath.GetExcluded());
@@ -994,7 +994,7 @@ void CMendelianAnalyzer::AssignDecisionToParentVars(EMendelianVcfName a_checkSid
     assert(varListToCheckParent.size() == a_rParentDecisions.size());
     
     //Get sync point list
-    std::vector<CSyncPoint> aSyncPointList;
+    std::vector<core::CSyncPoint> aSyncPointList;
     bool bIsFatherChild = a_checkSide == eFATHER ? true : false;
     GetSyncPointList(a_rTriplet, bIsFatherChild, aSyncPointList);
     
@@ -1077,8 +1077,8 @@ void CMendelianAnalyzer::MergeFunc(SChrIdTriplet& a_triplet)
     if(FatherChildVariants.hasNext() == false && MotherChildVariants.hasNext() == false)
         return;
     
-    const COrientedVariant* varMC = (MotherChildVariants.hasNext() ? MotherChildVariants.Next() : NULL);
-    const COrientedVariant* varFC = (FatherChildVariants.hasNext() ? FatherChildVariants.Next() : NULL);
+    const core::COrientedVariant* varMC = (MotherChildVariants.hasNext() ? MotherChildVariants.Next() : NULL);
+    const core::COrientedVariant* varFC = (FatherChildVariants.hasNext() ? FatherChildVariants.Next() : NULL);
     
     while(varMC != NULL && varFC != NULL)
     {

@@ -263,16 +263,16 @@ void CVariantProvider::FillVariantLists()
 void CVariantProvider::FillOrientedVariantLists()
 {
     //Initialize OrientedVariantLists
-    m_aBaseOrientedVariantList = std::vector<std::vector<COrientedVariant>>(m_baseVCF.GetContigs().size());
-    m_aCalledOrientedVariantList = std::vector<std::vector<COrientedVariant>>(m_calledVCF.GetContigs().size());
+    m_aBaseOrientedVariantList = std::vector<std::vector<core::COrientedVariant>>(m_baseVCF.GetContigs().size());
+    m_aCalledOrientedVariantList = std::vector<std::vector<core::COrientedVariant>>(m_calledVCF.GetContigs().size());
     
     
     for(int i=0; i < (int)m_aBaseOrientedVariantList.size(); i++)
     {
         for(int j=0; j < (int)m_aBaseVariantList[i].size(); j++)
         {
-            m_aBaseOrientedVariantList[i].push_back(COrientedVariant(m_aBaseVariantList[i][j], true));
-            m_aBaseOrientedVariantList[i].push_back(COrientedVariant(m_aBaseVariantList[i][j], false));
+            m_aBaseOrientedVariantList[i].push_back(core::COrientedVariant(m_aBaseVariantList[i][j], true));
+            m_aBaseOrientedVariantList[i].push_back(core::COrientedVariant(m_aBaseVariantList[i][j], false));
         }
     }
     
@@ -280,8 +280,8 @@ void CVariantProvider::FillOrientedVariantLists()
     {
         for(int j=0; j < (int)m_aCalledVariantList[i].size(); j++)
         {
-            m_aCalledOrientedVariantList[i].push_back(COrientedVariant(m_aCalledVariantList[i][j], true));
-            m_aCalledOrientedVariantList[i].push_back(COrientedVariant(m_aCalledVariantList[i][j], false));
+            m_aCalledOrientedVariantList[i].push_back(core::COrientedVariant(m_aCalledVariantList[i][j], true));
+            m_aCalledOrientedVariantList[i].push_back(core::COrientedVariant(m_aCalledVariantList[i][j], false));
         }
     }
 }
@@ -291,21 +291,21 @@ void CVariantProvider::FillAlleleMatchVariantList(SChrIdTuple& a_tuple, std::vec
     //Initialize HomozygousOrientedVariantLists
     if(false == m_bIsHomozygousOvarListInitialized)
     {
-        m_aBaseHomozygousOrientedVariantList = std::vector<std::vector<COrientedVariant>>(m_baseVCF.GetContigs().size());
-        m_aCalledHomozygousOrientedVariantList = std::vector<std::vector<COrientedVariant>>(m_calledVCF.GetContigs().size());
+        m_aBaseHomozygousOrientedVariantList = std::vector<std::vector<core::COrientedVariant>>(m_baseVCF.GetContigs().size());
+        m_aCalledHomozygousOrientedVariantList = std::vector<std::vector<core::COrientedVariant>>(m_calledVCF.GetContigs().size());
         m_bIsHomozygousOvarListInitialized = true;
     }
     
     for(int j=0; j < (int)a_rBaseVariants.size(); j++)
     {
-        m_aBaseHomozygousOrientedVariantList[a_tuple.m_nBaseId].push_back(COrientedVariant(*a_rBaseVariants[j], 0));
-        m_aBaseHomozygousOrientedVariantList[a_tuple.m_nBaseId].push_back(COrientedVariant(*a_rBaseVariants[j], 1));
+        m_aBaseHomozygousOrientedVariantList[a_tuple.m_nBaseId].push_back(core::COrientedVariant(*a_rBaseVariants[j], 0));
+        m_aBaseHomozygousOrientedVariantList[a_tuple.m_nBaseId].push_back(core::COrientedVariant(*a_rBaseVariants[j], 1));
     }
         
     for(int j=0; j < (int)a_rCalledVariants.size(); j++)
     {
-        m_aCalledHomozygousOrientedVariantList[a_tuple.m_nCalledId].push_back(COrientedVariant(*a_rCalledVariants[j], 0));
-        m_aCalledHomozygousOrientedVariantList[a_tuple.m_nCalledId].push_back(COrientedVariant(*a_rCalledVariants[j], 1));
+        m_aCalledHomozygousOrientedVariantList[a_tuple.m_nCalledId].push_back(core::COrientedVariant(*a_rCalledVariants[j], 0));
+        m_aCalledHomozygousOrientedVariantList[a_tuple.m_nCalledId].push_back(core::COrientedVariant(*a_rCalledVariants[j], 1));
     }
 }
 
@@ -367,12 +367,12 @@ std::vector<const CVariant*> CVariantProvider::GetVariantList(std::vector<const 
 }
 
 
-std::vector<const COrientedVariant*> CVariantProvider::GetOrientedVariantList(EVcfName a_uFrom, int a_nChrNo, bool a_bIsGenotypeMatch)
+std::vector<const core::COrientedVariant*> CVariantProvider::GetOrientedVariantList(EVcfName a_uFrom, int a_nChrNo, bool a_bIsGenotypeMatch)
 {
     if(a_bIsGenotypeMatch)
     {
         unsigned long size = a_uFrom == eBASE ? m_aBaseOrientedVariantList[a_nChrNo].size() : m_aCalledOrientedVariantList[a_nChrNo].size();
-        std::vector<const COrientedVariant*> result(size);
+        std::vector<const core::COrientedVariant*> result(size);
         
         switch (a_uFrom)
         {
@@ -395,7 +395,7 @@ std::vector<const COrientedVariant*> CVariantProvider::GetOrientedVariantList(EV
     else
     {
         unsigned long size = a_uFrom == eBASE ? m_aBaseHomozygousOrientedVariantList[a_nChrNo].size() : m_aCalledHomozygousOrientedVariantList[a_nChrNo].size();
-        std::vector<const COrientedVariant*> result(size);
+        std::vector<const core::COrientedVariant*> result(size);
         
         switch (a_uFrom)
         {
@@ -481,9 +481,9 @@ void CVariantProvider::SetVariantStatus(const std::vector<const CVariant*>& a_rV
 }
 
 
-void CVariantProvider::SetVariantStatus(const std::vector<const COrientedVariant*>& a_rVariantList, EVariantMatch a_status) const
+void CVariantProvider::SetVariantStatus(const std::vector<const core::COrientedVariant*>& a_rVariantList, EVariantMatch a_status) const
 {
-    for(const COrientedVariant* pOvar : a_rVariantList)
+    for(const core::COrientedVariant* pOvar : a_rVariantList)
         pOvar->GetVariant().m_variantStatus = a_status;
 }
 

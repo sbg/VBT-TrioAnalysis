@@ -61,7 +61,7 @@ void CVcfAnalyzer::Run(int argc, char** argv)
         m_resultLogger.OpenSyncPointFile(std::string(m_config.m_pOutputDirectory) + "/SyncPointList.txt");
         for(int k = 0; k < chromosomeListToProcess.size(); k++)
         {
-            std::vector<CSyncPoint> syncPointList;
+            std::vector<core::CSyncPoint> syncPointList;
             CalculateSyncPointList(chromosomeListToProcess[k], syncPointList);
             m_resultLogger.WriteSyncPointList(chromosomeListToProcess[k].m_chrName, syncPointList);
         }
@@ -95,8 +95,8 @@ int CVcfAnalyzer::AssignJobsToThreads(int a_nThreadCount)
     std::vector<SChrIdTuple> chromosomeListToProcess = m_provider.GetChromosomeIdTuples();
     
     //Initialize best Path vectors
-    m_aBestPaths = std::vector<CPath>(chromosomeListToProcess.size());
-    m_aBestPathsAllele = std::vector<CPath>(chromosomeListToProcess.size());
+    m_aBestPaths = std::vector<core::CPath>(chromosomeListToProcess.size());
+    m_aBestPathsAllele = std::vector<core::CPath>(chromosomeListToProcess.size());
     
     
     int exactThreadCount = std::min(a_nThreadCount, (int)chromosomeListToProcess.size());
@@ -140,10 +140,10 @@ void CVcfAnalyzer::ThreadFunctionGA4GH(std::vector<SChrIdTuple> a_aTuples)
     {
         std::vector<const CVariant*> varListBase = m_provider.GetVariantList(eBASE, a_aTuples[k].m_nBaseId);
         std::vector<const CVariant*> varListCalled = m_provider.GetVariantList(eCALLED, a_aTuples[k].m_nCalledId);
-        std::vector<const COrientedVariant*> ovarListBase = m_provider.GetOrientedVariantList(eBASE, a_aTuples[k].m_nBaseId, true);
-        std::vector<const COrientedVariant*> ovarListCalled = m_provider.GetOrientedVariantList(eCALLED, a_aTuples[k].m_nCalledId, true);
+        std::vector<const core::COrientedVariant*> ovarListBase = m_provider.GetOrientedVariantList(eBASE, a_aTuples[k].m_nBaseId, true);
+        std::vector<const core::COrientedVariant*> ovarListCalled = m_provider.GetOrientedVariantList(eCALLED, a_aTuples[k].m_nCalledId, true);
         
-        CPathReplay pathReplay(varListBase, varListCalled, ovarListBase, ovarListCalled);
+        core::CPathReplay pathReplay(varListBase, varListCalled, ovarListBase, ovarListCalled);
         pathReplay.SetMaxPathAndIteration(m_config.m_nMaxPathSize, m_config.m_nMaxIterationCount);
         SContig ctg;
         m_provider.GetContig(a_aTuples[k].m_chrName, ctg);
@@ -152,8 +152,8 @@ void CVcfAnalyzer::ThreadFunctionGA4GH(std::vector<SChrIdTuple> a_aTuples)
         m_aBestPaths[a_aTuples[k].m_nTupleIndex] = pathReplay.FindBestPath(ctg,true);
         
         //Genotype Match variants
-        const std::vector<const COrientedVariant*>& includedVarsBase = m_aBestPaths[a_aTuples[k].m_nTupleIndex].m_baseSemiPath.GetIncludedVariants();
-        const std::vector<const COrientedVariant*>& includedVarsCall = m_aBestPaths[a_aTuples[k].m_nTupleIndex].m_calledSemiPath.GetIncludedVariants();
+        const std::vector<const core::COrientedVariant*>& includedVarsBase = m_aBestPaths[a_aTuples[k].m_nTupleIndex].m_baseSemiPath.GetIncludedVariants();
+        const std::vector<const core::COrientedVariant*>& includedVarsCall = m_aBestPaths[a_aTuples[k].m_nTupleIndex].m_calledSemiPath.GetIncludedVariants();
         
         //Variants that will be passed for allele match check
         std::vector<const CVariant*> excludedVarsBase = m_provider.GetVariantList(eBASE, a_aTuples[k].m_nBaseId, m_aBestPaths[a_aTuples[k].m_nTupleIndex].m_baseSemiPath.GetExcluded());
@@ -185,8 +185,8 @@ void CVcfAnalyzer::ThreadFunctionGA4GH(std::vector<SChrIdTuple> a_aTuples)
                                                                                    m_aBestPathsAllele[a_aTuples[k].m_nTupleIndex].m_calledSemiPath.GetExcluded());
         
         //Allele Match variants
-        const std::vector<const COrientedVariant*>& includedVarsBase2 = m_aBestPathsAllele[a_aTuples[k].m_nTupleIndex].m_baseSemiPath.GetIncludedVariants();
-        const std::vector<const COrientedVariant*>& includedVarsCall2 = m_aBestPathsAllele[a_aTuples[k].m_nTupleIndex].m_calledSemiPath.GetIncludedVariants();
+        const std::vector<const core::COrientedVariant*>& includedVarsBase2 = m_aBestPathsAllele[a_aTuples[k].m_nTupleIndex].m_baseSemiPath.GetIncludedVariants();
+        const std::vector<const core::COrientedVariant*>& includedVarsCall2 = m_aBestPathsAllele[a_aTuples[k].m_nTupleIndex].m_calledSemiPath.GetIncludedVariants();
         
         
         m_resultLogger.LogStatistic(a_aTuples[k].m_chrName,
@@ -218,8 +218,8 @@ void CVcfAnalyzer::ThreadFunctionSPLIT(std::vector<SChrIdTuple> a_aTuples, bool 
         std::vector<const CVariant*> varListBase = m_provider.GetVariantList(eBASE, a_aTuples[k].m_nBaseId);
         std::vector<const CVariant*> varListCalled = m_provider.GetVariantList(eCALLED, a_aTuples[k].m_nCalledId);
         
-        std::vector<const COrientedVariant*> ovarListBase;
-        std::vector<const COrientedVariant*> ovarListCalled;
+        std::vector<const core::COrientedVariant*> ovarListBase;
+        std::vector<const core::COrientedVariant*> ovarListCalled;
         
         if(!a_bIsGenotypeMatch)
         {
@@ -230,7 +230,7 @@ void CVcfAnalyzer::ThreadFunctionSPLIT(std::vector<SChrIdTuple> a_aTuples, bool 
         ovarListBase = m_provider.GetOrientedVariantList(eBASE, a_aTuples[k].m_nBaseId, a_bIsGenotypeMatch);
         ovarListCalled = m_provider.GetOrientedVariantList(eCALLED, a_aTuples[k].m_nCalledId, a_bIsGenotypeMatch);
         
-        CPathReplay pathReplay(varListBase, varListCalled, ovarListBase, ovarListCalled);
+        core::CPathReplay pathReplay(varListBase, varListCalled, ovarListBase, ovarListCalled);
         pathReplay.SetMaxPathAndIteration(m_config.m_nMaxPathSize, m_config.m_nMaxIterationCount);
         SContig ctg;
         m_provider.GetContig(a_aTuples[k].m_chrName, ctg);
@@ -238,8 +238,8 @@ void CVcfAnalyzer::ThreadFunctionSPLIT(std::vector<SChrIdTuple> a_aTuples, bool 
         m_aBestPaths[a_aTuples[k].m_nTupleIndex] = pathReplay.FindBestPath(ctg,a_bIsGenotypeMatch);
         
         //Genotype Match variants
-        const std::vector<const COrientedVariant*>& includedVarsBase = m_aBestPaths[a_aTuples[k].m_nTupleIndex].m_baseSemiPath.GetIncludedVariants();
-        const std::vector<const COrientedVariant*>& includedVarsCall = m_aBestPaths[a_aTuples[k].m_nTupleIndex].m_calledSemiPath.GetIncludedVariants();
+        const std::vector<const core::COrientedVariant*>& includedVarsBase = m_aBestPaths[a_aTuples[k].m_nTupleIndex].m_baseSemiPath.GetIncludedVariants();
+        const std::vector<const core::COrientedVariant*>& includedVarsCall = m_aBestPaths[a_aTuples[k].m_nTupleIndex].m_calledSemiPath.GetIncludedVariants();
         
         //Variants that will be passed for allele match check
         std::vector<const CVariant*> excludedVarsBase = m_provider.GetVariantList(eBASE, a_aTuples[k].m_nBaseId, m_aBestPaths[a_aTuples[k].m_nTupleIndex].m_baseSemiPath.GetExcluded());
@@ -267,15 +267,15 @@ void CVcfAnalyzer::ThreadFunctionSPLIT(std::vector<SChrIdTuple> a_aTuples, bool 
     }
 }
 
-void CVcfAnalyzer::CalculateSyncPointList(const SChrIdTuple& a_rTuple, std::vector<CSyncPoint>& a_rSyncPointList)
+void CVcfAnalyzer::CalculateSyncPointList(const SChrIdTuple& a_rTuple, std::vector<core::CSyncPoint>& a_rSyncPointList)
 {
-    std::vector<const COrientedVariant*> pBaseIncluded = m_aBestPaths[a_rTuple.m_nTupleIndex].m_baseSemiPath.GetIncludedVariants();
-    std::vector<const COrientedVariant*> pCalledIncluded = m_aBestPaths[a_rTuple.m_nTupleIndex].m_calledSemiPath.GetIncludedVariants();;
+    std::vector<const core::COrientedVariant*> pBaseIncluded = m_aBestPaths[a_rTuple.m_nTupleIndex].m_baseSemiPath.GetIncludedVariants();
+    std::vector<const core::COrientedVariant*> pCalledIncluded = m_aBestPaths[a_rTuple.m_nTupleIndex].m_calledSemiPath.GetIncludedVariants();;
     
     std::vector<const CVariant*> pBaseExcluded = m_provider.GetVariantList(eBASE, a_rTuple.m_nBaseId, m_aBestPaths[a_rTuple.m_nTupleIndex].m_baseSemiPath.GetExcluded());
     std::vector<const CVariant*> pCalledExcluded = m_provider.GetVariantList(eCALLED, a_rTuple.m_nCalledId, m_aBestPaths[a_rTuple.m_nTupleIndex].m_calledSemiPath.GetExcluded());
     
-    CPath *pPath = &m_aBestPaths[a_rTuple.m_nTupleIndex];
+    core::CPath *pPath = &m_aBestPaths[a_rTuple.m_nTupleIndex];
     
     int baseIncludedItr = 0;
     int baseExcludedItr = 0;
@@ -284,21 +284,21 @@ void CVcfAnalyzer::CalculateSyncPointList(const SChrIdTuple& a_rTuple, std::vect
 
     for(int k = 0; k < (int)pPath->m_aSyncPointList.size(); k++)
     {
-        CSyncPoint ssPoint;
+        core::CSyncPoint ssPoint;
         ssPoint.m_nStartPosition = k > 0 ? pPath->m_aSyncPointList[k-1] : 0;
         ssPoint.m_nEndPosition = pPath->m_aSyncPointList[k];
         ssPoint.m_nIndex = k;
         
         while(baseIncludedItr < (int)pBaseIncluded.size() && pBaseIncluded[baseIncludedItr]->GetStartPos() <= pPath->m_aSyncPointList[k])
         {
-            const COrientedVariant* pOvar = pBaseIncluded[baseIncludedItr];
+            const core::COrientedVariant* pOvar = pBaseIncluded[baseIncludedItr];
             ssPoint.m_baseVariantsIncluded.push_back(pOvar);
             baseIncludedItr++;
         }
         
         while(calledIncludedItr < (int)pCalledIncluded.size() && pCalledIncluded[calledIncludedItr]->GetStartPos() <= pPath->m_aSyncPointList[k])
         {
-            const COrientedVariant* pOvar = pCalledIncluded[calledIncludedItr];
+            const core::COrientedVariant* pOvar = pCalledIncluded[calledIncludedItr];
             ssPoint.m_calledVariantsIncluded.push_back(pOvar);
             calledIncludedItr++;
         }
@@ -319,7 +319,7 @@ void CVcfAnalyzer::CalculateSyncPointList(const SChrIdTuple& a_rTuple, std::vect
     }
     
     //Add Remaining variants to the last syncPoint
-    CSyncPoint sPoint;
+    core::CSyncPoint sPoint;
     sPoint.m_nStartPosition = pPath->m_aSyncPointList[pPath->m_aSyncPointList.size()-1];
     sPoint.m_nEndPosition = INT_MAX;
     sPoint.m_nIndex = static_cast<int>(pPath->m_aSyncPointList.size()-1);
@@ -351,7 +351,7 @@ void CVcfAnalyzer::CalculateSyncPointList(const SChrIdTuple& a_rTuple, std::vect
 }
 
 
-void CVcfAnalyzer::PrintVariants(std::string a_outputDirectory, std::string a_FileName, const std::vector<const COrientedVariant*>& a_rOvarList) const
+void CVcfAnalyzer::PrintVariants(std::string a_outputDirectory, std::string a_FileName, const std::vector<const core::COrientedVariant*>& a_rOvarList) const
 {
     std::ofstream outputFile;
     

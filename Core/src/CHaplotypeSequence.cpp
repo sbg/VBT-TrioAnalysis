@@ -11,6 +11,8 @@
 #include "CHaplotypeSequence.h"
 #include <iostream>
 
+using namespace core;
+
 CHaplotypeSequence::CHaplotypeSequence()
 {}
 

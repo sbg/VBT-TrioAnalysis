@@ -13,6 +13,9 @@
 #include "CVariant.h"
 #include "COrientedVariant.h"
 
+namespace core
+{
+
 const int g_nINVALID = -1;
 
 class CHaplotypeSequence
@@ -86,5 +89,6 @@ class CHaplotypeSequence
 
 };
 
+}
 
 #endif //_C_HAPLOTYPE_SEQUENCE_H_

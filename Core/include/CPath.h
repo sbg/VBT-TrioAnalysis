@@ -14,6 +14,9 @@
 #include "EVcfName.h"
 #include <memory>
 
+namespace core
+{
+
 class CPathContainer;
 class CSyncPoint;
 class CMendelianVariantProvider;
@@ -147,7 +150,7 @@ public:
     
 };
 
-
+}
 
 
 #endif // _C_PATH_H_

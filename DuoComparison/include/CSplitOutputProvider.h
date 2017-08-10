@@ -13,9 +13,14 @@
 #include "CVcfReader.h"
 #include "SChrIdTuple.h"
 
+namespace core
+{
 class COrientedVariant;
-class CVariantProvider;
 class CPath;
+}
+
+class CVariantProvider;
+
 
 class CSplitOutputProvider
 {
@@ -29,7 +34,7 @@ public:
     void SetVariantProvider(CVariantProvider* a_pProvider);
     
     //Set access to best path list
-    void SetBestPaths(std::vector<CPath>& a_rBestPathList);
+    void SetBestPaths(std::vector<core::CPath>& a_rBestPathList);
     
     //Set the output vcfs path FOLDER
     void SetVcfPath(const std::string& a_rVcfPath);
@@ -44,11 +49,11 @@ public:
 private:
 
     //Add the given variant list to the given writer vcf
-    void AddRecords(CVcfWriter* a_pWriter, const std::vector<const COrientedVariant*>& a_pOvarList);
+    void AddRecords(CVcfWriter* a_pWriter, const std::vector<const core::COrientedVariant*>& a_pOvarList);
     void AddRecords(CVcfWriter* a_pWriter, const std::vector<const CVariant*>& a_pVarList);
     
     //Convert CVariant/COrientedVariant to vcf record
-    void VariantToVcfRecord(const COrientedVariant* a_pOvar, SVcfRecord& a_rVcfRecord);
+    void VariantToVcfRecord(const core::COrientedVariant* a_pOvar, SVcfRecord& a_rVcfRecord);
     void VariantToVcfRecord(const CVariant* a_pVar, SVcfRecord& a_rVcfRecord);
     
     //Fill the header of given writers
@@ -74,7 +79,7 @@ private:
     CVariantProvider* m_pProvider;
     
     //Access to best paths
-    std::vector<CPath> m_aBestPaths;
+    std::vector<core::CPath> m_aBestPaths;
     
     //Contig list which will be used to fill header part of output vcf
     std::vector<SVcfContig> m_contigs;

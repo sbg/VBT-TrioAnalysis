@@ -19,7 +19,7 @@ class CVariantIteratorV2
 {
 public:
     
-    CVariantIteratorV2(std::vector<const COrientedVariant*>& included, std::vector<const CVariant*>& excluded, std::vector<CVariant>& notAssessed)
+    CVariantIteratorV2(std::vector<const core::COrientedVariant*>& included, std::vector<const CVariant*>& excluded, std::vector<CVariant>& notAssessed)
     : m_aIncluded(included),
     m_aExcluded(excluded),
     m_aNotAssessed(notAssessed)
@@ -96,11 +96,11 @@ private:
             return 3;
     }
     
-    std::vector<const COrientedVariant*>::iterator it_Included;
+    std::vector<const core::COrientedVariant*>::iterator it_Included;
     std::vector<const CVariant*>::iterator it_Excluded;
     std::vector<CVariant>::iterator it_NotAssessed;
     
-    std::vector<const COrientedVariant*>& m_aIncluded;
+    std::vector<const core::COrientedVariant*>& m_aIncluded;
     std::vector<const CVariant*>& m_aExcluded;
     
     std::vector<CVariant>& m_aNotAssessed;

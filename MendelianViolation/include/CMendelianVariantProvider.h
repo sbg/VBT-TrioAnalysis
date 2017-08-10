@@ -49,10 +49,10 @@ public:
     int GetVariantCount(EMendelianVcfName a_uFrom, int a_nChrNo) const;
     
     //Return all the oriented variants belongs to given chromosome
-    std::vector<const COrientedVariant*> GetOrientedVariantList(EMendelianVcfName a_uFrom, int a_nChrNo, bool a_bIsAlleleMatch = false) const;
+    std::vector<const core::COrientedVariant*> GetOrientedVariantList(EMendelianVcfName a_uFrom, int a_nChrNo, bool a_bIsAlleleMatch = false) const;
     
     //Return all the oriented variants belongs to given chromosome with provided index list
-    std::vector<const COrientedVariant*> GetOrientedVariantList(EMendelianVcfName a_uFrom, int a_nChrNo, bool a_bIsAlleleMatch, const std::vector<int>& a_nIndexList) const;
+    std::vector<const core::COrientedVariant*> GetOrientedVariantList(EMendelianVcfName a_uFrom, int a_nChrNo, bool a_bIsAlleleMatch, const std::vector<int>& a_nIndexList) const;
     
     //Return contig object given by the chromosome Id
     void GetContig(int a_nChrId, SContig& a_rContig) const;
@@ -65,7 +65,7 @@ public:
 
     //Set the status of each variant in the given lust
     void SetVariantStatus(const std::vector<const CVariant*>& a_rVariantList, EVariantMatch a_status) const;
-    void SetVariantStatus(const std::vector<const COrientedVariant*>& a_rVariantList, EVariantMatch a_status) const;
+    void SetVariantStatus(const std::vector<const core::COrientedVariant*>& a_rVariantList, EVariantMatch a_status) const;
     
     //Returns the 0 based index of variants starting from the first variant for that chromosome
     int Get0BasedVariantIndex(EMendelianVcfName a_uFrom, int a_nChr, int a_nVariantId) const;
@@ -121,18 +121,18 @@ private:
     std::vector<std::vector<CVariant>> m_aChildVariantList;
     
     //List that store the genotype match base Oriented variant tuples (In the order of genotype)
-    std::vector<std::vector<COrientedVariant>> m_aMotherOrientedVariantList;
+    std::vector<std::vector<core::COrientedVariant>> m_aMotherOrientedVariantList;
     //List that store the genotype match called Oriented variant tuples (In the order of genotype)
-    std::vector<std::vector<COrientedVariant>> m_aFatherOrientedVariantList;
+    std::vector<std::vector<core::COrientedVariant>> m_aFatherOrientedVariantList;
     //List that store the genotype match base Oriented variant tuples (In the order of genotype)
-    std::vector<std::vector<COrientedVariant>> m_aChildOrientedVariantList;
+    std::vector<std::vector<core::COrientedVariant>> m_aChildOrientedVariantList;
 
     //List that store the allele match base Oriented variant tuples (In the order of genotype)
-    std::vector<std::vector<COrientedVariant>> m_aMotherAlleleMatchOrientedVariantList;
+    std::vector<std::vector<core::COrientedVariant>> m_aMotherAlleleMatchOrientedVariantList;
     //List that store the allele match called Oriented variant tuples (In the order of genotype)
-    std::vector<std::vector<COrientedVariant>> m_aFatherAlleleMatchOrientedVariantList;
+    std::vector<std::vector<core::COrientedVariant>> m_aFatherAlleleMatchOrientedVariantList;
     //List that store the allele match base Oriented variant tuples (In the order of genotype)
-    std::vector<std::vector<COrientedVariant>> m_aChildAlleleMatchOrientedVariantList;
+    std::vector<std::vector<core::COrientedVariant>> m_aChildAlleleMatchOrientedVariantList;
     
     //List that stores Father variants which are filtered out from comparison
     std::vector<std::vector<CVariant>> m_aFatherNotAssessedVariantList;

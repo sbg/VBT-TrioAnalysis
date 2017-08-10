@@ -47,7 +47,7 @@ public:
     void CloseSyncPointFile();
     
     //Write SyncPointList to a file
-    void WriteSyncPointList(const std::string& a_rChrName, const std::vector<CSyncPoint>& a_rSyncPointList);
+    void WriteSyncPointList(const std::string& a_rChrName, const std::vector<core::CSyncPoint>& a_rSyncPointList);
         
 private:
     

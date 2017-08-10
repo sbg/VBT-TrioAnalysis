@@ -14,6 +14,8 @@
 #include "CPathSet.h"
 #include "CVariant.h"
 
+namespace core
+{
 
 class CPath;
 class CPathContainer;
@@ -86,7 +88,7 @@ class CPathReplay
         int m_nMaxIterationCount;
 };
 
-
+}
 
 
 #endif // _C_PATH_REPLAY_H_

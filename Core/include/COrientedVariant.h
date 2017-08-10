@@ -12,6 +12,8 @@
 
 #include "CVariant.h"
 
+namespace core
+{
 
 class COrientedVariant
 {
@@ -78,5 +80,7 @@ class COrientedVariant
     bool m_bIsNull;
 
 };
+
+}
 
 #endif //_C_ORIENTED_VARIANT_H_
