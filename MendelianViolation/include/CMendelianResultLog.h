@@ -14,6 +14,9 @@
 #include <vector>
 #include "SChrIdTriplet.h"
 
+namespace mendelian
+{
+
 struct SMendelianBestPathLogEntry
 {
     bool m_bIsNull = true;
@@ -150,5 +153,6 @@ private:
     
 };
 
-
+}
+    
 #endif // _C_MENDELIAN_RESULT_LOG_H_

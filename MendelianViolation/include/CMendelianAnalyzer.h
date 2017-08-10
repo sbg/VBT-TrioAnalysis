@@ -20,6 +20,9 @@
 #include <thread>
 #include "SChrIdTriplet.h"
 
+namespace mendelian
+{
+
 class CMendelianAnalyzer
 {
     
@@ -117,5 +120,6 @@ private:
     std::thread *m_pThreadPool;
 };
 
+}
 
 #endif //C_MENDELIAN_ANALYZER_H_

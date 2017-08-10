@@ -15,6 +15,8 @@
 #include "CSyncPoint.h"
 #include <algorithm>
 
+using namespace mendelian;
+
 //Compare variants according to id for sort operation
 bool variantCompare(const CVariant* v1, const CVariant* v2) {return v1->m_nId < v2->m_nId;}
 

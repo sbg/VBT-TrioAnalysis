@@ -20,12 +20,17 @@
  
 */
 
+namespace mendelian
+{
+
 enum ENoCallMode
 {
     eNone,
     eImplicitNoCall,
     eExplicitNoCall
 };
+    
+}
 
 
 #endif // _E_NO_CALL_MODE_H_

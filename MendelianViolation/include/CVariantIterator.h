@@ -13,6 +13,8 @@
 #include <vector>
 #include "COrientedVariant.h"
 
+namespace mendelian
+{
 
 class CVariantIterator
 {
@@ -72,5 +74,6 @@ private:
     
 };
 
+}
 
 #endif // _C_CALL_ITERATOR_H_

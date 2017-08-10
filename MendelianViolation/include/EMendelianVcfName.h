@@ -9,6 +9,9 @@
 #ifndef _E_MENDELIAN_VCF_NAME_H_
 #define _E_MENDELIAN_VCF_NAME_H_
 
+namespace mendelian
+{
+
 enum EMendelianVcfName
 {
     eFATHER,
@@ -16,6 +19,7 @@ enum EMendelianVcfName
     eCHILD
 };
 
+}
 
 
 #endif // _E_MENDELIAN_VCF_NAME_H_

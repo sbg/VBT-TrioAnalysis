@@ -9,6 +9,9 @@
 #ifndef _E_MENDELIAN_DECISION_H_
 #define _E_MENDELIAN_DECISION_H_
 
+namespace mendelian
+{
+
 enum EMendelianDecision
 {
     eUnknown = 0,
@@ -18,5 +21,7 @@ enum EMendelianDecision
     eNoCallChild = 4,
     eSkipped = 5
 };
+    
+}
 
 #endif // _E_MENDELIAN_DECISION_H_

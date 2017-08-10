@@ -20,6 +20,8 @@
 #include "CMendelianResultLog.h"
 #include "SChrIdTriplet.h"
 
+namespace mendelian
+{
 
 class CMendelianTrioMerger
 {
@@ -126,7 +128,7 @@ private:
     CMendelianResultLog* m_pResultLog;
 };
 
-
+}
 
 
 #endif // _C_MENDELIAN_TRIO_MERGER_H_

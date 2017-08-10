@@ -21,8 +21,8 @@ int main (int argc, char** argv)
     
     else if(strcmp(argv[1], "mendelian") == 0)
     {
-       CMendelianAnalyzer mendelianAnalyzer;
-       successNo = mendelianAnalyzer.run(argc, argv);
+        mendelian::CMendelianAnalyzer mendelianAnalyzer;
+        successNo = mendelianAnalyzer.run(argc, argv);
     }
     
     else if(strcmp(argv[1], "varcomp") == 0)

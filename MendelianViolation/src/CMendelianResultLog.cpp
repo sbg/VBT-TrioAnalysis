@@ -10,6 +10,7 @@
 #include <fstream>
 #include <iomanip>
 
+using namespace mendelian;
 
 void CMendelianResultLog::SetLogDirectory(std::string a_rLogDirectory)
 {

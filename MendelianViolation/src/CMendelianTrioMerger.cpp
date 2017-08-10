@@ -11,6 +11,8 @@
 #include <iostream>
 #include <sstream>
 
+using namespace mendelian;
+
 //Checks if the given two range is overlapping
 bool IsOverlap(SVcfRecord& rec1, SVcfRecord& rec2)
 {

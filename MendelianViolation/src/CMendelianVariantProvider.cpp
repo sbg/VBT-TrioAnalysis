@@ -13,6 +13,8 @@
 #include <iostream>
 #include <sstream>
 
+using namespace mendelian;
+
 bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildConfig, const SConfig& a_rMotherChildConfig)
 {
     bool bIsSuccessFather = true;

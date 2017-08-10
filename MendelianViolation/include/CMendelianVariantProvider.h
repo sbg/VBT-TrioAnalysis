@@ -16,6 +16,9 @@
 #include "EMendelianVcfName.h"
 #include "SChrIdTriplet.h"
 
+namespace mendelian
+{
+
 class CMendelianVariantProvider
 {
 
@@ -150,6 +153,8 @@ private:
     int m_nFatherAsteriskCount;
     int m_nChildAsteriskCount;
 };
+
+}
 
 #endif //_C_MENDELIAN_VARIANT_PROVIDER_H_
 

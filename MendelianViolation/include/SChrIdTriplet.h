@@ -12,6 +12,9 @@
 #ifndef _S_CHROMOSOME_ID_TRIPLET_H_
 #define _S_CHROMOSOME_ID_TRIPLET_H_
 
+namespace mendelian
+{
+
 struct SChrIdTriplet
 {
     SChrIdTriplet(int a_mother, int a_father, int a_child, std::string a_chrName, int a_tripleIndex)
@@ -45,4 +48,6 @@ struct SChrIdTriplet
     std::string m_chrName;
 };
 
+}
+    
 #endif /* _S_CHROMOSOME_ID_TRIPLET_H_ */
