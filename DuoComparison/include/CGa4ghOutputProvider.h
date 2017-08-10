@@ -17,6 +17,10 @@ namespace core
 {
 class CPath;
 }
+
+namespace duocomparison
+{
+
 class CVariantProvider;
 
 
@@ -89,5 +93,6 @@ private:
     
 };
 
+}
 
 #endif //_C_GA4GH_OUTPUT_PROVIDER_H_

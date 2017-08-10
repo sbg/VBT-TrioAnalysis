@@ -13,7 +13,7 @@
 #include "CSplitOutputProvider.h"
 #include <fstream>
 
-
+using namespace duocomparison;
 
 void CVcfAnalyzer::Run(int argc, char** argv)
 {

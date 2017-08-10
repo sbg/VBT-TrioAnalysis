@@ -11,6 +11,8 @@
 #include "COrientedVariant.h"
 #include <algorithm>
 
+using namespace duocomparison;
+
 CVariantProvider::CVariantProvider()
 {
     m_bIsHomozygousOvarListInitialized = false;

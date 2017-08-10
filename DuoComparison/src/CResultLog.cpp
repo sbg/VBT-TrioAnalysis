@@ -9,6 +9,7 @@
 #include "CResultLog.h"
 #include <fstream>
 
+using namespace duocomparison;
 
 void CResultLog::SetLogPath(const std::string& a_rLogFolder)
 {

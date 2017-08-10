@@ -11,6 +11,9 @@
 
 #include <string>
 
+namespace duocomparison
+{
+
 struct SChrIdTuple
 {
     SChrIdTuple(int a_base, int a_called, std::string a_chrName, int a_nTupleIndex)
@@ -34,5 +37,7 @@ struct SChrIdTuple
     int m_nTupleIndex;
     std::string m_chrName;
 };
+
+}
 
 #endif /* _S_CHR_ID_TUPLE_H_ */

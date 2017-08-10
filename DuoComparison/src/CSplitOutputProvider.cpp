@@ -11,6 +11,7 @@
 #include "CVariantProvider.h"
 #include <algorithm>
 
+using namespace duocomparison;
 
 CSplitOutputProvider::CSplitOutputProvider()
 {

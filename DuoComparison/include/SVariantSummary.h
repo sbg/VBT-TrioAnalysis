@@ -11,6 +11,9 @@
 
 #include "CVariant.h"
 
+namespace duocomparison
+{
+
 struct SVariantSummary
 {
     const CVariant* m_pVariant;
@@ -73,5 +76,7 @@ struct SVariantSummary
     }
     
 };
+
+}
 
 #endif //_S_VARIANY_SUMMARY_H_

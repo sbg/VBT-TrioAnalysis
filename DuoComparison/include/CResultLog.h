@@ -15,6 +15,9 @@
 #include "CSyncPoint.h"
 #include <fstream>
 
+namespace duocomparison
+{
+
 struct SLogEntry
 {
     std::string m_chrName;
@@ -59,6 +62,8 @@ private:
     std::ofstream m_syncPointFile;
     
 };
+    
+}
 
 
 

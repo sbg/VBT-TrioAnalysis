@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "DuoComparison/src/CVariantProvider.cpp"
-            timestampString = "517958511.181866"
+            timestampString = "524091394.416182"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "96"
-            endingLineNumber = "96"
+            startingLineNumber = "98"
+            endingLineNumber = "98"
             landmarkName = "CVariantProvider::InitializeReaders(const SConfig&amp; a_rConfig)"
             landmarkType = "7">
          </BreakpointContent>
@@ -42,11 +42,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "DuoComparison/src/CSplitOutputProvider.cpp"
-            timestampString = "516303878.200081"
+            timestampString = "524091394.416182"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "186"
-            endingLineNumber = "186"
+            startingLineNumber = "187"
+            endingLineNumber = "187"
             landmarkName = "CSplitOutputProvider::FillHeader(CVcfWriter *a_pWriter, bool a_bIsBaseSide)"
             landmarkType = "7">
          </BreakpointContent>
@@ -58,11 +58,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "DuoComparison/src/CSplitOutputProvider.cpp"
-            timestampString = "515705231.121518"
+            timestampString = "524091394.416182"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "62"
-            endingLineNumber = "62"
+            startingLineNumber = "63"
+            endingLineNumber = "63"
             landmarkName = "CSplitOutputProvider::GenerateTpBaseVcf(const std::vector&lt;SChrIdTuple&gt;&amp; a_rCommonChromosomes)"
             landmarkType = "7">
          </BreakpointContent>
@@ -74,11 +74,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "DuoComparison/src/CSplitOutputProvider.cpp"
-            timestampString = "516232896.03354"
+            timestampString = "524091394.416182"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "80"
-            endingLineNumber = "80"
+            startingLineNumber = "81"
+            endingLineNumber = "81"
             landmarkName = "CSplitOutputProvider::GenerateTpCalledVcf(const std::vector&lt;SChrIdTuple&gt;&amp; a_rCommonChromosomes)"
             landmarkType = "7">
          </BreakpointContent>
@@ -214,11 +214,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "DuoComparison/src/CSplitOutputProvider.cpp"
-            timestampString = "516232896.03354"
+            timestampString = "524091394.416182"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "167"
-            endingLineNumber = "167"
+            startingLineNumber = "168"
+            endingLineNumber = "168"
             landmarkName = "CSplitOutputProvider::AddRecords(CVcfWriter* a_pWriter, const std::vector&lt;const core::COrientedVariant*&gt;&amp; a_pOvarList)"
             landmarkType = "7">
          </BreakpointContent>
@@ -262,11 +262,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "DuoComparison/src/CVariantProvider.cpp"
-            timestampString = "517958511.181866"
+            timestampString = "524091394.416182"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "60"
-            endingLineNumber = "60"
+            startingLineNumber = "62"
+            endingLineNumber = "62"
             landmarkName = "CVariantProvider::InitializeReaders(const SConfig&amp; a_rConfig)"
             landmarkType = "7">
          </BreakpointContent>
@@ -278,11 +278,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "DuoComparison/src/CVariantProvider.cpp"
-            timestampString = "517958511.181866"
+            timestampString = "524091394.416182"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "70"
-            endingLineNumber = "70"
+            startingLineNumber = "72"
+            endingLineNumber = "72"
             landmarkName = "CVariantProvider::InitializeReaders(const SConfig&amp; a_rConfig)"
             landmarkType = "7">
          </BreakpointContent>
@@ -438,11 +438,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "DuoComparison/src/CSplitOutputProvider.cpp"
-            timestampString = "515705231.121518"
+            timestampString = "524091394.416182"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "44"
-            endingLineNumber = "44"
+            startingLineNumber = "45"
+            endingLineNumber = "45"
             landmarkName = "CSplitOutputProvider::GenerateSplitVcfs(const std::vector&lt;SChrIdTuple&gt;&amp; a_rCommonChromosomes)"
             landmarkType = "7">
          </BreakpointContent>
@@ -454,11 +454,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "DuoComparison/src/CSplitOutputProvider.cpp"
-            timestampString = "516232896.03354"
+            timestampString = "524091394.416182"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "77"
-            endingLineNumber = "77"
+            startingLineNumber = "78"
+            endingLineNumber = "78"
             landmarkName = "CSplitOutputProvider::GenerateTpCalledVcf(const std::vector&lt;SChrIdTuple&gt;&amp; a_rCommonChromosomes)"
             landmarkType = "7">
          </BreakpointContent>
@@ -470,11 +470,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "DuoComparison/src/CGa4ghOutputProvider.cpp"
-            timestampString = "516211157.240005"
+            timestampString = "524091394.416182"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "302"
-            endingLineNumber = "302"
+            startingLineNumber = "304"
+            endingLineNumber = "304"
             landmarkName = "CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase, const CVariant* a_pVariantCalled, const std::string&amp; a_rMatchTypeBase, const std::string&amp; a_rMatchTypeCalled, const std::string&amp; a_rDecisionBase, const std::string&amp; a_rDecisionCalled, SVcfRecord&amp; a_rOutputRec)"
             landmarkType = "7">
          </BreakpointContent>
@@ -486,11 +486,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "DuoComparison/src/CGa4ghOutputProvider.cpp"
-            timestampString = "516211157.240005"
+            timestampString = "524091394.416182"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "245"
-            endingLineNumber = "245"
+            startingLineNumber = "247"
+            endingLineNumber = "247"
             landmarkName = "CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase, const CVariant* a_pVariantCalled, const std::string&amp; a_rMatchTypeBase, const std::string&amp; a_rMatchTypeCalled, const std::string&amp; a_rDecisionBase, const std::string&amp; a_rDecisionCalled, SVcfRecord&amp; a_rOutputRec)"
             landmarkType = "7">
          </BreakpointContent>
@@ -566,11 +566,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "DuoComparison/src/CVariantProvider.cpp"
-            timestampString = "517958511.181866"
+            timestampString = "524091394.416182"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "189"
-            endingLineNumber = "189"
+            startingLineNumber = "191"
+            endingLineNumber = "191"
             landmarkName = "CVariantProvider::FillVariantLists()"
             landmarkType = "7">
          </BreakpointContent>
@@ -822,11 +822,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "DuoComparison/src/CVariantProvider.cpp"
-            timestampString = "519230303.09894"
+            timestampString = "524091394.416182"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "231"
-            endingLineNumber = "231"
+            startingLineNumber = "233"
+            endingLineNumber = "233"
             landmarkName = "CVariantProvider::FillVariantLists()"
             landmarkType = "7">
          </BreakpointContent>

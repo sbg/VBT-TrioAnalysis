@@ -13,6 +13,8 @@
 #include "CVariantProvider.h"
 #include <iostream>
 
+using namespace duocomparison;
+
 void CGa4ghOutputProvider::SetVariantProvider(CVariantProvider* a_pProvider)
 {
     m_pVariantProvider = a_pProvider;

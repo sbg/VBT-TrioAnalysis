@@ -15,6 +15,9 @@
 #include "CVariantProvider.h"
 #include "CResultLog.h"
 
+namespace duocomparison
+{
+
 class CVcfAnalyzer
 {
 
@@ -71,5 +74,7 @@ private:
     std::thread *m_pThreadPool;
 
 };
+    
+}
 
 #endif //C_VCF_ANALYZER_H

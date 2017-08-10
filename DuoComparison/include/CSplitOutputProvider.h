@@ -19,6 +19,8 @@ class COrientedVariant;
 class CPath;
 }
 
+namespace duocomparison
+{
 class CVariantProvider;
 
 
@@ -85,5 +87,6 @@ private:
     std::vector<SVcfContig> m_contigs;
     
 };
-
+    
+}
 #endif // _C_SPLIT_OUTPUT_PROVIDER_H_

@@ -14,6 +14,8 @@
 #include "COrientedVariant.h"
 #include "SVariantSummary.h"
 
+namespace duocomparison
+{
 
 class CVariantIteratorV2
 {
@@ -107,5 +109,6 @@ private:
     
 };
 
+}
 
 #endif // _C_CALL_ITERATOR_V2_H_

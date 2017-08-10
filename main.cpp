@@ -27,7 +27,7 @@ int main (int argc, char** argv)
     
     else if(strcmp(argv[1], "varcomp") == 0)
     {
-       CVcfAnalyzer analyzer;
+       duocomparison::CVcfAnalyzer analyzer;
        analyzer.Run(argc, argv);
     }
     

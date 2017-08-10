@@ -18,6 +18,9 @@ namespace core
     class COrientedVariant;
 }
 
+namespace duocomparison
+{
+
 class CVariantProvider
 {
 public:
@@ -121,5 +124,6 @@ private:
     
 };
 
+}
 
 #endif // _C_VARIANT_PROVIDER_H_
