@@ -10,6 +10,13 @@ int main (int argc, char** argv)
     std::cout << "Docker image id of this copy is :  vbtapp:v0.6.0" << std::endl;
     std::cerr << "Docker image id of this copy is :  vbtapp:v0.6.0" << std::endl;
     
+    std::cout << "==== VARIANT BENCHMARKING TOOL VERSION 1.0 (Beta) ==== " << std::endl;
+    std::cout << "Based on paper: http://biorxiv.org/content/biorxiv/early/2015/08/02/023754.full.pdf" << std::endl;
+    std::cout << "Author: Berke Cagkan Toptas (berke.toptas@sbgdinc.com)" << std::endl;
+    std::cout << "Please notify me if program fails or return unexpected results" << std::endl;
+    std::cout << "COPYRIGHT (C) 2017 SBGD INC" << std::endl;
+    std::cout << std::endl;
+    
     if(argc == 1)
     {
         std::cerr << "You have not entered an input.Please try either following:" << std::endl;

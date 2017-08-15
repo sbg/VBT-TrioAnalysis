@@ -566,12 +566,6 @@ bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
 
 void CVcfAnalyzer::PrintHelp() const
 {
-    std::cout << "==== VARIANT BENCHMARKING TOOL VERSION 1.0 (Beta) ==== " << std::endl;
-    std::cout << "Based on paper: http://biorxiv.org/content/biorxiv/early/2015/08/02/023754.full.pdf" << std::endl;
-    std::cout << "Author: Berke Cagkan Toptas (berke.toptas@sbgenomics.com || berke.toptas@sbgdinc.com)" << std::endl;
-    std::cout << "Please notify me if program fails or return unexpected results" << std::endl;
-    std::cout << "COPYRIGHT (C) 2016 SEVEN BRIDGES GENOMICS." << std::endl;
-    std::cout << "COPYRIGHT (C) 2017 SBGD INC" << std::endl;
     std::cout << std::endl;
     std::cout << " --- VARCOMP PARAMETERS --- " << std::endl;
     std::cout << "-base <baseline_vcf_path>    [Required.Add baseline VCF file.]" << std::endl;
