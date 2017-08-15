@@ -64,51 +64,55 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "mendelian"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "varcomp"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-father"
+            argument = "graphcomp"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-father"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/CEU_FreeBayes_Normalized_VBT/CEU_BWA_FreeBayes_Normalized.merged.vcf"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-child"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/CEU_FreeBayes_Normalized_VBT/CEU_BWA_FreeBayes_Normalized.merged.vcf"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-mother"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/CEU_FreeBayes_Normalized_VBT/CEU_BWA_FreeBayes_Normalized.merged.vcf"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-outDir"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/CEU_FreeBayes_Normalized_VBT"
+            argument = "/Users/c1ms21p6h3qk/Desktop/graphComparison"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-filter"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "none"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-ref"
@@ -120,31 +124,31 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-pedigree"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/CEU_PED_Input/CEUTrio_graphs.ped"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--ref-overlap"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-base"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest5/FreeBayes_Normalized_NA12891DUP.vcf"
-            isEnabled = "NO">
+            argument = "/Users/c1ms21p6h3qk/Desktop/graphComparison/1KG.AF001.SimonsV99.AC10.bl.V3.vcf.gz"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-called"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest5/FreeBayes_Normalized_NA12878DUP.vcf"
-            isEnabled = "NO">
+            argument = "/Users/c1ms21p6h3qk/Desktop/graphComparison/sing5_v3_5samples_to1KGPan.vcf.gz"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--allele-match"
@@ -152,7 +156,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--autosome-only"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-bed"
@@ -164,11 +168,11 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-out-prefix"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "VBT_FreeBayes_Normalized"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
       <AdditionalOptions>

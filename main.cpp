@@ -1,13 +1,14 @@
 #include <iostream>
 #include "CVcfAnalyzer.h"
 #include "CMendelianAnalyzer.h"
+#include "CGraphVcfAnalyzer.h"
 
 int main (int argc, char** argv)
 {
     int successNo = 0;
     
-    std::cout << "Docker image of this copy is :  vbtapp:v5.40" << std::endl;
-    std::cerr << "Docker image of this copy is :  vbtapp:v5.40" << std::endl;
+    std::cout << "Docker image id of this copy is :  vbtapp:v0.6.0" << std::endl;
+    std::cerr << "Docker image id of this copy is :  vbtapp:v0.6.0" << std::endl;
     
     if(argc == 1)
     {
@@ -21,14 +22,20 @@ int main (int argc, char** argv)
     
     else if(strcmp(argv[1], "mendelian") == 0)
     {
-        mendelian::CMendelianAnalyzer mendelianAnalyzer;
-        successNo = mendelianAnalyzer.run(argc, argv);
+        mendelian::CMendelianAnalyzer analyzer;
+        successNo = analyzer.run(argc, argv);
     }
     
     else if(strcmp(argv[1], "varcomp") == 0)
     {
        duocomparison::CVcfAnalyzer analyzer;
        analyzer.Run(argc, argv);
+    }
+
+    else if(strcmp(argv[1], "graphcomp") == 0)
+    {
+        graphcomparison::CGraphVcfAnalyzer analyzer;
+        successNo = analyzer.run(argc, argv);
     }
     
     else
