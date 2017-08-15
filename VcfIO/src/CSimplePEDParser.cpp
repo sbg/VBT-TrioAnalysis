@@ -65,9 +65,9 @@ std::vector<std::string> CSimplePEDParser::GetIdsMFC(const std::vector<std::stri
 {
     for (auto it = m_familyMap.begin(); it != m_familyMap.end(); ++it )
     {
-        for(int k = 0; k < childList.size(); k++)
+        for(unsigned int k = 0; k < childList.size(); k++)
         {
-            for(int m = 0; m < it->second.size(); m++)
+            for(unsigned int m = 0; m < it->second.size(); m++)
             {
                 if(it->second[m].m_id == childList[k])
                 {
@@ -96,7 +96,7 @@ std::vector<std::string> CSimplePEDParser::GetIdsMFC(const std::string& id1, con
 {
     for (auto it = m_familyMap.begin(); it != m_familyMap.end(); ++it )
     {
-        for(int k = 0; k < it->second.size(); k++)
+        for(unsigned int k = 0; k < it->second.size(); k++)
         {
             if(it->second[k].m_id == id1)
             {

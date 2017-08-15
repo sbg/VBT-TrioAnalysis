@@ -933,7 +933,7 @@ void CMendelianAnalyzer::CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTr
         if(selfSideMatches.size() > 2)
             selfCheck = false;
         //check if all variants is 0/x form
-        for(int m=0; m < selfSideMatches.size(); m++)
+        for(unsigned int m=0; m < selfSideMatches.size(); m++)
         {
             if(selfSideMatches[m]->m_genotype[0] != 0 && selfSideMatches[m]->m_genotype[1] != 0)
             {
@@ -943,7 +943,7 @@ void CMendelianAnalyzer::CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTr
         }
         
         //===== STEP 2: Check the other Parent Side =======
-        for(int m=0; m < parentSideMatches.size(); m++)
+        for(unsigned int m=0; m < parentSideMatches.size(); m++)
         {
             if((a_checkSide == eFATHER && m_aMotherDecisions[a_rTriplet.m_nTripleIndex][varItrParent+m] == eViolation)
                ||
@@ -961,7 +961,7 @@ void CMendelianAnalyzer::CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTr
         }
         
         //===== STEP 3: Check child Side =========
-        for(int m=0; m < childSideMatches.size(); m++)
+        for(unsigned int m=0; m < childSideMatches.size(); m++)
         {
             if(m_aChildDecisions[a_rTriplet.m_nTripleIndex][varItrChild+m] == eCompliant)
             {
@@ -1001,9 +1001,9 @@ void CMendelianAnalyzer::AssignDecisionToParentVars(EMendelianVcfName a_checkSid
     GetSyncPointList(a_rTriplet, bIsFatherChild, aSyncPointList);
     
     //Iterator to synchronization point list
-    int itrSyncPList = 0;
+    unsigned int itrSyncPList = 0;
     
-    for(int k = 0; k < varListToCheckParent.size(); k++)
+    for(unsigned int k = 0; k < varListToCheckParent.size(); k++)
     {
         //Skipped assigned variants
         if(a_rParentDecisions[k] != eUnknown)
@@ -1019,7 +1019,7 @@ void CMendelianAnalyzer::AssignDecisionToParentVars(EMendelianVcfName a_checkSid
         
         bool bIsViolationFound = false;
         
-        for(int m = 0; m < aSyncPointList[itrSyncPList].m_calledVariantsIncluded.size(); m++)
+        for(unsigned int m = 0; m < aSyncPointList[itrSyncPList].m_calledVariantsIncluded.size(); m++)
         {
             if(a_rChildDecisions[m_provider.Get0BasedVariantIndex(eCHILD, a_rTriplet.m_nCid, aSyncPointList[itrSyncPList].m_calledVariantsIncluded[m]->GetVariant().m_nId)] == eViolation)
             {
@@ -1029,7 +1029,7 @@ void CMendelianAnalyzer::AssignDecisionToParentVars(EMendelianVcfName a_checkSid
             }
         }
 
-        for(int m = 0; m < aSyncPointList[itrSyncPList].m_calledVariantsExcluded.size(); m++)
+        for(unsigned int m = 0; m < aSyncPointList[itrSyncPList].m_calledVariantsExcluded.size(); m++)
         {
             if(a_rChildDecisions[m_provider.Get0BasedVariantIndex(eCHILD, a_rTriplet.m_nCid, aSyncPointList[itrSyncPList].m_calledVariantsExcluded[m]->m_nId)] == eViolation)
             {

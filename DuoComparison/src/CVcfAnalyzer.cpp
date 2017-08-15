@@ -59,7 +59,7 @@ void CVcfAnalyzer::Run(int argc, char** argv)
         
         std::vector<SChrIdTuple> chromosomeListToProcess = m_provider.GetChromosomeIdTuples();
         m_resultLogger.OpenSyncPointFile(std::string(m_config.m_pOutputDirectory) + "/SyncPointList.txt");
-        for(int k = 0; k < chromosomeListToProcess.size(); k++)
+        for(int k = 0; k < static_cast<int>(chromosomeListToProcess.size()); k++)
         {
             std::vector<core::CSyncPoint> syncPointList;
             CalculateSyncPointList(chromosomeListToProcess[k], syncPointList);

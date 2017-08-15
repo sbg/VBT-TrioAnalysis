@@ -9,29 +9,33 @@ INCCORE := Core/include
 INCDUO := DuoComparison/include
 INCTRIO := MendelianViolation/include
 INCVCFIO := VcfIO/include
+INCGRAPH := GraphComparison/include
 
 CFLAGS := -std=c++11 -Wall -O2 -g
 LIB := -lz -pthread -lhts
-INC := -I $(INCCORE) -I htslib -I $(INCDUO) -I $(INCTRIO) -I $(INCVCFIO) -I $(shell pwd)
+INC := -I $(INCCORE) -I htslib -I $(INCDUO) -I $(INCTRIO) -I $(INCVCFIO) -I $(INCGRAPH) -I $(shell pwd)
 
 SRCCORE := Core/src
 SRCDUO := DuoComparison/src
 SRCTRIO := MendelianViolation/src
 SRCVCFIO := VcfIO/src
+SRCGRAPH := GraphComparison/src
 
  
 SOURCESCORE := $(shell find $(SRCCORE) -type f -name '*.cpp')
 SOURCESDUO := $(shell find $(SRCDUO) -type f -name '*.cpp')
 SOURCESTRIO := $(shell find $(SRCTRIO) -type f -name '*.cpp')
-SOURCESVCFIO := $(shell find $(SRCVCFIO) -type f -name '*.cpp') 
+SOURCESVCFIO := $(shell find $(SRCVCFIO) -type f -name '*.cpp')
+SOURCESGRAPH := $(shell find $(SRCGRAPH) -type f -name '*.cpp')
 
 OBJECTSCORE := $(subst $(SRCCORE), $(BUILDDIR), $(SOURCESCORE:.cpp=.o))
 OBJECTSDUO := $(subst $(SRCDUO), $(BUILDDIR), $(SOURCESDUO:.cpp=.o))
 OBJECTSTRIO := $(subst $(SRCTRIO), $(BUILDDIR), $(SOURCESTRIO:.cpp=.o))
 OBJECTSVCFIO := $(subst $(SRCVCFIO), $(BUILDDIR), $(SOURCESVCFIO:.cpp=.o))
+OBJECTSGRAPH := $(subst $(SRCGRAPH), $(BUILDDIR), $(SOURCESGRAPH:.cpp=.o))
 
-OBJECTS := $(OBJECTSCORE) $(OBJECTSDUO) $(OBJECTSTRIO) $(OBJECTSVCFIO) $(BUILDDIR)/main.o
-SOURCES := $(SOURCESCORE) $(SOURCESDUO) $(SOURCESTRIO) $(SOURCESVCFIO) main.cpp
+OBJECTS := $(OBJECTSCORE) $(OBJECTSDUO) $(OBJECTSTRIO) $(OBJECTSVCFIO) $(OBJECTSGRAPH) $(BUILDDIR)/main.o
+SOURCES := $(SOURCESCORE) $(SOURCESDUO) $(SOURCESTRIO) $(SOURCESVCFIO) $(SOURCESGRAPH) main.cpp
 
 all: $(TARGET)
 	@echo "SUCCESSFULLY COMPILED!!"
@@ -59,6 +63,10 @@ $(BUILDDIR)/%.o: $(SRCTRIO)/%.cpp Constants.h
 $(BUILDDIR)/%.o: $(SRCVCFIO)/%.cpp Constants.h
 	@mkdir -p $(BUILDDIR)
 	@echo " VCFIO: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
+
+$(BUILDDIR)/%.o: $(SRCGRAPH)/%.cpp Constants.h
+    @mkdir -p $(BUILDDIR)
+    @echo " VCFIO: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
 
 $(BUILDDIR)/main.o: main.cpp
 	@mkdir -p $(BUILDDIR)

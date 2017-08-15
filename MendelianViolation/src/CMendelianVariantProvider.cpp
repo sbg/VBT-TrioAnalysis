@@ -1070,7 +1070,7 @@ void CMendelianVariantProvider::RemoveNonAssessedSites()
     int fatherId = 0;
     int childId = 0;
     
-    for(int k = 0; k < m_aCommonChromosomes.size(); k++)
+    for(int k = 0; k < static_cast<int>(m_aCommonChromosomes.size()); k++)
     {
         SChrIdTriplet triplet = m_aCommonChromosomes[k];
         
@@ -1094,7 +1094,7 @@ void CMendelianVariantProvider::RemoveNonAssessedSites()
         //Remove dependent non-assessed sites from father side
         for(auto varItr = m_aFatherVariantList[triplet.m_nFid].begin(); varItr != m_aFatherVariantList[triplet.m_nFid].end();)
         {
-            while(naItr != mergedSorted_NA_VariantPositions.size() && mergedSorted_NA_VariantPositions[naItr] < varItr->m_nOriginalPos)
+            while(naItr != static_cast<int>(mergedSorted_NA_VariantPositions.size()) && mergedSorted_NA_VariantPositions[naItr] < varItr->m_nOriginalPos)
                 naItr++;
             
             if(varItr->m_nOriginalPos == mergedSorted_NA_VariantPositions[naItr])
@@ -1111,7 +1111,7 @@ void CMendelianVariantProvider::RemoveNonAssessedSites()
         //Remove dependent non-assessed sites from mother side
         for(auto varItr = m_aMotherVariantList[triplet.m_nMid].begin(); varItr != m_aMotherVariantList[triplet.m_nMid].end();)
         {
-            while(naItr != mergedSorted_NA_VariantPositions.size() && mergedSorted_NA_VariantPositions[naItr] < varItr->m_nOriginalPos)
+            while(naItr != static_cast<int>(mergedSorted_NA_VariantPositions.size()) && mergedSorted_NA_VariantPositions[naItr] < varItr->m_nOriginalPos)
                 naItr++;
             
             if(varItr->m_nOriginalPos == mergedSorted_NA_VariantPositions[naItr])
@@ -1128,7 +1128,7 @@ void CMendelianVariantProvider::RemoveNonAssessedSites()
         //Remove dependent non-assessed sites from child side
         for(auto varItr = m_aChildVariantList[triplet.m_nCid].begin(); varItr != m_aChildVariantList[triplet.m_nCid].end();)
         {
-            while(naItr != mergedSorted_NA_VariantPositions.size() && mergedSorted_NA_VariantPositions[naItr] < varItr->m_nOriginalPos)
+            while(naItr != static_cast<int>(mergedSorted_NA_VariantPositions.size()) && mergedSorted_NA_VariantPositions[naItr] < varItr->m_nOriginalPos)
                 naItr++;
             
             if(varItr->m_nOriginalPos == mergedSorted_NA_VariantPositions[naItr])

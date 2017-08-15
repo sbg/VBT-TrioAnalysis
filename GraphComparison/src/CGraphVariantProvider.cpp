@@ -10,6 +10,7 @@
 #include "CSimpleBEDParser.h"
 #include "CVcfWriter.h"
 #include <iostream>
+#include <algorithm>
 
 using namespace graphcomparison;
 

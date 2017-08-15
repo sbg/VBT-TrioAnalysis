@@ -378,7 +378,7 @@ void CMendelianTrioMerger::AddRecords(SChrIdTriplet& a_rTriplet)
     std::cerr << "Writing variants to output vcf..." << std::endl;
     
     //Write the final updated variants to output vcf and logs to the report table
-    for(int k = 0; k < recordList.size(); k++)
+    for(int k = 0; k < static_cast<int>(recordList.size()); k++)
     {
         m_vcfWriter.AddMendelianRecord(recordList[k]);
         RegisterMergedLine(recordDecisionList[k], recordCategoryList[k]);
@@ -896,7 +896,7 @@ void CMendelianTrioMerger::ProcessRefOverlappedRegions(std::vector<SVcfRecord>& 
     int recordItr = 0;
     std::string curVariantDecision;
     
-    while(recordItr < a_rRecordList.size())
+    while(recordItr < static_cast<int>(a_rRecordList.size()))
     {
         curVariantDecision = a_rRecordList[recordItr].m_mendelianDecision;
         
