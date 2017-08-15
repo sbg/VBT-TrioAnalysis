@@ -73,6 +73,9 @@ public:
     //Append the given variant to the opened vcf file
     void AddRecord(const SVcfRecord& a_rVcfRecord);
     
+    //Append the given raw variant to the opened vcf file
+    void AddRawRecord(bcf1_t* a_rRecord);
+    
     //Append the given variant to the opned vcf file for Mendelian Trio Mode
     void AddMendelianRecord(const SVcfRecord& a_rVcfRecord);
     
@@ -90,6 +93,9 @@ public:
     
     //Write the header to the vcf - No change should be made to the m_pHeader after this function is called.
     void WriteHeaderToVcf();
+    
+    //Set raw header to the output vcf
+    void SetRawHeader(bcf_hdr_t* a_pHeader);
     
 private:
     

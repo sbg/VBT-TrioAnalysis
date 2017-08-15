@@ -306,3 +306,14 @@ std::string CVcfWriter::GetTime()
     return std::string(buffer);
 }
 
+void CVcfWriter::SetRawHeader(bcf_hdr_t* a_pHeader)
+{
+    m_pHeader = a_pHeader;
+    m_HEADER_GUARD = 1;
+}
+
+void CVcfWriter::AddRawRecord(bcf1_t* a_rRecord)
+{
+    bcf_write1(m_pHtsFile, m_pHeader, a_rRecord);
+}
+
