@@ -131,11 +131,6 @@ bool COrientedVariant::IsOrderOfGenotype() const
     return m_bIsOrderOfGenotype;
 }
 
-void COrientedVariant::SetWeight(double a_fWeight) const
-{
-    m_fWeight = a_fWeight;
-}
-
 void COrientedVariant::SetToNull()
 {
     m_bIsNull = true;

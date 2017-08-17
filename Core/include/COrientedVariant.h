@@ -59,9 +59,6 @@ class COrientedVariant
     //Set variant to null
     void SetToNull();
     
-    //Set the weight(proportion of variant inside 2 consecutive syncpoints) of the variant
-    void SetWeight(double a_fWeight) const;
-    
     //[For Test purpose] print the oriented variant
     void Print() const;
 
@@ -70,8 +67,6 @@ class COrientedVariant
     int m_nAlleleIndex;
     //Index of the other allele of this variant
     int m_nOtherAlleleIndex;
-    //Weight of the variant
-    mutable double m_fWeight;
     //Pointer Access to variant
     const CVariant* m_variant;
     //If the selected allele is first number or not (eg.  a/b   a-> true b-> false)
