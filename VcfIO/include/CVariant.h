@@ -93,48 +93,61 @@ class CVariant
     
     //ID of which vcf file that the variant belongs to
     int m_nVcfId;
+
     //Id of the chromosome that variant belogs to
     int m_nChrId;
-    //Chromosome name
-    std::string m_chrName;
+
     //Unique Id of variant
     int m_nId;
- 
-    //Filter Data
-    std::vector<std::string> m_filterString;
-    bool m_bIsFilterPASS;
+
+    //Allele count of the variant (2 for diploid and 1 for haploid)
+    int m_nAlleleCount;
+    
+    //Start Position of the variant - min start pos of all alleles
+    int m_nStartPos;
+
+    //End Position of the variant - max end pos of all alleles
+    int m_nEndPos;
+    
+    //Original Genotype list read from vcf file
+    int m_genotype[2];
+    
+    //Zygot Count
+    int m_nZygotCount;
+    
+    //Original variant position
+    int m_nOriginalPos;
+    
+    mutable EVariantMatch m_variantStatus;
     
     //True if the variant genotype is phased
     bool m_bIsPhased;
+    
+    //If the variant is heterozygous (ie. GT is 0/1 1/2 etc.)
     bool m_bIsHeterozygous;
     
     //True if the first nucleotide is trimmed
     bool m_bIsFirstNucleotideTrimmed;
-
+    
     //True if genotype is ./.
     bool m_bIsNoCall;
     
     //Allele array of the variant
     SAllele m_alleles[2];
-    //Allele count of the variant (2 for diploid and 1 for haploid)
-    int m_nAlleleCount;
+
     //Reference sequence
     std::string m_refSequence;
     
-    //Start Position of the variant - min start pos of all alleles
-    int m_nStartPos;
-    //End Position of the variant - max end pos of all alleles
-    int m_nEndPos;
-        
-    //THIS VARIABLES SHOULD NOT BE ACCESSED BY GENERIC USERS
+    //Filter Data
+    bool m_bIsFilterPASS;
+    std::vector<std::string> m_filterString;
+    
+    //Chromosome name
+    std::string m_chrName;
+    
     //Original Alleles string read from vcf file
     std::string m_allelesStr;
-    //Original Genotype list read from vcf file
-    int m_genotype[2];
-    int m_nZygotCount;
-    int m_nOriginalPos;
     
-    mutable EVariantMatch m_variantStatus;
 };
 
 
