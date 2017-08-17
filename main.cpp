@@ -50,6 +50,7 @@ int main (int argc, char** argv)
         std::cerr << "Invalid feature name.Please try either following:" << std::endl;
         std::cerr << "./vbt varcomp [PARAMETERS]" << std::endl;
         std::cerr << "./vbt mendelian [PARAMETERS]" << std::endl;
+        std::cerr << "./vbt graphcomp [PARAMETERS]" << std::endl;
         std::cerr << "Please type ./vbt <select_feature> --help for short info about the parameter structure." << std::endl;
         
         return -1;

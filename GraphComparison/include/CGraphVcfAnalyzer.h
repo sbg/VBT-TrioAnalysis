@@ -13,6 +13,7 @@
 #include "SChrIdTuple.h"
 #include "SGraphVarContainer.h"
 #include "CPath.h"
+#include "CSyncPoint.h"
 #include <unordered_map>
 
 namespace graphcomparison
@@ -42,6 +43,19 @@ namespace graphcomparison
         //Function that process chromosome in bulk for SPLIT mode (process either genotype or allele match)
         void ThreadFunctionSPLIT(std::vector<duocomparison::SChrIdTuple> a_aTuples);
 
+        //Get the SyncPointList between 2 graph
+        void GetSyncPointList(const std::vector<const core::COrientedVariant*> a_rBaseIncluded,
+                              const std::vector<const core::COrientedVariant*> a_rCalledIncluded,
+                              const std::vector<const CVariant*>& a_rBaseExcluded,
+                              const std::vector<const CVariant*>& a_rCalledExcluded,
+                              const std::vector<int>& a_rSyncPointCoordinates,
+                              std::vector<core::CSyncPoint>& a_rSyncPointList);
+        
+        //Filter excluded variants for next iteration if there is no included branch within the same synchronization points
+        void FilterGuaranteedUniqueVariants(std::vector<core::CSyncPoint>& a_rSyncPointList,
+                                            std::vector<const CVariant*>& a_rBaseExcluded,
+                                            std::vector<const CVariant*>& a_rCalledExcluded);
+        
         //Print the logs of graphcomparison to log.txt
         void PrintLogs();
         

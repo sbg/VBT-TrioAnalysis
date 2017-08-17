@@ -184,7 +184,7 @@ void CGraphVcfReader::TrimRefOverlap(SAllele& a_rAllele)
     //Overlapping deletion
     if(a_rAllele.m_sequence == "*")
     {
-        a_rAllele.m_sequence = "";
+        //a_rAllele.m_sequence = "";
         return;
     }
     

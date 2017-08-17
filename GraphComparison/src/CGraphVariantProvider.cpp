@@ -90,7 +90,7 @@ bool CGraphVariantProvider::InitializeReaders()
     if(bIsSuccess)
     {
         FillVariantLists();
-        FillOrientedVariantLists();
+        //FillOrientedVariantLists();
         
         //Set the common chromosome list for parsing
         SetChromosomeIdTuples();
@@ -101,13 +101,11 @@ bool CGraphVariantProvider::InitializeReaders()
             {
                 std::cout << "Called VCF does not contain Chromosome " << tuple.m_chrName << ".The chromosome will be filtered out from the comparison!" << std::endl;
                 m_aCalledVariantList[tuple.m_nCalledId].clear();
-                m_aCalledOrientedVariantList[tuple.m_nCalledId].clear();
             }
             else if(m_aBaseVariantList[tuple.m_nBaseId].size() < LEAST_VARIANT_THRESHOLD && m_aCalledVariantList[tuple.m_nCalledId].size() >= LEAST_VARIANT_THRESHOLD)
             {
                 std::cout << "Baseline VCF does not contain Chromosome " << tuple.m_chrName << ".The chromosome will be filtered out from the comparison!" << std::endl;
                 m_aBaseVariantList[tuple.m_nBaseId].clear();
-                m_aBaseOrientedVariantList[tuple.m_nBaseId].clear();
             }
         }
     }
@@ -146,8 +144,8 @@ void CGraphVariantProvider::FillVariantLists()
     std::string preChrId = "";
     
     //Initialize variantLists
-    m_aBaseVariantList = std::vector<std::vector<CVariant>>(m_baseVCF.GetContigSize());
-    m_aCalledVariantList = std::vector<std::vector<CVariant>>(m_calledVCF.GetContigSize());
+    m_aBaseVariantList = std::deque<std::deque<CVariant>>(m_baseVCF.GetContigSize());
+    m_aCalledVariantList = std::deque<std::deque<CVariant>>(m_calledVCF.GetContigSize());
     
     while(m_baseVCF.GetNextRecord(&variant, id))
     {
@@ -179,6 +177,8 @@ void CGraphVariantProvider::FillVariantLists()
             continue;
         //Variant Length is higher than the max base-pair limit
         else if(variant.m_nEndPos - variant.m_nStartPos > m_nMaxBasePairLength)
+            continue;
+        else if(variant.m_alleles[0].m_sequence == "*")
             continue;
         //Add variant to the variant list
         else
@@ -232,6 +232,8 @@ void CGraphVariantProvider::FillVariantLists()
         //Variant Length is higher than the max base-pair limit
         else if(variant.m_nEndPos - variant.m_nStartPos > m_nMaxBasePairLength)
             continue;
+        else if(variant.m_alleles[0].m_sequence == "*")
+            continue;
         else
         {
             m_aCalledVariantList[variant.m_nChrId].push_back(variant);
@@ -243,30 +245,21 @@ void CGraphVariantProvider::FillVariantLists()
         std::sort(m_aCalledVariantList[k].begin(), m_aCalledVariantList[k].end(), CompareVariants);
 }
 
-void CGraphVariantProvider::FillOrientedVariantLists()
+void CGraphVariantProvider::FillOrientedVariantList(const duocomparison::SChrIdTuple& a_rTuple, std::deque<core::COrientedVariant>& a_rBaseOrientedVars, std::deque<core::COrientedVariant>& a_rCalledOrientedVars)
 {
-    //Initialize OrientedVariantLists
-    m_aBaseOrientedVariantList = std::vector<std::vector<core::COrientedVariant>>(m_baseVCF.GetContigSize());
-    m_aCalledOrientedVariantList = std::vector<std::vector<core::COrientedVariant>>(m_calledVCF.GetContigSize());
     
-    
-    for(int i=0; i < (int)m_aBaseOrientedVariantList.size(); i++)
+    for(int j=0; j < (int)m_aBaseVariantList[a_rTuple.m_nBaseId].size(); j++)
     {
-        for(int j=0; j < (int)m_aBaseVariantList[i].size(); j++)
-        {
-            m_aBaseOrientedVariantList[i].push_back(core::COrientedVariant(m_aBaseVariantList[i][j], 0));
-            m_aBaseOrientedVariantList[i].push_back(core::COrientedVariant(m_aBaseVariantList[i][j], 1));
-        }
+        a_rBaseOrientedVars.push_back(core::COrientedVariant(m_aBaseVariantList[a_rTuple.m_nBaseId][j], 0));
+        a_rBaseOrientedVars.push_back(core::COrientedVariant(m_aBaseVariantList[a_rTuple.m_nBaseId][j], 1));
+    }
+
+    for(int j=0; j < (int)m_aCalledVariantList[a_rTuple.m_nCalledId].size(); j++)
+    {
+        a_rCalledOrientedVars.push_back(core::COrientedVariant(m_aCalledVariantList[a_rTuple.m_nCalledId][j], 0));
+        a_rCalledOrientedVars.push_back(core::COrientedVariant(m_aCalledVariantList[a_rTuple.m_nCalledId][j], 1));
     }
     
-    for(int i=0; i < (int)m_aCalledOrientedVariantList.size(); i++)
-    {
-        for(int j=0; j < (int)m_aCalledVariantList[i].size(); j++)
-        {
-            m_aCalledOrientedVariantList[i].push_back(core::COrientedVariant(m_aCalledVariantList[i][j], 0));
-            m_aCalledOrientedVariantList[i].push_back(core::COrientedVariant(m_aCalledVariantList[i][j], 1));
-        }
-    }
 }
 
 std::vector<const CVariant*> CGraphVariantProvider::GetVariantList(EVcfName a_uFrom, int a_nChrNo, const std::vector<int>& a_VariantIndexes)
@@ -314,56 +307,28 @@ std::vector<const CVariant*> CGraphVariantProvider::GetVariantList(EVcfName a_uF
     return result;
 }
 
-std::vector<const core::COrientedVariant*> CGraphVariantProvider::GetOrientedVariantList(EVcfName a_uFrom, int a_nChrNo)
+std::vector<const core::COrientedVariant*> CGraphVariantProvider::GetOrientedVariantList(std::deque<core::COrientedVariant>& a_rOvarList)
 {
-    unsigned long size = a_uFrom == eBASE ? m_aBaseOrientedVariantList[a_nChrNo].size() : m_aCalledOrientedVariantList[a_nChrNo].size();
+    unsigned long size = a_rOvarList.size();
     std::vector<const core::COrientedVariant*> result(size);
     
-    switch (a_uFrom)
-    {
-        case eBASE:
-            for(int k=0; k < (int)size; k++)
-                result[k] = &(m_aBaseOrientedVariantList[a_nChrNo][k]);
-            break;
+    for(int k=0; k< (int)size; k++)
+        result[k] = &(a_rOvarList[k]);
             
-        case eCALLED:
-            for(int k=0; k< (int)size; k++)
-                result[k] = &(m_aCalledOrientedVariantList[a_nChrNo][k]);
-            
-        default:
-            break;
-    }
-    
     return result;
 }
 
-std::vector<const core::COrientedVariant*> CGraphVariantProvider::GetOrientedVariantList(EVcfName a_uFrom, int a_nChrNo, const std::vector<int> a_rVariantIndexes)
+std::vector<const core::COrientedVariant*> CGraphVariantProvider::GetOrientedVariantList(std::deque<core::COrientedVariant>& a_rOvarList, const std::vector<const CVariant*>& a_rVariants)
 {
-    std::vector<const core::COrientedVariant*> ovarList(a_rVariantIndexes.size() * 2);
+    std::vector<const core::COrientedVariant*> ovarList(a_rVariants.size() * 2);
     int itr = 0;
     
-    switch (a_uFrom)
+    for(unsigned int k = 0; k < a_rVariants.size(); k++)
     {
-        case eBASE:
-            for(int ind : a_rVariantIndexes)
-            {
-                ovarList[itr++] = &(m_aBaseOrientedVariantList[a_nChrNo][2*ind]);
-                ovarList[itr++] = &(m_aBaseOrientedVariantList[a_nChrNo][2*ind +1]);
-            }
-            break;
-            
-        case eCALLED:
-            for(int ind : a_rVariantIndexes)
-            {
-                ovarList[itr++] = &(m_aCalledOrientedVariantList[a_nChrNo][2*ind]);
-                ovarList[itr++] = &(m_aCalledOrientedVariantList[a_nChrNo][2*ind +1]);
-            }
-            break;
-            
-        default:
-            break;
+        ovarList[itr++] = &(a_rOvarList[2*(a_rVariants[k]->m_nId)]);
+        ovarList[itr++] = &(a_rOvarList[2*(a_rVariants[k]->m_nId) +1]);
     }
-
+    
     return ovarList;
 }
 
@@ -383,6 +348,44 @@ void CGraphVariantProvider::GetContig(std::string a_chrName, SContig& a_rCtg)
     m_fastaParser.FetchNewChromosome(a_chrName, a_rCtg);
 }
 
+void CGraphVariantProvider::SetVariantStatus(const std::vector<const CVariant*>& a_rVariantList, EVariantMatch a_status) const
+{
+    for(const CVariant* pVar : a_rVariantList)
+        pVar->m_variantStatus = a_status;
+}
+
+void CGraphVariantProvider::SetVariantStatus(const std::vector<const core::COrientedVariant*>& a_rVariantList, EVariantMatch a_status) const
+{
+    for(const core::COrientedVariant* pOVar : a_rVariantList)
+        pOVar->GetVariant().m_variantStatus = a_status;
+}
+
+std::vector<int> CGraphVariantProvider::GetVariantIndexesByStatus(EVcfName a_uFrom, int a_nChrNo, EVariantMatch a_nStatus)
+{
+    std::vector<int> returnIndexes;
+    
+    switch (a_uFrom)
+    {
+        case eBASE:
+            for(unsigned int k = 0; k < m_aBaseVariantList[a_nChrNo].size(); k++)
+            {
+                if(m_aBaseVariantList[a_nChrNo][k].m_variantStatus == a_nStatus)
+                    returnIndexes.push_back(k);
+            }
+            break;
+        case eCALLED:
+            for(unsigned int k = 0; k < m_aCalledVariantList[a_nChrNo].size(); k++)
+            {
+                if(m_aCalledVariantList[a_nChrNo][k].m_variantStatus == a_nStatus)
+                    returnIndexes.push_back(k);
+            }
+            break;
+        default:
+            break;
+    }
+    
+    return returnIndexes;
+}
 
 
 

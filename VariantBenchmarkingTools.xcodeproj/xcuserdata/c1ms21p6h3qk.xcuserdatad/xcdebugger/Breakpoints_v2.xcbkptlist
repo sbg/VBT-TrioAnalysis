@@ -713,13 +713,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Core/src/CPathReplay.cpp"
-            timestampString = "524499663.971637"
+            filePath = "GraphComparison/src/CGraphVariantProvider.cpp"
+            timestampString = "524600732.667303"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "59"
-            endingLineNumber = "59"
-            landmarkName = "CPathReplay::FindBestPath(SContig a_contig, bool a_bIsGenotypeMatch)"
+            startingLineNumber = "92"
+            endingLineNumber = "92"
+            landmarkName = "CGraphVariantProvider::InitializeReaders()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -729,13 +729,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "GraphComparison/src/CGraphVariantProvider.cpp"
-            timestampString = "524512687.826898"
+            filePath = "GraphComparison/src/CGraphVcfAnalyzer.cpp"
+            timestampString = "524693211.894814"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "366"
-            endingLineNumber = "366"
-            landmarkName = "CGraphVariantProvider::GetOrientedVariantList(EVcfName a_uFrom, int a_nChrNo, const std::vector&lt;int&gt; a_rVariantIndexes)"
+            startingLineNumber = "202"
+            endingLineNumber = "202"
+            landmarkName = "CGraphVcfAnalyzer::GetSyncPointList(const std::vector&lt;const core::COrientedVariant*&gt; a_rBaseIncluded, const std::vector&lt;const core::COrientedVariant*&gt; a_rCalledIncluded, const std::vector&lt;const CVariant*&gt;&amp; a_rBaseExcluded, const std::vector&lt;const CVariant*&gt;&amp; a_rCalledExcluded, const std::vector&lt;int&gt;&amp; a_rSyncPointCoordinates, std::vector&lt;core::CSyncPoint&gt;&amp; a_rSyncPointList)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

@@ -15,6 +15,7 @@
 #include "CFastaParser.h"
 #include "EVcfName.h"
 #include "SChrIdTuple.h"
+#include <deque>
 
 namespace graphcomparison
 {
@@ -40,11 +41,10 @@ namespace graphcomparison
         std::vector<const CVariant*> GetVariantList(EVcfName a_uFrom, int a_nChrNo);
                 
         //Return all the oriented variants belongs to given chromosome
-        std::vector<const core::COrientedVariant*> GetOrientedVariantList(EVcfName a_uFrom, int a_nChrNo);
+        std::vector<const core::COrientedVariant*> GetOrientedVariantList(std::deque<core::COrientedVariant>& a_rOvarList);
 
-        //Return the oriented variants belongs to given chromosome and given variant indexes
-        std::vector<const core::COrientedVariant*> GetOrientedVariantList(EVcfName a_uFrom, int a_nChrNo, const std::vector<int> a_rVariantIndexes);
-
+        //Return the oriented variants belongs to given chromosome and given variant list
+        std::vector<const core::COrientedVariant*> GetOrientedVariantList(std::deque<core::COrientedVariant>& a_rOvarList, const std::vector<const CVariant*>& a_rVariants);
         
         //Return the index tuples of chromosomes which both contained by baseline and called VCF
         std::vector<duocomparison::SChrIdTuple>& GetChromosomeIdTuples();
@@ -55,12 +55,20 @@ namespace graphcomparison
         //Since CPath excluded index list depends on the input variant list, we return a list to the absolute variant index list using variant ids
         static std::vector<int> GetExcludedIndexes(const std::vector<const CVariant*> a_rVariantList, const std::vector<int>& a_rExcludedIndexList);
         
+        //Return the list of variants that are included/excluded according to the variant status stored in the provider
+        std::vector<int> GetVariantIndexesByStatus(EVcfName a_uFrom, int a_nChrNo, EVariantMatch a_nStatus);
+        
+        //Set the status of each variant in the given list
+        void SetVariantStatus(const std::vector<const CVariant*>& a_rVariantList, EVariantMatch a_status) const;
+        void SetVariantStatus(const std::vector<const core::COrientedVariant*>& a_rVariantList, EVariantMatch a_status) const;
+        
+        //Read through the variant lists and generate oriented variant list for call and base
+        void FillOrientedVariantList(const duocomparison::SChrIdTuple& a_rTuple, std::deque<core::COrientedVariant>& a_rBaseOrientedVars, std::deque<core::COrientedVariant>& a_rCalledOrientedVars);
+        
     private:
         
         //Read through the variant file and fill the variant lists. It assumes that positions are sorted.
         void FillVariantLists();
-        //Read through the variant lists and generate oriented variant list for call and base
-        void FillOrientedVariantLists();
         //Finds the tuple index list of chromosome which is contained by both baseline and called vcf
         void SetChromosomeIdTuples();
         
@@ -83,16 +91,10 @@ namespace graphcomparison
         int m_nMaxBasePairLength;
         
         //List that stores base Variants in order
-        std::vector<std::vector<CVariant>> m_aBaseVariantList;
+        std::deque<std::deque<CVariant>> m_aBaseVariantList;
         //List that stores called Variants in order
-        std::vector<std::vector<CVariant>> m_aCalledVariantList;
-        
-        //List that store the base Oriented variant tuples (In the order of genotype)
-        std::vector<std::vector<core::COrientedVariant>> m_aBaseOrientedVariantList;
-        //List that store the called Oriented variant tuples (In the order of genotype)
-        std::vector<std::vector<core::COrientedVariant>> m_aCalledOrientedVariantList;
-        
-        
+        std::deque<std::deque<CVariant>> m_aCalledVariantList;
+                
         //Chromosome id tuples for each common chromosome
         std::vector<duocomparison::SChrIdTuple> m_aCommonChrTupleList;
         

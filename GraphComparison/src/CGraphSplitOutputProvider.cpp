@@ -51,6 +51,7 @@ void CGraphSplitOutputProvider::GenerateVcfs(const std::string& a_rIncludeName, 
     
     //Iterator of excluded variant container
     int excludeIndexItr = 0;
+    int includeIndexItr = 0;
     
     //Open vcf input and output vcf files
     includeWriter.CreateVcf(std::string(m_vcfsFolder + a_rIncludeName).c_str());
@@ -116,6 +117,8 @@ void CGraphSplitOutputProvider::GenerateVcfs(const std::string& a_rIncludeName, 
         //Variant Length is higher than the max base-pair limit
         else if(variant.m_nEndPos - variant.m_nStartPos > m_nMaxBasePairLength)
             continue;
+        else if(variant.m_alleles[0].m_sequence == "*")
+            continue;
         //Add variant to the variant list
         else
         {
@@ -126,8 +129,11 @@ void CGraphSplitOutputProvider::GenerateVcfs(const std::string& a_rIncludeName, 
                     excludeWriter.AddRawRecord(pRecord);
                     excludeIndexItr++;
                 }
-                else
+                else if(m_excludedIndexContainers[variant.m_chrName].baseIncludedIndexes[includeIndexItr] == id)
+                {
                     includeWriter.AddRawRecord(pRecord);
+                    includeIndexItr++;
+                }
             }
             else
             {
@@ -136,8 +142,11 @@ void CGraphSplitOutputProvider::GenerateVcfs(const std::string& a_rIncludeName, 
                     excludeWriter.AddRawRecord(pRecord);
                     excludeIndexItr++;
                 }
-                else
+                else if(m_excludedIndexContainers[variant.m_chrName].calledIncludedIndexes[includeIndexItr] == id)
+                {
                     includeWriter.AddRawRecord(pRecord);
+                    includeIndexItr++;
+                }
             }
             id++;
         }

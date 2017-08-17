@@ -17,6 +17,8 @@ namespace graphcomparison
     struct SGraphVarContainer
     {
         std::string chrName;
+        std::vector<int> baseIncludedIndexes;
+        std::vector<int> calledIncludedIndexes;
         std::vector<int> baseExcludedIndexes;
         std::vector<int> calledExcludedIndexes;
     };

@@ -65,8 +65,8 @@ $(BUILDDIR)/%.o: $(SRCVCFIO)/%.cpp Constants.h
 	@echo " VCFIO: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
 
 $(BUILDDIR)/%.o: $(SRCGRAPH)/%.cpp Constants.h
-    @mkdir -p $(BUILDDIR)
-    @echo " VCFIO: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
+	@mkdir -p $(BUILDDIR)
+	@echo " GRAPH: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
 
 $(BUILDDIR)/main.o: main.cpp
 	@mkdir -p $(BUILDDIR)

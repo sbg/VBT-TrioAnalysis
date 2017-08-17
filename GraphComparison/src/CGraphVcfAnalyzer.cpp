@@ -12,6 +12,7 @@
 #include "CGraphVcfAnalyzer.h"
 #include "CGraphSplitOutputProvider.h"
 #include "CPathReplay.h"
+#include "CSyncPoint.h"
 
 using namespace graphcomparison;
 
@@ -114,15 +115,21 @@ void CGraphVcfAnalyzer::ThreadFunctionSPLIT(std::vector<duocomparison::SChrIdTup
     
     for(int k = 0; k < (int)a_aTuples.size(); k++)
     {
+        //List that store the base Oriented variant tuples (In the order of genotype)
+        std::deque<core::COrientedVariant> BaseOrientedVariantList;
+        //List that store the called Oriented variant tuples (In the order of genotype)
+        std::deque<core::COrientedVariant> CalledOrientedVariantList;
+
+        m_provider.FillOrientedVariantList(a_aTuples[k], BaseOrientedVariantList, CalledOrientedVariantList);
+        
         std::vector<const CVariant*> varListBase = m_provider.GetVariantList(eBASE, a_aTuples[k].m_nBaseId);
         std::vector<const CVariant*> varListCalled = m_provider.GetVariantList(eCALLED, a_aTuples[k].m_nCalledId);
         
-        std::vector<const core::COrientedVariant*> ovarListBase = m_provider.GetOrientedVariantList(eBASE, a_aTuples[k].m_nBaseId);
-        std::vector<const core::COrientedVariant*> ovarListCalled = m_provider.GetOrientedVariantList(eCALLED, a_aTuples[k].m_nCalledId);
+        std::vector<const core::COrientedVariant*> ovarListBase = m_provider.GetOrientedVariantList(BaseOrientedVariantList);
+        std::vector<const core::COrientedVariant*> ovarListCalled = m_provider.GetOrientedVariantList(CalledOrientedVariantList);
         
         SContig ctg;
         m_provider.GetContig(a_aTuples[k].m_chrName, ctg);
-        
         
         core::CPath path;
         int replayIterationCount = 0;
@@ -139,15 +146,17 @@ void CGraphVcfAnalyzer::ThreadFunctionSPLIT(std::vector<duocomparison::SChrIdTup
             const std::vector<const core::COrientedVariant*>& includedVarsBase = path.m_baseSemiPath.GetIncludedVariants();
             const std::vector<const core::COrientedVariant*>& includedVarsCall = path.m_calledSemiPath.GetIncludedVariants();
             
-            baseExcludedVariantIndexes = CGraphVariantProvider::GetExcludedIndexes(varListBase, path.m_baseSemiPath.GetExcluded());
-            calledExcludedVariantIndexes = CGraphVariantProvider::GetExcludedIndexes(varListCalled, path.m_calledSemiPath.GetExcluded());
-            
             if(includedVarsBase.size() == 0 && includedVarsCall.size() == 0)
             {
                 SGraphVarContainer container;
                 container.chrName = a_aTuples[k].m_chrName;
-                container.baseExcludedIndexes = baseExcludedVariantIndexes;
-                container.calledExcludedIndexes = calledExcludedVariantIndexes;
+                
+                container.baseIncludedIndexes = m_provider.GetVariantIndexesByStatus(eBASE, a_aTuples[k].m_nBaseId, eALLELE_MATCH);
+                container.baseExcludedIndexes = m_provider.GetVariantIndexesByStatus(eBASE, a_aTuples[k].m_nBaseId, eNO_MATCH);
+                
+                container.calledIncludedIndexes = m_provider.GetVariantIndexesByStatus(eCALLED, a_aTuples[k].m_nCalledId, eALLELE_MATCH);
+                container.calledExcludedIndexes = m_provider.GetVariantIndexesByStatus(eCALLED, a_aTuples[k].m_nCalledId, eNO_MATCH);
+                
                 m_uniqueVariantsListPerChromosome[container.chrName] = container;
                 std::cout << "Total Iteration : " << replayIterationCount + 1 << std::endl;
                 break;
@@ -155,16 +164,136 @@ void CGraphVcfAnalyzer::ThreadFunctionSPLIT(std::vector<duocomparison::SChrIdTup
             
             else
             {
-                varListBase = m_provider.GetVariantList(eBASE, a_aTuples[k].m_nBaseId, baseExcludedVariantIndexes);
-                varListCalled = m_provider.GetVariantList(eCALLED, a_aTuples[k].m_nCalledId, calledExcludedVariantIndexes);
+                //Get the excluded variants for base and called graph
+                baseExcludedVariantIndexes = CGraphVariantProvider::GetExcludedIndexes(varListBase, path.m_baseSemiPath.GetExcluded());
+                calledExcludedVariantIndexes = CGraphVariantProvider::GetExcludedIndexes(varListCalled, path.m_calledSemiPath.GetExcluded());
                 
-                ovarListBase   = m_provider.GetOrientedVariantList(eBASE,   a_aTuples[k].m_nBaseId,   baseExcludedVariantIndexes);
-                ovarListCalled = m_provider.GetOrientedVariantList(eCALLED, a_aTuples[k].m_nCalledId, calledExcludedVariantIndexes);
+                std::vector<const CVariant*> excludedVarsBase = m_provider.GetVariantList(eBASE, a_aTuples[k].m_nBaseId, baseExcludedVariantIndexes);
+                std::vector<const CVariant*> excludedVarsCall = m_provider.GetVariantList(eCALLED, a_aTuples[k].m_nCalledId, calledExcludedVariantIndexes);
+                
+                //Set Variant status
+                m_provider.SetVariantStatus(excludedVarsBase, EVariantMatch::eNO_MATCH);
+                m_provider.SetVariantStatus(excludedVarsCall, EVariantMatch::eNO_MATCH);
+                m_provider.SetVariantStatus(includedVarsBase, EVariantMatch::eALLELE_MATCH);
+                m_provider.SetVariantStatus(includedVarsCall, EVariantMatch::eALLELE_MATCH);
+
+                std::vector<core::CSyncPoint> syncPointList;
+                GetSyncPointList(includedVarsBase, includedVarsCall, excludedVarsBase, excludedVarsCall, path.m_aSyncPointList, syncPointList);
+                
+                std::vector<const CVariant*> tmpBase;
+                std::vector<const CVariant*> tmpCalled;
+                FilterGuaranteedUniqueVariants(syncPointList, tmpBase, tmpCalled);
+                
+                varListBase = tmpBase;
+                varListCalled = tmpCalled;
+                
+                ovarListBase   = m_provider.GetOrientedVariantList(BaseOrientedVariantList,   varListBase);
+                ovarListCalled = m_provider.GetOrientedVariantList(CalledOrientedVariantList, varListCalled);
                 
                 pathReplay.Clear();
                 replayIterationCount++;
             }
             
+        }
+    }
+}
+
+void CGraphVcfAnalyzer::GetSyncPointList(const std::vector<const core::COrientedVariant*> a_rBaseIncluded,
+                                         const std::vector<const core::COrientedVariant*> a_rCalledIncluded,
+                                         const std::vector<const CVariant*>& a_rBaseExcluded,
+                                         const std::vector<const CVariant*>& a_rCalledExcluded,
+                                         const std::vector<int>& a_rSyncPointCoordinates,
+                                         std::vector<core::CSyncPoint>& a_rSyncPointList)
+{
+    
+    int baseIncludedItr = 0;
+    int baseExcludedItr = 0;
+    int calledIncludedItr = 0;
+    int calledExcludedItr = 0;
+    
+    for(int k = 0; k < (int)a_rSyncPointCoordinates.size(); k++)
+    {
+        core::CSyncPoint ssPoint;
+        ssPoint.m_nStartPosition = k > 0 ? a_rSyncPointCoordinates[k-1] : 0;
+        ssPoint.m_nEndPosition = a_rSyncPointCoordinates[k];
+        ssPoint.m_nIndex = k;
+        int bound = ssPoint.m_nStartPosition == ssPoint.m_nEndPosition ? 1 : 0;
+        
+        while(baseIncludedItr < (int)a_rBaseIncluded.size() && a_rBaseIncluded[baseIncludedItr]->GetStartPos() < (a_rSyncPointCoordinates[k] + bound))
+        {
+            const core::COrientedVariant* pOvar = a_rBaseIncluded[baseIncludedItr];
+            ssPoint.m_baseVariantsIncluded.push_back(pOvar);
+            baseIncludedItr++;
+        }
+        
+        while(calledIncludedItr < (int)a_rCalledIncluded.size() && a_rCalledIncluded[calledIncludedItr]->GetStartPos() < (a_rSyncPointCoordinates[k] + bound))
+        {
+            const core::COrientedVariant* pOvar = a_rCalledIncluded[calledIncludedItr];
+            ssPoint.m_calledVariantsIncluded.push_back(pOvar);
+            calledIncludedItr++;
+        }
+        
+        while(baseExcludedItr < (int)a_rBaseExcluded.size() && a_rBaseExcluded[baseExcludedItr]->m_nStartPos < (a_rSyncPointCoordinates[k] + bound))
+        {
+            ssPoint.m_baseVariantsExcluded.push_back(a_rBaseExcluded[baseExcludedItr]);
+            baseExcludedItr++;
+        }
+        
+        while(calledExcludedItr < (int)a_rCalledExcluded.size() && a_rCalledExcluded[calledExcludedItr]->m_nStartPos < (a_rSyncPointCoordinates[k] + bound))
+        {
+            ssPoint.m_calledVariantsExcluded.push_back(a_rCalledExcluded[calledExcludedItr]);
+            calledExcludedItr++;
+        }
+        
+        a_rSyncPointList.push_back(ssPoint);
+    }
+    
+    //Add Remaining variants to the last syncPoint
+    core::CSyncPoint sPoint;
+    sPoint.m_nStartPosition = a_rSyncPointCoordinates[a_rSyncPointCoordinates.size()-1];
+    sPoint.m_nEndPosition = INT_MAX;
+    sPoint.m_nIndex = static_cast<int>(a_rSyncPointCoordinates.size()-1);
+  
+    while(baseIncludedItr < (int)a_rBaseIncluded.size() && a_rBaseIncluded[baseIncludedItr]->GetStartPos() <= sPoint.m_nEndPosition)
+    {
+        sPoint.m_baseVariantsIncluded.push_back(a_rBaseIncluded[baseIncludedItr]);
+        baseIncludedItr++;
+    }
+    while(calledIncludedItr < (int)a_rCalledIncluded.size() && a_rCalledIncluded[calledIncludedItr]->GetStartPos() <= sPoint.m_nEndPosition)
+    {
+        sPoint.m_calledVariantsIncluded.push_back(a_rCalledIncluded[calledIncludedItr]);
+        calledIncludedItr++;
+    }
+    
+    while(baseExcludedItr < (int)a_rBaseExcluded.size() && a_rBaseExcluded[baseExcludedItr]->m_nStartPos <= sPoint.m_nEndPosition)
+    {
+        sPoint.m_baseVariantsExcluded.push_back(a_rBaseExcluded[baseExcludedItr]);
+        baseExcludedItr++;
+    }
+    
+    while(calledExcludedItr < (int)a_rCalledExcluded.size() && a_rCalledExcluded[calledExcludedItr]->m_nStartPos <= sPoint.m_nEndPosition)
+    {
+        sPoint.m_calledVariantsExcluded.push_back(a_rCalledExcluded[calledExcludedItr]);
+        calledExcludedItr++;
+    }
+    a_rSyncPointList.push_back(sPoint);
+
+}
+
+void CGraphVcfAnalyzer::FilterGuaranteedUniqueVariants(std::vector<core::CSyncPoint>& a_rSyncPointList,
+                                                       std::vector<const CVariant*>& a_rBaseExcluded,
+                                                       std::vector<const CVariant*>& a_rCalledExcluded)
+{
+    for(core::CSyncPoint syncPoint : a_rSyncPointList)
+    {
+        if(syncPoint.m_baseVariantsIncluded.size() == 0 && syncPoint.m_calledVariantsIncluded.size() == 0)
+            continue;
+        else
+        {
+            for(const CVariant* var : syncPoint.m_baseVariantsExcluded)
+                a_rBaseExcluded.push_back(var);
+            for(const CVariant* var : syncPoint.m_calledVariantsExcluded)
+                a_rCalledExcluded.push_back(var);
         }
     }
 }
@@ -310,9 +439,9 @@ void CGraphVcfAnalyzer::PrintLogs()
     for(int k = 0; k < chrIdTuples.size(); k++)
     {
         unsigned long excludedSizeBase = m_uniqueVariantsListPerChromosome[chrIdTuples[k].m_chrName].baseExcludedIndexes.size();
-        unsigned long includedSizeBase = m_provider.GetVariantList(eBASE, chrIdTuples[k].m_nBaseId).size() - excludedSizeBase;
-        unsigned long excludedSizeCalled = m_uniqueVariantsListPerChromosome[chrIdTuples[k].m_chrName].baseExcludedIndexes.size();
-        unsigned long includedSizeCalled = m_provider.GetVariantList(eCALLED, chrIdTuples[k].m_nCalledId).size() - excludedSizeCalled;
+        unsigned long includedSizeBase = m_uniqueVariantsListPerChromosome[chrIdTuples[k].m_chrName].baseIncludedIndexes.size();
+        unsigned long excludedSizeCalled = m_uniqueVariantsListPerChromosome[chrIdTuples[k].m_chrName].calledExcludedIndexes.size();
+        unsigned long includedSizeCalled = m_uniqueVariantsListPerChromosome[chrIdTuples[k].m_chrName].calledIncludedIndexes.size();
         
         //std::cout << chrIdTuples[k].m_chrName << "\t" << includedSizeBase << "\t"  << includedSizeCalled << "\t" << excludedSizeCalled << "\t" << excludedSizeBase << std::endl;
         std::cout << std::left << std::setw(20)  << std::setfill(separator) << chrIdTuples[k].m_chrName;
@@ -332,6 +461,7 @@ void CGraphVcfAnalyzer::PrintHelp() const
     std::cout << "-called <called_vcf_path>    [Required.Add called VCF file.]" << std::endl;
     std::cout << "-ref <reference_fasta_path>  [Required.Add reference FASTA file]" << std::endl;
     std::cout << "-outDir <output_directory>   [Required.Add output directory]" << std::endl;
+    std::cout << "-bed <bed_file_path>         [Optional.Process only given regions in BED file]" << std::endl;
     std::cout << "--pass-filter                [Optional.Process only 'PASS' or '.' variants. Default value is false]" << std::endl;
     std::cout << "-thread-count                [Optional.Specify the number of threads that program will use. Default value is 2]" << std::endl;
     std::cout << "-max-bp-length               [*Optional.Specify the maximum base pair length of variant to process. Default value is 1000]" << std::endl;

@@ -139,12 +139,20 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "/Users/c1ms21p6h3qk/Desktop/graphComparison/base.vcf.gz"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/graphComparison/1KG.AF001.SimonsV99.AC10.bl.V3.vcf.gz"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-called"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/c1ms21p6h3qk/Desktop/graphComparison/called.vcf.gz"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/graphComparison/sing5_v3_5samples_to1KGPan.vcf.gz"
@@ -173,6 +181,14 @@
          <CommandLineArgument
             argument = "VBT_FreeBayes_Normalized"
             isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-thread-count"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "2"
+            isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
       <AdditionalOptions>
