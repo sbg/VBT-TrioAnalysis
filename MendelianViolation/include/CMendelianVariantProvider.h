@@ -66,7 +66,7 @@ public:
     //Return a list of common chromosome id triplets found in all 3 vcf file
     std::vector<SChrIdTriplet>& GetCommonChromosomes();
 
-    //Set the status of each variant in the given lust
+    //Set the status of each variant in the given list
     void SetVariantStatus(const std::vector<const CVariant*>& a_rVariantList, EVariantMatch a_status) const;
     void SetVariantStatus(const std::vector<const core::COrientedVariant*>& a_rVariantList, EVariantMatch a_status) const;
     
