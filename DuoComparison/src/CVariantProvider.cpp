@@ -224,8 +224,9 @@ void CVariantProvider::FillVariantsFromBED()
                 break;
         }
         
+        
         //Variant Could not pass from BED region
-        if(bedRegion.m_chrName != variant.m_chrName || std::min(bedRegion.m_nEndPos, variant.m_nOriginalPos + static_cast<int>(variant.m_refSequence.length())) - std::max(bedRegion.m_nStartPos, variant.m_nOriginalPos) < 0)
+        if(bedRegion.m_chrName != variant.m_chrName || bedRegion.m_nStartPos > variant.m_nStartPos || bedRegion.m_nEndPos < variant.m_nEndPos)
             continue;
         
         if(!variant.m_bIsNoCall && IsHomRef(variant))
@@ -276,7 +277,7 @@ void CVariantProvider::FillVariantsFromBED()
         }
         
         //Variant Could not pass from BED region
-        if(bedRegion.m_chrName != variant.m_chrName || std::min(bedRegion.m_nEndPos, variant.m_nOriginalPos + static_cast<int>(variant.m_refSequence.length())) - std::max(bedRegion.m_nStartPos, variant.m_nOriginalPos) < 0)
+        if(bedRegion.m_chrName != variant.m_chrName || bedRegion.m_nStartPos > variant.m_nStartPos || bedRegion.m_nEndPos < variant.m_nEndPos)
             continue;
         
         if(!variant.m_bIsNoCall && IsHomRef(variant))
