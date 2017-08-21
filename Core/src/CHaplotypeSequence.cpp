@@ -52,7 +52,7 @@ void CHaplotypeSequence::AddVariant(const COrientedVariant& a_rVariant)
     if(a.m_nStartPos == -1 || a.m_bIsIgnored == true)
         return;
     
-    m_nLastVariantEnd = a_rVariant.GetEndPos();
+    m_nLastVariantEnd = a_rVariant.GetAllele().m_nEndPos;
     
     if(true == m_nextVariant.IsNull())
     {
@@ -231,7 +231,7 @@ void CHaplotypeSequence::Next()
 
 bool CHaplotypeSequence::IsNew(const COrientedVariant& a_rVar) const
 {
-    return a_rVar.GetAllele().m_bIsIgnored || a_rVar.GetAllele().m_nStartPos > m_nLastVariantEnd;
+    return a_rVar.GetAllele().m_bIsIgnored || a_rVar.GetAllele().m_nStartPos >= m_nLastVariantEnd;
     
     //bool res1 = a_rVar.GetAllele().m_sequence == "";
     //bool res2 = a_rVar.GetAllele().m_nStartPos > m_nLastVariantEnd;
