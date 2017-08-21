@@ -387,6 +387,7 @@ bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
     const char* PARAM_CALLED = "-called";
     const char* PARAM_FILTER = "-filter";
     const char* PARAM_REFERENCE = "-ref";
+    const char* PARAM_BED = "-bed";
     const char* PARAM_HELP = "--help";
     const char* PARAM_SAMPLE_BASE = "-sample-base";
     const char* PARAM_SAMPLE_CALLED = "-sample-called";
@@ -452,6 +453,13 @@ bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
             it += 2;
         }
 
+        else if(0 == strcmp(argv[it], PARAM_BED))
+        {
+            m_config.m_bInitializeFromBed = true;
+            m_config.m_pBedFileName = argv[it+1];
+            it += 2;
+        }
+        
         else if(0 == strcmp(argv[it], PARAM_OUTPUT_MODE))
         {
             if(0 == strcmp("SPLIT", argv[it+1]))
@@ -572,6 +580,7 @@ void CVcfAnalyzer::PrintHelp() const
     std::cout << "-called <called_vcf_path>    [Required.Add called VCF file.]" << std::endl;
     std::cout << "-ref <reference_fasta_path>  [Required.Add reference FASTA file]" << std::endl;
     std::cout << "-outDir <output_directory>   [Required.Add output directory]" << std::endl;
+    std::cout << "-bed <bed_file_path>         [Optional.Filter variants out of comparison for the given regions]" << std::endl;;
     std::cout << "-output-mode <output_mode>   [Optional.Choose the output mode. SPLIT creates 4 vcf files. GA4GH creates a single merged vcf. Default value is SPLIT]" << std::endl;
     std::cout << "-filter <filter_name>        [Optional.Filter variants based on filter column. Default value is PASS. Use 'none' to unfilter]" << std::endl;
     std::cout << "--allele-match               [Optional.Execute the variant comparison engine in allele matching mode]" << std::endl;

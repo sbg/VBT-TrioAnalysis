@@ -9,6 +9,7 @@
 #include "CVariantProvider.h"
 #include <iostream>
 #include "COrientedVariant.h"
+#include "CSimpleBEDParser.h"
 #include <algorithm>
 
 using namespace duocomparison;
@@ -117,7 +118,10 @@ bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
     
     if(bIsSuccess)
     {
-        FillVariantLists();
+        if(m_config.m_bInitializeFromBed)
+            FillVariantsFromBED();
+        else
+            FillVariantLists();
         FillOrientedVariantLists();
         
         //Set the common chromosome list for parsing
@@ -178,6 +182,127 @@ bool CVariantProvider::CompareVariants(const CVariant& var1, const CVariant& var
         return var1.m_nOriginalPos < var2.m_nOriginalPos;
     else
         return var1.m_nId < var2.m_nId;
+}
+
+void CVariantProvider::FillVariantsFromBED()
+{
+    CVariant variant;
+    int id = 0;
+    std::string preChrId = "";
+
+    //Initialize variantLists
+    m_aBaseVariantList = std::vector<std::vector<CVariant>>(m_baseVCF.GetContigs().size());
+    m_aCalledVariantList = std::vector<std::vector<CVariant>>(m_calledVCF.GetContigs().size());
+    m_aBaseNotAssessedVariantList = std::vector<std::vector<CVariant>>(m_baseVCF.GetContigs().size());
+    m_aCalledNotAssessedVariantList = std::vector<std::vector<CVariant>>(m_calledVCF.GetContigs().size());
+
+    CSimpleBEDParser bedParser;
+    bedParser.InitBEDFile(m_config.m_pBedFileName);
+    
+    SBedRegion bedRegion;
+    bool hasNextRegion = bedParser.GetNextRegion(bedRegion);
+    
+    //There is no region in BED file
+    if(false == hasNextRegion)
+        return;
+
+    while(m_baseVCF.GetNextRecord(&variant, id++, m_config))
+    {
+        if(preChrId != variant.m_chrName)
+        {
+            preChrId = variant.m_chrName;
+            std::cout << "Processing chromosome " << preChrId << " of base vcf" << std::endl;
+        }
+        
+        //Pass to the next region
+        if((bedRegion.m_chrName == variant.m_chrName && variant.m_nStartPos > bedRegion.m_nEndPos)
+           ||
+           m_baseVCF.m_chrIndexMap[variant.m_chrName] > m_baseVCF.m_chrIndexMap[bedRegion.m_chrName])
+        {
+            hasNextRegion = bedParser.GetNextRegion(bedRegion);
+            if(false == hasNextRegion)
+                break;
+        }
+        
+        //Variant Could not pass from BED region
+        if(bedRegion.m_chrName != variant.m_chrName || std::min(bedRegion.m_nEndPos, variant.m_nOriginalPos + static_cast<int>(variant.m_refSequence.length())) - std::max(bedRegion.m_nStartPos, variant.m_nOriginalPos) < 0)
+            continue;
+        
+        if(!variant.m_bIsNoCall && IsHomRef(variant))
+            continue;
+        
+        if(m_config.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
+            m_aBaseNotAssessedVariantList[variant.m_nChrId].push_back(variant);
+        
+        else if(m_config.m_bSNPOnly && variant.GetVariantType() != eSNP)
+            m_aBaseNotAssessedVariantList[variant.m_nChrId].push_back(variant);
+        
+        else if(m_config.m_bINDELOnly && variant.GetVariantType() != eINDEL)
+            m_aBaseNotAssessedVariantList[variant.m_nChrId].push_back(variant);
+        
+        else if(IsStructuralVariant(variant, m_config.m_nMaxVariantSize))
+            m_aBaseNotAssessedVariantList[variant.m_nChrId].push_back(variant);
+        else
+            m_aBaseVariantList[variant.m_nChrId].push_back(variant);
+    }
+    
+    for(int k = 0; k < (int)m_baseVCF.GetContigs().size(); k++)
+    {
+        std::sort(m_aBaseNotAssessedVariantList[k].begin(), m_aBaseNotAssessedVariantList[k].end(), CompareVariants);
+        std::sort(m_aBaseVariantList[k].begin(), m_aBaseVariantList[k].end(), CompareVariants);
+    }
+    
+    preChrId = "";
+    bedParser.ResetIterator();
+    bedParser.GetNextRegion(bedRegion);
+    
+    while(m_calledVCF.GetNextRecord(&variant, id++, m_config))
+    {
+        
+        if(preChrId != variant.m_chrName)
+        {
+            preChrId = variant.m_chrName;
+            std::cout << "Processing chromosome " << preChrId << " of called vcf" << std::endl;
+        }
+        
+        //Pass to the next region
+        if((bedRegion.m_chrName == variant.m_chrName && variant.m_nStartPos > bedRegion.m_nEndPos)
+           ||
+           m_calledVCF.m_chrIndexMap[variant.m_chrName] > m_calledVCF.m_chrIndexMap[bedRegion.m_chrName])
+        {
+            hasNextRegion = bedParser.GetNextRegion(bedRegion);
+            if(false == hasNextRegion)
+                break;
+        }
+        
+        //Variant Could not pass from BED region
+        if(bedRegion.m_chrName != variant.m_chrName || std::min(bedRegion.m_nEndPos, variant.m_nOriginalPos + static_cast<int>(variant.m_refSequence.length())) - std::max(bedRegion.m_nStartPos, variant.m_nOriginalPos) < 0)
+            continue;
+        
+        if(!variant.m_bIsNoCall && IsHomRef(variant))
+            continue;
+        
+        else if(m_config.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
+            m_aCalledNotAssessedVariantList[variant.m_nChrId].push_back(variant);
+        
+        else if(m_config.m_bSNPOnly && variant.GetVariantType() != eSNP)
+            m_aCalledNotAssessedVariantList[variant.m_nChrId].push_back(variant);
+        
+        else if(m_config.m_bINDELOnly && variant.GetVariantType() != eINDEL)
+            m_aCalledNotAssessedVariantList[variant.m_nChrId].push_back(variant);
+        
+        else if(IsStructuralVariant(variant, m_config.m_nMaxVariantSize))
+            m_aCalledNotAssessedVariantList[variant.m_nChrId].push_back(variant);
+        else
+            m_aCalledVariantList[variant.m_nChrId].push_back(variant);
+    }
+    
+    for(int k = 0; k < (int)m_calledVCF.GetContigs().size(); k++)
+    {
+        std::sort(m_aCalledNotAssessedVariantList[k].begin(), m_aCalledNotAssessedVariantList[k].end(), CompareVariants);
+        std::sort(m_aCalledVariantList[k].begin(), m_aCalledVariantList[k].end(), CompareVariants);
+    }
+        
 }
 
 

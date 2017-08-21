@@ -73,6 +73,9 @@ private:
     //Read through the variant file and fill the variant lists. It assumes that positions are sorted.
     void FillVariantLists();
 
+    //Fill Variant sets for parent and child using a BED file
+    void FillVariantsFromBED();
+    
     //Read through the variant lists and generate oriented variant list for call and base
     void FillOrientedVariantLists();
 
@@ -121,7 +124,6 @@ private:
 
     //Chromosome id tuples for each common chromosome
     std::vector<SChrIdTuple> m_aCommonChrTupleList;
-    
 };
 
 }
