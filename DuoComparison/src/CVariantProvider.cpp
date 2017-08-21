@@ -178,10 +178,8 @@ bool CVariantProvider::CompareVariants(const CVariant& var1, const CVariant& var
 {
     if(var1.m_nStartPos != var2.m_nStartPos)
         return var1.m_nStartPos < var2.m_nStartPos;
-    else if(var1.m_nOriginalPos != var2.m_nOriginalPos)
-        return var1.m_nOriginalPos < var2.m_nOriginalPos;
     else
-        return var1.m_nId < var2.m_nId;
+        return var1.m_nEndPos < var2.m_nEndPos;
 }
 
 void CVariantProvider::FillVariantsFromBED()
