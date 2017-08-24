@@ -39,7 +39,7 @@ private:
     std::vector<SBedRegion> m_regionArray;
     
     //Points to the Next Region in m_regionArray
-    int m_nIterator;
+    unsigned int m_nIterator;
     
 };
 
