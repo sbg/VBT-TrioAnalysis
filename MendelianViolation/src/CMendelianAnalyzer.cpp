@@ -1019,6 +1019,16 @@ void CMendelianAnalyzer::AssignDecisionToParentVars(EMendelianVcfName a_checkSid
         
         bool bIsViolationFound = false;
         
+        if(aSyncPointList[itrSyncPList].m_calledVariantsIncluded.size() == 0 && aSyncPointList[itrSyncPList].m_calledVariantsExcluded.size() == 0)
+        {
+            if(varListToCheckParent[k]->m_genotype[0] != 0 && varListToCheckParent[k]->m_genotype[1] != 0)
+            {
+                a_rParentDecisions[k] = eViolation;
+                bIsViolationFound = true;
+                break;
+            }
+        }
+            
         for(unsigned int m = 0; m < aSyncPointList[itrSyncPList].m_calledVariantsIncluded.size(); m++)
         {
             if(a_rChildDecisions[m_provider.Get0BasedVariantIndex(eCHILD, a_rTriplet.m_nCid, aSyncPointList[itrSyncPList].m_calledVariantsIncluded[m]->GetVariant().m_nId)] == eViolation)
