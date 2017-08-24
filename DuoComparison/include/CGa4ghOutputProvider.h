@@ -68,7 +68,11 @@ private:
                        SVcfRecord& a_rOutputRec);
     
     //Write the content of variant into the output record
-    void VariantToVcfRecord(const CVariant* a_rVariant, SVcfRecord& a_rOutputRec, bool a_bIsBase, const std::string& a_rMatchType, const::std::string& a_rDecision);
+    void VariantToVcfRecord(const CVariant* a_rVariant,
+                            SVcfRecord& a_rOutputRec,
+                            bool a_bIsBase,
+                            const std::string& a_rMatchType,
+                            const::std::string& a_rDecision);
     
     //Vcf writer instance for output
     CVcfWriter m_vcfWriter;

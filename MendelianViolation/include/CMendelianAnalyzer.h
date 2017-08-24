@@ -43,7 +43,10 @@ private:
     void MergeFunc(SChrIdTriplet& a_rTriplet);
     
     //Return the syncpointlist for given comparison. Writes to the last parameter
-    void GetSyncPointList(SChrIdTriplet& a_rTriplet, bool a_bIsFatherChild, std::vector<core::CSyncPoint>& a_rSyncPointList, bool a_bIsGT = false);
+    void GetSyncPointList(SChrIdTriplet& a_rTriplet,
+                          bool a_bIsFatherChild,
+                          std::vector<core::CSyncPoint>& a_rSyncPointList,
+                          bool a_bIsGT = false);
     
     //Check sync points which child excluded contains 0 Allele variant. If that 0 allele is playable for the parent, we mark variants as compliant, violation otherwise
     void CheckFor0Path(SChrIdTriplet& a_rTriplet,
@@ -54,10 +57,14 @@ private:
                        bool a_bIsUpdateDecisionList = true);
     
     //Check each unique vars and seek for 0 path at the requested side and fills the a_rSideDecisionList
-    void CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTriplet& a_rTriplet, const std::vector<const CVariant*>& a_rVariantList, std::vector<bool>& a_rSideDecisions);
+    void CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTriplet& a_rTriplet,
+                         const std::vector<const CVariant*>& a_rVariantList,
+                         std::vector<bool>& a_rSideDecisions);
     
     //Check each parent variant and assign all unassigned parent variants as violation or consistent
-    void AssignDecisionToParentVars(EMendelianVcfName a_checkSide, SChrIdTriplet& a_rTriplet, std::vector<EMendelianDecision>& a_rParentDecisions, std::vector<EMendelianDecision>& a_rChildDecisions);
+    void AssignDecisionToParentVars(EMendelianVcfName a_checkSide,
+                                    SChrIdTriplet& a_rTriplet, std::vector<EMendelianDecision>& a_rParentDecisions,
+                                    std::vector<EMendelianDecision>& a_rChildDecisions);
     
     //Check sync points which child excluded contains 0 Allele variant. If that 0 allele is playable for the parent, we mark variants as compliant, violation otherwise
     void CheckFor0PathFor00(SChrIdTriplet& a_rTriplet,
@@ -77,7 +84,9 @@ private:
     void ProcessChromosome(const std::vector<SChrIdTriplet>& a_rChromosomeIds);
     
     //Report short output table (Non 0/0 child variants only)
-    void ReportChildChromosomeData(SChrIdTriplet& a_rTriplet, std::vector<const CVariant*>& a_rCompliants, std::vector<const CVariant*>& a_rViolations);
+    void ReportChildChromosomeData(SChrIdTriplet& a_rTriplet,
+                                   std::vector<const CVariant*>& a_rCompliants,
+                                   std::vector<const CVariant*>& a_rViolations);
     
     //Divide the jobs between different threads homogeneously for given number of thread count. Return the actual thread count
     int AssignJobsToThreads(int a_nThreadCount);

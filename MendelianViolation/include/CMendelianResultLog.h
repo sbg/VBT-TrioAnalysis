@@ -76,10 +76,19 @@ public:
     
     
     //For given chromosome it reports the result of best path algorithm for parent-child
-    void LogBestPathStatistic(bool a_bIsFatherChild, SChrIdTriplet a_triplet, int a_nTpCalled, int a_nTpBaseline, int a_nFalsePositive, int a_nFalseNegative);
+    void LogBestPathStatistic(bool a_bIsFatherChild,
+                              SChrIdTriplet a_triplet,
+                              int a_nTpCalled,
+                              int a_nTpBaseline,
+                              int a_nFalsePositive,
+                              int a_nFalseNegative);
     
     //For given chromosome it reports the short result table (SNP and INDEL counts for non 0/0 variants)
-    void LogShortReport(std::string& a_rChrName, int a_nSNPcompliant, int a_nSNPviolation, int a_nINDELcompliant, int a_nINDELviolation);
+    void LogShortReport(std::string& a_rChrName,
+                        int a_nSNPcompliant,
+                        int a_nSNPviolation,
+                        int a_nINDELcompliant,
+                        int a_nINDELviolation);
     
     //For given chromosome logs the number of compliant and violations for each of 10 variant category
     void LogDetailedReport(SMendelianDetailedLogEntry& a_rLogEntry);

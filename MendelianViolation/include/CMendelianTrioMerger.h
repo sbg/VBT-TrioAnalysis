@@ -32,10 +32,16 @@ public:
     void GenerateTrioVcf(std::vector<SChrIdTriplet>& a_rCommonChromosomes);
     
     //Set contigs to write output header. Also initializes size of decision and variant arrays according to number of common chromosomes
-    void SetContigList(const std::vector<SVcfContig>& a_rContigs, int a_nCommonContigCount, int a_nChildVarListSize, int a_nFatherVarListSize, int a_nMotherVarListSize);
+    void SetContigList(const std::vector<SVcfContig>& a_rContigs,
+                       int a_nCommonContigCount,
+                       int a_nChildVarListSize,
+                       int a_nFatherVarListSize,
+                       int a_nMotherVarListSize);
     
     //Set variants and their decisions for marking MendelianDecision info columns
-    void SetDecisionsAndVariants(SChrIdTriplet& a_rTriplet, EMendelianVcfName a_vcfName, const std::vector<EMendelianDecision>& a_rDecisionList, const std::vector<const CVariant*>& a_rVarList);
+    void SetDecisionsAndVariants(SChrIdTriplet& a_rTriplet, EMendelianVcfName a_vcfName,
+                                 const std::vector<EMendelianDecision>& a_rDecisionList,
+                                 const std::vector<const CVariant*>& a_rVarList);
 
     //Set No Call mode to decide if no calls will be printed as ./. or 0/0s
     void SetNoCallMode(ENoCallMode a_mode);
@@ -82,7 +88,10 @@ private:
                      std::vector<SVcfRecord>& a_rRecordList);
     
     //Decide the mendelian type of the given three variant in a row
-    EMendelianDecision GetMendelianDecision(const CVariant* a_pVarMother, const CVariant* a_pVarFather, const CVariant* a_pVarChild, EMendelianDecision a_initDecision);
+    EMendelianDecision GetMendelianDecision(const CVariant* a_pVarMother,
+                                            const CVariant* a_pVarFather,
+                                            const CVariant* a_pVarChild,
+                                            EMendelianDecision a_initDecision);
     
     //Register a line of merged vcf to the detailed report table [updates m_logEntry]
     //EVariantCategory RegisterMergedLine(const CVariant* a_pVariant, EMendelianDecision a_decision);

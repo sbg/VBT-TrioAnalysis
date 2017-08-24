@@ -55,7 +55,10 @@ public:
     std::vector<const core::COrientedVariant*> GetOrientedVariantList(EMendelianVcfName a_uFrom, int a_nChrNo, bool a_bIsAlleleMatch = false) const;
     
     //Return all the oriented variants belongs to given chromosome with provided index list
-    std::vector<const core::COrientedVariant*> GetOrientedVariantList(EMendelianVcfName a_uFrom, int a_nChrNo, bool a_bIsAlleleMatch, const std::vector<int>& a_nIndexList) const;
+    std::vector<const core::COrientedVariant*> GetOrientedVariantList(EMendelianVcfName a_uFrom,
+                                                                      int a_nChrNo,
+                                                                      bool a_bIsAlleleMatch,
+                                                                      const std::vector<int>& a_nIndexList) const;
     
     //Return contig object given by the chromosome Id
     void GetContig(int a_nChrId, SContig& a_rContig) const;

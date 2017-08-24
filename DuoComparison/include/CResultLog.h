@@ -39,7 +39,13 @@ public:
     void SetLogPath(const std::string& a_rLogPath);
     
     //Records the result for given chromosome
-    void LogStatistic(std::string a_chromosomeName, int a_nTpCalled, int a_nTpBaseline, int a_nHalfTPCalled, int a_nHalfTPBaseline, int a_nFalsePositive, int a_nFalseNegative);
+    void LogStatistic(std::string a_chromosomeName,
+                      int a_nTpCalled,
+                      int a_nTpBaseline,
+                      int a_nHalfTPCalled,
+                      int a_nHalfTPBaseline,
+                      int a_nFalsePositive,
+                      int a_nFalseNegative);
     
     //Write the results in log.txt file
     //@ a_nMode: 0 - SPLIT (genotype match)   1 - SPLIT (allele match) s 2 - GA4GH

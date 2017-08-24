@@ -59,7 +59,9 @@ public:
     std::vector<CVariant>& GetNotAssessedVariantList(EVcfName a_uFrom, int a_nChrNo);
 
     //Initialize Homozygous Oriented Variant Lists with given base and called variant set
-    void FillAlleleMatchVariantList(SChrIdTuple& a_rTuple, std::vector<const CVariant*>& a_rBaseVariants, std::vector<const CVariant*>& a_rCalledVariants);
+    void FillAlleleMatchVariantList(SChrIdTuple& a_rTuple,
+                                    std::vector<const CVariant*>& a_rBaseVariants,
+                                    std::vector<const CVariant*>& a_rCalledVariants);
 
     //Set the status of each variant in the given lust
     void SetVariantStatus(const std::vector<const CVariant*>& a_rVariantList, EVariantMatch a_status) const;

@@ -81,7 +81,8 @@ class CPath
     //Delete all Included variants
     void ClearIncludedVariants();
     //Add variants to the included variant list
-    void AddIncludedVariants(std::vector<const COrientedVariant*>& a_rIncludedVarListCalled, std::vector<const COrientedVariant*>& a_rIncludedVarListBase);
+    void AddIncludedVariants(std::vector<const COrientedVariant*>& a_rIncludedVarListCalled,
+                             std::vector<const COrientedVariant*>& a_rIncludedVarListBase);
     
     //Delete all excluded variant indexes
     void ClearExcludedVariants();
