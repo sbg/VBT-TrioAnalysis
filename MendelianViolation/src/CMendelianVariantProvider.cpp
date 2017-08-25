@@ -179,9 +179,9 @@ void CMendelianVariantProvider::FillVariantsFromBED()
     m_aFatherVariantList = std::vector<std::vector<CVariant>>(m_FatherVcf.GetContigs().size());
     m_aMotherVariantList = std::vector<std::vector<CVariant>>(m_MotherVcf.GetContigs().size());
     m_aChildVariantList = std::vector<std::vector<CVariant>>(m_ChildVcf.GetContigs().size());
-    m_aFatherNotAssessedVariantList = std::vector<std::vector<CVariant>>(m_FatherVcf.GetContigs().size());
-    m_aMotherNotAssessedVariantList = std::vector<std::vector<CVariant>>(m_MotherVcf.GetContigs().size());
-    m_aChildNotAssessedVariantList = std::vector<std::vector<CVariant>>(m_ChildVcf.GetContigs().size());
+    m_nFatherNotAssessedVariantCount = 0;
+    m_nMotherNotAssessedVariantCount = 0;
+    m_nChildNotAssessedVariantCount = 0;
     
     //TODO : this will be replaced ??
     m_nMotherAsteriskCount = 0;
@@ -195,6 +195,8 @@ void CMendelianVariantProvider::FillVariantsFromBED()
         {
             preChrId = variant.m_chrName;
             std::cout << "Reading chromosome " << preChrId << " of Parent[FATHER] vcf" << std::endl;
+            id = 0;
+            variant.m_nId = id;
         }
 
         //Pass to the next region
@@ -222,10 +224,10 @@ void CMendelianVariantProvider::FillVariantsFromBED()
         }
         
         else if(m_fatherChildConfig.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
-            m_aFatherNotAssessedVariantList[variant.m_nChrId].push_back(variant);
+            m_nFatherNotAssessedVariantCount++;
         
         else if(IsStructuralVariant(variant, m_fatherChildConfig.m_nMaxVariantSize))
-            m_aFatherNotAssessedVariantList[variant.m_nChrId].push_back(variant);
+            m_nFatherNotAssessedVariantCount++;
         
         else
         {
@@ -241,10 +243,7 @@ void CMendelianVariantProvider::FillVariantsFromBED()
     
     
     for(int k = 0; k < (int)m_FatherVcf.GetContigs().size(); k++)
-    {
-        std::sort(m_aFatherNotAssessedVariantList[k].begin(), m_aFatherNotAssessedVariantList[k].end(), CompareVariants);
         std::sort(m_aFatherVariantList[k].begin(), m_aFatherVariantList[k].end(), CompareVariants);
-    }
     
     //READ VARIANTS OF MOTHER
     while(m_MotherVcf.GetNextRecord(&variant, id, m_motherChildConfig))
@@ -253,6 +252,8 @@ void CMendelianVariantProvider::FillVariantsFromBED()
         {
             preChrId = variant.m_chrName;
             std::cout << "Reading chromosome " << preChrId << " of Parent[MOTHER] vcf" << std::endl;
+            id = 0;
+            variant.m_nId = id;
         }
         
         //Pass to the next region
@@ -280,10 +281,10 @@ void CMendelianVariantProvider::FillVariantsFromBED()
         }
         
         else if(m_motherChildConfig.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
-            m_aMotherNotAssessedVariantList[variant.m_nChrId].push_back(variant);
+            m_nMotherNotAssessedVariantCount++;
         
         else if(IsStructuralVariant(variant, m_motherChildConfig.m_nMaxVariantSize))
-            m_aMotherNotAssessedVariantList[variant.m_nChrId].push_back(variant);
+            m_nMotherNotAssessedVariantCount++;
         
         else
         {
@@ -297,13 +298,9 @@ void CMendelianVariantProvider::FillVariantsFromBED()
     bedParser.ResetIterator();
     bedParser.GetNextRegion(bedRegion);
     
-    
     for(int k = 0; k < (int)m_MotherVcf.GetContigs().size(); k++)
-    {
-        std::sort(m_aMotherNotAssessedVariantList[k].begin(), m_aMotherNotAssessedVariantList[k].end(), CompareVariants);
         std::sort(m_aMotherVariantList[k].begin(), m_aMotherVariantList[k].end(), CompareVariants);
-    }
-    
+
     //READ VARIANTS OF CHILD
     while(m_ChildVcf.GetNextRecord(&variant, id, m_motherChildConfig))
     {
@@ -311,6 +308,8 @@ void CMendelianVariantProvider::FillVariantsFromBED()
         {
             preChrId = variant.m_chrName;
             std::cout << "Reading chromosome " << preChrId << " of child vcf" << std::endl;
+            id = 0;
+            variant.m_nId = id;
         }
 
         //Pass to the next region
@@ -338,10 +337,10 @@ void CMendelianVariantProvider::FillVariantsFromBED()
         }
         
         else if(m_motherChildConfig.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
-            m_aChildNotAssessedVariantList[variant.m_nChrId].push_back(variant);
+            m_nChildNotAssessedVariantCount++;
         
         else if(IsStructuralVariant(variant, m_motherChildConfig.m_nMaxVariantSize))
-            m_aChildNotAssessedVariantList[variant.m_nChrId].push_back(variant);
+            m_nChildNotAssessedVariantCount++;
         
         else
         {
@@ -351,14 +350,7 @@ void CMendelianVariantProvider::FillVariantsFromBED()
     }
     
     for(int k = 0; k < (int)m_ChildVcf.GetContigs().size(); k++)
-    {
-        std::sort(m_aChildNotAssessedVariantList[k].begin(), m_aChildNotAssessedVariantList[k].end(), CompareVariants);
         std::sort(m_aChildVariantList[k].begin(), m_aChildVariantList[k].end(), CompareVariants);
-    }
-    
-   
-    
-
 }
 
 
@@ -373,9 +365,9 @@ void CMendelianVariantProvider::FillVariants()
     m_aFatherVariantList = std::vector<std::vector<CVariant>>(m_FatherVcf.GetContigs().size());
     m_aMotherVariantList = std::vector<std::vector<CVariant>>(m_MotherVcf.GetContigs().size());
     m_aChildVariantList = std::vector<std::vector<CVariant>>(m_ChildVcf.GetContigs().size());
-    m_aFatherNotAssessedVariantList = std::vector<std::vector<CVariant>>(m_FatherVcf.GetContigs().size());
-    m_aMotherNotAssessedVariantList = std::vector<std::vector<CVariant>>(m_MotherVcf.GetContigs().size());
-    m_aChildNotAssessedVariantList = std::vector<std::vector<CVariant>>(m_ChildVcf.GetContigs().size());
+    m_nFatherNotAssessedVariantCount = 0;
+    m_nMotherNotAssessedVariantCount = 0;
+    m_nChildNotAssessedVariantCount = 0;
     
     //TODO : this will be replaced ??
     m_nMotherAsteriskCount = 0;
@@ -389,6 +381,8 @@ void CMendelianVariantProvider::FillVariants()
         {
             preChrId = variant.m_chrName;
             std::cout << "Processing chromosome " << preChrId << " of Parent[FATHER] vcf" << std::endl;
+            id = 0;
+            variant.m_nId = id;
         }
         
         if(!variant.m_bIsNoCall && IsHomRef(variant))
@@ -402,10 +396,10 @@ void CMendelianVariantProvider::FillVariants()
         }
         
         else if(m_fatherChildConfig.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
-            m_aFatherNotAssessedVariantList[variant.m_nChrId].push_back(variant);
+            m_nFatherNotAssessedVariantCount++;
         
         else if(IsStructuralVariant(variant, m_fatherChildConfig.m_nMaxVariantSize))
-            m_aFatherNotAssessedVariantList[variant.m_nChrId].push_back(variant);
+            m_nFatherNotAssessedVariantCount++;
 
         else
         {
@@ -419,10 +413,7 @@ void CMendelianVariantProvider::FillVariants()
 
     
     for(int k = 0; k < (int)m_FatherVcf.GetContigs().size(); k++)
-    {
-        std::sort(m_aFatherNotAssessedVariantList[k].begin(), m_aFatherNotAssessedVariantList[k].end(), CompareVariants);
         std::sort(m_aFatherVariantList[k].begin(), m_aFatherVariantList[k].end(), CompareVariants);
-    }
 
     //READ VARIANTS OF MOTHER
     while(m_MotherVcf.GetNextRecord(&variant, id, m_motherChildConfig))
@@ -431,6 +422,8 @@ void CMendelianVariantProvider::FillVariants()
         {
             preChrId = variant.m_chrName;
             std::cout << "Processing chromosome " << preChrId << " of Parent[MOTHER] vcf" << std::endl;
+            id = 0;
+            variant.m_nId = id;
         }
         
         if(!variant.m_bIsNoCall &&  IsHomRef(variant))
@@ -444,10 +437,10 @@ void CMendelianVariantProvider::FillVariants()
         }
         
         else if(m_motherChildConfig.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
-            m_aMotherNotAssessedVariantList[variant.m_nChrId].push_back(variant);
+            m_nMotherNotAssessedVariantCount++;
         
         else if(IsStructuralVariant(variant, m_motherChildConfig.m_nMaxVariantSize))
-            m_aMotherNotAssessedVariantList[variant.m_nChrId].push_back(variant);
+            m_nMotherNotAssessedVariantCount++;
         
         else
         {
@@ -461,10 +454,7 @@ void CMendelianVariantProvider::FillVariants()
 
     
     for(int k = 0; k < (int)m_MotherVcf.GetContigs().size(); k++)
-    {
-        std::sort(m_aMotherNotAssessedVariantList[k].begin(), m_aMotherNotAssessedVariantList[k].end(), CompareVariants);
         std::sort(m_aMotherVariantList[k].begin(), m_aMotherVariantList[k].end(), CompareVariants);
-    }
     
     //READ VARIANTS OF CHILD
     while(m_ChildVcf.GetNextRecord(&variant, id, m_motherChildConfig))
@@ -473,6 +463,8 @@ void CMendelianVariantProvider::FillVariants()
         {
             preChrId = variant.m_chrName;
             std::cout << "Processing chromosome " << preChrId << " of child vcf" << std::endl;
+            id = 0;
+            variant.m_nId = id;
         }
         
         if(!variant.m_bIsNoCall && IsHomRef(variant))
@@ -486,10 +478,10 @@ void CMendelianVariantProvider::FillVariants()
         }
         
         else if(m_motherChildConfig.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
-            m_aChildNotAssessedVariantList[variant.m_nChrId].push_back(variant);
+            m_nChildNotAssessedVariantCount++;
         
         else if(IsStructuralVariant(variant, m_motherChildConfig.m_nMaxVariantSize))
-            m_aChildNotAssessedVariantList[variant.m_nChrId].push_back(variant);
+            m_nChildNotAssessedVariantCount++;
         
         else
         {
@@ -499,11 +491,7 @@ void CMendelianVariantProvider::FillVariants()
     }
     
     for(int k = 0; k < (int)m_ChildVcf.GetContigs().size(); k++)
-    {
-        std::sort(m_aChildNotAssessedVariantList[k].begin(), m_aChildNotAssessedVariantList[k].end(), CompareVariants);
         std::sort(m_aChildVariantList[k].begin(), m_aChildVariantList[k].end(), CompareVariants);
-    }
-
 }
 
 
@@ -954,17 +942,6 @@ int CMendelianVariantProvider:: GetVariantCount(EMendelianVcfName a_uFrom, int a
         return -1;
 }
 
-int CMendelianVariantProvider::Get0BasedVariantIndex(EMendelianVcfName a_uFrom, int a_nChr, int a_nVariantId) const
-{
-    int variantCountSoFar = 0;
-    
-    for(int k = 0; k < a_nChr; k++)
-        variantCountSoFar += GetVariantCount(a_uFrom, k);
-    
-    
-    return a_nVariantId - variantCountSoFar;
-}
-
 
 int CMendelianVariantProvider::GetSkippedVariantCount(EMendelianVcfName a_uFrom) const
 {
@@ -1037,22 +1014,15 @@ int CMendelianVariantProvider::GetNotAssessedVariantCount(EMendelianVcfName a_uF
 {
     unsigned int skippedVariantCount = 0;
     
-    
     switch (a_uFrom) {
         case eMOTHER:
-            for(int k = 0; k < (int)m_aMotherNotAssessedVariantList.size(); k++)
-                skippedVariantCount += m_aMotherNotAssessedVariantList[k].size();
-            skippedVariantCount += m_nMotherAsteriskCount;
+            skippedVariantCount = m_nMotherNotAssessedVariantCount;
             break;
         case eFATHER:
-            for(int k = 0; k < (int)m_aFatherNotAssessedVariantList.size(); k++)
-                skippedVariantCount += m_aFatherNotAssessedVariantList[k].size();
-            skippedVariantCount += m_nFatherAsteriskCount;
+            skippedVariantCount = m_nFatherNotAssessedVariantCount;
             break;
         case eCHILD:
-            for(int k = 0; k < (int)m_aChildNotAssessedVariantList.size(); k++)
-                skippedVariantCount += m_aChildNotAssessedVariantList[k].size();
-            skippedVariantCount += m_nChildAsteriskCount;
+            skippedVariantCount = m_nChildNotAssessedVariantCount;
             break;
         default:
             break;
@@ -1060,111 +1030,6 @@ int CMendelianVariantProvider::GetNotAssessedVariantCount(EMendelianVcfName a_uF
     
     return static_cast<int>(skippedVariantCount);
 }
-
-
-void CMendelianVariantProvider::RemoveNonAssessedSites()
-{
-    int motherId = 0;
-    int fatherId = 0;
-    int childId = 0;
-    
-    for(int k = 0; k < static_cast<int>(m_aCommonChromosomes.size()); k++)
-    {
-        SChrIdTriplet triplet = m_aCommonChromosomes[k];
-        
-        std::vector<int> mergedSorted_NA_VariantPositions;
-        
-        for(CVariant var : m_aFatherNotAssessedVariantList[triplet.m_nFid])
-            mergedSorted_NA_VariantPositions.push_back(var.m_nOriginalPos);
-        for(CVariant var : m_aMotherNotAssessedVariantList[triplet.m_nMid])
-            mergedSorted_NA_VariantPositions.push_back(var.m_nOriginalPos);
-        for(CVariant var : m_aChildNotAssessedVariantList[triplet.m_nCid])
-            mergedSorted_NA_VariantPositions.push_back(var.m_nOriginalPos);
-
-        //Sort positions and remove duplicates
-        std::sort(mergedSorted_NA_VariantPositions.begin(), mergedSorted_NA_VariantPositions.end());
-        std::vector<int>::iterator it;
-        it = std::unique (mergedSorted_NA_VariantPositions.begin(), mergedSorted_NA_VariantPositions.end());
-        mergedSorted_NA_VariantPositions.resize(std::distance(mergedSorted_NA_VariantPositions.begin(),it));
-        
-        int naItr = 0;
-        
-        //Remove dependent non-assessed sites from father side
-        for(auto varItr = m_aFatherVariantList[triplet.m_nFid].begin(); varItr != m_aFatherVariantList[triplet.m_nFid].end();)
-        {
-            while(naItr != static_cast<int>(mergedSorted_NA_VariantPositions.size()) && mergedSorted_NA_VariantPositions[naItr] < varItr->m_nOriginalPos)
-                naItr++;
-            
-            if(varItr->m_nOriginalPos == mergedSorted_NA_VariantPositions[naItr])
-                m_aFatherVariantList[triplet.m_nFid].erase(varItr);
-            
-            else
-            {
-                varItr->m_nId = fatherId++;
-                varItr++;
-            }
-        }
-        
-        naItr = 0;
-        //Remove dependent non-assessed sites from mother side
-        for(auto varItr = m_aMotherVariantList[triplet.m_nMid].begin(); varItr != m_aMotherVariantList[triplet.m_nMid].end();)
-        {
-            while(naItr != static_cast<int>(mergedSorted_NA_VariantPositions.size()) && mergedSorted_NA_VariantPositions[naItr] < varItr->m_nOriginalPos)
-                naItr++;
-            
-            if(varItr->m_nOriginalPos == mergedSorted_NA_VariantPositions[naItr])
-                m_aMotherVariantList[triplet.m_nMid].erase(varItr);
-            
-            else
-            {
-                varItr->m_nId = motherId++;
-                varItr++;
-            }
-        }
-        
-        naItr = 0;
-        //Remove dependent non-assessed sites from child side
-        for(auto varItr = m_aChildVariantList[triplet.m_nCid].begin(); varItr != m_aChildVariantList[triplet.m_nCid].end();)
-        {
-            while(naItr != static_cast<int>(mergedSorted_NA_VariantPositions.size()) && mergedSorted_NA_VariantPositions[naItr] < varItr->m_nOriginalPos)
-                naItr++;
-            
-            if(varItr->m_nOriginalPos == mergedSorted_NA_VariantPositions[naItr])
-                m_aChildVariantList[triplet.m_nCid].erase(varItr);
-            
-            else
-            {
-                varItr->m_nId = childId++;
-                varItr++;
-            }
-        }
-        
-    }
-    
-    
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

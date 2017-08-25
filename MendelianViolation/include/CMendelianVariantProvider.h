@@ -72,10 +72,7 @@ public:
     //Set the status of each variant in the given list
     void SetVariantStatus(const std::vector<const CVariant*>& a_rVariantList, EVariantMatch a_status) const;
     void SetVariantStatus(const std::vector<const core::COrientedVariant*>& a_rVariantList, EVariantMatch a_status) const;
-    
-    //Returns the 0 based index of variants starting from the first variant for that chromosome
-    int Get0BasedVariantIndex(EMendelianVcfName a_uFrom, int a_nChr, int a_nVariantId) const;
-    
+        
     //Returns the count of eNOT_ASSESSED variants for all chromosome belong to input VCF sample
     int GetSkippedVariantCount(EMendelianVcfName a_uFrom) const;
         
@@ -101,9 +98,6 @@ private:
 
     //Fill Oriented variant sets for parent and child
     void FillAlleleMatchOrientedVariants(std::vector<SChrIdTriplet>& a_aCommonChromosomes);
-    
-    //If a variant is mark as non-asssesed for one sample, clear the variants at same position in the other 2 sample
-    void RemoveNonAssessedSites();
     
     static bool CompareVariants(const CVariant& var1, const CVariant& var2);
     
@@ -140,12 +134,12 @@ private:
     //List that store the allele match base Oriented variant tuples (In the order of genotype)
     std::vector<std::vector<core::COrientedVariant>> m_aChildAlleleMatchOrientedVariantList;
     
-    //List that stores Father variants which are filtered out from comparison
-    std::vector<std::vector<CVariant>> m_aFatherNotAssessedVariantList;
-    //List that stores Mother variants which are filtered out from comparison
-    std::vector<std::vector<CVariant>> m_aMotherNotAssessedVariantList;
-    //List that stores Child variants which are filtered out from comparison
-    std::vector<std::vector<CVariant>> m_aChildNotAssessedVariantList;
+    //Father variants which are filtered out from comparison
+    int m_nFatherNotAssessedVariantCount;
+    //Mother variants which are filtered out from comparison
+    int m_nMotherNotAssessedVariantCount;
+    //Child variants which are filtered out from comparison
+    int m_nChildNotAssessedVariantCount;
     
     //Reference to the fasta reader object
     CFastaParser m_fastaParser;
