@@ -436,7 +436,7 @@ void CGraphVcfAnalyzer::PrintLogs()
     std::cout << std::endl;
     //std::cout << "Chr" << "\t" << "TP Base" << "\t" <<  "TP Called" << "\t" << "False Positive" << "\t" << "False Negative" << std::endl;
     
-    for(int k = 0; k < chrIdTuples.size(); k++)
+    for(unsigned int k = 0; k < chrIdTuples.size(); k++)
     {
         unsigned long excludedSizeBase = m_uniqueVariantsListPerChromosome[chrIdTuples[k].m_chrName].baseExcludedIndexes.size();
         unsigned long includedSizeBase = m_uniqueVariantsListPerChromosome[chrIdTuples[k].m_chrName].baseIncludedIndexes.size();
