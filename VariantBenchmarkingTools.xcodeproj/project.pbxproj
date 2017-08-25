@@ -22,7 +22,6 @@
 		551661EE1E82E7D9002436FA /* CResultLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 551661EA1E82E7D9002436FA /* CResultLog.cpp */; };
 		551661EF1E82E7D9002436FA /* CVariantProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 551661EB1E82E7D9002436FA /* CVariantProvider.cpp */; };
 		551661F01E82E7D9002436FA /* CVcfAnalyzer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 551661EC1E82E7D9002436FA /* CVcfAnalyzer.cpp */; };
-		551661FC1E82E8EB002436FA /* CMendelianAnalyzer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 551661F81E82E8EB002436FA /* CMendelianAnalyzer.cpp */; };
 		551661FD1E82E8EB002436FA /* CMendelianTrioMerger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 551661F91E82E8EB002436FA /* CMendelianTrioMerger.cpp */; };
 		551661FE1E82E8EB002436FA /* CMendelianVariantProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 551661FA1E82E8EB002436FA /* CMendelianVariantProvider.cpp */; };
 		551662191E82EBC5002436FA /* CVariant.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 551662181E82EBC5002436FA /* CVariant.cpp */; };
@@ -34,6 +33,8 @@
 		556D39971DD3AF2E00551040 /* libhts.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 556D39841DD3AF2E00551040 /* libhts.dylib */; };
 		556D39CC1DD3AFAC00551040 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 556D39CB1DD3AFAC00551040 /* libz.tbd */; };
 		558A41741E92EDA900575FA6 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 558A41731E92EDA900575FA6 /* Makefile */; };
+		5596B3201F4F201B00B6BFC3 /* CMendelianDecider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5596B31F1F4F201B00B6BFC3 /* CMendelianDecider.cpp */; };
+		5596B3221F4F220600B6BFC3 /* CMendelianAnalyzer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5596B3211F4F220600B6BFC3 /* CMendelianAnalyzer.cpp */; };
 		559BA2941E97D63F0018D734 /* CSplitOutputProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 559BA2931E97D63F0018D734 /* CSplitOutputProvider.cpp */; };
 		55BDF86F1F3CEC470095669B /* CGraphVcfAnalyzer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55BDF86E1F3CEC470095669B /* CGraphVcfAnalyzer.cpp */; };
 		55BDF8731F3DFDAA0095669B /* CGraphVcfReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55BDF8721F3DFDAA0095669B /* CGraphVcfReader.cpp */; };
@@ -97,7 +98,6 @@
 		551661F41E82E8DB002436FA /* CMendelianVariantProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CMendelianVariantProvider.h; path = MendelianViolation/include/CMendelianVariantProvider.h; sourceTree = SOURCE_ROOT; };
 		551661F61E82E8DB002436FA /* EMendelianDecision.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EMendelianDecision.h; path = MendelianViolation/include/EMendelianDecision.h; sourceTree = SOURCE_ROOT; };
 		551661F71E82E8DB002436FA /* EMendelianVcfName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EMendelianVcfName.h; path = MendelianViolation/include/EMendelianVcfName.h; sourceTree = SOURCE_ROOT; };
-		551661F81E82E8EB002436FA /* CMendelianAnalyzer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CMendelianAnalyzer.cpp; path = MendelianViolation/src/CMendelianAnalyzer.cpp; sourceTree = SOURCE_ROOT; };
 		551661F91E82E8EB002436FA /* CMendelianTrioMerger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CMendelianTrioMerger.cpp; path = MendelianViolation/src/CMendelianTrioMerger.cpp; sourceTree = SOURCE_ROOT; };
 		551661FA1E82E8EB002436FA /* CMendelianVariantProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CMendelianVariantProvider.cpp; path = MendelianViolation/src/CMendelianVariantProvider.cpp; sourceTree = SOURCE_ROOT; };
 		551662001E82E934002436FA /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = SOURCE_ROOT; };
@@ -116,6 +116,9 @@
 		556D39CB1DD3AFAC00551040 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		557366F31EB8DAF9005F46C1 /* SChrIdTuple.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SChrIdTuple.h; path = DuoComparison/include/SChrIdTuple.h; sourceTree = SOURCE_ROOT; };
 		558A41731E92EDA900575FA6 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = SOURCE_ROOT; };
+		5596B31E1F4F1AA100B6BFC3 /* CMendelianDecider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CMendelianDecider.h; path = MendelianViolation/include/CMendelianDecider.h; sourceTree = SOURCE_ROOT; };
+		5596B31F1F4F201B00B6BFC3 /* CMendelianDecider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CMendelianDecider.cpp; path = MendelianViolation/src/CMendelianDecider.cpp; sourceTree = SOURCE_ROOT; };
+		5596B3211F4F220600B6BFC3 /* CMendelianAnalyzer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CMendelianAnalyzer.cpp; path = MendelianViolation/src/CMendelianAnalyzer.cpp; sourceTree = SOURCE_ROOT; };
 		559BA2921E97D42F0018D734 /* CSplitOutputProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CSplitOutputProvider.h; path = DuoComparison/include/CSplitOutputProvider.h; sourceTree = SOURCE_ROOT; };
 		559BA2931E97D63F0018D734 /* CSplitOutputProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CSplitOutputProvider.cpp; path = DuoComparison/src/CSplitOutputProvider.cpp; sourceTree = SOURCE_ROOT; };
 		559BA2961E982DFE0018D734 /* bgzf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bgzf.h; sourceTree = "<group>"; };
@@ -297,7 +300,8 @@
 		551661BB1E82C269002436FA /* src */ = {
 			isa = PBXGroup;
 			children = (
-				551661F81E82E8EB002436FA /* CMendelianAnalyzer.cpp */,
+				5596B3211F4F220600B6BFC3 /* CMendelianAnalyzer.cpp */,
+				5596B31F1F4F201B00B6BFC3 /* CMendelianDecider.cpp */,
 				551661F91E82E8EB002436FA /* CMendelianTrioMerger.cpp */,
 				551661FA1E82E8EB002436FA /* CMendelianVariantProvider.cpp */,
 				550E1F5F1E8ABE8B00AEFB0B /* CMendelianResultLog.cpp */,
@@ -310,6 +314,7 @@
 			children = (
 				55647EF01EA810DB00D2625D /* CVariantIterator.h */,
 				551661F21E82E8DB002436FA /* CMendelianAnalyzer.h */,
+				5596B31E1F4F1AA100B6BFC3 /* CMendelianDecider.h */,
 				551661F31E82E8DB002436FA /* CMendelianTrioMerger.h */,
 				551661F41E82E8DB002436FA /* CMendelianVariantProvider.h */,
 				551661F61E82E8DB002436FA /* EMendelianDecision.h */,
@@ -535,6 +540,7 @@
 			files = (
 				55BDF86F1F3CEC470095669B /* CGraphVcfAnalyzer.cpp in Sources */,
 				558A41741E92EDA900575FA6 /* Makefile in Sources */,
+				5596B3221F4F220600B6BFC3 /* CMendelianAnalyzer.cpp in Sources */,
 				551661CB1E82C51B002436FA /* CVcfWriter.cpp in Sources */,
 				553B0F861E36A2FE00E7186C /* README.md in Sources */,
 				551661EE1E82E7D9002436FA /* CResultLog.cpp in Sources */,
@@ -546,7 +552,6 @@
 				551661DE1E82C967002436FA /* COrientedVariant.cpp in Sources */,
 				551661FD1E82E8EB002436FA /* CMendelianTrioMerger.cpp in Sources */,
 				55BDF8751F3E06BF0095669B /* CGraphVariantProvider.cpp in Sources */,
-				551661FC1E82E8EB002436FA /* CMendelianAnalyzer.cpp in Sources */,
 				55DE31921F1012F1009D385D /* CSimpleBEDParser.cpp in Sources */,
 				551661E21E82C967002436FA /* CSemiPath.cpp in Sources */,
 				551661DD1E82C967002436FA /* CHaplotypeSequence.cpp in Sources */,
@@ -558,6 +563,7 @@
 				551661CA1E82C51B002436FA /* CVcfReader.cpp in Sources */,
 				551661E01E82C967002436FA /* CPathReplay.cpp in Sources */,
 				5516621D1E82F271002436FA /* main.cpp in Sources */,
+				5596B3201F4F201B00B6BFC3 /* CMendelianDecider.cpp in Sources */,
 				550759BA1EF96C4600780569 /* CSimplePEDParser.cpp in Sources */,
 				551661E11E82C967002436FA /* CPathSet.cpp in Sources */,
 				55BDF8731F3DFDAA0095669B /* CGraphVcfReader.cpp in Sources */,
