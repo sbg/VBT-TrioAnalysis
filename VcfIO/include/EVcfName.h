@@ -6,6 +6,10 @@
 #ifndef _E_VCF_NAME_H_
 #define _E_VCF_NAME_H_
 
+/**
+ * @brief Enum for VCF file type
+ *
+ */
 enum EVcfName
 {
     eBASE,

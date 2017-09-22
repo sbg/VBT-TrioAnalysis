@@ -14,6 +14,10 @@
 namespace duocomparison
 {
 
+/**
+ * @brief Groups indexes of common chromosomes for truth and query vcfs
+ *
+ */
 struct SChrIdTuple
 {
     SChrIdTuple(int a_base, int a_called, std::string a_chrName, int a_nTupleIndex)
@@ -32,9 +36,13 @@ struct SChrIdTuple
         m_nTupleIndex = -1;
     }
     
+    ///Index of chromosome in truth vcf
     int m_nBaseId;
+    ///Index of chromosome in query vcf
     int m_nCalledId;
+    ///Tuple Index
     int m_nTupleIndex;
+    ///Chromosome name
     std::string m_chrName;
 };
 

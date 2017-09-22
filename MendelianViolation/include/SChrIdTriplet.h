@@ -15,6 +15,10 @@
 namespace mendelian
 {
 
+/**
+ * @brief Groups indexes of common chromosomes for mother father and child
+ *
+ */
 struct SChrIdTriplet
 {
     SChrIdTriplet(int a_mother, int a_father, int a_child, std::string a_chrName, int a_tripleIndex)
@@ -35,16 +39,16 @@ struct SChrIdTriplet
         m_nTripleIndex = -1;
     }
     
-    //We will use this index to store best paths [After we eliminate uncommon chromosomes, indexes will be shifted so we will allocate the size of common chromosomes for best paths]
+    ///We will use this index to store best paths [After we eliminate uncommon chromosomes, indexes will be shifted so we will allocate the size of common chromosomes for best paths]
     int m_nTripleIndex;
     
-    //Mother index
+    ///Index of mother chromosome in Mother vcf
     int m_nMid;
-    //Father index
+    ///Index of father chromosome in Father vcf
     int m_nFid;
-    //Child index
+    ///Index of child chromosome in Child vcf
     int m_nCid;
-    //Chromosome Name
+    ///Chromosome Name
     std::string m_chrName;
 };
 

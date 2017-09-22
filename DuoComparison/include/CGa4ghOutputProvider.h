@@ -23,25 +23,27 @@ namespace duocomparison
 
 class CVariantProvider;
 
-
+/**
+ * @brief Output merged baseline and called vcf annotated with comparison decisions in ga4gh benchmarking output standards
+ */
 class CGa4ghOutputProvider
 {
 
 public:
  
-    //Set access to variant provider
+    ///Set access to variant provider
     void SetVariantProvider(CVariantProvider* a_pProvider);
     
-    //Set access to best path list
+    ///Set access to best path list
     void SetBestPaths(std::vector<core::CPath>& a_rBestPathList, std::vector<core::CPath>& a_rBestAlleleMatchPathList);
     
-    //Set the output vcf path
+    ///Set the output vcf path
     void SetVcfPath(const std::string& a_rVcfPath);
     
-    //Set contigs [id, name and length] to write output header
+    ///Set contigs [id, name and length] to write output header
     void SetContigList(const std::vector<SVcfContig>& a_rContigs);
     
-    //Generates the vcf file by merging all chromosomes
+    ///Generates the vcf file by merging all chromosomes
     void GenerateGa4ghVcf(const std::vector<SChrIdTuple>& a_rCommonChromosomes);
     
 private:

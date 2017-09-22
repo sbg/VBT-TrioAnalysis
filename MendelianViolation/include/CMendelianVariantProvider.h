@@ -19,42 +19,48 @@
 namespace mendelian
 {
 
+/**
+ * @brief Reads and stores variants of family members
+ *
+ * CMendelianVariantProvider contains functions to parse vcf files of family members. All variants are stored in this object and
+ * other classes can get access variant lists via this class.
+ */
 class CMendelianVariantProvider
 {
 
 public:
     
-    //Initialize the vcf and fasta files for mendelian violation mode
+    ///Initialize the vcf and fasta files for mendelian violation mode
     bool InitializeReaders(const SConfig &a_rFatherChildConfig, const SConfig& a_rMotherChildConfig);
     
-    //Return all the variants belongs to given chromosome
+    ///Return all the variants belongs to given chromosome
     std::vector<const CVariant*> GetVariantList(EMendelianVcfName a_uFrom, int a_nChrNo) const;
 
-    //Return all the variants belongs to given chromosome sorted by variant ids
+    ///Return all the variants belongs to given chromosome sorted by variant ids
     std::vector<const CVariant*> GetSortedVariantList(EMendelianVcfName a_uFrom, int a_nChrNo) const;
 
-    //Return all the variants belongs to given chromosome according to given index list
+    ///Return all the variants belongs to given chromosome according to given index list
     std::vector<const CVariant*> GetVariantList(EMendelianVcfName a_uFrom, int a_nChrNo, const std::vector<int>& a_nIndexList) const;
 
-    //Return all the variants belongs to given List according to given index list
+    ///Return all the variants belongs to given List according to given index list
     std::vector<const CVariant*> GetVariantList(const std::vector<const CVariant*> a_rVariantList, const std::vector<int>& a_nIndexList) const;
 
-    //Return the count of not assessed variants in vcf file - variants that contains any of *, <, >, [, ], {, } symbols at their allele string
+    ///Return the count of not assessed variants in vcf file - variants that contains any of *, <, >, [, ], {, } symbols at their allele string
     int GetNotAssessedVariantCount(EMendelianVcfName a_uFrom);
     
-    //Return contig information from header of child vcf
+    ///Return contig information from header of child vcf
     const std::vector<SVcfContig>& GetContigs();
     
-    //Return the total contig count of requested vcf
+    ///Return the total contig count of requested vcf
     int GetContigCount(EMendelianVcfName a_uFrom);
     
-    //Get the total variant count for given chromosome
+    ///Get the total variant count for given chromosome
     int GetVariantCount(EMendelianVcfName a_uFrom, int a_nChrNo) const;
     
-    //Return all the oriented variants belongs to given chromosome
+    ///Return all the oriented variants belongs to given chromosome
     std::vector<const core::COrientedVariant*> GetOrientedVariantList(EMendelianVcfName a_uFrom, int a_nChrNo, bool a_bIsAlleleMatch = false) const;
     
-    //Return all the oriented variants belongs to given chromosome with provided index list
+    ///Return all the oriented variants belongs to given chromosome with provided index list
     std::vector<const core::COrientedVariant*> GetOrientedVariantList(EMendelianVcfName a_uFrom,
                                                                       int a_nChrNo,
                                                                       bool a_bIsAlleleMatch,

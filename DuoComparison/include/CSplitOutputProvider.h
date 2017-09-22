@@ -23,28 +23,31 @@ namespace duocomparison
 {
 class CVariantProvider;
 
-
+/**
+ * @brief Outputs TPBase, TPCalled, FP and FN vcf files as output after comparison operation
+ *
+ */
 class CSplitOutputProvider
 {
 
 public:
     
-    //Default constructor
+    ///Default constructor
     CSplitOutputProvider();
     
-    //Set access to variant provider
+    ///Set access to variant provider
     void SetVariantProvider(CVariantProvider* a_pProvider);
     
-    //Set access to best path list
+    ///Set access to best path list
     void SetBestPaths(std::vector<core::CPath>& a_rBestPathList);
     
-    //Set the output vcfs path FOLDER
+    ///Set the output vcfs path FOLDER
     void SetVcfPath(const std::string& a_rVcfPath);
     
-    //Set contigs [id, name and length] to write output header
+    ///Set contigs [id, name and length] to write output header
     void SetContigList(const std::vector<SVcfContig>& a_rContigs);
     
-    //Generates 4 vcf files splitting each variant decisions
+    ///Generates 4 vcf files splitting each variant decisions for given common chromosome list
     void GenerateSplitVcfs(const std::vector<SChrIdTuple>& a_rCommonChromosomes);
 
     

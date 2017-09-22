@@ -14,12 +14,20 @@
 
 namespace graphcomparison
 {
+    /**
+     * @brief stores the indexes of variants for each small cluster in graph vcf
+     */
     struct SGraphVarContainer
     {
+        ///Chromosome name
         std::string chrName;
+        ///Included variant indexes for baseline graph
         std::vector<int> baseIncludedIndexes;
+        ///Included variant indexes for called graph
         std::vector<int> calledIncludedIndexes;
+        ///Excluded variant indexes for baseline graph
         std::vector<int> baseExcludedIndexes;
+        ///Excluded variant indexes for called graph
         std::vector<int> calledExcludedIndexes;
     };
 }

@@ -17,16 +17,22 @@
 #include <unordered_map>
 
 namespace graphcomparison
-{    
+{
+    /**
+     * @brief Graph VCF Comparison Tool Capability Class
+     *
+     * CGraphVcfAnalyzer object is a tool itself that performs graph vcf comparison operation.
+     *
+     */
     class CGraphVcfAnalyzer
     {
         
     public:
         
-        //Constructor
+        ///Constructor
         CGraphVcfAnalyzer();
         
-        //Run the application
+        ///Run the application
         int run(int argc, char** argv);
         
     private:

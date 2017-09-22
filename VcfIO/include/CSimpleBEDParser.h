@@ -12,6 +12,10 @@
 #include <string>
 #include <vector>
 
+/**
+ * @brief Defines a BED region specified by the contig name and the interval
+ *
+ */
 struct SBedRegion
 {
     std::string m_chrName;
@@ -19,26 +23,30 @@ struct SBedRegion
     int m_nEndPos;
 };
 
+/**
+ * @brief Parse BED region for input filtering
+ *
+ */
 class CSimpleBEDParser
 {
     
 public:
     
-    //Reads the bed file and save it inside. If there is an unknown region format, it returns FALSE
+    ///Reads the bed file and save it inside. If there is an unknown region format, it returns FALSE
     bool InitBEDFile(const std::string& a_rBEDFilePath);
     
-    //Return the next region from bed file
+    ///Return the next region from bed file
     bool GetNextRegion(SBedRegion& a_rRegion);
     
-    //Set the next Region as first region
+    ///Set the next Region as first region
     void ResetIterator();
     
 private:
     
-    //List of regions from BED file
+    ///List of regions from BED file
     std::vector<SBedRegion> m_regionArray;
     
-    //Points to the Next Region in m_regionArray
+    ///Points to the Next Region in m_regionArray
     unsigned int m_nIterator;
     
 };

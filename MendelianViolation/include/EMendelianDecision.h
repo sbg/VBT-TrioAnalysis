@@ -12,6 +12,10 @@
 namespace mendelian
 {
 
+/**
+ * @brief ENUM for merged trio anotations. Indicate the final decision of mendelian tool for variant
+ *
+ */
 enum EMendelianDecision
 {
     eUnknown = 0,

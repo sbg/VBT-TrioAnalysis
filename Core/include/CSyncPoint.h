@@ -15,6 +15,10 @@
 namespace core
 {
 
+/**
+ * @brief Locations that separate variants into small clusters where within each cluster the comparison is independent
+ *
+ */
 class CSyncPoint
 {
     
@@ -38,21 +42,22 @@ public:
         m_nEndPosition = -1;
     }
     
-    //Index of the sync point
+    ///Index of the sync point
     int m_nIndex;
     
-    //Range of the regeion
+    ///0-based start position of the region (inclusive)
     int m_nStartPosition;
+    ///0-base end position of the region (exclusive)
     int m_nEndPosition;
     
-    //Included Base variants at the range
+    ///Included Base variants at the range
     std::vector<const COrientedVariant*> m_baseVariantsIncluded;
-    //Excluded Base variants at the range
+    ///Excluded Base variants at the range
     std::vector<const CVariant*> m_baseVariantsExcluded;
 
-    //Included Called variants at the range
+    ///Included Called variants at the range
     std::vector<const COrientedVariant*> m_calledVariantsIncluded;
-    //Excluded Called variants at the range
+    ///Excluded Called variants at the range
     std::vector<const CVariant*> m_calledVariantsExcluded;
     
 };

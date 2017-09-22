@@ -9,6 +9,10 @@
 #ifndef _E_VARIANT_MATCH_H_
 #define _E_VARIANT_MATCH_H_
 
+/**
+ * @brief ENUM of Variant Match status after a variant is processed by Core Comparison module
+ *
+ */
 enum EVariantMatch
 {
     eGENOTYPE_MATCH,

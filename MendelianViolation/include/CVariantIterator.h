@@ -16,6 +16,10 @@
 namespace mendelian
 {
 
+/**
+ * @brief A container that stores allele match and genotype match variants and implements Next function to iterate between these two set according to variant order
+ *
+ */
 class CVariantIterator
 {
 public:

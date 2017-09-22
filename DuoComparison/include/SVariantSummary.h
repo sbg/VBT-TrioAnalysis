@@ -14,6 +14,10 @@
 namespace duocomparison
 {
 
+/**
+ * @brief Stores Phasing information and Comparison decision information for a CVariant
+ *
+ */
 struct SVariantSummary
 {
     const CVariant* m_pVariant;

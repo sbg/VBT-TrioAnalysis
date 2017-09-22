@@ -21,6 +21,13 @@ class CPathContainer;
 class CSyncPoint;
 class CMendelianVariantProvider;
 
+    
+/**
+ * @brief A Container that stores the current state of base and called variant semi paths during variant replay
+ *
+ * CPath is the largest container that sotores variant replay information during variant comparison. Each CPath
+ * Object consist of 2 SemiPaths represent base and called vcfs and a list of synchronization points.
+ */
 class CPath
 {
     public:
@@ -29,25 +36,25 @@ class CPath
     CPath(const char* a_aRefSequence, int a_nRefSize);
     CPath(const CPath& a_rObj, int a_nSyncPointToPush);
     
-    //Copy constructor
+    ///Copy constructor
     CPath(const CPath& a_rObj);
     
-    // Check if the two semipaths are synchronized
+    /// Check if the two semipaths are synchronized
     bool InSync() const;
     
-    //Check if the given path is equal to this
+    ///Check if the given path is equal to this
     bool IsEqual(const CPath& a_rObj) const;
     
-    //Compare two the given path with this
+    ///Compare two the given path with this
     int CompareTo(const CPath& a_rObj) const;
     
-    //Exclude the variant to the given side
+    ///Exclude the variant to the given side
     CPath& Exclude(EVcfName a_nVCF, const CVariant& a_rVariant, int a_nVariantIndex);
     
-    //Include variant to the given side
+    ///Include variant to the given side
     CPath& Include(EVcfName a_nVCF, const COrientedVariant& a_rVariant, int a_nVariantIndex);
     
-    //Add variant to the given side of path and return the path count
+    ///Add variant to the given side of path and return the path count
     int AddVariant(CPathContainer* a_pPathList,
                    EVcfName a_nVcfName,
                    const std::vector<const CVariant*>& a_pVariantList,
@@ -63,53 +70,53 @@ class CPath
     //
     void Step();
     
-    //Force move haplotypes to the given position
+    ///Force move haplotypes to the given position
     void MoveForward(int a_nPosition);
 
-    //[FOR TEST] Print the values of path
+    ///[FOR TEST] Print the values of path
     void Print() const;
 
-    //Check if baseline semipath matches with the called semipath
+    ///Check if baseline semipath matches with the called semipath
     bool Matches();
 
-    //return If the path has no called or based variant after last sync
+    ///return If the path has no called or based variant after last sync
     bool HasNoOperation() const;
     
-    //Check if the path has finished
+    ///Check if the path has finished
     bool HasFinished() const;
     
-    //Delete all Included variants
+    ///Delete all Included variants
     void ClearIncludedVariants();
-    //Add variants to the included variant list
+    ///Add variants to the included variant list
     void AddIncludedVariants(std::vector<const COrientedVariant*>& a_rIncludedVarListCalled,
                              std::vector<const COrientedVariant*>& a_rIncludedVarListBase);
     
-    //Delete all excluded variant indexes
+    ///Delete all excluded variant indexes
     void ClearExcludedVariants();
-    //Add variant indexes to the excluded variant list
+    ///Add variant indexes to the excluded variant list
     void AddExcludedVariants(std::vector<int>& a_rIncludedVarListCalled, std::vector<int>& a_rIncludedVarListBase);
     
-    //Delete all sync point list
+    ///Delete all sync point list
     void ClearSyncPointList();
-    //Add sync points to the sync point list
+    ///Add sync points to the sync point list
     void AddSyncPointList(std::vector<int>& a_rSyncPointArray);
     
-    //Sorts included variants (baseline and called) according to variant ids
+    ///Sorts included variants (baseline and called) according to variant ids
     void SortIncludedVariants();
     
-    //Semi path object for base 
+    ///Semi path object for base
     CSemiPath m_baseSemiPath;
     
-    //Semi path object for called
+    ///Semi path object for called
     CSemiPath m_calledSemiPath;
     
-    //Position index list of the syncronisation points
+    ///Position index list of the syncronisation points
     std::vector<int> m_aSyncPointList;
     
-    //Added variant count to called since last sync 
+    ///Added variant count to called since last sync
     int m_nCSinceSync;
     
-    //Added variant count to called since last sync
+    ///Added variant count to called since last sync
     int m_nBSinceSync;
     
     //TEST Purpose
@@ -117,6 +124,11 @@ class CPath
     
 };
 
+/**
+ * @brief A Path Container that stores the reference of a path for effective store in std::set container
+ *
+ * CPathContainer contains a pointer to CPath object and couple overload constructors
+ */
 class CPathContainer
 {
 public:

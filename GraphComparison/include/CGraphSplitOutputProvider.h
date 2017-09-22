@@ -18,23 +18,27 @@ namespace graphcomparison
 {
     class CGraphVariantProvider;
 
+    /**
+     * @brief Outputs TPBase, TPCalled, FP and FN vcf files as output after comparison operation
+     *
+     */
     class CGraphSplitOutputProvider
     {
         public:
         
-        //Set access to variant provider
+        ///Set access to variant provider
         void SetVcfNames(const std::string& a_rBaseVcfPath, const std::string& a_rCalledVcfPath);
         
-        //Pass graph comparison parameters to output provider since the input vcfs will be traced again
+        ///Pass graph comparison parameters to output provider since the input vcfs will be traced again
         void SetParameters(const std::string& a_rBedPath, bool a_bPassFilterEnabled, int a_nMaxBasePairLength);
         
-        //Set access to best path list
+        ///Set access to best path list
         void SetExcludeIndexes(std::unordered_map<std::string, SGraphVarContainer>& a_rExcludedIndexContainers);
         
-        //Set the output vcfs path FOLDER
+        ///Set the output vcfs path FOLDER
         void SetOutputVcfFolder(const std::string& a_rVcfPath);
         
-        //Generates 2 vcf files splitting included and excluded decisions
+        ///Generates 2 vcf files splitting included and excluded decisions
         void GenerateVcfs(const std::string& a_rIncludeName, const std::string& a_rExcludeName, bool a_bIsBase);
         
         private:

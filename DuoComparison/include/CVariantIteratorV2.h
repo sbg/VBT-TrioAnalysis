@@ -17,10 +17,15 @@
 namespace duocomparison
 {
 
+/**
+ * @brief Groups indexes of common chromosomes for truth and query vcfs
+ *
+ */
 class CVariantIteratorV2
 {
 public:
     
+    ///Constructor
     CVariantIteratorV2(std::vector<const core::COrientedVariant*>& included, std::vector<const CVariant*>& excluded, std::vector<CVariant>& notAssessed)
     : m_aIncluded(included),
     m_aExcluded(excluded),
@@ -31,12 +36,14 @@ public:
         it_NotAssessed = m_aNotAssessed.begin();
     }
     
+    ///Return true if the iterator is not at the end of variant list
     bool hasNext()
     {
         bool hasNext = (it_Included != m_aIncluded.end() || it_Excluded != m_aExcluded.end() || it_NotAssessed != m_aNotAssessed.end());
         return hasNext;
     }
     
+    ///Return next variant(s) that the iterator point. Multiple variant is return in case they are at the same position
     bool FillNext(std::vector<SVariantSummary>& a_rResultsVec)
     {
         SVariantSummary result;

@@ -21,50 +21,58 @@ namespace core
 namespace duocomparison
 {
 
+/**
+ * @brief Reads and stores variants of base/called vcf files
+ *
+ * CVariantProvider contains functions to parse vcf files of truth and query. All variants are stored in this object and
+ * other classes can get access variant lists via this class.
+ */
 class CVariantProvider
 {
 public:
-    //Destructor
+    ///Destructor
     ~CVariantProvider();
+    ///Constructor
     CVariantProvider();
 
-    //Initialize the VCF readers for base and called vcf file
+    ///Initialize the VCF readers for base and called vcf file
     bool InitializeReaders(const SConfig& a_rConfig);
 
-    //Return the variant list with the given index list
+    ///Return the variant list with the given index list
     std::vector<const CVariant*> GetVariantList(EVcfName a_uFrom, int a_nChrNo, const std::vector<int>& a_VariantIndexes);
 
-    //Return the all the variants belongs to given chromosome
+    ///Return the all the variants belongs to given chromosome
     std::vector<const CVariant*> GetVariantList(EVcfName a_uFrom, int a_nChrNo);
 
-    //Return the list of variants from varlist according to given variant indexes
+    ///Return the list of variants from varlist according to given variant indexes
     std::vector<const CVariant*> GetVariantList(std::vector<const CVariant*>& a_varList, const std::vector<int>& a_VariantIndexes);
 
-    //Return all the oriented variants belongs to given chromosome
+    ///Return all the oriented variants belongs to given chromosome
     std::vector<const core::COrientedVariant*> GetOrientedVariantList(EVcfName a_uFrom, int a_nChrNo, bool a_bIsGenotypeMatch);
 
-    //Return the index tuples of chromosomes which both contained by baseline and called VCF
+    ///Return the index tuples of chromosomes which both contained by baseline and called VCF
     std::vector<SChrIdTuple>& GetChromosomeIdTuples();
 
-    //Get the contig from fasta file with given chromosome name
+    ///Get the contig from fasta file with given chromosome name
     void GetContig(std::string a_chrName, SContig& a_rCtg);
 
-    //Return contig information from header of query vcf
+    ///Return contig information from header of query vcf
     const std::vector<SVcfContig>& GetContigs() const;
 
-    //Read the header of Called vcf and return the filter names and descriptions
+    ///Read the header of Called vcf and return the filter names and descriptions
     void GetFilterInfo(EVcfName a_vcfType, std::vector<std::string>& a_rFilterNames, std::vector<std::string>& a_rFilterDescriptions);
 
-    //Return the access of not-asessed variants
+    ///Return the access of not-asessed variants
     std::vector<CVariant>& GetNotAssessedVariantList(EVcfName a_uFrom, int a_nChrNo);
 
-    //Initialize Homozygous Oriented Variant Lists with given base and called variant set
+    ///Initialize Homozygous Oriented Variant Lists with given base and called variant set
     void FillAlleleMatchVariantList(SChrIdTuple& a_rTuple,
                                     std::vector<const CVariant*>& a_rBaseVariants,
                                     std::vector<const CVariant*>& a_rCalledVariants);
 
-    //Set the status of each variant in the given lust
+    ///Set the status of each variant in the given list
     void SetVariantStatus(const std::vector<const CVariant*>& a_rVariantList, EVariantMatch a_status) const;
+    ///Set the status of each variant in the given list
     void SetVariantStatus(const std::vector<const core::COrientedVariant*>& a_rVariantList, EVariantMatch a_status) const;
 
 private:

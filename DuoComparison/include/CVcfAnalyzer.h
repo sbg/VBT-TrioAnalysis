@@ -18,12 +18,20 @@
 namespace duocomparison
 {
 
+/**
+ * @brief Duo Comparison Tool Capability Class
+ *
+ * CVcfAnalyzer object is a tool itself that performs variant comparison operation. Its output is very close to vcfeval.
+ * The differences:
+ * 1. Variants with 0/0 genotype is eliminated from output while vcfeval keeps them
+ * 2. Cutoff limits during variant replay is configurable with VBT while it is fixed in vcfeval
+ */
 class CVcfAnalyzer
 {
 
 public:
     
-    //Run the application
+    ///Run the application
     void Run(int argc, char** argv);
     
     
@@ -50,7 +58,7 @@ private:
     //Calculate the syncronization point list for the given tuple
     void CalculateSyncPointList(const SChrIdTuple& a_rTuple, std::vector<core::CSyncPoint>& a_rSyncPointList);
     
-    
+    //[TEST PURPOSE] Print given variants to an external file
     void PrintVariants(std::string a_outputDirectory, std::string a_FileName, const std::vector<const core::COrientedVariant*>& a_rOvarList) const;
     void PrintVariants(std::string a_outputDirectory, std::string a_FileName, const std::vector<const CVariant*>& a_rVarList) const;
     

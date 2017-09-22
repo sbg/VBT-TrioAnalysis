@@ -12,6 +12,10 @@
 namespace mendelian
 {
 
+/**
+ * @brief ENUM for indicating the vcf file that is being processed
+ *
+ */
 enum EMendelianVcfName
 {
     eFATHER,

@@ -9,6 +9,10 @@
 #ifndef _E_VARIANT_TYPE_H_
 #define _E_VARIANT_TYPE_H_
 
+/**
+ * @brief ENUM to present variant category based on variant size and type(SNP/INSERT/DELETE)
+ *
+ */
 enum class EVariantCategory
 {
     eSNP = 0,

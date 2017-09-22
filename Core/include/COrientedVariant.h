@@ -15,63 +15,69 @@
 namespace core
 {
 
+/**
+ * @brief A Container that stores the Phasing information of the variant
+ *
+ * COrientedVariant is an extended version of CVariant which stores an additional phasing data
+ * to be used while replaying variant to the corresponding haplotype sequence
+ */
 class COrientedVariant
 {
-    public: 
+    public:
     COrientedVariant();
     
-    //Initialize Oriented with a variant and orientation selection
+    ///Initialize Oriented with a variant and orientation selection
     COrientedVariant(const CVariant& a_rObj, bool a_bIsOrderOfGenotype);
     
-    //Create homozygous oriented variant from given allele index
+    ///Create homozygous oriented variant from given allele index
     COrientedVariant(const CVariant& a_rObj, int a_nAlleleIndex);
     
-    //Copy constructor
+    ///Copy constructor
     COrientedVariant(const COrientedVariant& a_rObj);    
     
-    //Get the allele alt string
+    ///Get the allele alt string
     const SAllele& GetAllele() const;
     
-    //Compare variants according to start/end position
+    ///Compare variants according to start/end position
     int CompareTo(const COrientedVariant& a_rObj) const;
     
-    //Gets the start position of the variant
+    ///Gets the start position of the variant
     int GetStartPos() const;
     
-    //Gets the index of the allele
+    ///Gets the index of the allele
     int GetAlleleIndex() const;
     
-    //Gets the end position of the allele
+    ///Gets the end position of the allele
     int GetEndPos() const;
     
-    //Get the Allele in the reverse side of chosen orientation
+    ///Get the Allele in the reverse side of chosen orientation
     COrientedVariant Other() const;
     
-    //Return if the variant is null
+    ///Return if the variant is null
     bool IsNull() const;
     
-    //Return true if hap A is used and return false if hap B is used
+    ///Return true if hap A is used and return false if hap B is used
     bool IsOrderOfGenotype() const;
     
-    //Return the variant
+    ///Return the variant
     const CVariant& GetVariant() const;
     
-    //Set variant to null
+    ///Set variant to null
     void SetToNull();
     
-    //[For Test purpose] print the oriented variant
+    ///[For Test purpose] print the oriented variant
     void Print() const;
 
     private:
-    //Index of the selected allele of this variant
+    ///Index of the selected allele of this variant
     int m_nAlleleIndex;
-    //Index of the other allele of this variant
+    ///Index of the other allele of this variant
     int m_nOtherAlleleIndex;
-    //Pointer Access to variant
+    ///Pointer Access to variant
     const CVariant* m_variant;
-    //If the selected allele is first number or not (eg.  a/b   a-> true b-> false)
+    ///If the selected allele is first number or not (eg.  a/b   a-> true b-> false)
     bool m_bIsOrderOfGenotype;
-    //If oriented variant is null
+    ///If oriented variant is null
     bool m_bIsNull;
 
 };
