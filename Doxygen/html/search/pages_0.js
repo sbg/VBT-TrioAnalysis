@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['graph_20variant_20comparison',['GRAPH VARIANT COMPARISON',['../md__graph_comparison__graph_comparison_readme.html',1,'']]]
+  ['graph_20variant_20comparison',['GRAPH VARIANT COMPARISON',['../md__graph_comparison__r_e_a_d_m_e.html',1,'']]]
 ];
