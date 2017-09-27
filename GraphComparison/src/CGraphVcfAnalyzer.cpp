@@ -463,7 +463,7 @@ void CGraphVcfAnalyzer::PrintHelp() const
     std::cout << "-outDir <output_directory>   [Required.Add output directory]" << std::endl;
     std::cout << "-bed <bed_file_path>         [Optional.Process only given regions in BED file]" << std::endl;
     std::cout << "--pass-filter                [Optional.Process only 'PASS' or '.' variants. Default value is false]" << std::endl;
-    std::cout << "-thread-count                [Optional.Specify the number of threads that program will use. Default value is 2]" << std::endl;
+    std::cout << "-thread-count                [Optional.Specify the number of threads that program will use. Default value is 1]" << std::endl;
     std::cout << "-max-bp-length               [*Optional.Specify the maximum base pair length of variant to process. Default value is 1000]" << std::endl;
     std::cout << "-max-path-size <size>        [*Optional.Specify the maximum size of path that core algorithm can store inside. Default value is 150,000]" << std::endl;
     std::cout << "-max-iteration-count <count> [*Optional.Specify the maximum iteration count that core algorithm can decide to include/exclude variant. Default value is 10,000,000]" << std::endl;

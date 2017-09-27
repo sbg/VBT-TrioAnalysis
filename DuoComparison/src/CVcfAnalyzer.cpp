@@ -580,7 +580,7 @@ void CVcfAnalyzer::PrintHelp() const
     std::cout << "-called <called_vcf_path>    [Required.Add called VCF file.]" << std::endl;
     std::cout << "-ref <reference_fasta_path>  [Required.Add reference FASTA file]" << std::endl;
     std::cout << "-outDir <output_directory>   [Required.Add output directory]" << std::endl;
-    std::cout << "-bed <bed_file_path>         [Optional.Filter variants out of comparison for the given regions]" << std::endl;;
+    std::cout << "-bed <bed_file_path>         [Optional.Filter variants out of comparison for the given regions]" << std::endl;
     std::cout << "-output-mode <output_mode>   [Optional.Choose the output mode. SPLIT creates 4 vcf files. GA4GH creates a single merged vcf. Default value is SPLIT]" << std::endl;
     std::cout << "-filter <filter_name>        [Optional.Filter variants based on filter column. Default value is PASS. Use 'none' to unfilter]" << std::endl;
     std::cout << "--allele-match               [Optional.Execute the variant comparison engine in allele matching mode]" << std::endl;
@@ -592,8 +592,8 @@ void CVcfAnalyzer::PrintHelp() const
     std::cout << "--platform-mode              [Optional.Allow to run program with the thread number of different chromosome count.]" << std::endl;
     std::cout << "-thread-count                [Optional.Specify the number of threads that program will use. Default value is 2]" << std::endl;
     std::cout << "-max-bp-length               [*Optional.Specify the maximum base pair length of variant to process. Default value is 1000]" << std::endl;
-    std::cout << "-max-path-size <size>        [*Optional.Specify the maximum size of path that core algorithm can store inside. Default value is 150000]" << std::endl;
-    std::cout << "-max-iteration-count <count> [*Optional.Specify the maximum iteration count that core algorithm can decide to include/exclude variant. Default value is 3000000]" << std::endl;
+    std::cout << "-max-path-size <size>        [*Optional.Specify the maximum size of path that core algorithm can store inside. Default value is 150,000]" << std::endl;
+    std::cout << "-max-iteration-count <count> [*Optional.Specify the maximum iteration count that core algorithm can decide to include/exclude variant. Default value is 10,000,000]" << std::endl;
     std::cout << "(*) - advanced usage" << std::endl;
     std::cout << std::endl;
     std::cout << "Example Commands:" << std::endl;
