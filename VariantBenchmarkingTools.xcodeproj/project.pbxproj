@@ -41,9 +41,9 @@
 		55BDF8751F3E06BF0095669B /* CGraphVariantProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55BDF8741F3E06BF0095669B /* CGraphVariantProvider.cpp */; };
 		55BDF8781F43714E0095669B /* CGraphSplitOutputProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55BDF8771F43714E0095669B /* CGraphSplitOutputProvider.cpp */; };
 		55DE31921F1012F1009D385D /* CSimpleBEDParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55DE31911F1012F1009D385D /* CSimpleBEDParser.cpp */; };
-		55F4FC9F1F7C26F400C7673F /* DuoComparisonReadme.md in Sources */ = {isa = PBXBuildFile; fileRef = 55F4FC9E1F7C26F400C7673F /* DuoComparisonReadme.md */; };
-		55F4FCA11F7C270500C7673F /* MendelianReadme.md in Sources */ = {isa = PBXBuildFile; fileRef = 55F4FCA01F7C270500C7673F /* MendelianReadme.md */; };
-		55F4FCA31F7C271A00C7673F /* GraphComparisonReadme.md in Sources */ = {isa = PBXBuildFile; fileRef = 55F4FCA21F7C271A00C7673F /* GraphComparisonReadme.md */; };
+		55F4FC9F1F7C26F400C7673F /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 55F4FC9E1F7C26F400C7673F /* README.md */; };
+		55F4FCA11F7C270500C7673F /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 55F4FCA01F7C270500C7673F /* README.md */; };
+		55F4FCA31F7C271A00C7673F /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 55F4FCA21F7C271A00C7673F /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -158,9 +158,9 @@
 		55BDF8791F4375030095669B /* SGraphVarContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGraphVarContainer.h; sourceTree = "<group>"; };
 		55DE31901F101038009D385D /* CSimpleBEDParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CSimpleBEDParser.h; path = VcfIO/include/CSimpleBEDParser.h; sourceTree = SOURCE_ROOT; };
 		55DE31911F1012F1009D385D /* CSimpleBEDParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CSimpleBEDParser.cpp; path = VcfIO/src/CSimpleBEDParser.cpp; sourceTree = SOURCE_ROOT; };
-		55F4FC9E1F7C26F400C7673F /* DuoComparisonReadme.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = DuoComparisonReadme.md; path = DuoComparison/DuoComparisonReadme.md; sourceTree = SOURCE_ROOT; };
-		55F4FCA01F7C270500C7673F /* MendelianReadme.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = MendelianReadme.md; path = MendelianViolation/MendelianReadme.md; sourceTree = SOURCE_ROOT; };
-		55F4FCA21F7C271A00C7673F /* GraphComparisonReadme.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = GraphComparisonReadme.md; path = GraphComparison/GraphComparisonReadme.md; sourceTree = SOURCE_ROOT; };
+		55F4FC9E1F7C26F400C7673F /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = DuoComparison/README.md; sourceTree = SOURCE_ROOT; };
+		55F4FCA01F7C270500C7673F /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = MendelianViolation/README.md; sourceTree = SOURCE_ROOT; };
+		55F4FCA21F7C271A00C7673F /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = GraphComparison/README.md; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -184,7 +184,6 @@
 			children = (
 				551661B11E82BE4C002436FA /* Include */,
 				551661B21E82BE6B002436FA /* src */,
-				551661BE1E82C31A002436FA /* test */,
 			);
 			name = Core;
 			sourceTree = "<group>";
@@ -221,7 +220,6 @@
 			children = (
 				551661B71E82C12A002436FA /* Include */,
 				551661B81E82C13F002436FA /* src */,
-				551661BD1E82C30B002436FA /* test */,
 			);
 			name = VcfIO;
 			sourceTree = "<group>";
@@ -229,10 +227,9 @@
 		551661B41E82C02B002436FA /* DuoComparison */ = {
 			isa = PBXGroup;
 			children = (
-				55F4FC9E1F7C26F400C7673F /* DuoComparisonReadme.md */,
+				55F4FC9E1F7C26F400C7673F /* README.md */,
 				551661B51E82C0BE002436FA /* Include */,
 				551661B61E82C0CD002436FA /* src */,
-				551661BF1E82C323002436FA /* test */,
 			);
 			name = DuoComparison;
 			sourceTree = "<group>";
@@ -297,10 +294,9 @@
 		551661BA1E82C230002436FA /* MendelianViolation */ = {
 			isa = PBXGroup;
 			children = (
-				55F4FCA01F7C270500C7673F /* MendelianReadme.md */,
+				55F4FCA01F7C270500C7673F /* README.md */,
 				551661BC1E82C272002436FA /* include */,
 				551661BB1E82C269002436FA /* src */,
-				551661C01E82C35F002436FA /* test */,
 			);
 			name = MendelianViolation;
 			sourceTree = "<group>";
@@ -332,34 +328,6 @@
 				55B3ED9A1EB7B8300096501D /* SChrIdTriplet.h */,
 			);
 			name = include;
-			sourceTree = "<group>";
-		};
-		551661BD1E82C30B002436FA /* test */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = test;
-			sourceTree = "<group>";
-		};
-		551661BE1E82C31A002436FA /* test */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = test;
-			sourceTree = "<group>";
-		};
-		551661BF1E82C323002436FA /* test */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = test;
-			sourceTree = "<group>";
-		};
-		551661C01E82C35F002436FA /* test */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = test;
 			sourceTree = "<group>";
 		};
 		556D396D1DD3AEA400551040 = {
@@ -458,7 +426,7 @@
 		55BDF8651F3CEAE30095669B /* GraphComparison */ = {
 			isa = PBXGroup;
 			children = (
-				55F4FCA21F7C271A00C7673F /* GraphComparisonReadme.md */,
+				55F4FCA21F7C271A00C7673F /* README.md */,
 				55BDF86B1F3CEC470095669B /* include */,
 				55BDF86D1F3CEC470095669B /* src */,
 			);
@@ -547,7 +515,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				55F4FCA11F7C270500C7673F /* MendelianReadme.md in Sources */,
+				55F4FCA11F7C270500C7673F /* README.md in Sources */,
 				55BDF86F1F3CEC470095669B /* CGraphVcfAnalyzer.cpp in Sources */,
 				558A41741E92EDA900575FA6 /* Makefile in Sources */,
 				5596B3221F4F220600B6BFC3 /* CMendelianAnalyzer.cpp in Sources */,
@@ -558,14 +526,14 @@
 				551661EF1E82E7D9002436FA /* CVariantProvider.cpp in Sources */,
 				551662191E82EBC5002436FA /* CVariant.cpp in Sources */,
 				551661C91E82C51B002436FA /* CFastaParser.cpp in Sources */,
-				55F4FC9F1F7C26F400C7673F /* DuoComparisonReadme.md in Sources */,
+				55F4FC9F1F7C26F400C7673F /* README.md in Sources */,
 				551661F01E82E7D9002436FA /* CVcfAnalyzer.cpp in Sources */,
 				551661DE1E82C967002436FA /* COrientedVariant.cpp in Sources */,
 				551661FD1E82E8EB002436FA /* CMendelianTrioMerger.cpp in Sources */,
 				55BDF8751F3E06BF0095669B /* CGraphVariantProvider.cpp in Sources */,
 				55DE31921F1012F1009D385D /* CSimpleBEDParser.cpp in Sources */,
 				551661E21E82C967002436FA /* CSemiPath.cpp in Sources */,
-				55F4FCA31F7C271A00C7673F /* GraphComparisonReadme.md in Sources */,
+				55F4FCA31F7C271A00C7673F /* README.md in Sources */,
 				551661DD1E82C967002436FA /* CHaplotypeSequence.cpp in Sources */,
 				551661DF1E82C967002436FA /* CPath.cpp in Sources */,
 				550E1F601E8ABE8B00AEFB0B /* CMendelianResultLog.cpp in Sources */,
