@@ -447,7 +447,7 @@ void CMendelianTrioMerger::DoTripleMerge(SChrIdTriplet& a_rTriplet, int& a_nChil
     //ADD MOTHER
     SPerSampleData dataMother;
     dataMother.m_nHaplotypeCount = m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->m_nZygotCount;
-    dataMother.m_bIsPhased = m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->m_bIsPhased; // TODO: This should be altered
+    dataMother.m_bIsPhased = m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->m_bIsPhased; // Feature Work: Phasings of variants we found can be written to output
     dataMother.m_bIsNoCallVariant = m_noCallMode == ENoCallMode::eNone ? false : m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->m_bIsNoCall;
     for(int k = 0; k < m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->m_nZygotCount; k++)
     {
@@ -464,7 +464,7 @@ void CMendelianTrioMerger::DoTripleMerge(SChrIdTriplet& a_rTriplet, int& a_nChil
     //ADD FATHER
     SPerSampleData dataFather;
     dataFather.m_nHaplotypeCount = m_aFatherVariants[a_rTriplet.m_nFid][a_nFatherItr]->m_nZygotCount;
-    dataFather.m_bIsPhased = m_aFatherVariants[a_rTriplet.m_nFid][a_nFatherItr]->m_bIsPhased; // TODO: This should be altered
+    dataFather.m_bIsPhased = m_aFatherVariants[a_rTriplet.m_nFid][a_nFatherItr]->m_bIsPhased; // Feature Work: Phasings of variants we found can be written to output
     dataFather.m_bIsNoCallVariant = m_noCallMode == ENoCallMode::eNone ? false : m_aFatherVariants[a_rTriplet.m_nFid][a_nFatherItr]->m_bIsNoCall;
     for(int k = 0; k < m_aFatherVariants[a_rTriplet.m_nFid][a_nFatherItr]->m_nZygotCount; k++)
     {
@@ -481,7 +481,7 @@ void CMendelianTrioMerger::DoTripleMerge(SChrIdTriplet& a_rTriplet, int& a_nChil
     //ADD CHILD
     SPerSampleData dataChild;
     dataChild.m_nHaplotypeCount = m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_nZygotCount;
-    dataChild.m_bIsPhased = m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_bIsPhased; // TODO: This should be altered
+    dataChild.m_bIsPhased = m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_bIsPhased; // Feature Work: Phasings of variants we found can be written to output
     dataChild.m_bIsNoCallVariant = m_noCallMode == ENoCallMode::eNone ? false : m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_bIsNoCall;
     for(int k = 0; k < m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->m_nZygotCount; k++)
     {
@@ -585,7 +585,7 @@ void CMendelianTrioMerger::DoDoubleMerge(SChrIdTriplet& a_rTriplet,
     if(pVarMother != NULL)
     {
         dataMother.m_nHaplotypeCount = pVarMother->m_nZygotCount;
-        dataMother.m_bIsPhased = pVarMother->m_bIsPhased; // TODO: This should be altered
+        dataMother.m_bIsPhased = pVarMother->m_bIsPhased; // Feature Work: Phasings of variants we found can be written to output
         dataMother.m_bIsNoCallVariant = m_noCallMode == eNone ? false : pVarMother->m_bIsNoCall;
         for(int k = 0; k < pVarMother->m_nZygotCount; k++)
         {
@@ -613,7 +613,7 @@ void CMendelianTrioMerger::DoDoubleMerge(SChrIdTriplet& a_rTriplet,
     if(pVarFather != NULL)
     {
         dataFather.m_nHaplotypeCount = pVarFather->m_nZygotCount;
-        dataFather.m_bIsPhased = pVarFather->m_bIsPhased; // TODO: This should be altered
+        dataFather.m_bIsPhased = pVarFather->m_bIsPhased; // Feature Work: Phasings of variants we found can be written to output
         dataFather.m_bIsNoCallVariant = m_noCallMode == eNone ? false : pVarFather->m_bIsNoCall;
         for(int k = 0; k < pVarFather->m_nZygotCount; k++)
         {
@@ -641,7 +641,7 @@ void CMendelianTrioMerger::DoDoubleMerge(SChrIdTriplet& a_rTriplet,
     if(pVarChild != NULL)
     {
         dataChild.m_nHaplotypeCount = pVarChild->m_nZygotCount;
-        dataChild.m_bIsPhased = pVarChild->m_bIsPhased; // TODO: This should be altered
+        dataChild.m_bIsPhased = pVarChild->m_bIsPhased; // Feature Work: Phasings of variants we found can be written to output
         dataChild.m_bIsNoCallVariant = m_noCallMode == eNone ? false : pVarChild->m_bIsNoCall;
         for(int k = 0; k < pVarChild->m_nZygotCount; k++)
         {
@@ -703,7 +703,7 @@ void CMendelianTrioMerger::DoSingleVar(SChrIdTriplet& a_rTriplet,
     if(a_name == eMOTHER)
     {
         dataMother.m_nHaplotypeCount = pVariant->m_nZygotCount;
-        dataMother.m_bIsPhased = pVariant->m_bIsPhased; // TODO: This should be altered
+        dataMother.m_bIsPhased = pVariant->m_bIsPhased; // Feature Work: Phasings of variants we found can be written to output
         dataMother.m_bIsNoCallVariant = m_noCallMode == ENoCallMode::eNone ? false : pVariant->m_bIsNoCall;
         for(int k = 0; k < pVariant->m_nZygotCount; k++)
             dataMother.m_aGenotype[k] = pVariant->m_genotype[k];
@@ -720,7 +720,7 @@ void CMendelianTrioMerger::DoSingleVar(SChrIdTriplet& a_rTriplet,
     if(a_name == eFATHER)
     {
         dataFather.m_nHaplotypeCount = pVariant->m_nZygotCount;
-        dataFather.m_bIsPhased = pVariant->m_bIsPhased; // TODO: This should be altered
+        dataFather.m_bIsPhased = pVariant->m_bIsPhased; // Feature Work: Phasings of variants we found can be written to output
         dataFather.m_bIsNoCallVariant = m_noCallMode == ENoCallMode::eNone ? false : pVariant->m_bIsNoCall;
         for(int k = 0; k < pVariant->m_nZygotCount; k++)
             dataFather.m_aGenotype[k] = pVariant->m_genotype[k];
@@ -738,7 +738,7 @@ void CMendelianTrioMerger::DoSingleVar(SChrIdTriplet& a_rTriplet,
     if(a_name == eCHILD)
     {
         dataChild.m_nHaplotypeCount = pVariant->m_nZygotCount;
-        dataChild.m_bIsPhased = pVariant->m_bIsPhased; // TODO: This should be altered
+        dataChild.m_bIsPhased = pVariant->m_bIsPhased; // Feature Work: Phasings of variants we found can be written to output
         dataChild.m_bIsNoCallVariant = m_noCallMode == ENoCallMode::eNone ? false : pVariant->m_bIsNoCall;
         for(int k = 0; k < pVariant->m_nZygotCount; k++)
             dataChild.m_aGenotype[k] = pVariant->m_genotype[k];
