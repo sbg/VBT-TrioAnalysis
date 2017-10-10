@@ -517,7 +517,6 @@ void CVcfReader::TrimRefOverlap(SAllele& a_rAllele)
 
 int CVcfReader::GetChromosomeNumber(const std::string& a_chrName) const
 {
-    //READ CHROMOSOME ID: (TODO: this should be renewed. there should be sth that reads the chromosome id)
     if(a_chrName == "x" || a_chrName == "X" || a_chrName == "chrX" || a_chrName == "chrx")
         return 23;
     else if(a_chrName == "y" || a_chrName == "Y" || a_chrName == "chrY" || a_chrName == "chry")
