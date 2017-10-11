@@ -7,7 +7,7 @@ int main (int argc, char** argv)
 {
     int successNo = 0;
     
-    std::cout << "==== VARIANT BENCHMARKING TOOLS v0.6.4 ==== " << std::endl;
+    std::cout << "==== VARIANT BENCHMARKING TOOLS v0.6.5 ==== " << std::endl;
     std::cout << "Core Comparison engine is based on RTG paper: http://biorxiv.org/content/biorxiv/early/2015/08/02/023754.full.pdf" << std::endl;
     std::cout << "Author: Berke Cagkan Toptas (berke.toptas@sbgdinc.com)" << std::endl;
     std::cout << "Please send me an email if there is a problem (e.g. bug reporting, run-time errors)" << std::endl;
