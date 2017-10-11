@@ -12,8 +12,11 @@
 #include "CGa4ghOutputProvider.h"
 #include "CSplitOutputProvider.h"
 #include <fstream>
+#include <mutex>
 
 using namespace duocomparison;
+
+std::mutex mtx;
 
 void CVcfAnalyzer::Run(int argc, char** argv)
 {
@@ -138,6 +141,7 @@ void CVcfAnalyzer::ThreadFunctionGA4GH(std::vector<SChrIdTuple> a_aTuples)
 {
     for(int k = 0; k < (int)a_aTuples.size(); k++)
     {
+        mtx.lock();
         std::vector<const CVariant*> varListBase = m_provider.GetVariantList(eBASE, a_aTuples[k].m_nBaseId);
         std::vector<const CVariant*> varListCalled = m_provider.GetVariantList(eCALLED, a_aTuples[k].m_nCalledId);
         std::vector<const core::COrientedVariant*> ovarListBase = m_provider.GetOrientedVariantList(eBASE, a_aTuples[k].m_nBaseId, true);
@@ -147,6 +151,7 @@ void CVcfAnalyzer::ThreadFunctionGA4GH(std::vector<SChrIdTuple> a_aTuples)
         pathReplay.SetMaxPathAndIteration(m_config.m_nMaxPathSize, m_config.m_nMaxIterationCount);
         SContig ctg;
         m_provider.GetContig(a_aTuples[k].m_chrName, ctg);
+        mtx.unlock();
         
         //Find Best Path [GENOTYPE MATCH]
         m_aBestPaths[a_aTuples[k].m_nTupleIndex] = pathReplay.FindBestPath(ctg,true);
@@ -188,7 +193,7 @@ void CVcfAnalyzer::ThreadFunctionGA4GH(std::vector<SChrIdTuple> a_aTuples)
         const std::vector<const core::COrientedVariant*>& includedVarsBase2 = m_aBestPathsAllele[a_aTuples[k].m_nTupleIndex].m_baseSemiPath.GetIncludedVariants();
         const std::vector<const core::COrientedVariant*>& includedVarsCall2 = m_aBestPathsAllele[a_aTuples[k].m_nTupleIndex].m_calledSemiPath.GetIncludedVariants();
         
-        
+        mtx.lock();
         m_resultLogger.LogStatistic(a_aTuples[k].m_chrName,
                                     static_cast<int>(includedVarsCall.size()),
                                     static_cast<int>(includedVarsBase.size()),
@@ -196,6 +201,7 @@ void CVcfAnalyzer::ThreadFunctionGA4GH(std::vector<SChrIdTuple> a_aTuples)
                                     static_cast<int>(includedVarsBase2.size()),
                                     static_cast<int>(excludedVarsCall2.size()),
                                     static_cast<int>(excludedVarsBase2.size()));
+        mtx.unlock();
         
         m_provider.SetVariantStatus(excludedVarsBase2, eNO_MATCH);
         m_provider.SetVariantStatus(excludedVarsCall2, eNO_MATCH);
