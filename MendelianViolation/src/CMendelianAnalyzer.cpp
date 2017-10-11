@@ -14,11 +14,8 @@
 #include "CVariantIterator.h"
 #include "CSyncPoint.h"
 #include <algorithm>
-#include <mutex>
 
 using namespace mendelian;
-std::mutex mtx;
-
 
 CMendelianAnalyzer::CMendelianAnalyzer() :
 m_mendelianDecider(m_aBestPathsFatherChildGT, m_aBestPathsFatherChildAM, m_aBestPathsMotherChildGT, m_aBestPathsMotherChildAM, m_provider, m_resultLog)

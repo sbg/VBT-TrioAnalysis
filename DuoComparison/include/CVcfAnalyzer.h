@@ -14,6 +14,7 @@
 #include "SConfig.h"
 #include "CVariantProvider.h"
 #include "CResultLog.h"
+#include <mutex>
 
 namespace duocomparison
 {
@@ -80,6 +81,9 @@ private:
     
     //Thread pool we have for multitasking by per chromosome
     std::thread *m_pThreadPool;
+    
+    //To prevent data race in multi-thread mode
+    std::mutex mtx;
 
 };
     

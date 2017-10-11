@@ -18,6 +18,7 @@
 #include "CMendelianDecider.h"
 #include "ENoCallMode.h"
 #include <thread>
+#include <mutex>
 
 namespace mendelian
 {
@@ -86,6 +87,9 @@ private:
     //Best Paths written by each thread for each unique chromosome exists [Between mother and child]
     std::vector<core::CPath> m_aBestPathsMotherChildGT;
     std::vector<core::CPath> m_aBestPathsMotherChildAM;
+    
+    //To prevent data race in multi-thread mode
+    std::mutex mtx;
 
 };
 

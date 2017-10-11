@@ -12,11 +12,8 @@
 #include "CGa4ghOutputProvider.h"
 #include "CSplitOutputProvider.h"
 #include <fstream>
-#include <mutex>
 
 using namespace duocomparison;
-
-std::mutex mtx;
 
 void CVcfAnalyzer::Run(int argc, char** argv)
 {
