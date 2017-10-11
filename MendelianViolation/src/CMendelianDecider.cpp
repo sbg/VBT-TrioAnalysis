@@ -168,13 +168,13 @@ void CMendelianDecider::CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTri
         //===== STEP 3: Check child Side =========
         for(unsigned int m=0; m < childSideMatches.size(); m++)
         {
-            if(a_rChildDecisions[varItrChild+m] == eCompliant)
+            if(a_rChildDecisions[varListToCheckChild[varItrChild+m]->m_nId] == eCompliant)
             {
                 childCheck = true;
                 continue;
             }
             
-            else if(a_rChildDecisions[varItrChild+m] == eViolation)
+            else if(a_rChildDecisions[varListToCheckChild[varItrChild+m]->m_nId] == eViolation)
             {
                 childCheck = false;
                 break;
@@ -310,9 +310,7 @@ void CMendelianDecider::CheckFor0PathFor00(SChrIdTriplet& a_rTriplet,
                                             bool a_bIsFatherChild,
                                             std::vector<const CVariant*>& a_rVarList,
                                             std::vector<const CVariant*>& a_rViolationList,
-                                            std::vector<const CVariant*>& a_rCompliantList,
-                                            std::vector<EMendelianDecision>& a_rMotherDecisions,
-                                            std::vector<EMendelianDecision>& a_rFatherDecisions)
+                                            std::vector<const CVariant*>& a_rCompliantList)
 {
     //Get sync point list
     std::vector<core::CSyncPoint> a_rSyncPointList;
@@ -491,8 +489,8 @@ void CMendelianDecider::CheckFor00Child(SChrIdTriplet& a_rTriplet,
     }
     else
     {
-        CheckFor0PathFor00(a_rTriplet, true,  a_rOvarList, fatherViolants, fatherCompliants, a_rFatherDecisions, a_rMotherDecisions);
-        CheckFor0PathFor00(a_rTriplet, false, a_rOvarList, motherViolants, motherCompliants, a_rFatherDecisions, a_rMotherDecisions);
+        CheckFor0PathFor00(a_rTriplet, true,  a_rOvarList, fatherViolants, fatherCompliants);
+        CheckFor0PathFor00(a_rTriplet, false, a_rOvarList, motherViolants, motherCompliants);
     }
     
     //Intersect father and mother compliant variants and write to a_rCompliantList
@@ -532,7 +530,7 @@ void CMendelianDecider::AssignDecisionToParentVars(EMendelianVcfName a_checkSide
     for(unsigned int k = 0; k < varListToCheckParent.size(); k++)
     {
         //Skipped assigned variants
-        if(a_rParentDecisions[k] != eUnknown)
+        if(a_rParentDecisions[varListToCheckParent[k]->m_nId] != eUnknown)
             continue;
         
         //Skip irrelevant sync points
@@ -550,7 +548,7 @@ void CMendelianDecider::AssignDecisionToParentVars(EMendelianVcfName a_checkSide
             if(varListToCheckParent[k]->m_variantStatus == eNO_MATCH)
             {
                 bIsViolationFound = true;
-                a_rParentDecisions[k] = eViolation;
+                a_rParentDecisions[varListToCheckParent[k]->m_nId] = eViolation;
             }
         }
         
@@ -558,7 +556,7 @@ void CMendelianDecider::AssignDecisionToParentVars(EMendelianVcfName a_checkSide
         {
             if(a_rChildDecisions[aSyncPointList[itrSyncPList].m_calledVariantsIncluded[m]->GetVariant().m_nId] == eViolation)
             {
-                a_rParentDecisions[k] = eViolation;
+                a_rParentDecisions[varListToCheckParent[k]->m_nId] = eViolation;
                 bIsViolationFound = true;
                 break;
             }
@@ -568,14 +566,14 @@ void CMendelianDecider::AssignDecisionToParentVars(EMendelianVcfName a_checkSide
         {
             if(a_rChildDecisions[aSyncPointList[itrSyncPList].m_calledVariantsExcluded[m]->m_nId] == eViolation)
             {
-                a_rParentDecisions[k] = eViolation;
+                a_rParentDecisions[varListToCheckParent[k]->m_nId] = eViolation;
                 bIsViolationFound = true;
                 break;
             }
         }
         
         if(!bIsViolationFound)
-            a_rParentDecisions[k] = eCompliant;
+            a_rParentDecisions[varListToCheckParent[k]->m_nId] = eCompliant;
     }
 }
 
@@ -901,18 +899,18 @@ void CMendelianDecider::MergeFunc(SChrIdTriplet& a_triplet,
     {
         if(compliantsIterator != compliants.end() && childVariants[k]->m_nId == (*compliantsIterator)->m_nId)
         {
-            a_rChildDecisions[k] = EMendelianDecision::eCompliant;
+            a_rChildDecisions[childVariants[k]->m_nId] = EMendelianDecision::eCompliant;
             compliantsIterator++;
             counterCompliant++;
         }
         else if(violationsIterator != violations.end() && childVariants[k]->m_nId == (*violationsIterator)->m_nId)
         {
-            a_rChildDecisions[k] = EMendelianDecision::eViolation;
+            a_rChildDecisions[childVariants[k]->m_nId] = EMendelianDecision::eViolation;
             violationsIterator++;
             counterViolation++;
         }
         else
-            a_rChildDecisions[k] = EMendelianDecision::eUnknown;
+            a_rChildDecisions[childVariants[k]->m_nId] = EMendelianDecision::eUnknown;
     }
     
     //Excluded Mother variant Check - If we can find 0/0 hidden child site correspond to mother variant
@@ -944,19 +942,19 @@ void CMendelianDecider::MergeFunc(SChrIdTriplet& a_triplet,
         for(int k = 0; k < (int)motherVariants.size(); k ++)
         {
             if(motherVariants[k]->m_bIsNoCall)
-                a_rMotherDecisions[k] = eNoCallParent;
+                a_rMotherDecisions[motherVariants[k]->m_nId] = eNoCallParent;
         }
         
         for(int k = 0; k < (int)fatherVariants.size(); k ++)
         {
             if(fatherVariants[k]->m_bIsNoCall)
-                a_rFatherDecisions[k] = eNoCallParent;
+                a_rFatherDecisions[fatherVariants[k]->m_nId] = eNoCallParent;
         }
         
         for(int k = 0; k < (int)childVariants.size(); k ++)
         {
             if(childVariants[k]->m_bIsNoCall)
-                a_rChildDecisions[k] = eNoCallChild;
+                a_rChildDecisions[childVariants[k]->m_nId] = eNoCallChild;
         }
     }
     

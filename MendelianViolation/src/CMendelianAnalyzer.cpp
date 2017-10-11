@@ -83,7 +83,7 @@ int CMendelianAnalyzer::run(int argc, char **argv)
         std::vector<EMendelianDecision> fatherDecisions = std::vector<EMendelianDecision>(m_provider.GetVariantCount(eFATHER, chrIds[k].m_nFid));
         m_mendelianDecider.MergeFunc(chrIds[k], motherDecisions, fatherDecisions, childDecisions);
         
-        //Set decision arrays -- TODO:: May have a problem after sort variants - decisions not match I guess?
+        //Set decision arrays
         m_trioWriter.SetDecisionsAndVariants(chrIds[k], eCHILD,  childDecisions, m_provider.GetSortedVariantList(eCHILD, chrIds[k].m_nCid));
         m_trioWriter.SetDecisionsAndVariants(chrIds[k], eMOTHER, motherDecisions, m_provider.GetSortedVariantList(eMOTHER, chrIds[k].m_nMid));
         m_trioWriter.SetDecisionsAndVariants(chrIds[k], eFATHER, fatherDecisions, m_provider.GetSortedVariantList(eFATHER, chrIds[k].m_nFid));

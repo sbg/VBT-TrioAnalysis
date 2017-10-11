@@ -2,4 +2,22 @@
 <Bucket
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MendelianViolation/src/CMendelianDecider.cpp"
+            timestampString = "529365950.044603"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "826"
+            endingLineNumber = "826"
+            landmarkName = "CMendelianDecider::MergeFunc(SChrIdTriplet&amp; a_triplet, std::vector&lt;EMendelianDecision&gt;&amp; a_rMotherDecisions, std::vector&lt;EMendelianDecision&gt;&amp; a_rFatherDecisions, std::vector&lt;EMendelianDecision&gt;&amp; a_rChildDecisions)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>
