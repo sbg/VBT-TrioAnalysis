@@ -32,3 +32,11 @@ For additional help, please use the following commands:
 ./vbt --help
 ./vbt [module_name] --help
 ```
+Links to parameter structure of tools:
+
+[Variant Comparison](DuoComparison/README.md)
+
+[Mendelian Violation Detector](Mendelian/README.md)
+
+[Graph Vcf Comparison](GraphComparison/README.md)
+
