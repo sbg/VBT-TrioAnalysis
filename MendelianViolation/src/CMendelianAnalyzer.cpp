@@ -14,8 +14,11 @@
 #include "CVariantIterator.h"
 #include "CSyncPoint.h"
 #include <algorithm>
+#include <mutex>
 
 using namespace mendelian;
+std::mutex mtx;
+
 
 CMendelianAnalyzer::CMendelianAnalyzer() :
 m_mendelianDecider(m_aBestPathsFatherChildGT, m_aBestPathsFatherChildAM, m_aBestPathsMotherChildGT, m_aBestPathsMotherChildAM, m_provider, m_resultLog)
@@ -374,7 +377,8 @@ void CMendelianAnalyzer::ProcessChromosome(const std::vector<SChrIdTriplet>& a_n
 {    
     for(SChrIdTriplet triplet : a_nChromosomeIds)
     {
-    
+        //Lock data read
+        mtx.lock();
         //Get variant list of parent-child for given chromosome
         std::vector<const CVariant*> varListFather = m_provider.GetVariantList(eFATHER, triplet.m_nFid);
         std::vector<const CVariant*> varListMother = m_provider.GetVariantList(eMOTHER, triplet.m_nMid);
@@ -388,7 +392,9 @@ void CMendelianAnalyzer::ProcessChromosome(const std::vector<SChrIdTriplet>& a_n
         //Get the chromosome ref seq
         SContig ctg;
         m_provider.ReadContig(triplet.m_chrName, ctg);
-        
+        //Unlock data read
+        mtx.unlock();
+
         // === PROCESS FATHER-CHILD ===
         
         //Create path replay for parent child;
@@ -483,6 +489,9 @@ void CMendelianAnalyzer::ProcessChromosome(const std::vector<SChrIdTriplet>& a_n
         //Clear Father child replay object
         replayMotherChildAM.Clear();
         
+        //Lock the logging mechanism
+        mtx.lock();
+        
         //Send TP/FP/FN values to the log file
         m_resultLog.LogBestPathStatistic(true,
                                          triplet,
@@ -499,6 +508,9 @@ void CMendelianAnalyzer::ProcessChromosome(const std::vector<SChrIdTriplet>& a_n
                                                           m_aBestPathsMotherChildAM[triplet.m_nTripleIndex].m_baseSemiPath.GetIncludedVariants().size()),
                                          static_cast<int>(m_aBestPathsMotherChildAM[triplet.m_nTripleIndex].m_calledSemiPath.GetExcluded().size()),
                                          static_cast<int>(m_aBestPathsMotherChildAM[triplet.m_nTripleIndex].m_baseSemiPath.GetExcluded().size()));
+        
+        //Unlock the logging mechanism
+        mtx.unlock();
         
         if(!ctg.Clean())
         {
