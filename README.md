@@ -36,7 +36,7 @@ Links to parameter structure of tools:
 
 [Variant Comparison](DuoComparison/README.md)
 
-[Mendelian Violation Detector](Mendelian/README.md)
+[Mendelian Violation Detector](MendelianViolation/README.md)
 
 [Graph Vcf Comparison](GraphComparison/README.md)
 
