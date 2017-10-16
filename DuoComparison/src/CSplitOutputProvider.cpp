@@ -196,11 +196,11 @@ void CSplitOutputProvider::FillHeader(CVcfWriter *a_pWriter, bool a_bIsBaseSide)
     std::vector<std::string> filterNames;
     std::vector<std::string> filterDescriptions;
     m_pProvider->GetFilterInfo((a_bIsBaseSide ? eBASE : eCALLED), filterNames, filterDescriptions);
-    for(int k = 1; k < (int)filterNames.size(); k++)
+    for(unsigned int k = 1; k < filterNames.size(); k++)
         a_pWriter->AddHeaderLine("##FILTER=<ID=" + filterNames[k] + ",Description=" + filterDescriptions[k] + ">");
     
     //ADD CONTIG IDs
-    for(int k = 0; k < (int)m_contigs.size(); k++)
+    for(unsigned int k = 0; k < m_contigs.size(); k++)
         a_pWriter->AddHeaderLine("##contig=<ID=" + m_contigs[k].name + ",length=" + std::to_string(m_contigs[k].length) + ">");
 
     //ADD REQUIRED SAMPLES

@@ -59,7 +59,7 @@ void CVcfAnalyzer::Run(int argc, char** argv)
         
         std::vector<SChrIdTuple> chromosomeListToProcess = m_provider.GetChromosomeIdTuples();
         m_resultLogger.OpenSyncPointFile(std::string(m_config.m_pOutputDirectory) + "/SyncPointList.txt");
-        for(int k = 0; k < static_cast<int>(chromosomeListToProcess.size()); k++)
+        for(unsigned int k = 0; k < chromosomeListToProcess.size(); k++)
         {
             std::vector<core::CSyncPoint> syncPointList;
             CalculateSyncPointList(chromosomeListToProcess[k], syncPointList);
@@ -108,7 +108,7 @@ int CVcfAnalyzer::AssignJobsToThreads(int a_nThreadCount)
     std::vector<SChrIdTuple> *chromosomeLists = new std::vector<SChrIdTuple>[exactThreadCount];
     
     //Divide tasks into threads
-    for(int k = 0; k < (int)chromosomeListToProcess.size(); k++)
+    for(unsigned int k = 0; k < chromosomeListToProcess.size(); k++)
     {
         chromosomeLists[threadPoolIt].push_back(chromosomeListToProcess[k]);
         threadPoolIt = (threadPoolIt+1) % exactThreadCount;
@@ -136,7 +136,7 @@ int CVcfAnalyzer::AssignJobsToThreads(int a_nThreadCount)
 
 void CVcfAnalyzer::ThreadFunctionGA4GH(std::vector<SChrIdTuple> a_aTuples)
 {
-    for(int k = 0; k < (int)a_aTuples.size(); k++)
+    for(unsigned int k = 0; k < a_aTuples.size(); k++)
     {
         mtx.lock();
         std::vector<const CVariant*> varListBase = m_provider.GetVariantList(eBASE, a_aTuples[k].m_nBaseId);
@@ -216,7 +216,7 @@ void CVcfAnalyzer::ThreadFunctionGA4GH(std::vector<SChrIdTuple> a_aTuples)
 
 void CVcfAnalyzer::ThreadFunctionSPLIT(std::vector<SChrIdTuple> a_aTuples, bool a_bIsGenotypeMatch)
 {
-    for(int k = 0; k < (int)a_aTuples.size(); k++)
+    for(unsigned int k = 0; k < a_aTuples.size(); k++)
     {
         std::vector<const CVariant*> varListBase = m_provider.GetVariantList(eBASE, a_aTuples[k].m_nBaseId);
         std::vector<const CVariant*> varListCalled = m_provider.GetVariantList(eCALLED, a_aTuples[k].m_nCalledId);
@@ -280,39 +280,39 @@ void CVcfAnalyzer::CalculateSyncPointList(const SChrIdTuple& a_rTuple, std::vect
     
     core::CPath *pPath = &m_aBestPaths[a_rTuple.m_nTupleIndex];
     
-    int baseIncludedItr = 0;
-    int baseExcludedItr = 0;
-    int calledIncludedItr = 0;
-    int calledExcludedItr = 0;
+    unsigned int baseIncludedItr = 0;
+    unsigned int baseExcludedItr = 0;
+    unsigned int calledIncludedItr = 0;
+    unsigned int calledExcludedItr = 0;
 
-    for(int k = 0; k < (int)pPath->m_aSyncPointList.size(); k++)
+    for(unsigned int k = 0; k < pPath->m_aSyncPointList.size(); k++)
     {
         core::CSyncPoint ssPoint;
         ssPoint.m_nStartPosition = k > 0 ? pPath->m_aSyncPointList[k-1] : 0;
         ssPoint.m_nEndPosition = pPath->m_aSyncPointList[k];
-        ssPoint.m_nIndex = k;
+        ssPoint.m_nIndex = (int)k;
         
-        while(baseIncludedItr < (int)pBaseIncluded.size() && pBaseIncluded[baseIncludedItr]->GetStartPos() <= pPath->m_aSyncPointList[k])
+        while(baseIncludedItr < pBaseIncluded.size() && pBaseIncluded[baseIncludedItr]->GetStartPos() <= pPath->m_aSyncPointList[k])
         {
             const core::COrientedVariant* pOvar = pBaseIncluded[baseIncludedItr];
             ssPoint.m_baseVariantsIncluded.push_back(pOvar);
             baseIncludedItr++;
         }
         
-        while(calledIncludedItr < (int)pCalledIncluded.size() && pCalledIncluded[calledIncludedItr]->GetStartPos() <= pPath->m_aSyncPointList[k])
+        while(calledIncludedItr < pCalledIncluded.size() && pCalledIncluded[calledIncludedItr]->GetStartPos() <= pPath->m_aSyncPointList[k])
         {
             const core::COrientedVariant* pOvar = pCalledIncluded[calledIncludedItr];
             ssPoint.m_calledVariantsIncluded.push_back(pOvar);
             calledIncludedItr++;
         }
         
-        while(baseExcludedItr < (int)pBaseExcluded.size() && pBaseExcluded[baseExcludedItr]->m_nStartPos <= pPath->m_aSyncPointList[k])
+        while(baseExcludedItr < pBaseExcluded.size() && pBaseExcluded[baseExcludedItr]->m_nStartPos <= pPath->m_aSyncPointList[k])
         {
             ssPoint.m_baseVariantsExcluded.push_back(pBaseExcluded[baseExcludedItr]);
             baseExcludedItr++;
         }
         
-        while(calledExcludedItr < (int)pCalledExcluded.size() && pCalledExcluded[calledExcludedItr]->m_nStartPos <= pPath->m_aSyncPointList[k])
+        while(calledExcludedItr < pCalledExcluded.size() && pCalledExcluded[calledExcludedItr]->m_nStartPos <= pPath->m_aSyncPointList[k])
         {
             ssPoint.m_calledVariantsExcluded.push_back(pCalledExcluded[calledExcludedItr]);
             calledExcludedItr++;
@@ -327,24 +327,24 @@ void CVcfAnalyzer::CalculateSyncPointList(const SChrIdTuple& a_rTuple, std::vect
     sPoint.m_nEndPosition = INT_MAX;
     sPoint.m_nIndex = static_cast<int>(pPath->m_aSyncPointList.size()-1);
     
-    while(baseIncludedItr < (int)pBaseIncluded.size() && pBaseIncluded[baseIncludedItr]->GetStartPos() <= sPoint.m_nEndPosition)
+    while(baseIncludedItr < pBaseIncluded.size() && pBaseIncluded[baseIncludedItr]->GetStartPos() <= sPoint.m_nEndPosition)
     {
         sPoint.m_baseVariantsIncluded.push_back(pBaseIncluded[baseIncludedItr]);
         baseIncludedItr++;
     }
-    while(calledIncludedItr < (int)pCalledIncluded.size() && pCalledIncluded[calledIncludedItr]->GetStartPos() <= sPoint.m_nEndPosition)
+    while(calledIncludedItr < pCalledIncluded.size() && pCalledIncluded[calledIncludedItr]->GetStartPos() <= sPoint.m_nEndPosition)
     {
         sPoint.m_calledVariantsIncluded.push_back(pCalledIncluded[calledIncludedItr]);
         calledIncludedItr++;
     }
     
-    while(baseExcludedItr < (int)pBaseExcluded.size() && pBaseExcluded[baseExcludedItr]->m_nStartPos <= sPoint.m_nEndPosition)
+    while(baseExcludedItr < pBaseExcluded.size() && pBaseExcluded[baseExcludedItr]->m_nStartPos <= sPoint.m_nEndPosition)
     {
         sPoint.m_baseVariantsExcluded.push_back(pBaseExcluded[baseExcludedItr]);
         baseExcludedItr++;
     }
     
-    while(calledExcludedItr < (int)pCalledExcluded.size() && pCalledExcluded[calledExcludedItr]->m_nStartPos <= sPoint.m_nEndPosition)
+    while(calledExcludedItr < pCalledExcluded.size() && pCalledExcluded[calledExcludedItr]->m_nStartPos <= sPoint.m_nEndPosition)
     {
         sPoint.m_calledVariantsExcluded.push_back(pCalledExcluded[calledExcludedItr]);
         calledExcludedItr++;

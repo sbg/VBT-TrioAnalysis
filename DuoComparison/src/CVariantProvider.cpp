@@ -21,7 +21,7 @@ CVariantProvider::CVariantProvider()
 
 CVariantProvider::~CVariantProvider()
 {
-    for(int k= 0; k < (int)m_aContigList.size(); k++)
+    for(unsigned int k= 0; k < m_aContigList.size(); k++)
     {
         if(m_aContigList[k].m_nRefLength > 0 && m_aContigList[k].m_pRefSeq != 0)
             delete[] m_aContigList[k].m_pRefSeq;
@@ -245,7 +245,7 @@ void CVariantProvider::FillVariantsFromBED()
             m_aBaseVariantList[variant.m_nChrId].push_back(variant);
     }
     
-    for(int k = 0; k < (int)m_baseVCF.GetContigs().size(); k++)
+    for(unsigned int k = 0; k < m_baseVCF.GetContigs().size(); k++)
     {
         std::sort(m_aBaseNotAssessedVariantList[k].begin(), m_aBaseNotAssessedVariantList[k].end(), CompareVariants);
         std::sort(m_aBaseVariantList[k].begin(), m_aBaseVariantList[k].end(), CompareVariants);
@@ -296,7 +296,7 @@ void CVariantProvider::FillVariantsFromBED()
             m_aCalledVariantList[variant.m_nChrId].push_back(variant);
     }
     
-    for(int k = 0; k < (int)m_calledVCF.GetContigs().size(); k++)
+    for(unsigned int k = 0; k < m_calledVCF.GetContigs().size(); k++)
     {
         std::sort(m_aCalledNotAssessedVariantList[k].begin(), m_aCalledNotAssessedVariantList[k].end(), CompareVariants);
         std::sort(m_aCalledVariantList[k].begin(), m_aCalledVariantList[k].end(), CompareVariants);
@@ -343,7 +343,7 @@ void CVariantProvider::FillVariantLists()
             m_aBaseVariantList[variant.m_nChrId].push_back(variant);
     }
     
-    for(int k = 0; k < (int)m_baseVCF.GetContigs().size(); k++)
+    for(unsigned int k = 0; k < m_baseVCF.GetContigs().size(); k++)
     {
         std::sort(m_aBaseNotAssessedVariantList[k].begin(), m_aBaseNotAssessedVariantList[k].end(), CompareVariants);
         std::sort(m_aBaseVariantList[k].begin(), m_aBaseVariantList[k].end(), CompareVariants);
@@ -378,7 +378,7 @@ void CVariantProvider::FillVariantLists()
             m_aCalledVariantList[variant.m_nChrId].push_back(variant);
     }
     
-    for(int k = 0; k < (int)m_calledVCF.GetContigs().size(); k++)
+    for(unsigned int k = 0; k < m_calledVCF.GetContigs().size(); k++)
     {
         std::sort(m_aCalledNotAssessedVariantList[k].begin(), m_aCalledNotAssessedVariantList[k].end(), CompareVariants);
         std::sort(m_aCalledVariantList[k].begin(), m_aCalledVariantList[k].end(), CompareVariants);
@@ -393,18 +393,18 @@ void CVariantProvider::FillOrientedVariantLists()
     m_aCalledOrientedVariantList = std::vector<std::vector<core::COrientedVariant>>(m_calledVCF.GetContigs().size());
     
     
-    for(int i=0; i < (int)m_aBaseOrientedVariantList.size(); i++)
+    for(unsigned int i=0; i < m_aBaseOrientedVariantList.size(); i++)
     {
-        for(int j=0; j < (int)m_aBaseVariantList[i].size(); j++)
+        for(unsigned int j=0; j < m_aBaseVariantList[i].size(); j++)
         {
             m_aBaseOrientedVariantList[i].push_back(core::COrientedVariant(m_aBaseVariantList[i][j], true));
             m_aBaseOrientedVariantList[i].push_back(core::COrientedVariant(m_aBaseVariantList[i][j], false));
         }
     }
     
-    for(int i=0; i < (int)m_aCalledOrientedVariantList.size(); i++)
+    for(unsigned int i=0; i < m_aCalledOrientedVariantList.size(); i++)
     {
-        for(int j=0; j < (int)m_aCalledVariantList[i].size(); j++)
+        for(unsigned int j=0; j < m_aCalledVariantList[i].size(); j++)
         {
             m_aCalledOrientedVariantList[i].push_back(core::COrientedVariant(m_aCalledVariantList[i][j], true));
             m_aCalledOrientedVariantList[i].push_back(core::COrientedVariant(m_aCalledVariantList[i][j], false));
@@ -422,13 +422,13 @@ void CVariantProvider::FillAlleleMatchVariantList(SChrIdTuple& a_tuple, std::vec
         m_bIsHomozygousOvarListInitialized = true;
     }
     
-    for(int j=0; j < (int)a_rBaseVariants.size(); j++)
+    for(unsigned int j=0; j < a_rBaseVariants.size(); j++)
     {
         m_aBaseHomozygousOrientedVariantList[a_tuple.m_nBaseId].push_back(core::COrientedVariant(*a_rBaseVariants[j], 0));
         m_aBaseHomozygousOrientedVariantList[a_tuple.m_nBaseId].push_back(core::COrientedVariant(*a_rBaseVariants[j], 1));
     }
         
-    for(int j=0; j < (int)a_rCalledVariants.size(); j++)
+    for(unsigned int j=0; j < a_rCalledVariants.size(); j++)
     {
         m_aCalledHomozygousOrientedVariantList[a_tuple.m_nCalledId].push_back(core::COrientedVariant(*a_rCalledVariants[j], 0));
         m_aCalledHomozygousOrientedVariantList[a_tuple.m_nCalledId].push_back(core::COrientedVariant(*a_rCalledVariants[j], 1));
@@ -442,12 +442,12 @@ std::vector<const CVariant*> CVariantProvider::GetVariantList(EVcfName a_uFrom, 
     switch (a_uFrom)
     {
         case eBASE:
-            for(int k=0; k< (int)a_VariantIndexes.size(); k++)
+            for(unsigned int k=0; k < a_VariantIndexes.size(); k++)
                 result.push_back(&(m_aBaseVariantList[a_nChrNo][a_VariantIndexes[k]]));
             break;
             
         case eCALLED:
-            for(int k=0; k< (int)a_VariantIndexes.size(); k++)
+            for(unsigned int k=0; k < a_VariantIndexes.size(); k++)
                 result.push_back(&(m_aCalledVariantList[a_nChrNo][a_VariantIndexes[k]]));
             
         default:
@@ -485,7 +485,7 @@ std::vector<const CVariant*> CVariantProvider::GetVariantList(std::vector<const 
 {
     std::vector<const CVariant*> result(a_VariantIndexes.size());
     
-    for(int k = 0; k < (int)a_VariantIndexes.size(); k++)
+    for(unsigned int k = 0; k < a_VariantIndexes.size(); k++)
     {
         result[k] = a_varList[a_VariantIndexes[k]];
     }
@@ -503,12 +503,12 @@ std::vector<const core::COrientedVariant*> CVariantProvider::GetOrientedVariantL
         switch (a_uFrom)
         {
             case eBASE:
-                for(int k=0; k < (int)size; k++)
+                for(unsigned int k=0; k < size; k++)
                     result[k] = &(m_aBaseOrientedVariantList[a_nChrNo][k]);
                 break;
                 
             case eCALLED:
-                for(int k=0; k< (int)size; k++)
+                for(unsigned int k=0; k < size; k++)
                     result[k] = &(m_aCalledOrientedVariantList[a_nChrNo][k]);
                 
             default:
@@ -526,12 +526,12 @@ std::vector<const core::COrientedVariant*> CVariantProvider::GetOrientedVariantL
         switch (a_uFrom)
         {
             case eBASE:
-                for(int k=0; k < (int)size; k++)
+                for(unsigned int k=0; k < size; k++)
                     result[k] = &(m_aBaseHomozygousOrientedVariantList[a_nChrNo][k]);
                 break;
                 
             case eCALLED:
-                for(int k=0; k< (int)size; k++)
+                for(unsigned int k=0; k < size; k++)
                     result[k] = &(m_aCalledHomozygousOrientedVariantList[a_nChrNo][k]);
                 
             default:
@@ -616,7 +616,7 @@ void CVariantProvider::SetVariantStatus(const std::vector<const core::COrientedV
 
 void CVariantProvider::GetContig(std::string a_chrName, SContig& a_rCtg)
 {
-    for(int k = 0; k < (int)m_aContigList.size(); k++)
+    for(unsigned int k = 0; k < m_aContigList.size(); k++)
     {
         if(m_aContigList[k].m_chromosomeName == a_chrName)
         {

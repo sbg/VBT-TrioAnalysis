@@ -48,7 +48,7 @@ void CResultLog::WriteStatistics(int a_nMode)
         outputLog << "ID" << "\t" << "True-Pos-Called" << "\t\t" << "True-Pos-Baseline" << "\t" << "False-Pos" << "\t" << "False-Neg" << "\t" << "Precision" << "\t" << "Recall";
         outputLog << "\t" << "F-measure" << std::endl;
 
-        for(int k = 0; k < (int)m_aResultEntries.size(); k++)
+        for(unsigned int k = 0; k < m_aResultEntries.size(); k++)
         {
             if(m_aResultEntries[k].m_bIsNull)
                 continue;
@@ -73,7 +73,7 @@ void CResultLog::WriteStatistics(int a_nMode)
         int FPTotal = 0;
         int FNTotal = 0;
         
-        for(int k = 0; k < (int)m_aResultEntries.size(); k++)
+        for(unsigned int k = 0; k < m_aResultEntries.size(); k++)
         {
             TPbaseTotal += m_aResultEntries[k].m_nTpBase;
             TPcalledTotal += m_aResultEntries[k].m_nTpCalled;
@@ -98,7 +98,7 @@ void CResultLog::WriteStatistics(int a_nMode)
         outputLog << "ID" << "\t" << "True-Pos-Called" << "\t\t" << "True-Pos-Baseline" << "\t" << "False-Pos" << "\t" << "False-Neg" << "\t" << "Precision" << "\t" << "Recall";
         outputLog << "\t" << "F-measure" << std::endl;
         
-        for(int k = 0; k < (int)m_aResultEntries.size(); k++)
+        for(unsigned int k = 0; k < m_aResultEntries.size(); k++)
         {
             if(m_aResultEntries[k].m_bIsNull)
                 continue;
@@ -123,7 +123,7 @@ void CResultLog::WriteStatistics(int a_nMode)
         int FPTotal = 0;
         int FNTotal = 0;
         
-        for(int k = 0; k < (int)m_aResultEntries.size(); k++)
+        for(unsigned int k = 0; k < m_aResultEntries.size(); k++)
         {
             TPbaseTotal += m_aResultEntries[k].m_nTpBase;
             TPcalledTotal += m_aResultEntries[k].m_nTpCalled;

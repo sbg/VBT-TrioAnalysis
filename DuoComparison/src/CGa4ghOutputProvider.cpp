@@ -67,11 +67,11 @@ void CGa4ghOutputProvider::FillHeader()
     std::vector<std::string> filterNames;
     std::vector<std::string> filterDescriptions;
     m_pVariantProvider->GetFilterInfo(eCALLED, filterNames, filterDescriptions);
-    for(int k = 1; k < (int)filterNames.size(); k++)
+    for(unsigned int k = 1; k < filterNames.size(); k++)
         m_vcfWriter.AddHeaderLine("##FILTER=<ID=" + filterNames[k] + ",Description=" + filterDescriptions[k] + ">");
     
     //ADD CONTIG IDs
-    for(int k = 0; k < (int)m_contigs.size(); k++)
+    for(unsigned int k = 0; k < m_contigs.size(); k++)
         m_vcfWriter.AddHeaderLine("##contig=<ID=" + m_contigs[k].name + ",length=" + std::to_string(m_contigs[k].length) + ">");
     
     //ADD REQUIRED SAMPLES
@@ -116,9 +116,9 @@ void CGa4ghOutputProvider::AddRecords(const core::CPath& a_rBestPath, const core
         if(basePosition == calledPosition)
         {
             //Look for a match between base and called list
-            for(int i = 0; i < (int)nextVarBaseList.size(); i++)
+            for(unsigned int i = 0; i < nextVarBaseList.size(); i++)
             {
-                for(int j = 0; j < (int)nextVarCalledList.size(); j++)
+                for(unsigned j = 0; j < nextVarCalledList.size(); j++)
                 {
                     if(CanMerge(nextVarBaseList[i].m_pVariant, nextVarCalledList[j].m_pVariant))
                     {
@@ -271,14 +271,14 @@ void CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase,
     
     for(int k=0; k < (int)a_pVariantBase->m_nZygotCount; k++)
     {
-        std::string allele = baseVariants[a_pVariantBase->m_genotype[k]];
+        std::string allele = baseVariants[(unsigned int)a_pVariantBase->m_genotype[k]];
         
         int bHasFound = false;
-        for(int p = 0; p < (int)calledVariants.size(); p++)
+        for(unsigned int p = 0; p < calledVariants.size(); p++)
         {
             if(0 == calledVariants[p].compare(allele))
             {
-                data.m_aGenotype[k] = p;
+                data.m_aGenotype[k] = (int)p;
                 bHasFound = true;
                 break;
             }
