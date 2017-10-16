@@ -46,7 +46,7 @@ void CGa4ghOutputProvider::GenerateGa4ghVcf(const std::vector<SChrIdTuple>& a_rC
     for(SChrIdTuple tuple : a_rCommonChromosomes)
     {
         std::cout << "Processing Chromosome " << tuple.m_chrName << std::endl;
-        AddRecords(m_aBestPaths[tuple.m_nTupleIndex], m_aBestAlleleMatchPaths[tuple.m_nTupleIndex], tuple);
+        AddRecords(m_aBestPaths[tuple.m_nTupleIndex], tuple);
     }
     
     m_vcfWriter.CloseVcf();
