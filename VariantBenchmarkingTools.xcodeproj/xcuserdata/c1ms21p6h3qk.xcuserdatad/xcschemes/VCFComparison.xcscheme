@@ -80,7 +80,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest_0.6.2/CEU_BWA_FreeBayes_Normalized.merged.vcf"
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest7/UG_CEU_MERGED_realigned.base_recalibrated.merged.merged.vcf"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -88,7 +88,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest_0.6.2/CEU_BWA_FreeBayes_Normalized.merged.vcf"
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest7/UG_CEU_MERGED_realigned.base_recalibrated.merged.merged.vcf"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -96,7 +96,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest_0.6.2/CEU_BWA_FreeBayes_Normalized.merged.vcf"
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest7/UG_CEU_MERGED_realigned.base_recalibrated.merged.merged.vcf"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -104,7 +104,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest_0.6.2/edited"
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest7/"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -128,7 +128,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest_0.6.2/ceu.ped"
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest7/ceu.ped"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -173,7 +173,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--autosome-only"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-bed"
@@ -188,7 +188,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "VBT_FreeBayes_Normalized"
+            argument = "VBT_0.6.5_UG_CEU"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -196,7 +196,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "4"
+            argument = "2"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

@@ -149,7 +149,7 @@ SAllele CVariant::GetAllele(int a_nAlleleId) const
     return m_alleles[a_nAlleleId];
 }
 
-std::string CVariant::GetOriginalAlleleStr(int a_nAlleleIndex) const
+std::string CVariant::GetOriginalAlleleStr(unsigned int a_nAlleleIndex) const
 {
     if(m_bIsNoCall == true)
         return "";
@@ -162,7 +162,7 @@ std::string CVariant::GetOriginalAlleleStr(int a_nAlleleIndex) const
         alleleList.push_back(alel);
     }
     
-    assert(a_nAlleleIndex < (int)alleleList.size());
+    assert(a_nAlleleIndex < alleleList.size());
     
     return alleleList[m_genotype[a_nAlleleIndex]];
 }

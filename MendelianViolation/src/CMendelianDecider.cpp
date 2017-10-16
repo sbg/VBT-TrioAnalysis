@@ -66,11 +66,11 @@ void CMendelianDecider::CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTri
     std::vector<const CVariant*> varListToCheckSelf = a_checkSide == eFATHER ? m_provider.GetVariantList(eFATHER, a_rTriplet.m_nFid) : m_provider.GetVariantList(eMOTHER, a_rTriplet.m_nMid);
     
     
-    int varItrChild = 0;
-    int varItrParent = 0;
-    int varItrSelf = 0;
+    unsigned int varItrChild = 0;
+    unsigned int varItrParent = 0;
+    unsigned int varItrSelf = 0;
     
-    for(int k = 0; k < (int)a_rVariantList.size(); k++)
+    for(unsigned int k = 0; k < a_rVariantList.size(); k++)
     {
         //Check if the variant is already marked
         if(a_rParentSelfDecisions[a_rVariantList[k]->m_nId] != eUnknown)
@@ -87,29 +87,29 @@ void CMendelianDecider::CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTri
         }
         
         //Skip child variants until end position of child variant is more than our current Parent variant start position
-        while(varItrChild <  (int)varListToCheckChild.size() && varListToCheckChild[varItrChild]->m_nEndPos < a_rVariantList[k]->m_nStartPos)
+        while(varItrChild <  varListToCheckChild.size() && varListToCheckChild[varItrChild]->m_nEndPos < a_rVariantList[k]->m_nStartPos)
             varItrChild++;
         
         //Skip parent variants until end position of child variant is more than our current Parent variant start position
-        while(varItrParent <  (int)varListToCheckParent.size() && varListToCheckParent[varItrParent]->m_nEndPos < a_rVariantList[k]->m_nStartPos)
+        while(varItrParent <  varListToCheckParent.size() && varListToCheckParent[varItrParent]->m_nEndPos < a_rVariantList[k]->m_nStartPos)
             varItrParent++;
         
         
         //Skip parent variants until end position of child variant is more than our current Parent variant start position
-        while(varItrSelf <  (int)varListToCheckSelf.size() && varListToCheckSelf[varItrSelf]->m_nEndPos < a_rVariantList[k]->m_nStartPos)
+        while(varItrSelf <  varListToCheckSelf.size() && varListToCheckSelf[varItrSelf]->m_nEndPos < a_rVariantList[k]->m_nStartPos)
             varItrSelf++;
         
         
-        int counterChild = 0;
-        int counterParent = 0;
-        int counterSelf = 0;
+        unsigned int counterChild = 0;
+        unsigned int counterParent = 0;
+        unsigned int counterSelf = 0;
         
         std::vector<const CVariant*> childSideMatches;
         std::vector<const CVariant*> parentSideMatches;
         std::vector<const CVariant*> selfSideMatches;
         
         //Get All overlapping variants in child side
-        while(varItrChild + counterChild < (int)varListToCheckChild.size() && varListToCheckChild[varItrChild+counterChild]->m_nStartPos < a_rVariantList[k]->m_nEndPos)
+        while(varItrChild + counterChild < varListToCheckChild.size() && varListToCheckChild[varItrChild+counterChild]->m_nStartPos < a_rVariantList[k]->m_nEndPos)
         {
             if(isOverlap(a_rVariantList[k]->m_nStartPos, a_rVariantList[k]->m_nEndPos, varListToCheckChild[varItrChild+counterChild]->m_nStartPos, varListToCheckChild[varItrChild+counterChild]->m_nEndPos))
                 childSideMatches.push_back(varListToCheckChild[varItrChild+counterChild]);
@@ -117,7 +117,7 @@ void CMendelianDecider::CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTri
         }
         
         //Get All overlapping variants in other parent side
-        while(varItrParent + counterParent < (int)varListToCheckParent.size() && varListToCheckParent[varItrParent+counterParent]->m_nStartPos < a_rVariantList[k]->m_nEndPos)
+        while(varItrParent + counterParent < varListToCheckParent.size() && varListToCheckParent[varItrParent+counterParent]->m_nStartPos < a_rVariantList[k]->m_nEndPos)
         {
             if(isOverlap(a_rVariantList[k]->m_nStartPos, a_rVariantList[k]->m_nEndPos, varListToCheckParent[varItrParent+counterParent]->m_nStartPos, varListToCheckParent[varItrParent+counterParent]->m_nEndPos))
                 parentSideMatches.push_back(varListToCheckParent[varItrParent+counterParent]);
@@ -125,7 +125,7 @@ void CMendelianDecider::CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTri
         }
         
         //Get All overlapping variants in self side
-        while(varItrSelf + counterSelf < (int)varListToCheckSelf.size() && varListToCheckSelf[varItrSelf+counterSelf]->m_nStartPos < a_rVariantList[k]->m_nEndPos)
+        while(varItrSelf + counterSelf < varListToCheckSelf.size() && varListToCheckSelf[varItrSelf+counterSelf]->m_nStartPos < a_rVariantList[k]->m_nEndPos)
         {
             if(isOverlap(a_rVariantList[k]->m_nStartPos, a_rVariantList[k]->m_nEndPos, varListToCheckSelf[varItrSelf+counterSelf]->m_nStartPos, varListToCheckSelf[varItrSelf+counterSelf]->m_nEndPos))
                 selfSideMatches.push_back(varListToCheckSelf[varItrSelf+counterSelf]);
@@ -232,40 +232,40 @@ void CMendelianDecider::GetSyncPointList(SChrIdTriplet& a_rTriplet, bool a_bIsFa
     }
     
     
-    int baseIncludedItr = 0;
-    int baseExcludedItr = 0;
-    int calledIncludedItr = 0;
-    int calledExcludedItr = 0;
+    unsigned int baseIncludedItr = 0;
+    unsigned int baseExcludedItr = 0;
+    unsigned int calledIncludedItr = 0;
+    unsigned int calledExcludedItr = 0;
     
-    for(int k = 0; k < (int)pPathSync->m_aSyncPointList.size(); k++)
+    for(unsigned int k = 0; k < pPathSync->m_aSyncPointList.size(); k++)
     {
         core::CSyncPoint ssPoint;
         ssPoint.m_nStartPosition = k > 0 ? pPathSync->m_aSyncPointList[k-1] : 0;
         ssPoint.m_nEndPosition = pPathSync->m_aSyncPointList[k];
-        ssPoint.m_nIndex = k;
+        ssPoint.m_nIndex = (int)k;
         int bound = ssPoint.m_nStartPosition == ssPoint.m_nEndPosition ? 1 : 0;
         
-        while(baseIncludedItr < (int)pBaseIncluded.size() && pBaseIncluded[baseIncludedItr]->GetStartPos() < (pPathSync->m_aSyncPointList[k] + bound))
+        while(baseIncludedItr < pBaseIncluded.size() && pBaseIncluded[baseIncludedItr]->GetStartPos() < (pPathSync->m_aSyncPointList[k] + bound))
         {
             const core::COrientedVariant* pOvar = pBaseIncluded[baseIncludedItr];
             ssPoint.m_baseVariantsIncluded.push_back(pOvar);
             baseIncludedItr++;
         }
         
-        while(calledIncludedItr < (int)pCalledIncluded.size() && pCalledIncluded[calledIncludedItr]->GetStartPos() < (pPathSync->m_aSyncPointList[k] + bound))
+        while(calledIncludedItr < pCalledIncluded.size() && pCalledIncluded[calledIncludedItr]->GetStartPos() < (pPathSync->m_aSyncPointList[k] + bound))
         {
             const core::COrientedVariant* pOvar = pCalledIncluded[calledIncludedItr];
             ssPoint.m_calledVariantsIncluded.push_back(pOvar);
             calledIncludedItr++;
         }
         
-        while(baseExcludedItr < (int)pBaseExcluded.size() && pBaseExcluded[baseExcludedItr]->m_nStartPos < (pPathSync->m_aSyncPointList[k] + bound))
+        while(baseExcludedItr < pBaseExcluded.size() && pBaseExcluded[baseExcludedItr]->m_nStartPos < (pPathSync->m_aSyncPointList[k] + bound))
         {
             ssPoint.m_baseVariantsExcluded.push_back(pBaseExcluded[baseExcludedItr]);
             baseExcludedItr++;
         }
         
-        while(calledExcludedItr < (int)pCalledExcluded.size() && pCalledExcluded[calledExcludedItr]->m_nStartPos < (pPathSync->m_aSyncPointList[k] + bound))
+        while(calledExcludedItr < pCalledExcluded.size() && pCalledExcluded[calledExcludedItr]->m_nStartPos < (pPathSync->m_aSyncPointList[k] + bound))
         {
             ssPoint.m_calledVariantsExcluded.push_back(pCalledExcluded[calledExcludedItr]);
             calledExcludedItr++;
@@ -280,24 +280,24 @@ void CMendelianDecider::GetSyncPointList(SChrIdTriplet& a_rTriplet, bool a_bIsFa
     sPoint.m_nEndPosition = INT_MAX;
     sPoint.m_nIndex = static_cast<int>(pPathSync->m_aSyncPointList.size()-1);
     
-    while(baseIncludedItr < (int)pBaseIncluded.size() && pBaseIncluded[baseIncludedItr]->GetStartPos() <= sPoint.m_nEndPosition)
+    while(baseIncludedItr < pBaseIncluded.size() && pBaseIncluded[baseIncludedItr]->GetStartPos() <= sPoint.m_nEndPosition)
     {
         sPoint.m_baseVariantsIncluded.push_back(pBaseIncluded[baseIncludedItr]);
         baseIncludedItr++;
     }
-    while(calledIncludedItr < (int)pCalledIncluded.size() && pCalledIncluded[calledIncludedItr]->GetStartPos() <= sPoint.m_nEndPosition)
+    while(calledIncludedItr < pCalledIncluded.size() && pCalledIncluded[calledIncludedItr]->GetStartPos() <= sPoint.m_nEndPosition)
     {
         sPoint.m_calledVariantsIncluded.push_back(pCalledIncluded[calledIncludedItr]);
         calledIncludedItr++;
     }
     
-    while(baseExcludedItr < (int)pBaseExcluded.size() && pBaseExcluded[baseExcludedItr]->m_nStartPos <= sPoint.m_nEndPosition)
+    while(baseExcludedItr < pBaseExcluded.size() && pBaseExcluded[baseExcludedItr]->m_nStartPos <= sPoint.m_nEndPosition)
     {
         sPoint.m_baseVariantsExcluded.push_back(pBaseExcluded[baseExcludedItr]);
         baseExcludedItr++;
     }
     
-    while(calledExcludedItr < (int)pCalledExcluded.size() && pCalledExcluded[calledExcludedItr]->m_nStartPos <= sPoint.m_nEndPosition)
+    while(calledExcludedItr < pCalledExcluded.size() && pCalledExcluded[calledExcludedItr]->m_nStartPos <= sPoint.m_nEndPosition)
     {
         sPoint.m_calledVariantsExcluded.push_back(pCalledExcluded[calledExcludedItr]);
         calledExcludedItr++;
@@ -317,7 +317,7 @@ void CMendelianDecider::CheckFor0PathFor00(SChrIdTriplet& a_rTriplet,
     GetSyncPointList(a_rTriplet, a_bIsFatherChild, a_rSyncPointList, true);
     
     int varlistItr = 0;
-    for(int k = 0; k < (int)a_rSyncPointList.size() && varlistItr < (int)a_rVarList.size(); k++)
+    for(unsigned int k = 0; k < a_rSyncPointList.size() && varlistItr < (int)a_rVarList.size(); k++)
     {
         //If we check that syncpoint
         bool bDoCheck = false;
@@ -331,7 +331,7 @@ void CMendelianDecider::CheckFor0PathFor00(SChrIdTriplet& a_rTriplet,
         }
         
         //Check if the sync interval contains 0/x child variants
-        for(int m = 0; m < (int)a_rSyncPointList[k].m_calledVariantsIncluded.size() && varlistItr != (int)a_rVarList.size(); m++)
+        for(unsigned int m = 0; m < a_rSyncPointList[k].m_calledVariantsIncluded.size() && varlistItr != (int)a_rVarList.size(); m++)
         {
             if(a_rSyncPointList[k].m_calledVariantsIncluded[m]->GetVariant().m_nId == a_rVarList[varlistItr]->m_nId)
             {
@@ -345,7 +345,7 @@ void CMendelianDecider::CheckFor0PathFor00(SChrIdTriplet& a_rTriplet,
         {
             bool bIsCompliant = true;
             
-            for(int m = 0; m < (int)a_rSyncPointList[k].m_baseVariantsExcluded.size(); m++)
+            for(unsigned int m = 0; m < a_rSyncPointList[k].m_baseVariantsExcluded.size(); m++)
             {
                 const CVariant* pVar = a_rSyncPointList[k].m_baseVariantsExcluded[m];
                 
@@ -361,13 +361,13 @@ void CMendelianDecider::CheckFor0PathFor00(SChrIdTriplet& a_rTriplet,
             
             if(bIsCompliant == true)
             {
-                for(int aa = 0; aa < (int)tmpVarList.size(); aa++)
+                for(unsigned int aa = 0; aa < tmpVarList.size(); aa++)
                     a_rCompliantList.push_back(tmpVarList[aa]);
             }
             
             else
             {
-                for(int aa = 0; aa < (int)tmpVarList.size(); aa++)
+                for(unsigned int aa = 0; aa < tmpVarList.size(); aa++)
                     a_rViolationList.push_back(tmpVarList[aa]);
             }
         }
@@ -391,7 +391,7 @@ void CMendelianDecider::CheckFor0Path(SChrIdTriplet& a_rTriplet,
     
     
     int varlistItr = 0;
-    for(int k = 0; k < (int)a_rSyncPointList.size() && varlistItr < (int)a_pVarList.size(); k++)
+    for(unsigned int k = 0; k < a_rSyncPointList.size() && varlistItr < (int)a_pVarList.size(); k++)
     {
         //If we check that syncpoint
         bool bDoCheck = false;
@@ -405,7 +405,7 @@ void CMendelianDecider::CheckFor0Path(SChrIdTriplet& a_rTriplet,
         }
         
         //Check if the sync interval contains 0/x child variants
-        for(int m = 0; m < (int)a_rSyncPointList[k].m_calledVariantsExcluded.size() && varlistItr != (int)a_pVarList.size(); m++)
+        for(unsigned int m = 0; m < a_rSyncPointList[k].m_calledVariantsExcluded.size() && varlistItr != (int)a_pVarList.size(); m++)
         {
             if(a_rSyncPointList[k].m_calledVariantsExcluded[m]->m_nId == a_pVarList[varlistItr]->m_nId)
             {
@@ -419,7 +419,7 @@ void CMendelianDecider::CheckFor0Path(SChrIdTriplet& a_rTriplet,
         {
             bool bIsCompliant = true;
             
-            for(int m = 0; m < (int)a_rSyncPointList[k].m_baseVariantsExcluded.size(); m++)
+            for(unsigned int m = 0; m < a_rSyncPointList[k].m_baseVariantsExcluded.size(); m++)
             {
                 const CVariant* pVar = a_rSyncPointList[k].m_baseVariantsExcluded[m];
                 
@@ -453,13 +453,13 @@ void CMendelianDecider::CheckFor0Path(SChrIdTriplet& a_rTriplet,
             
             if(bIsCompliant == true)
             {
-                for(int aa = 0; aa < (int)tmpVarList.size(); aa++)
+                for(unsigned int aa = 0; aa < tmpVarList.size(); aa++)
                     a_pCompliantList.push_back(tmpVarList[aa]);
             }
             
             else
             {
-                for(int aa = 0; aa < (int)tmpVarList.size(); aa++)
+                for(unsigned int aa = 0; aa < tmpVarList.size(); aa++)
                     a_pViolantList.push_back(tmpVarList[aa]);
             }
         }
@@ -841,21 +841,21 @@ void CMendelianDecider::MergeFunc(SChrIdTriplet& a_triplet,
     //Find Child Unique variants
     std::vector<const CVariant*> childVariants = m_provider.GetSortedVariantList(eCHILD, a_triplet.m_nCid);
     std::vector<int>childProcessedArray(childVariants.size());
-    for(int k = 0; k <  (int)childProcessedArray.size(); k++)
+    for(unsigned int k = 0; k < childProcessedArray.size(); k++)
         childProcessedArray[k] = 0;
     
     //Mark mendelian compliant vars as processed
-    for(int k = 0; k < (int)compliants.size(); k++)
+    for(unsigned int k = 0; k < compliants.size(); k++)
     {
         childProcessedArray[compliants[k]->m_nId]++;
     }
     //Mark mendelian violation vars as processed
-    for(int k = 0; k < (int)violations.size(); k++)
+    for(unsigned int k = 0; k < violations.size(); k++)
     {
         childProcessedArray[violations[k]->m_nId]++;
     }
     
-    for(int childItr = 0; childItr < (int)childProcessedArray.size(); childItr++)
+    for(unsigned int childItr = 0; childItr < childProcessedArray.size(); childItr++)
     {
         if(childProcessedArray[childItr] == 0)
         {
@@ -895,7 +895,7 @@ void CMendelianDecider::MergeFunc(SChrIdTriplet& a_triplet,
     int counterCompliant = 0;
     int counterViolation = 0;
     
-    for(int k = 0; k < (int)childVariants.size(); k++)
+    for(unsigned int k = 0; k < childVariants.size(); k++)
     {
         if(compliantsIterator != compliants.end() && childVariants[k]->m_nId == (*compliantsIterator)->m_nId)
         {
@@ -926,11 +926,11 @@ void CMendelianDecider::MergeFunc(SChrIdTriplet& a_triplet,
     CheckUniqueVars(eFATHER, a_triplet, uniqueFatherVars, fatherDecisions, a_rFatherDecisions, a_rMotherDecisions, a_rChildDecisions);
     
     //Fill the mother decision array
-    for(int k = 0; k < (int)motherDecisions.size(); k++)
+    for(unsigned int k = 0; k < motherDecisions.size(); k++)
         a_rMotherDecisions[uniqueMotherVars[k]->m_nId] = (motherDecisions[k] ? eCompliant : eViolation);
     
     //Fill the father decision array
-    for(int k = 0; k < (int)fatherDecisions.size(); k++)
+    for(unsigned int k = 0; k < fatherDecisions.size(); k++)
         a_rFatherDecisions[uniqueFatherVars[k]->m_nId] = (fatherDecisions[k] ? eCompliant : eViolation);
     
     //If NoCall Mode Is not enabled, mark all decisions of nocall childs as NoCallChild and all nocall parents as NoCallParent
@@ -939,19 +939,19 @@ void CMendelianDecider::MergeFunc(SChrIdTriplet& a_triplet,
         std::vector<const CVariant*> motherVariants = m_provider.GetVariantList(eMOTHER, a_triplet.m_nMid);
         std::vector<const CVariant*> fatherVariants = m_provider.GetVariantList(eFATHER, a_triplet.m_nFid);
         
-        for(int k = 0; k < (int)motherVariants.size(); k ++)
+        for(unsigned int k = 0; k < motherVariants.size(); k ++)
         {
             if(motherVariants[k]->m_bIsNoCall)
                 a_rMotherDecisions[motherVariants[k]->m_nId] = eNoCallParent;
         }
         
-        for(int k = 0; k < (int)fatherVariants.size(); k ++)
+        for(unsigned int k = 0; k < fatherVariants.size(); k ++)
         {
             if(fatherVariants[k]->m_bIsNoCall)
                 a_rFatherDecisions[fatherVariants[k]->m_nId] = eNoCallParent;
         }
         
-        for(int k = 0; k < (int)childVariants.size(); k ++)
+        for(unsigned int k = 0; k < childVariants.size(); k ++)
         {
             if(childVariants[k]->m_bIsNoCall)
                 a_rChildDecisions[childVariants[k]->m_nId] = eNoCallChild;

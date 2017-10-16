@@ -81,7 +81,7 @@ class CVariant
     bool IsFilterPASS() const;
     
     ///Return the original Alt string with the given index (Take back trim operation)
-    std::string GetOriginalAlleleStr(int a_nAlleleIndex) const;
+    std::string GetOriginalAlleleStr(unsigned int a_nAlleleIndex) const;
     
     ///Return the reference sequences
     std::string GetRefSeq() const;

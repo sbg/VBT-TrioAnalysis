@@ -56,7 +56,7 @@ void CMendelianTrioMerger::SetDecisionsAndVariants(SChrIdTriplet& a_rTriplet, EM
             break;
     }
 
-    for(int k = 0; k < (int)a_rVarList.size(); k++)
+    for(unsigned int k = 0; k < a_rVarList.size(); k++)
     {
         pDecisionList->push_back(a_rDecisionList[k]);
         pVarList->push_back(a_rVarList[k]);
@@ -103,7 +103,7 @@ void CMendelianTrioMerger::FillHeader()
 
     
     //ADD CONTIG IDs
-    for(int k = 0; k < (int)m_contigs.size(); k++)
+    for(unsigned int k = 0; k < m_contigs.size(); k++)
         m_vcfWriter.AddHeaderLine("##contig=<ID=" + m_contigs[k].name + ",length=" + std::to_string(m_contigs[k].length) + ">");
     
     //ADD REQUIRED SAMPLES
@@ -128,7 +128,7 @@ void CMendelianTrioMerger::GenerateTrioVcf(std::vector<SChrIdTriplet>& a_rCommon
     m_logEntry.clear();
     m_logGenotypes.clear();
     
-    for(int k = 0; k < (int)a_rCommonChromosomes.size(); k++)
+    for(unsigned int k = 0; k < a_rCommonChromosomes.size(); k++)
     {
         std::cout << "Writing chromosome " << a_rCommonChromosomes[k].m_chrName << std::endl;
         std::cerr << "[stderr] Writing chromosome " << a_rCommonChromosomes[k].m_chrName << std::endl;
@@ -152,18 +152,18 @@ void CMendelianTrioMerger::AddRecords(SChrIdTriplet& a_rTriplet)
     
     
     
-    int childItr = 0, motherItr = 0, fatherItr = 0;
+    unsigned int childItr = 0, motherItr = 0, fatherItr = 0;
     
-    while(childItr < (int)m_aChildVariants[a_rTriplet.m_nCid].size() || motherItr < (int)m_aMotherVariants[a_rTriplet.m_nMid].size() || fatherItr < (int)m_aFatherVariants[a_rTriplet.m_nFid].size())
+    while(childItr < m_aChildVariants[a_rTriplet.m_nCid].size() || motherItr < m_aMotherVariants[a_rTriplet.m_nMid].size() || fatherItr < m_aFatherVariants[a_rTriplet.m_nFid].size())
     {
         bool mergeMotherChild;
         bool mergeFatherChild;
         
-        if(childItr == (int)m_aChildVariants[a_rTriplet.m_nCid].size() || motherItr == (int)m_aMotherVariants[a_rTriplet.m_nMid].size())
+        if(childItr == m_aChildVariants[a_rTriplet.m_nCid].size() || motherItr == m_aMotherVariants[a_rTriplet.m_nMid].size())
             mergeMotherChild = false;
         else
             mergeMotherChild = IsMerge(m_aChildVariants[a_rTriplet.m_nCid][childItr], m_aMotherVariants[a_rTriplet.m_nMid][motherItr]);
-        if(childItr == (int)m_aChildVariants[a_rTriplet.m_nCid].size() || fatherItr == (int)m_aFatherVariants[a_rTriplet.m_nFid].size())
+        if(childItr == m_aChildVariants[a_rTriplet.m_nCid].size() || fatherItr == m_aFatherVariants[a_rTriplet.m_nFid].size())
             mergeFatherChild = false;
         else
             mergeFatherChild = IsMerge(m_aChildVariants[a_rTriplet.m_nCid][childItr], m_aFatherVariants[a_rTriplet.m_nFid][fatherItr]);
@@ -395,7 +395,7 @@ bool CMendelianTrioMerger::IsMerge(const CVariant* a_pVar1, const CVariant* a_pV
         return false;
 }
 
-void CMendelianTrioMerger::DoTripleMerge(SChrIdTriplet& a_rTriplet, int& a_nChildItr, int& a_nFatherItr, int& a_nMotherItr, EMendelianDecision a_decision, std::vector<SVcfRecord>& a_rRecordList)
+void CMendelianTrioMerger::DoTripleMerge(SChrIdTriplet& a_rTriplet, unsigned int& a_nChildItr, unsigned int& a_nFatherItr, unsigned int& a_nMotherItr, EMendelianDecision a_decision, std::vector<SVcfRecord>& a_rRecordList)
 {
     SVcfRecord vcfrecord;
     
@@ -411,7 +411,7 @@ void CMendelianTrioMerger::DoTripleMerge(SChrIdTriplet& a_rTriplet, int& a_nChil
     alleles.push_back(m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_refSequence);
     
     //Add different child alleles
-    for(int k= 0; k < m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_nAlleleCount; k++)
+    for(unsigned int k= 0; k < (unsigned int)m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_nAlleleCount; k++)
     {
         std::string childAllele = m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->GetOriginalAlleleStr(k);
         if(childAllele != "" && std::find(alleles.begin(), alleles.end(), childAllele) == alleles.end())
@@ -419,7 +419,7 @@ void CMendelianTrioMerger::DoTripleMerge(SChrIdTriplet& a_rTriplet, int& a_nChil
     }
     
     //Add different mother alleles
-    for(int k= 0; k < m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->m_nAlleleCount; k++)
+    for(unsigned int k= 0; k < (unsigned int)m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->m_nAlleleCount; k++)
     {
         std::string motherAllele = m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->GetOriginalAlleleStr(k);
         if(motherAllele != "" && std::find(alleles.begin(), alleles.end(), motherAllele) == alleles.end())
@@ -427,7 +427,7 @@ void CMendelianTrioMerger::DoTripleMerge(SChrIdTriplet& a_rTriplet, int& a_nChil
     }
     
     //Add different father alleles
-    for(int k= 0; k < m_aFatherVariants[a_rTriplet.m_nFid][a_nFatherItr]->m_nAlleleCount; k++)
+    for(unsigned int k= 0; k < (unsigned int)m_aFatherVariants[a_rTriplet.m_nFid][a_nFatherItr]->m_nAlleleCount; k++)
     {
         std::string fatherAllele = m_aFatherVariants[a_rTriplet.m_nFid][a_nFatherItr]->GetOriginalAlleleStr(k);
         if(fatherAllele != "" && std::find(alleles.begin(), alleles.end(), fatherAllele) == alleles.end())
@@ -436,7 +436,7 @@ void CMendelianTrioMerger::DoTripleMerge(SChrIdTriplet& a_rTriplet, int& a_nChil
     
     //Generate final allele string
     std::string alleleString = "";
-    for(int k=0; k < (int)alleles.size(); k++)
+    for(unsigned int k=0; k < alleles.size(); k++)
     {
         if(k != 0)
             alleleString = alleleString + ",";
@@ -449,13 +449,13 @@ void CMendelianTrioMerger::DoTripleMerge(SChrIdTriplet& a_rTriplet, int& a_nChil
     dataMother.m_nHaplotypeCount = m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->m_nZygotCount;
     dataMother.m_bIsPhased = m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->m_bIsPhased; // Feature Work: Phasings of variants we found can be written to output
     dataMother.m_bIsNoCallVariant = m_noCallMode == ENoCallMode::eNone ? false : m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->m_bIsNoCall;
-    for(int k = 0; k < m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->m_nZygotCount; k++)
+    for(unsigned int k = 0; k < (unsigned int)m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->m_nZygotCount; k++)
     {
-        for(int m = 0; m < (int)alleles.size(); m++)
+        for(unsigned int m = 0; m < alleles.size(); m++)
         {
             if(m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->GetOriginalAlleleStr(k) == alleles[m])
             {
-                dataMother.m_aGenotype[k] = m;
+                dataMother.m_aGenotype[k] = (int)m;
                 break;
             }
         }
@@ -466,13 +466,13 @@ void CMendelianTrioMerger::DoTripleMerge(SChrIdTriplet& a_rTriplet, int& a_nChil
     dataFather.m_nHaplotypeCount = m_aFatherVariants[a_rTriplet.m_nFid][a_nFatherItr]->m_nZygotCount;
     dataFather.m_bIsPhased = m_aFatherVariants[a_rTriplet.m_nFid][a_nFatherItr]->m_bIsPhased; // Feature Work: Phasings of variants we found can be written to output
     dataFather.m_bIsNoCallVariant = m_noCallMode == ENoCallMode::eNone ? false : m_aFatherVariants[a_rTriplet.m_nFid][a_nFatherItr]->m_bIsNoCall;
-    for(int k = 0; k < m_aFatherVariants[a_rTriplet.m_nFid][a_nFatherItr]->m_nZygotCount; k++)
+    for(unsigned int k = 0; k < (unsigned int)m_aFatherVariants[a_rTriplet.m_nFid][a_nFatherItr]->m_nZygotCount; k++)
     {
-        for(int m = 0; m < (int)alleles.size(); m++)
+        for(unsigned int m = 0; m < alleles.size(); m++)
         {
             if(m_aFatherVariants[a_rTriplet.m_nFid][a_nFatherItr]->GetOriginalAlleleStr(k) == alleles[m])
             {
-                dataFather.m_aGenotype[k] = m;
+                dataFather.m_aGenotype[k] = (int)m;
                 break;
             }
         }
@@ -483,13 +483,13 @@ void CMendelianTrioMerger::DoTripleMerge(SChrIdTriplet& a_rTriplet, int& a_nChil
     dataChild.m_nHaplotypeCount = m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_nZygotCount;
     dataChild.m_bIsPhased = m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_bIsPhased; // Feature Work: Phasings of variants we found can be written to output
     dataChild.m_bIsNoCallVariant = m_noCallMode == ENoCallMode::eNone ? false : m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_bIsNoCall;
-    for(int k = 0; k < m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->m_nZygotCount; k++)
+    for(unsigned int k = 0; k < (unsigned int)m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->m_nZygotCount; k++)
     {
-        for(int m = 0; m < (int)alleles.size(); m++)
+        for(unsigned int m = 0; m < alleles.size(); m++)
         {
             if(m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->GetOriginalAlleleStr(k) == alleles[m])
             {
-                dataChild.m_aGenotype[k] = m;
+                dataChild.m_aGenotype[k] = (int)m;
                 break;
             }
         }
@@ -510,7 +510,8 @@ void CMendelianTrioMerger::DoTripleMerge(SChrIdTriplet& a_rTriplet, int& a_nChil
 
 
 void CMendelianTrioMerger::DoDoubleMerge(SChrIdTriplet& a_rTriplet,
-                                         int& a_nItr1, int& a_nItr2,
+                                         unsigned int& a_nItr1,
+                                         unsigned int& a_nItr2,
                                          EMendelianVcfName a_name1,
                                          EMendelianVcfName a_name2,
                                          EMendelianDecision a_decision,
@@ -541,7 +542,7 @@ void CMendelianTrioMerger::DoDoubleMerge(SChrIdTriplet& a_rTriplet,
     //Add child allele
     if(pVarChild != NULL)
     {
-        for(int k= 0; k < pVarChild->m_nAlleleCount; k++)
+        for(unsigned int k= 0; k < (unsigned int)pVarChild->m_nAlleleCount; k++)
         {
             std::string childAllele = pVarChild->GetOriginalAlleleStr(k);
             if(childAllele != "" && std::find(alleles.begin(), alleles.end(), childAllele) == alleles.end())
@@ -552,7 +553,7 @@ void CMendelianTrioMerger::DoDoubleMerge(SChrIdTriplet& a_rTriplet,
     //Add different mother alleles
     if(pVarMother != NULL)
     {
-        for(int k= 0; k < pVarMother->m_nAlleleCount; k++)
+        for(unsigned int k= 0; k < (unsigned int)pVarMother->m_nAlleleCount; k++)
         {
             std::string motherAllele = pVarMother->GetOriginalAlleleStr(k);
             if(motherAllele != "" && std::find(alleles.begin(), alleles.end(), motherAllele) == alleles.end())
@@ -563,7 +564,7 @@ void CMendelianTrioMerger::DoDoubleMerge(SChrIdTriplet& a_rTriplet,
     //Add different father alleles
     if(pVarFather != NULL)
     {
-        for(int k= 0; k < pVarFather->m_nAlleleCount; k++)
+        for(unsigned int k= 0; k < (unsigned int)pVarFather->m_nAlleleCount; k++)
         {
             std::string fatherAllele = pVarFather->GetOriginalAlleleStr(k);
             if(fatherAllele != "" && std::find(alleles.begin(), alleles.end(), fatherAllele) == alleles.end())
@@ -572,7 +573,7 @@ void CMendelianTrioMerger::DoDoubleMerge(SChrIdTriplet& a_rTriplet,
     }
     
     std::string alleleString = "";
-    for(int k=0; k < (int)alleles.size(); k++)
+    for(unsigned int k=0; k < alleles.size(); k++)
     {
         if(k != 0)
             alleleString = alleleString + ",";
@@ -587,13 +588,13 @@ void CMendelianTrioMerger::DoDoubleMerge(SChrIdTriplet& a_rTriplet,
         dataMother.m_nHaplotypeCount = pVarMother->m_nZygotCount;
         dataMother.m_bIsPhased = pVarMother->m_bIsPhased; // Feature Work: Phasings of variants we found can be written to output
         dataMother.m_bIsNoCallVariant = m_noCallMode == eNone ? false : pVarMother->m_bIsNoCall;
-        for(int k = 0; k < pVarMother->m_nZygotCount; k++)
+        for(unsigned int k = 0; k < (unsigned int)pVarMother->m_nZygotCount; k++)
         {
-            for(int m = 0; m < (int)alleles.size(); m++)
+            for(unsigned int m = 0; m < alleles.size(); m++)
             {
                 if(pVarMother->GetOriginalAlleleStr(k) == alleles[m])
                 {
-                    dataMother.m_aGenotype[k] = m;
+                    dataMother.m_aGenotype[k] = (int)m;
                     break;
                 }
             }
@@ -615,13 +616,13 @@ void CMendelianTrioMerger::DoDoubleMerge(SChrIdTriplet& a_rTriplet,
         dataFather.m_nHaplotypeCount = pVarFather->m_nZygotCount;
         dataFather.m_bIsPhased = pVarFather->m_bIsPhased; // Feature Work: Phasings of variants we found can be written to output
         dataFather.m_bIsNoCallVariant = m_noCallMode == eNone ? false : pVarFather->m_bIsNoCall;
-        for(int k = 0; k < pVarFather->m_nZygotCount; k++)
+        for(unsigned int k = 0; k < (unsigned int)pVarFather->m_nZygotCount; k++)
         {
-            for(int m = 0; m < (int)alleles.size(); m++)
+            for(unsigned int m = 0; m < alleles.size(); m++)
             {
                 if(pVarFather->GetOriginalAlleleStr(k) == alleles[m])
                 {
-                    dataFather.m_aGenotype[k] = m;
+                    dataFather.m_aGenotype[k] = (int)m;
                     break;
                 }
             }
@@ -643,13 +644,13 @@ void CMendelianTrioMerger::DoDoubleMerge(SChrIdTriplet& a_rTriplet,
         dataChild.m_nHaplotypeCount = pVarChild->m_nZygotCount;
         dataChild.m_bIsPhased = pVarChild->m_bIsPhased; // Feature Work: Phasings of variants we found can be written to output
         dataChild.m_bIsNoCallVariant = m_noCallMode == eNone ? false : pVarChild->m_bIsNoCall;
-        for(int k = 0; k < pVarChild->m_nZygotCount; k++)
+        for(unsigned int k = 0; k < (unsigned int)pVarChild->m_nZygotCount; k++)
         {
-            for(int m = 0; m < (int)alleles.size(); m++)
+            for(unsigned int m = 0; m < alleles.size(); m++)
             {
                 if(pVarChild->GetOriginalAlleleStr(k) == alleles[m])
                 {
-                    dataChild.m_aGenotype[k] = m;
+                    dataChild.m_aGenotype[k] = (int)m;
                     break;
                 }
             }
@@ -680,7 +681,7 @@ void CMendelianTrioMerger::DoDoubleMerge(SChrIdTriplet& a_rTriplet,
 
 
 void CMendelianTrioMerger::DoSingleVar(SChrIdTriplet& a_rTriplet,
-                                       int& a_nItr,
+                                       unsigned int& a_nItr,
                                        EMendelianVcfName a_name,
                                        EMendelianDecision a_decision,
                                        std::vector<SVcfRecord>& a_rRecordList)
@@ -893,10 +894,10 @@ void CMendelianTrioMerger::RegisterGenotype(const SVcfRecord& a_rRecord, EVarian
 void CMendelianTrioMerger::ProcessRefOverlappedRegions(std::vector<SVcfRecord>&  a_rRecordList, std::vector<EMendelianDecision>& a_rRecordDecisionList)
 {
 
-    int recordItr = 0;
+    unsigned int recordItr = 0;
     std::string curVariantDecision;
     
-    while(recordItr < static_cast<int>(a_rRecordList.size()))
+    while(recordItr < a_rRecordList.size())
     {
         curVariantDecision = a_rRecordList[recordItr].m_mendelianDecision;
         
@@ -904,7 +905,7 @@ void CMendelianTrioMerger::ProcessRefOverlappedRegions(std::vector<SVcfRecord>& 
         if(curVariantDecision != "1" && curVariantDecision != "0")
         {
             //Go Backward and use a second iterator
-            int temporaryItr = recordItr-1;
+            int temporaryItr = (int)recordItr-1;
             while(temporaryItr >= 0)
             {
                 if(IsOverlap(a_rRecordList[recordItr], a_rRecordList[temporaryItr]))
@@ -918,7 +919,7 @@ void CMendelianTrioMerger::ProcessRefOverlappedRegions(std::vector<SVcfRecord>& 
             }
             
             //Go Forward with second iterator
-            temporaryItr = recordItr + 1;
+            temporaryItr = (int)recordItr + 1;
             while(recordItr < a_rRecordList.size())
             {
                 if(IsOverlap(a_rRecordList[recordItr], a_rRecordList[temporaryItr]))

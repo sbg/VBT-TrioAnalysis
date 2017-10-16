@@ -214,7 +214,7 @@ void CMendelianResultLog::WriteBestPathStatistics(const std::string& a_rPrefixNa
     outputLog << std::left << std::setw(15) << std::setfill(separator) << "F-measure" << std::endl;
     
     
-    for(int k = 0; k < (int)m_aFatherChildLogEntries.size(); k++)
+    for(unsigned int k = 0; k < m_aFatherChildLogEntries.size(); k++)
     {
         if(m_aFatherChildLogEntries[k].m_bIsNull)
             continue;
@@ -252,7 +252,7 @@ void CMendelianResultLog::WriteBestPathStatistics(const std::string& a_rPrefixNa
     outputLog << std::left << std::setw(15) << std::setfill(separator) << "Recall";
     outputLog << std::left << std::setw(15) << std::setfill(separator) << "F-measure" << std::endl;
     
-    for(int k = 0; k < (int)m_aMotherChildLogEntries.size(); k++)
+    for(unsigned int k = 0; k < m_aMotherChildLogEntries.size(); k++)
     {
         if(m_aMotherChildLogEntries[k].m_bIsNull)
             continue;

@@ -75,7 +75,7 @@ int CMendelianAnalyzer::run(int argc, char **argv)
     //Perform merge process
     m_mendelianDecider.SetNocallMode(m_noCallMode);
     std::vector<SChrIdTriplet> chrIds = m_provider.GetCommonChromosomes();
-    for(int k = 0; k < (int)chrIds.size(); k++)
+    for(unsigned int k = 0; k < chrIds.size(); k++)
     {
         //Initialize the decision arrays
         std::vector<EMendelianDecision> childDecisions  = std::vector<EMendelianDecision>(m_provider.GetVariantCount(eCHILD,  chrIds[k].m_nCid));
@@ -347,7 +347,7 @@ int CMendelianAnalyzer::AssignJobsToThreads(int a_nThreadCount)
     std::vector<SChrIdTriplet> *chromosomeLists = new std::vector<SChrIdTriplet>[exactThreadCount];
     
     //Divide tasks into threads
-    for(int k = 0; k < (int)chromosomeListToProcess.size(); k++)
+    for(unsigned int k = 0; k < chromosomeListToProcess.size(); k++)
     {
         chromosomeLists[threadPoolIt].push_back(chromosomeListToProcess[k]);
         threadPoolIt = (threadPoolIt+1) % exactThreadCount;

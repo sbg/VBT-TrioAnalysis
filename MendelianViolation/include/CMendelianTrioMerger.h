@@ -69,16 +69,16 @@ private:
     
     ///Merge 3 variant to single vcf record
     void DoTripleMerge(SChrIdTriplet& a_rTriplet,
-                       int& a_nChildItr,
-                       int& a_nFatherItr,
-                       int& a_nMotherItr,
+                       unsigned int& a_nChildItr,
+                       unsigned int& a_nFatherItr,
+                       unsigned int& a_nMotherItr,
                        EMendelianDecision a_decision,
                        std::vector<SVcfRecord>& a_rRecordList);
 
     ///Merge 2 variant to single vcf record
     void DoDoubleMerge(SChrIdTriplet& a_rTriplet,
-                       int& a_nItr1,
-                       int& a_nItr2,
+                       unsigned int& a_nItr1,
+                       unsigned int& a_nItr2,
                        EMendelianVcfName a_name1,
                        EMendelianVcfName a_name2,
                        EMendelianDecision a_decision,
@@ -86,7 +86,7 @@ private:
  
     ///Write single variant to vcf record
     void DoSingleVar(SChrIdTriplet& a_rTriplet,
-                     int& a_nItr,
+                     unsigned int& a_nItr,
                      EMendelianVcfName a_name,
                      EMendelianDecision a_decision,
                      std::vector<SVcfRecord>& a_rRecordList);

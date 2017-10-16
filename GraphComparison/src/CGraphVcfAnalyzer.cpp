@@ -88,7 +88,7 @@ int CGraphVcfAnalyzer::AssignJobsToThreads(int a_nThreadCount)
     std::vector<duocomparison::SChrIdTuple> *chromosomeLists = new std::vector<duocomparison::SChrIdTuple>[exactThreadCount];
     
     //Divide tasks into threads
-    for(int k = 0; k < (int)chromosomeListToProcess.size(); k++)
+    for(unsigned int k = 0; k < chromosomeListToProcess.size(); k++)
     {
         chromosomeLists[threadPoolIt].push_back(chromosomeListToProcess[k]);
         threadPoolIt = (threadPoolIt+1) % exactThreadCount;
@@ -113,7 +113,7 @@ int CGraphVcfAnalyzer::AssignJobsToThreads(int a_nThreadCount)
 void CGraphVcfAnalyzer::ThreadFunctionSPLIT(std::vector<duocomparison::SChrIdTuple> a_aTuples)
 {
     
-    for(int k = 0; k < (int)a_aTuples.size(); k++)
+    for(unsigned int k = 0; k < a_aTuples.size(); k++)
     {
         //List that store the base Oriented variant tuples (In the order of genotype)
         std::deque<core::COrientedVariant> BaseOrientedVariantList;
@@ -206,40 +206,40 @@ void CGraphVcfAnalyzer::GetSyncPointList(const std::vector<const core::COriented
                                          std::vector<core::CSyncPoint>& a_rSyncPointList)
 {
     
-    int baseIncludedItr = 0;
-    int baseExcludedItr = 0;
-    int calledIncludedItr = 0;
-    int calledExcludedItr = 0;
+    unsigned int baseIncludedItr = 0;
+    unsigned int baseExcludedItr = 0;
+    unsigned int calledIncludedItr = 0;
+    unsigned int calledExcludedItr = 0;
     
-    for(int k = 0; k < (int)a_rSyncPointCoordinates.size(); k++)
+    for(unsigned int k = 0; k < a_rSyncPointCoordinates.size(); k++)
     {
         core::CSyncPoint ssPoint;
         ssPoint.m_nStartPosition = k > 0 ? a_rSyncPointCoordinates[k-1] : 0;
         ssPoint.m_nEndPosition = a_rSyncPointCoordinates[k];
-        ssPoint.m_nIndex = k;
+        ssPoint.m_nIndex = (int)k;
         int bound = ssPoint.m_nStartPosition == ssPoint.m_nEndPosition ? 1 : 0;
         
-        while(baseIncludedItr < (int)a_rBaseIncluded.size() && a_rBaseIncluded[baseIncludedItr]->GetStartPos() < (a_rSyncPointCoordinates[k] + bound))
+        while(baseIncludedItr < a_rBaseIncluded.size() && a_rBaseIncluded[baseIncludedItr]->GetStartPos() < (a_rSyncPointCoordinates[k] + bound))
         {
             const core::COrientedVariant* pOvar = a_rBaseIncluded[baseIncludedItr];
             ssPoint.m_baseVariantsIncluded.push_back(pOvar);
             baseIncludedItr++;
         }
         
-        while(calledIncludedItr < (int)a_rCalledIncluded.size() && a_rCalledIncluded[calledIncludedItr]->GetStartPos() < (a_rSyncPointCoordinates[k] + bound))
+        while(calledIncludedItr < a_rCalledIncluded.size() && a_rCalledIncluded[calledIncludedItr]->GetStartPos() < (a_rSyncPointCoordinates[k] + bound))
         {
             const core::COrientedVariant* pOvar = a_rCalledIncluded[calledIncludedItr];
             ssPoint.m_calledVariantsIncluded.push_back(pOvar);
             calledIncludedItr++;
         }
         
-        while(baseExcludedItr < (int)a_rBaseExcluded.size() && a_rBaseExcluded[baseExcludedItr]->m_nStartPos < (a_rSyncPointCoordinates[k] + bound))
+        while(baseExcludedItr < a_rBaseExcluded.size() && a_rBaseExcluded[baseExcludedItr]->m_nStartPos < (a_rSyncPointCoordinates[k] + bound))
         {
             ssPoint.m_baseVariantsExcluded.push_back(a_rBaseExcluded[baseExcludedItr]);
             baseExcludedItr++;
         }
         
-        while(calledExcludedItr < (int)a_rCalledExcluded.size() && a_rCalledExcluded[calledExcludedItr]->m_nStartPos < (a_rSyncPointCoordinates[k] + bound))
+        while(calledExcludedItr < a_rCalledExcluded.size() && a_rCalledExcluded[calledExcludedItr]->m_nStartPos < (a_rSyncPointCoordinates[k] + bound))
         {
             ssPoint.m_calledVariantsExcluded.push_back(a_rCalledExcluded[calledExcludedItr]);
             calledExcludedItr++;
@@ -254,24 +254,24 @@ void CGraphVcfAnalyzer::GetSyncPointList(const std::vector<const core::COriented
     sPoint.m_nEndPosition = INT_MAX;
     sPoint.m_nIndex = static_cast<int>(a_rSyncPointCoordinates.size()-1);
   
-    while(baseIncludedItr < (int)a_rBaseIncluded.size() && a_rBaseIncluded[baseIncludedItr]->GetStartPos() <= sPoint.m_nEndPosition)
+    while(baseIncludedItr < a_rBaseIncluded.size() && a_rBaseIncluded[baseIncludedItr]->GetStartPos() <= sPoint.m_nEndPosition)
     {
         sPoint.m_baseVariantsIncluded.push_back(a_rBaseIncluded[baseIncludedItr]);
         baseIncludedItr++;
     }
-    while(calledIncludedItr < (int)a_rCalledIncluded.size() && a_rCalledIncluded[calledIncludedItr]->GetStartPos() <= sPoint.m_nEndPosition)
+    while(calledIncludedItr < a_rCalledIncluded.size() && a_rCalledIncluded[calledIncludedItr]->GetStartPos() <= sPoint.m_nEndPosition)
     {
         sPoint.m_calledVariantsIncluded.push_back(a_rCalledIncluded[calledIncludedItr]);
         calledIncludedItr++;
     }
     
-    while(baseExcludedItr < (int)a_rBaseExcluded.size() && a_rBaseExcluded[baseExcludedItr]->m_nStartPos <= sPoint.m_nEndPosition)
+    while(baseExcludedItr < a_rBaseExcluded.size() && a_rBaseExcluded[baseExcludedItr]->m_nStartPos <= sPoint.m_nEndPosition)
     {
         sPoint.m_baseVariantsExcluded.push_back(a_rBaseExcluded[baseExcludedItr]);
         baseExcludedItr++;
     }
     
-    while(calledExcludedItr < (int)a_rCalledExcluded.size() && a_rCalledExcluded[calledExcludedItr]->m_nStartPos <= sPoint.m_nEndPosition)
+    while(calledExcludedItr < a_rCalledExcluded.size() && a_rCalledExcluded[calledExcludedItr]->m_nStartPos <= sPoint.m_nEndPosition)
     {
         sPoint.m_calledVariantsExcluded.push_back(a_rCalledExcluded[calledExcludedItr]);
         calledExcludedItr++;
