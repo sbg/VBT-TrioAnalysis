@@ -17,7 +17,7 @@ cd vbt
 make
 ```
 
-**Note:** If you are unable to compile program or getting runtime error, it is mostly because the project is still under heavy development. Please shoot me an email **(berke.toptas@sbgdinc.com)** for any problems, suggestions etc.
+**Note:** If you are unable to compile program or getting runtime error, please contact me. **(berke.toptas@sbgdinc.com)**
 
 ### Parameter format:
 
