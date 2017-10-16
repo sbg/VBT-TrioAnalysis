@@ -193,7 +193,7 @@ void CMendelianTrioMerger::AddRecords(SChrIdTriplet& a_rTriplet)
         else if(mergeMotherChild)
         {
             //CHECK IF FATHER IS SMALLER
-            if(fatherItr != (int)m_aFatherVariants[a_rTriplet.m_nFid].size() && m_aFatherVariants[a_rTriplet.m_nFid][fatherItr]->m_nOriginalPos < m_aChildVariants[a_rTriplet.m_nCid][childItr]->m_nOriginalPos)
+            if(fatherItr != m_aFatherVariants[a_rTriplet.m_nFid].size() && m_aFatherVariants[a_rTriplet.m_nFid][fatherItr]->m_nOriginalPos < m_aChildVariants[a_rTriplet.m_nCid][childItr]->m_nOriginalPos)
             {
                 EMendelianDecision decision = GetMendelianDecision(0, m_aFatherVariants[a_rTriplet.m_nFid][fatherItr], 0, m_aFatherDecisions[a_rTriplet.m_nTripleIndex][fatherItr]);
                 
@@ -233,7 +233,7 @@ void CMendelianTrioMerger::AddRecords(SChrIdTriplet& a_rTriplet)
         else if(mergeFatherChild)
         {
             //CHECK IF MOTHER IS SMALLER
-            if(motherItr != (int)m_aMotherVariants[a_rTriplet.m_nMid].size() && m_aMotherVariants[a_rTriplet.m_nMid][motherItr]->m_nOriginalPos < m_aChildVariants[a_rTriplet.m_nCid][childItr]->m_nOriginalPos)
+            if(motherItr != m_aMotherVariants[a_rTriplet.m_nMid].size() && m_aMotherVariants[a_rTriplet.m_nMid][motherItr]->m_nOriginalPos < m_aChildVariants[a_rTriplet.m_nCid][childItr]->m_nOriginalPos)
             {
                 EMendelianDecision decision = GetMendelianDecision(m_aMotherVariants[a_rTriplet.m_nMid][motherItr], 0, 0, m_aMotherDecisions[a_rTriplet.m_nTripleIndex][motherItr]);
                 
@@ -273,7 +273,7 @@ void CMendelianTrioMerger::AddRecords(SChrIdTriplet& a_rTriplet)
         
         // No Child variant is merged check for father-mother merge
         bool mergeMotherFather;
-        if(motherItr == (int)m_aMotherVariants[a_rTriplet.m_nMid].size() || fatherItr == (int)m_aFatherVariants[a_rTriplet.m_nFid].size())
+        if(motherItr == m_aMotherVariants[a_rTriplet.m_nMid].size() || fatherItr == m_aFatherVariants[a_rTriplet.m_nFid].size())
             mergeMotherFather = false;
         else
             mergeMotherFather = IsMerge(m_aMotherVariants[a_rTriplet.m_nMid][motherItr], m_aFatherVariants[a_rTriplet.m_nFid][fatherItr]);
@@ -281,7 +281,7 @@ void CMendelianTrioMerger::AddRecords(SChrIdTriplet& a_rTriplet)
         if(mergeMotherFather)
         {
             //CHECK IF CHILD IS SMALLER
-            if(childItr != (int)m_aChildVariants[a_rTriplet.m_nCid].size() && m_aChildVariants[a_rTriplet.m_nCid][childItr]->m_nOriginalPos < m_aMotherVariants[a_rTriplet.m_nMid][motherItr]->m_nOriginalPos)
+            if(childItr != m_aChildVariants[a_rTriplet.m_nCid].size() && m_aChildVariants[a_rTriplet.m_nCid][childItr]->m_nOriginalPos < m_aMotherVariants[a_rTriplet.m_nMid][motherItr]->m_nOriginalPos)
             {
                 EMendelianDecision decision = GetMendelianDecision(0, 0, m_aChildVariants[a_rTriplet.m_nCid][childItr], m_aChildDecisions[a_rTriplet.m_nTripleIndex][childItr]);
                 
@@ -334,9 +334,9 @@ void CMendelianTrioMerger::AddRecords(SChrIdTriplet& a_rTriplet)
         //There is no merge between three variant print the smallest one
         else
         {
-            int motherPos = motherItr != (int)m_aMotherVariants[a_rTriplet.m_nMid].size() ? m_aMotherVariants[a_rTriplet.m_nMid][motherItr]->m_nOriginalPos : INT_MAX;
-            int fatherPos = fatherItr != (int)m_aFatherVariants[a_rTriplet.m_nFid].size() ? m_aFatherVariants[a_rTriplet.m_nFid][fatherItr]->m_nOriginalPos : INT_MAX;
-            int childPos  = childItr  != (int)m_aChildVariants[a_rTriplet.m_nCid].size()  ? m_aChildVariants[a_rTriplet.m_nCid][childItr]->m_nOriginalPos   : INT_MAX;
+            int motherPos = motherItr != m_aMotherVariants[a_rTriplet.m_nMid].size() ? m_aMotherVariants[a_rTriplet.m_nMid][motherItr]->m_nOriginalPos : INT_MAX;
+            int fatherPos = fatherItr != m_aFatherVariants[a_rTriplet.m_nFid].size() ? m_aFatherVariants[a_rTriplet.m_nFid][fatherItr]->m_nOriginalPos : INT_MAX;
+            int childPos  = childItr  != m_aChildVariants[a_rTriplet.m_nCid].size()  ? m_aChildVariants[a_rTriplet.m_nCid][childItr]->m_nOriginalPos   : INT_MAX;
         
             if(motherPos <= fatherPos && motherPos <= childPos)
             {
