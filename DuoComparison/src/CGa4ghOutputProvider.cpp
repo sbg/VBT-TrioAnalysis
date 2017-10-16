@@ -82,7 +82,7 @@ void CGa4ghOutputProvider::FillHeader()
     m_vcfWriter.WriteHeaderToVcf();
 }
 
-void CGa4ghOutputProvider::AddRecords(const core::CPath& a_rBestPath, const core::CPath& a_rBestAlleleMatchPath, SChrIdTuple a_rTuple)
+void CGa4ghOutputProvider::AddRecords(const core::CPath& a_rBestPath, SChrIdTuple a_rTuple)
 {
     //Best Path included/excluded variants
     std::vector<const CVariant*> excludedVarsBase = m_pVariantProvider->GetVariantList(eBASE, a_rTuple.m_nBaseId, a_rBestPath.m_baseSemiPath.GetExcluded());

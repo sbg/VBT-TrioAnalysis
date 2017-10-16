@@ -55,7 +55,7 @@ private:
     void FillHeader();
     
     //Add records of best path to the vcf file (Contain single chromosome)
-    void AddRecords(const core::CPath& a_rBestPath, const core::CPath& a_rBestAlleleMatchPath, SChrIdTuple a_rTuple);
+    void AddRecords(const core::CPath& a_rBestPath, SChrIdTuple a_rTuple);
 
     //Return true if base and called variants can be merged
     bool CanMerge(const CVariant* a_pVariantBase, const CVariant* a_pVariantCalled) const;
