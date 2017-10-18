@@ -436,15 +436,19 @@ const std::vector<SVcfContig>&  CVcfReader::GetContigs() const
 
 void CVcfReader::GetFilterInfo(std::vector<std::string> &a_rFilterNames, std::vector<std::string> &a_rFilterDescriptions)
 {
-    for(int k = 0; k < m_pHeader->n[BCF_DT_ID]; k++)
+    
+    for(int k = 0; k < m_pHeader->nhrec; k++)
     {
-        if(m_pHeader->id[BCF_DT_ID][k].val->hrec[0] !=0 && 0 == strcmp(m_pHeader->id[BCF_DT_ID][k].val->hrec[0]->key, "FILTER"))
+        if(0 == strcmp(m_pHeader->hrec[k]->key, "FILTER"))
         {
-            a_rFilterNames.push_back(m_pHeader->id[BCF_DT_ID][k].key);
-            a_rFilterDescriptions.push_back(m_pHeader->id[BCF_DT_ID][k].val->hrec[0]->vals[1]);
+            for(int m = 0; m < m_pHeader->hrec[k]->nkeys; m++)
+            {
+                if(0 == strcmp(m_pHeader->hrec[k]->keys[m], "ID"))
+                    a_rFilterNames.push_back(m_pHeader->hrec[k]->vals[m]);
+                if(0 == strcmp(m_pHeader->hrec[k]->keys[m], "Description"))
+                    a_rFilterDescriptions.push_back(m_pHeader->hrec[k]->vals[m]);
+            }
         }
-        else
-            break;
     }
 }
 

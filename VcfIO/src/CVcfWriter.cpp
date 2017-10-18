@@ -115,7 +115,10 @@ void CVcfWriter::AddRecord(const SVcfRecord& a_rVcfRecord)
         int32_t* tmpi = new int[a_rVcfRecord.m_aFilterString.size()];
         for(int k = 0; k < (int)a_rVcfRecord.m_aFilterString.size(); k++)
             tmpi[k] = bcf_hdr_id2int(m_pHeader, BCF_DT_ID, a_rVcfRecord.m_aFilterString[k].c_str());
-        bcf_update_filter(m_pHeader, m_pRecord, tmpi, static_cast<int>(a_rVcfRecord.m_aFilterString.size()));
+        success = bcf_update_filter(m_pHeader, m_pRecord, tmpi, static_cast<int>(a_rVcfRecord.m_aFilterString.size()));
+        
+        if(success < 0)
+            std::cerr << "Failed to update Filter for Record: " << "Chr" << a_rVcfRecord.m_chrName << " Position: " << a_rVcfRecord.m_nPosition << std::endl;
     }
     
     //==Set Per Sample Data==
