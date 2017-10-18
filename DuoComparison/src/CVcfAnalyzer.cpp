@@ -192,6 +192,7 @@ void CVcfAnalyzer::ThreadFunctionGA4GH(std::vector<SChrIdTuple> a_aTuples)
         
         mtx.lock();
         m_resultLogger.LogStatistic(a_aTuples[k].m_chrName,
+                                    a_aTuples[k].m_nTupleIndex,
                                     static_cast<int>(includedVarsCall.size()),
                                     static_cast<int>(includedVarsBase.size()),
                                     static_cast<int>(includedVarsCall2.size()),
@@ -250,6 +251,7 @@ void CVcfAnalyzer::ThreadFunctionSPLIT(std::vector<SChrIdTuple> a_aTuples, bool 
         
         
         m_resultLogger.LogStatistic(a_aTuples[k].m_chrName,
+                                    a_aTuples[k].m_nTupleIndex,
                                     static_cast<int>(includedVarsCall.size()),
                                     static_cast<int>(includedVarsBase.size()),
                                     static_cast<int>(0),

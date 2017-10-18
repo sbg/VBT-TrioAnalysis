@@ -18,7 +18,7 @@ void CResultLog::SetLogPath(const std::string& a_rLogFolder)
 
 
 //Records the result for given chromosome
-void CResultLog::LogStatistic(std::string a_chromosomeName, int a_nTpCalled, int a_nTpBaseline, int a_nHalfTPCalled, int a_nHalfTPBaseline, int a_nFalsePositive, int a_nFalseNegative)
+void CResultLog::LogStatistic(const std::string& a_chromosomeName, int a_nChrId, int a_nTpCalled, int a_nTpBaseline, int a_nHalfTPCalled, int a_nHalfTPBaseline, int a_nFalsePositive, int a_nFalseNegative)
 {
     SLogEntry entry;
     
@@ -30,6 +30,7 @@ void CResultLog::LogStatistic(std::string a_chromosomeName, int a_nTpCalled, int
     entry.m_nFn = a_nFalseNegative;
     entry.m_bIsNull = false;
     entry.m_chrName = a_chromosomeName;
+    entry.m_nChrId = a_nChrId;
     
     m_aResultEntries.push_back(entry);
 }
@@ -48,6 +49,8 @@ void CResultLog::WriteStatistics(int a_nMode)
         outputLog << "ID" << "\t" << "True-Pos-Called" << "\t\t" << "True-Pos-Baseline" << "\t" << "False-Pos" << "\t" << "False-Neg" << "\t" << "Precision" << "\t" << "Recall";
         outputLog << "\t" << "F-measure" << std::endl;
 
+        std::sort(m_aResultEntries.begin(), m_aResultEntries.end(), [](const SLogEntry& l, const SLogEntry& r){ return l.m_nChrId < r.m_nChrId; });
+        
         for(unsigned int k = 0; k < m_aResultEntries.size(); k++)
         {
             if(m_aResultEntries[k].m_bIsNull)
@@ -97,6 +100,8 @@ void CResultLog::WriteStatistics(int a_nMode)
         outputLog << "====== ALLELE MATCHING MODE (GA4GH Method 2) ======" << std::endl;
         outputLog << "ID" << "\t" << "True-Pos-Called" << "\t\t" << "True-Pos-Baseline" << "\t" << "False-Pos" << "\t" << "False-Neg" << "\t" << "Precision" << "\t" << "Recall";
         outputLog << "\t" << "F-measure" << std::endl;
+        
+        std::sort(m_aResultEntries.begin(), m_aResultEntries.end(), [](const SLogEntry& l, const SLogEntry& r){ return l.m_nChrId < r.m_nChrId; });
         
         for(unsigned int k = 0; k < m_aResultEntries.size(); k++)
         {
