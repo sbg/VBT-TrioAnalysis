@@ -24,7 +24,7 @@ namespace duocomparison
 struct SLogEntry
 {
     std::string m_chrName;
-    int m_nChrId;
+    int m_nBaseId;
     bool m_bIsNull = true;
     int m_nTpCalled;
     int m_nTpBase;
@@ -47,7 +47,7 @@ public:
     
     ///Records the result for given chromosome
     void LogStatistic(const std::string& a_chromosomeName,
-                      int a_nChrId,
+                      int a_nBaseId,
                       int a_nTpCalled,
                       int a_nTpBaseline,
                       int a_nHalfTPCalled,
