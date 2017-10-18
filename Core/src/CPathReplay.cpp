@@ -479,7 +479,7 @@ int CPathReplay::SkipVariantsTo(CPath& a_rPath, const SContig& a_rContig, int a_
     
     while(varIndex < (int)m_aVariantListBase.size() && (varIndex == -1  || m_aVariantListBase[varIndex]->GetStart() < a_nMaxPos))
     {
-        m_aVariantListBase[varIndex]->m_variantStatus = eCOMPLEX_SKIPPED;
+        m_aVariantListBase[(varIndex >= 0 ? varIndex : 0)]->m_variantStatus = eCOMPLEX_SKIPPED;
         varIndex++;
         baseSkippedCount++;
     }
@@ -494,7 +494,7 @@ int CPathReplay::SkipVariantsTo(CPath& a_rPath, const SContig& a_rContig, int a_
     
     while(varIndex < (int)m_aVariantListCalled.size() && (varIndex == -1  || m_aVariantListCalled[varIndex]->GetStart() < a_nMaxPos))
     {
-        m_aVariantListCalled[varIndex]->m_variantStatus = eCOMPLEX_SKIPPED;
+        m_aVariantListCalled[(varIndex >= 0 ? varIndex : 0)]->m_variantStatus = eCOMPLEX_SKIPPED;
         varIndex++;
         calledSkippedCount++;
     }
