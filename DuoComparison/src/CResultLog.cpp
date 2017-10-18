@@ -8,6 +8,7 @@
 
 #include "CResultLog.h"
 #include <fstream>
+#include <algorithm>
 
 using namespace duocomparison;
 
