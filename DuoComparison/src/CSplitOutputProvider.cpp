@@ -189,8 +189,6 @@ void CSplitOutputProvider::FillHeader(CVcfWriter *a_pWriter, bool a_bIsBaseSide)
     
     //ADD REQUIRED FORMATS BY GA4GH
     a_pWriter->AddHeaderLine("##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">");
-    a_pWriter->AddHeaderLine("##FORMAT=<ID=BD,Number=1,Type=String,Description=\"Decision for call (TP/FP/FN/N)\">");
-    a_pWriter->AddHeaderLine("##FORMAT=<ID=BK,Number=1,Type=String,Description=\"Sub-type for decision (match/mismatch type)\">");
     
     //ADD FILTER COLUMNS FROM CALL FILE
     std::vector<std::string> filterNames;
