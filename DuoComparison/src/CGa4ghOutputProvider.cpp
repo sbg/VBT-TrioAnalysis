@@ -11,6 +11,7 @@
 #include "CPath.h"
 #include "CVariantIteratorV2.h"
 #include "CVariantProvider.h"
+#include "Constants.h"
 #include <iostream>
 
 using namespace duocomparison;
@@ -56,7 +57,7 @@ void CGa4ghOutputProvider::FillHeader()
 {
     //INIT VCF HEADER
     m_vcfWriter.InitHeader();
-    m_vcfWriter.AddHeaderLine("##source= VBT Variant Comparison Tool Ver. 1.0 (Beta), 2016");
+    m_vcfWriter.AddHeaderLine("##source= VBT Variant Comparison Tool " + VBT_VERSION);
     
     //ADD REQUIRED FORMATS BY GA4GH
     m_vcfWriter.AddHeaderLine("##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">");

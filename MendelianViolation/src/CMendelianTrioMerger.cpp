@@ -7,6 +7,7 @@
 //
 
 #include "CMendelianTrioMerger.h"
+#include "Constants.h"
 #include <algorithm>
 #include <iostream>
 #include <sstream>
@@ -92,7 +93,7 @@ void CMendelianTrioMerger::FillHeader()
 {
     //INIT VCF HEADER
     m_vcfWriter.InitHeader();
-    m_vcfWriter.AddHeaderLine("##source= VBT Mendelian Violation Tool Ver. 1.0 (Beta), 2017");
+    m_vcfWriter.AddHeaderLine("##source= VBT Mendelian Violation Tool " + VBT_VERSION );
     
     //ADD MENDELIAN VIOLATION INFO TYPE
     m_vcfWriter.AddHeaderLine("##INFO=<ID=MD,Number=1,Type=Integer,Description=\"Mendelian Violation Decision. (0)-complex, (1)-compliant, (2)-violation (3)-NoCall Parent (4)-NoCall Child \">");

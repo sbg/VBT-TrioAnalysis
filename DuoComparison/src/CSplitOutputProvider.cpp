@@ -9,7 +9,9 @@
 #include "CSplitOutputProvider.h"
 #include "CPath.h"
 #include "CVariantProvider.h"
+#include "Constants.h"
 #include <algorithm>
+
 
 using namespace duocomparison;
 
@@ -181,7 +183,7 @@ void CSplitOutputProvider::FillHeader(CVcfWriter *a_pWriter, bool a_bIsBaseSide)
 {
     //INIT VCF HEADER
     a_pWriter->InitHeader();
-    a_pWriter->AddHeaderLine("##source= VBT Variant Comparison Tool Ver. 1.0 (Beta), 2016");
+    a_pWriter->AddHeaderLine("##source= VBT Variant Comparison Tool " + VBT_VERSION);
     
     //ADD REQUIRED FORMATS BY GA4GH
     a_pWriter->AddHeaderLine("##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">");

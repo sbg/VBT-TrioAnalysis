@@ -147,5 +147,69 @@
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DuoComparison/src/CVariantProvider.cpp"
+            timestampString = "530046527.781533"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "52"
+            endingLineNumber = "52"
+            landmarkName = "CVariantProvider::SetChromosomeIdTuples()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "duocomparison::CVariantProvider::SetChromosomeIdTuples()"
+                  moduleName = "VariantBenchmarkingTools"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/c1ms21p6h3qk/Desktop/VBT/vbt/DuoComparison/src/CVariantProvider.cpp"
+                  timestampString = "530046535.29225"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "52"
+                  endingLineNumber = "52"
+                  offsetFromSymbolStart = "4353">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "duocomparison::CVariantProvider::SetChromosomeIdTuples()::$_0::operator()(duocomparison::SChrIdTuple const&amp;, duocomparison::SChrIdTuple const&amp;) const"
+                  moduleName = "VariantBenchmarkingTools"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/c1ms21p6h3qk/Desktop/VBT/vbt/DuoComparison/src/CVariantProvider.cpp"
+                  timestampString = "530046535.294332"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "52"
+                  endingLineNumber = "52"
+                  offsetFromSymbolStart = "16">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "VcfIO/src/CVcfReader.cpp"
+            timestampString = "530057655.055012"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "450"
+            endingLineNumber = "450"
+            landmarkName = "CVcfReader::GetFilterInfo(std::vector&lt;std::string&gt; &amp;a_rFilterNames, std::vector&lt;std::string&gt; &amp;a_rFilterDescriptions)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
    </Breakpoints>
 </Bucket>
