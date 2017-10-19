@@ -28,7 +28,6 @@ void CSplitOutputProvider::SetBestPaths(std::vector<core::CPath>& a_rBestPathLis
     m_aBestPaths = a_rBestPathList;
 }
 
-
 void CSplitOutputProvider::SetVcfPath(const std::string& a_rVcfPath)
 {
     m_vcfsFolder = a_rVcfPath;
@@ -38,7 +37,6 @@ void CSplitOutputProvider::SetContigList(const std::vector<SVcfContig>& a_rConti
 {
     m_contigs = a_rContigs;
 }
-
 
 void CSplitOutputProvider::GenerateSplitVcfs(const std::vector<SChrIdTuple>& a_rCommonChromosomes)
 {
@@ -70,7 +68,6 @@ void CSplitOutputProvider::GenerateTpBaseVcf(const std::vector<SChrIdTuple>& a_r
     
     m_TPBaseWriter.CloseVcf();
 }
-
 
 void CSplitOutputProvider::GenerateTpCalledVcf(const std::vector<SChrIdTuple>& a_rCommonChromosomes)
 {
@@ -141,7 +138,6 @@ void CSplitOutputProvider::GenerateFpVcf(const std::vector<SChrIdTuple>& a_rComm
     m_FPWriter.CloseVcf();
 }
 
-
 void CSplitOutputProvider::VariantToVcfRecord(const CVariant* a_pVariant, SVcfRecord& a_rOutputRec)
 {
     //Fill basic variant data
@@ -161,7 +157,6 @@ void CSplitOutputProvider::VariantToVcfRecord(const CVariant* a_pVariant, SVcfRe
     a_rOutputRec.m_aSampleData.push_back(data);
 }
 
-
 void CSplitOutputProvider::AddRecords(CVcfWriter* a_pWriter, const std::vector<const core::COrientedVariant*>& a_pOvarList)
 {
     for(const core::COrientedVariant* pOvar : a_pOvarList)
@@ -171,7 +166,6 @@ void CSplitOutputProvider::AddRecords(CVcfWriter* a_pWriter, const std::vector<c
         a_pWriter->AddRecord(record);
     }
 }
-
 
 void CSplitOutputProvider::AddRecords(CVcfWriter* a_pWriter, const std::vector<const CVariant*>& a_pVarList)
 {
@@ -210,7 +204,3 @@ void CSplitOutputProvider::FillHeader(CVcfWriter *a_pWriter, bool a_bIsBaseSide)
     a_pWriter->WriteHeaderToVcf();
 
 }
-
-
-
-
