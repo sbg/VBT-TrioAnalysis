@@ -64,7 +64,7 @@ void CSplitOutputProvider::GenerateTpBaseVcf(const std::vector<SChrIdTuple>& a_r
     {
         const std::vector<const core::COrientedVariant*> ovarList = m_aBestPaths[tuple.m_nTupleIndex].m_baseSemiPath.GetIncludedVariants();
         std::vector<const core::COrientedVariant*> sortedOvarList(ovarList);
-        std::sort(sortedOvarList.begin(), sortedOvarList.end(), [](const core::COrientedVariant* ovar1, const core::COrientedVariant* ovar2){return ovar1->GetVariant().m_nId < ovar2->GetVariant().m_nId;});
+        std::sort(sortedOvarList.begin(), sortedOvarList.end(), [](const core::COrientedVariant* ovar1, const core::COrientedVariant* ovar2){return ovar1->GetVariant().m_nOriginalPos < ovar2->GetVariant().m_nOriginalPos;});
         AddRecords(&m_TPBaseWriter, sortedOvarList);
     }
     
@@ -112,7 +112,7 @@ void CSplitOutputProvider::GenerateFnVcf(const std::vector<SChrIdTuple>& a_rComm
         const std::vector<const CVariant*> varList = m_pProvider->GetVariantList(eBASE, tuple.m_nBaseId, m_aBestPaths[tuple.m_nTupleIndex].m_baseSemiPath.GetExcluded());
         std::vector<const CVariant*> sortedVarList(varList);
         std::sort(sortedVarList.begin(), sortedVarList.end(), [](const CVariant* pVar1, const CVariant* pVar2){return pVar1->m_nId < pVar2->m_nId;});
-        AddRecords(&m_FNWriter, varList);
+        AddRecords(&m_FNWriter, sortedVarList);
     }
     
     m_FNWriter.CloseVcf();
@@ -133,7 +133,9 @@ void CSplitOutputProvider::GenerateFpVcf(const std::vector<SChrIdTuple>& a_rComm
     for(SChrIdTuple tuple : commonChromosomesOrdered)
     {
         const std::vector<const CVariant*> varList = m_pProvider->GetVariantList(eCALLED, tuple.m_nCalledId, m_aBestPaths[tuple.m_nTupleIndex].m_calledSemiPath.GetExcluded());
-        AddRecords(&m_FPWriter, varList);
+        std::vector<const CVariant*> sortedVarList(varList);
+        std::sort(sortedVarList.begin(), sortedVarList.end(), [](const CVariant* pVar1, const CVariant* pVar2){return pVar1->m_nId < pVar2->m_nId;});
+        AddRecords(&m_FPWriter, sortedVarList);
     }
     
     m_FPWriter.CloseVcf();
