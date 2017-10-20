@@ -191,6 +191,8 @@ void CMendelianVariantProvider::FillVariantsFromBED()
     //READ VARIANTS OF FATHER
     while(m_FatherVcf.GetNextRecord(&variant, id, m_fatherChildConfig))
     {
+        bool regionsEnded = false;
+        
         if(preChrId != variant.m_chrName)
         {
             preChrId = variant.m_chrName;
@@ -206,8 +208,14 @@ void CMendelianVariantProvider::FillVariantsFromBED()
         {
             hasNextRegion = bedParser.GetNextRegion(bedRegion);
             if(false == hasNextRegion)
+            {
+                regionsEnded = true;
                 break;
+            }
         }
+        
+        if(true == regionsEnded)
+            break;
         
         //Variant Could not pass from BED region
         if(bedRegion.m_chrName != variant.m_chrName || bedRegion.m_nStartPos >= variant.m_nEndPos)
@@ -248,6 +256,8 @@ void CMendelianVariantProvider::FillVariantsFromBED()
     //READ VARIANTS OF MOTHER
     while(m_MotherVcf.GetNextRecord(&variant, id, m_motherChildConfig))
     {
+        bool regionsEnded = false;
+        
         if(preChrId != variant.m_chrName)
         {
             preChrId = variant.m_chrName;
@@ -263,8 +273,14 @@ void CMendelianVariantProvider::FillVariantsFromBED()
         {
             hasNextRegion = bedParser.GetNextRegion(bedRegion);
             if(false == hasNextRegion)
+            {
+                regionsEnded = true;
                 break;
+            }
         }
+        
+        if(true == regionsEnded)
+            break;
         
         //Variant Could not pass from BED region
         if(bedRegion.m_chrName != variant.m_chrName || bedRegion.m_nStartPos >= variant.m_nEndPos)
@@ -304,6 +320,8 @@ void CMendelianVariantProvider::FillVariantsFromBED()
     //READ VARIANTS OF CHILD
     while(m_ChildVcf.GetNextRecord(&variant, id, m_motherChildConfig))
     {
+        bool regionsEnded = false;
+        
         if(preChrId != variant.m_chrName)
         {
             preChrId = variant.m_chrName;
@@ -319,8 +337,14 @@ void CMendelianVariantProvider::FillVariantsFromBED()
         {
             hasNextRegion = bedParser.GetNextRegion(bedRegion);
             if(false == hasNextRegion)
+            {
+                regionsEnded = true;
                 break;
+            }
         }
+        
+        if(true == regionsEnded)
+            break;
         
         //Variant Could not pass from BED region
         if(bedRegion.m_chrName != variant.m_chrName || bedRegion.m_nStartPos >= variant.m_nEndPos)

@@ -206,6 +206,8 @@ void CVariantProvider::FillVariantsFromBED()
 
     while(m_baseVCF.GetNextRecord(&variant, id++, m_config))
     {
+        bool regionsEnded = false;
+        
         if(preChrId != variant.m_chrName)
         {
             preChrId = variant.m_chrName;
@@ -219,9 +221,14 @@ void CVariantProvider::FillVariantsFromBED()
         {
             hasNextRegion = bedParser.GetNextRegion(bedRegion);
             if(false == hasNextRegion)
+            {
+                regionsEnded = true;
                 break;
+            }
         }
         
+        if(true == regionsEnded)
+            break;
         
         //Variant Could not pass from BED region
         if(bedRegion.m_chrName != variant.m_chrName || bedRegion.m_nStartPos >= variant.m_nEndPos)
@@ -257,13 +264,14 @@ void CVariantProvider::FillVariantsFromBED()
     
     while(m_calledVCF.GetNextRecord(&variant, id++, m_config))
     {
+        bool regionsEnded = false;
         
         if(preChrId != variant.m_chrName)
         {
             preChrId = variant.m_chrName;
             std::cout << "Processing chromosome " << preChrId << " of called vcf" << std::endl;
         }
-        
+
         //Pass to the next region
         while((bedRegion.m_chrName == variant.m_chrName && variant.m_nOriginalPos >= bedRegion.m_nEndPos)
            ||
@@ -271,8 +279,14 @@ void CVariantProvider::FillVariantsFromBED()
         {
             hasNextRegion = bedParser.GetNextRegion(bedRegion);
             if(false == hasNextRegion)
+            {
+                regionsEnded = true;
                 break;
+            }
         }
+        
+        if(true == regionsEnded)
+            break;
         
         //Variant Could not pass from BED region
         if(bedRegion.m_chrName != variant.m_chrName || bedRegion.m_nStartPos >= variant.m_nEndPos)
