@@ -200,7 +200,7 @@ void CMendelianVariantProvider::FillVariantsFromBED()
         }
 
         //Pass to the next region
-        if((bedRegion.m_chrName == variant.m_chrName && variant.m_nStartPos > bedRegion.m_nEndPos)
+        while((bedRegion.m_chrName == variant.m_chrName && variant.m_nOriginalPos >= bedRegion.m_nEndPos)
             ||
             m_FatherVcf.m_chrIndexMap[variant.m_chrName] > m_FatherVcf.m_chrIndexMap[bedRegion.m_chrName])
         {
@@ -210,7 +210,7 @@ void CMendelianVariantProvider::FillVariantsFromBED()
         }
         
         //Variant Could not pass from BED region
-        if(bedRegion.m_chrName != variant.m_chrName || bedRegion.m_nStartPos > variant.m_nStartPos || bedRegion.m_nEndPos < variant.m_nEndPos)
+        if(bedRegion.m_chrName != variant.m_chrName || bedRegion.m_nStartPos >= variant.m_nEndPos)
             continue;
         
         if(!variant.m_bIsNoCall && IsHomRef(variant))
@@ -257,7 +257,7 @@ void CMendelianVariantProvider::FillVariantsFromBED()
         }
         
         //Pass to the next region
-        if((bedRegion.m_chrName == variant.m_chrName && variant.m_nStartPos > bedRegion.m_nEndPos)
+        while((bedRegion.m_chrName == variant.m_chrName && variant.m_nOriginalPos >= bedRegion.m_nEndPos)
            ||
            m_MotherVcf.m_chrIndexMap[variant.m_chrName] > m_MotherVcf.m_chrIndexMap[bedRegion.m_chrName])
         {
@@ -267,7 +267,7 @@ void CMendelianVariantProvider::FillVariantsFromBED()
         }
         
         //Variant Could not pass from BED region
-        if(bedRegion.m_chrName != variant.m_chrName || bedRegion.m_nStartPos > variant.m_nStartPos || bedRegion.m_nEndPos < variant.m_nEndPos)
+        if(bedRegion.m_chrName != variant.m_chrName || bedRegion.m_nStartPos >= variant.m_nEndPos)
             continue;
         
         if(!variant.m_bIsNoCall &&  IsHomRef(variant))
@@ -313,7 +313,7 @@ void CMendelianVariantProvider::FillVariantsFromBED()
         }
 
         //Pass to the next region
-        if((bedRegion.m_chrName == variant.m_chrName && variant.m_nStartPos > bedRegion.m_nEndPos)
+        while((bedRegion.m_chrName == variant.m_chrName && variant.m_nOriginalPos >= bedRegion.m_nEndPos)
            ||
            m_ChildVcf.m_chrIndexMap[variant.m_chrName] > m_ChildVcf.m_chrIndexMap[bedRegion.m_chrName])
         {
@@ -323,7 +323,7 @@ void CMendelianVariantProvider::FillVariantsFromBED()
         }
         
         //Variant Could not pass from BED region
-        if(bedRegion.m_chrName != variant.m_chrName || bedRegion.m_nStartPos > variant.m_nStartPos || bedRegion.m_nEndPos < variant.m_nEndPos)
+        if(bedRegion.m_chrName != variant.m_chrName || bedRegion.m_nStartPos >= variant.m_nEndPos)
             continue;
 
         if(!variant.m_bIsNoCall && IsHomRef(variant))

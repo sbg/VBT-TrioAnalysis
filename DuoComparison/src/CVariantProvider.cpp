@@ -213,7 +213,7 @@ void CVariantProvider::FillVariantsFromBED()
         }
         
         //Pass to the next region
-        if((bedRegion.m_chrName == variant.m_chrName && variant.m_nStartPos > bedRegion.m_nEndPos)
+        while((bedRegion.m_chrName == variant.m_chrName && variant.m_nOriginalPos >= bedRegion.m_nEndPos)
            ||
            m_baseVCF.m_chrIndexMap[variant.m_chrName] > m_baseVCF.m_chrIndexMap[bedRegion.m_chrName])
         {
@@ -224,7 +224,7 @@ void CVariantProvider::FillVariantsFromBED()
         
         
         //Variant Could not pass from BED region
-        if(bedRegion.m_chrName != variant.m_chrName || bedRegion.m_nStartPos > variant.m_nStartPos || bedRegion.m_nEndPos < variant.m_nEndPos)
+        if(bedRegion.m_chrName != variant.m_chrName || bedRegion.m_nStartPos >= variant.m_nEndPos)
             continue;
         
         if(!variant.m_bIsNoCall && IsHomRef(variant))
@@ -265,7 +265,7 @@ void CVariantProvider::FillVariantsFromBED()
         }
         
         //Pass to the next region
-        if((bedRegion.m_chrName == variant.m_chrName && variant.m_nStartPos > bedRegion.m_nEndPos)
+        while((bedRegion.m_chrName == variant.m_chrName && variant.m_nOriginalPos >= bedRegion.m_nEndPos)
            ||
            m_calledVCF.m_chrIndexMap[variant.m_chrName] > m_calledVCF.m_chrIndexMap[bedRegion.m_chrName])
         {
@@ -275,7 +275,7 @@ void CVariantProvider::FillVariantsFromBED()
         }
         
         //Variant Could not pass from BED region
-        if(bedRegion.m_chrName != variant.m_chrName || bedRegion.m_nStartPos > variant.m_nStartPos || bedRegion.m_nEndPos < variant.m_nEndPos)
+        if(bedRegion.m_chrName != variant.m_chrName || bedRegion.m_nStartPos >= variant.m_nEndPos)
             continue;
         
         if(!variant.m_bIsNoCall && IsHomRef(variant))
