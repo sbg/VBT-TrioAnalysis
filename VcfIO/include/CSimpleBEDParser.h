@@ -11,6 +11,7 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 /**
  * @brief Defines a BED region specified by the contig name and the interval
@@ -34,12 +35,9 @@ public:
     
     ///Reads the bed file and save it inside. If there is an unknown region format, it returns FALSE
     bool InitBEDFile(const std::string& a_rBEDFilePath);
-    
-    ///Return the next region from bed file
-    bool GetNextRegion(SBedRegion& a_rRegion);
-    
-    ///Set the next Region as first region
-    void ResetIterator();
+        
+    ///Bed Region map use chromosome name as key [This one is not accesible with GetNextRegion]
+    std::unordered_map<std::string, std::vector<SBedRegion>> m_regionMap;
     
 private:
     

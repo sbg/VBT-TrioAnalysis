@@ -52,7 +52,7 @@ bool CSimpleBEDParser::InitBEDFile(const std::string& a_rBEDFilePath)
             if (ss.peek() == '\t')
                 ss.ignore();
             
-            m_regionArray.push_back(region);
+            m_regionMap[region.m_chrName].push_back(region);
         }
     }
     catch(std::exception ex)
@@ -66,23 +66,6 @@ bool CSimpleBEDParser::InitBEDFile(const std::string& a_rBEDFilePath)
     return bIsSuccess;
 }
 
-//Return the next region from bed file
-bool CSimpleBEDParser::GetNextRegion(SBedRegion& a_rRegion)
-{
-    if(m_nIterator != m_regionArray.size())
-    {
-        a_rRegion = m_regionArray[m_nIterator];
-        m_nIterator++;
-        return true;
-    }
-    else
-        return false;
-}
-
-void CSimpleBEDParser::ResetIterator()
-{
-    m_nIterator = 0;
-}
 
 
 
