@@ -307,7 +307,6 @@ void CMendelianTrioMerger::AddRecords(SChrIdTriplet& a_rTriplet)
                 {
                     fatherItr++;
                     motherItr++;
-                    decision = eSkipped;
                     continue;
                 }
                 else if(m_noCallMode == ENoCallMode::eImplicitNoCall)
