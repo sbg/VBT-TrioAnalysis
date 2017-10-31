@@ -31,6 +31,7 @@ struct SAllele
     int m_nStartPos = -1;
     int m_nEndPos = -1;
     bool m_bIsIgnored = false;
+    bool m_bIsTrimmed = false;
 };
 
 /**
@@ -101,6 +102,15 @@ class CVariant
     ///Print the variant [For Test Purpose]
     std::string ToString() const;
     
+    ///Gets the maximum number of nucleotides can be trimmed from beginning and ending of selected allele
+    void GetMaxTrimStartEnd(int a_nAlleleIndex, unsigned int& trimLengthFromBeginning, unsigned int& trimLengthFromEnd);
+
+    ///Trim the redundant nucleotides from beginning and ending of given allele (Beginning nucleotides will be trimmed first)
+    void TrimVariant(int a_nAlleleIndex);
+
+    ///Trim the redundant nucleotides from beginning and ending of given allele. Nucleotides to be clipped from beginning and ending of the allele are specified as parameter
+    void TrimVariant(int a_nAlleleIndex, unsigned int trimLengthFromBeginning, unsigned int trimLengthFromEnd);
+    
     ///ID of which vcf file that the variant belongs to
     int m_nVcfId;
 
@@ -141,6 +151,9 @@ class CVariant
     
     ///True if genotype is ./.
     bool m_bIsNoCall;
+    
+    ///If the variant can be trimmed more than 1 way (for -ref-overlap mode)
+    bool m_bHaveMultipleTrimOption;
     
     ///Allele array of the variant
     SAllele m_alleles[2];

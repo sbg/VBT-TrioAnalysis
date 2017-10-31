@@ -29,6 +29,7 @@ CVariant::CVariant(): m_nVcfId(-1),
     m_genotype[0] = -1;
     m_genotype[1] = -1;
     m_bIsNoCall = false;
+    m_bHaveMultipleTrimOption = false;
 }
 
 CVariant::CVariant(const CVariant& a_rObj)
@@ -42,10 +43,12 @@ CVariant::CVariant(const CVariant& a_rObj)
     m_alleles[0].m_nStartPos = a_rObj.m_alleles[0].m_nStartPos;
     m_alleles[0].m_sequence = a_rObj.m_alleles[0].m_sequence;
     m_alleles[0].m_bIsIgnored = a_rObj.m_alleles[0].m_bIsIgnored;
+    m_alleles[0].m_bIsTrimmed = a_rObj.m_alleles[0].m_bIsTrimmed;
     m_alleles[1].m_nEndPos = a_rObj.m_alleles[1].m_nEndPos;
     m_alleles[1].m_nStartPos = a_rObj.m_alleles[1].m_nStartPos;
     m_alleles[1].m_sequence = a_rObj.m_alleles[1].m_sequence;
     m_alleles[1].m_bIsIgnored = a_rObj.m_alleles[1].m_bIsIgnored;
+    m_alleles[1].m_bIsTrimmed = a_rObj.m_alleles[1].m_bIsTrimmed;
     
     m_nStartPos = a_rObj.m_nStartPos;
     m_nEndPos = a_rObj.m_nEndPos;
@@ -53,6 +56,7 @@ CVariant::CVariant(const CVariant& a_rObj)
     m_refSequence = a_rObj.m_refSequence;
     m_bIsHeterozygous = a_rObj.m_bIsHeterozygous;
     m_bIsFirstNucleotideTrimmed = a_rObj.m_bIsFirstNucleotideTrimmed;
+    m_bHaveMultipleTrimOption = a_rObj.m_bHaveMultipleTrimOption;
     
     m_filterString = a_rObj.m_filterString;
     m_allelesStr = a_rObj.m_allelesStr;
@@ -90,9 +94,12 @@ bool CVariant::Clear()
     m_nOriginalPos = -1;
     m_alleles[0].m_bIsIgnored = false;
     m_alleles[1].m_bIsIgnored = false;
+    m_alleles[0].m_bIsTrimmed = false;
+    m_alleles[1].m_bIsTrimmed = false;
     m_genotype[0] = -1;
     m_genotype[1] = -1;
     m_bIsNoCall = false;
+    m_bHaveMultipleTrimOption = false;
     return true;
 }
 
@@ -287,13 +294,151 @@ EVariantCategory CVariant::GetVariantCategory() const
 }
 
 
+//Gets the maximum trim nucleotide counts from start and end
+void CVariant::GetMaxTrimStartEnd(int a_nAlleleIndex, unsigned int& trimLengthFromBeginning, unsigned int& trimLengthFromEnd)
+{
+    trimLengthFromBeginning = 0;
+    trimLengthFromEnd = 0;
+    
+    //Trim from the beginning
+    unsigned int compSize = static_cast<unsigned int>(std::min(m_refSequence.size(), m_alleles[a_nAlleleIndex].m_sequence.size()));
+    for(unsigned int k = 0; k < compSize; k++)
+    {
+        if(m_alleles[a_nAlleleIndex].m_sequence[k] != m_refSequence[k])
+            break;
+        trimLengthFromBeginning++;
+    }
+    
+    //Trim from the end
+    for(int k = static_cast<int>(m_refSequence.size() - 1), p = static_cast<int>(m_alleles[a_nAlleleIndex].m_sequence.size() - 1); k >= 0 && p >= 0;  k--, p--)
+    {
+        if(m_alleles[a_nAlleleIndex].m_sequence[p] != m_refSequence[k])
+            break;
+        trimLengthFromEnd++;
+    }
+}
 
+void CVariant::TrimVariant(int a_nAlleleIndex)
+{    
+    if(m_alleles[a_nAlleleIndex].m_sequence == "*")
+        return;
+    
+    //Ref string
+    std::string refString = m_refSequence;
+    
+    int trimLengthFromBeginning = 0;
+    int trimLengthFromEnd = 0;
+    
+    //Trim from the beginning
+    int compSize = static_cast<int>(std::min(refString.size(), m_alleles[a_nAlleleIndex].m_sequence.size()));
+    for(int k = 0; k < compSize; k++)
+    {
+        if(m_alleles[a_nAlleleIndex].m_sequence[k] == refString[k] && k == compSize -1)
+        {
+            trimLengthFromBeginning++;
+            m_alleles[a_nAlleleIndex].m_nStartPos += trimLengthFromBeginning;
+            break;
+        }
+        
+        else if(m_alleles[a_nAlleleIndex].m_sequence[k] != refString[k])
+        {
+            m_alleles[a_nAlleleIndex].m_nStartPos += trimLengthFromBeginning;
+            break;
+        }
+        
+        else
+            trimLengthFromBeginning++;
+    }
+    
+    //Cut the beginning of the string
+    m_alleles[a_nAlleleIndex].m_sequence = m_alleles[a_nAlleleIndex].m_sequence.substr(trimLengthFromBeginning);
+    
+    //Trim from the end
+    for(int k = static_cast<int>(refString.size() - 1), p = static_cast<int>(m_alleles[a_nAlleleIndex].m_sequence.size() - 1); k >= trimLengthFromBeginning && p >= 0;  k--, p--)
+    {
+        if(m_alleles[a_nAlleleIndex].m_sequence[p] == refString[k] && p == 0)
+        {
+            trimLengthFromEnd = static_cast<int>(m_alleles[a_nAlleleIndex].m_sequence.size());
+            m_alleles[a_nAlleleIndex].m_nEndPos -= trimLengthFromEnd;
+            break;
+        }
+        
+        else if(m_alleles[a_nAlleleIndex].m_sequence[p] == refString[k] && k == trimLengthFromBeginning)
+        {
+            trimLengthFromEnd = static_cast<int>(refString.size()) - trimLengthFromBeginning;
+            m_alleles[a_nAlleleIndex].m_nEndPos -= trimLengthFromEnd;
+            break;
+        }
+        
+        
+        else if(m_alleles[a_nAlleleIndex].m_sequence[p] != refString[k])
+        {
+            m_alleles[a_nAlleleIndex].m_nEndPos -= trimLengthFromEnd;
+            break;
+        }
+        else
+            trimLengthFromEnd++;
+    }
+    
+    //Cut the end of the string
+    m_alleles[a_nAlleleIndex].m_sequence = m_alleles[a_nAlleleIndex].m_sequence.substr(0, m_alleles[a_nAlleleIndex].m_sequence.length() - trimLengthFromEnd);
 
+    //Set the trimming check as true
+    m_alleles[a_nAlleleIndex].m_bIsTrimmed = true;
+    
+    return;    
+}
 
-
-
-
-
-
+void CVariant::TrimVariant(int a_nAlleleIndex, unsigned int trimLengthFromBeginning, unsigned int trimLengthFromEnd)
+{
+    m_alleles[a_nAlleleIndex].m_bIsTrimmed = true;
+    
+    bool canTrimFromBegin = true;
+    bool canTrimFromEnd = true;
+    
+    //Trim from the beginning
+    unsigned int compSize = static_cast<unsigned int>(std::min(m_refSequence.size(), m_alleles[a_nAlleleIndex].m_sequence.size()));
+    
+    if(trimLengthFromBeginning > compSize)
+        canTrimFromBegin = false;
+    
+    for(unsigned int k = 0; k < trimLengthFromBeginning ; k++)
+    {
+        if(m_alleles[a_nAlleleIndex].m_sequence[k] != m_refSequence[k])
+        {
+            canTrimFromBegin = false;
+            break;
+        }
+    }
+    
+    if(canTrimFromBegin == true)
+    {
+        m_alleles[a_nAlleleIndex].m_sequence = m_alleles[a_nAlleleIndex].m_sequence.substr(trimLengthFromBeginning);
+        m_alleles[a_nAlleleIndex].m_nStartPos += trimLengthFromBeginning;
+        compSize -= trimLengthFromBeginning;
+    }
+    
+    if(trimLengthFromEnd > compSize)
+        canTrimFromEnd = false;
+    
+    //Trim from the end
+    for(int k = static_cast<int>(m_refSequence.size()) - 1, p = static_cast<int>(m_alleles[a_nAlleleIndex].m_sequence.size()) - 1; k >= 0;  k--, p--)
+    {
+        if(p == (int)m_alleles[a_nAlleleIndex].m_sequence.size() - (int)trimLengthFromEnd - 1)
+           break;
+        
+        if(m_alleles[a_nAlleleIndex].m_sequence[p] != m_refSequence[k])
+        {
+            canTrimFromEnd = false;
+            break;
+        }
+    }
+    
+    if(canTrimFromEnd == true)
+    {
+        m_alleles[a_nAlleleIndex].m_sequence = m_alleles[a_nAlleleIndex].m_sequence.substr(0, m_alleles[a_nAlleleIndex].m_sequence.length() - trimLengthFromEnd);
+        m_alleles[a_nAlleleIndex].m_nEndPos -= trimLengthFromEnd;
+    }
+}
 
 
