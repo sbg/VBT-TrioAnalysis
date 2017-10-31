@@ -39,14 +39,8 @@ void CMendelianDecider::SetNocallMode(ENoCallMode a_nMode)
 
 
 //Checks if the given two range is overlapping
-bool isOverlap(int left1, int right1, int left2, int right2)
-{
-    //If the interval length is 0 (eg. 974791-974791) we need to check if the boundaries matches
-    if(right1-left1 == 0 || right2-left2 == 0)
-        return left1==left2 || right1 == right2;
-    else
-        return std::min(right1, right2) - std::max(left1, left2) > 0;
-}
+extern bool isOverlap(int left1, int right1, int left2, int right2);
+
 
 //Compare variants according to id for sort operation
 bool variantCompare(const CVariant* v1, const CVariant* v2)
