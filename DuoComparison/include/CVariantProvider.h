@@ -96,6 +96,12 @@ private:
 
     //Checks if the variant genotype is 0/0 (homref)
     bool IsHomRef(const CVariant& a_rVariant) const;
+    
+    //Find the optimal trimmings for given variant list
+    void FindOptimalTrimmings(std::vector<CVariant>& a_rVariantList, EVcfName a_uFrom);
+    
+    //Merge trimmed variants with the original variant list
+    void AppendTrimmedVariants(std::vector<CVariant>& a_rVariantList, EVcfName a_uFrom);
 
     //VCF Readers
     CVcfReader m_baseVCF;
