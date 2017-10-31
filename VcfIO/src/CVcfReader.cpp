@@ -178,9 +178,11 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
                 int curGT = bcf_gt_allele(gt_arr[i]);
                 
                 if(curGT == 0 || curGT == -1)
-                   a_pVariant->m_alleles[i].m_bIsIgnored = true;
+                    a_pVariant->m_alleles[i].m_bIsIgnored = true;
+                else if(HasMultipleTrimming(a_pVariant->m_alleles[i]))
+                    a_pVariant->m_bHaveMultipleTrimOption = true;
                 else
-                    TrimRefOverlap(a_pVariant->m_alleles[i]);
+                    a_pVariant->TrimVariant(i);
             }
         }
         
@@ -452,71 +454,43 @@ void CVcfReader::GetFilterInfo(std::vector<std::string> &a_rFilterNames, std::ve
     }
 }
 
-void CVcfReader::TrimRefOverlap(SAllele& a_rAllele)
+bool CVcfReader::HasMultipleTrimming(SAllele& a_rAllele)
 {
-    if(a_rAllele.m_sequence == "*")
-        return;
+    if(a_rAllele.m_sequence == "*" || a_rAllele.m_sequence.length() < 2)
+        return false;
     
     //Ref string
     std::string refString = m_pRecord->d.allele[0];
     
-    int trimLengthFromBeginning = 0;
-    int trimLengthFromEnd = 0;
+    //We do not need to check insertion
+    if(refString.length() < a_rAllele.m_sequence.length() || refString.length() < 2)
+        return false;
+    
+    unsigned int trimLengthFromBeginning = 0;
+    unsigned int trimLengthFromEnd = 0;
     
     //Trim from the beginning
-    int compSize = static_cast<int>(std::min(refString.size(), a_rAllele.m_sequence.size()));
-    for(int k = 0; k < compSize; k++)
+    unsigned int compSize = static_cast<unsigned int>(std::min(refString.size(), a_rAllele.m_sequence.size()));
+    for(unsigned int k = 0; k < compSize; k++)
     {
-        if(a_rAllele.m_sequence[k] == refString[k] && k == compSize -1)
-        {
-            trimLengthFromBeginning++;
-            a_rAllele.m_nStartPos += trimLengthFromBeginning;
+        if(a_rAllele.m_sequence[k] != refString[k])
             break;
-        }
-        
-        else if(a_rAllele.m_sequence[k] != refString[k])
-        {
-            a_rAllele.m_nStartPos += trimLengthFromBeginning;
-            break;
-        }
-        
-        else
-            trimLengthFromBeginning++;
+        trimLengthFromBeginning++;
     }
-    
-    //Cut the beginning of the string
-    a_rAllele.m_sequence = a_rAllele.m_sequence.substr(trimLengthFromBeginning);
     
     //Trim from the end
-    for(int k = static_cast<int>(refString.size() - 1), p = static_cast<int>(a_rAllele.m_sequence.size() - 1); k >= trimLengthFromBeginning && p >= 0;  k--, p--)
+    for(int k = static_cast<int>(refString.size() - 1), p = static_cast<int>(a_rAllele.m_sequence.size() - 1); k >= 0 && p >= 0;  k--, p--)
     {
-        if(a_rAllele.m_sequence[p] == refString[k] && p == 0)
-        {
-            trimLengthFromEnd = static_cast<int>(a_rAllele.m_sequence.size());
-            a_rAllele.m_nEndPos -= trimLengthFromEnd;
+        if(a_rAllele.m_sequence[p] != refString[k])
             break;
-        }
-        
-        else if(a_rAllele.m_sequence[p] == refString[k] && k == trimLengthFromBeginning)
-        {
-            trimLengthFromEnd = static_cast<int>(refString.size()) - trimLengthFromBeginning;
-            a_rAllele.m_nEndPos -= trimLengthFromEnd;
-            break;
-        }
-        
-        
-        else if(a_rAllele.m_sequence[p] != refString[k])
-        {
-            a_rAllele.m_nEndPos -= trimLengthFromEnd;
-            break;
-        }
-        else
-            trimLengthFromEnd++;
+        trimLengthFromEnd++;
     }
     
-    //Cut the end of the string
-    a_rAllele.m_sequence = a_rAllele.m_sequence.substr(0, a_rAllele.m_sequence.length() - trimLengthFromEnd);
-    
+    //Our condition to decide if there are multiple option of trimming
+    if(trimLengthFromBeginning + trimLengthFromEnd > compSize)
+        return true;
+    else
+        return false;
 }
 
 int CVcfReader::GetChromosomeNumber(const std::string& a_chrName) const
