@@ -53,7 +53,6 @@ bool CFastaParser::GenerateFastaIndex(const char *fn)
     if(!f.good())
     {
         std::cout << "FASTA index file for " << fn << " does not exists. Generating the index file..." << std::endl;
-        bIsSuccess = true;
         int res = fai_build(fn);
         if(res == 0)
             bIsSuccess = true;
