@@ -77,6 +77,9 @@ struct SConfig
     ///Enable REF Overlap mode
     bool m_bIsRefOverlap = false;
     
+    ///Enable generating syncpoint files which is the intermediate output of core module
+    bool m_bGenerateSyncPoints = false;
+    
     ///Number of thread to use during execution
     int m_nThreadCount = DEFAULT_THREAD_COUNT;
     

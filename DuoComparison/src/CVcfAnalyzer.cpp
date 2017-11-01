@@ -56,16 +56,6 @@ void CVcfAnalyzer::Run(int argc, char** argv)
         outputprovider.SetBestPaths(m_aBestPaths);
         outputprovider.SetContigList(m_provider.GetContigs());
         outputprovider.GenerateSplitVcfs(m_provider.GetChromosomeIdTuples());
-        
-        std::vector<SChrIdTuple> chromosomeListToProcess = m_provider.GetChromosomeIdTuples();
-        m_resultLogger.OpenSyncPointFile(std::string(m_config.m_pOutputDirectory) + "/SyncPointList.txt");
-        for(unsigned int k = 0; k < chromosomeListToProcess.size(); k++)
-        {
-            std::vector<core::CSyncPoint> syncPointList;
-            CalculateSyncPointList(chromosomeListToProcess[k], syncPointList);
-            m_resultLogger.WriteSyncPointList(chromosomeListToProcess[k].m_chrName, syncPointList);
-        }
-        m_resultLogger.CloseSyncPointFile();
     }
     
     else
@@ -79,6 +69,19 @@ void CVcfAnalyzer::Run(int argc, char** argv)
         outputprovider.GenerateGa4ghVcf(m_provider.GetChromosomeIdTuples());
     }
     
+    if(true == m_config.m_bGenerateSyncPoints)
+    {
+        std::vector<SChrIdTuple> chromosomeListToProcess = m_provider.GetChromosomeIdTuples();
+        m_resultLogger.OpenSyncPointFile(std::string(m_config.m_pOutputDirectory) + "/SyncPointList.txt");
+        for(unsigned int k = 0; k < chromosomeListToProcess.size(); k++)
+        {
+            std::vector<core::CSyncPoint> syncPointList;
+            CalculateSyncPointList(chromosomeListToProcess[k], syncPointList);
+            m_resultLogger.WriteSyncPointList(chromosomeListToProcess[k].m_chrName, syncPointList);
+        }
+        m_resultLogger.CloseSyncPointFile();
+    }
+
     m_resultLogger.SetLogPath(m_config.m_pOutputDirectory);
     int logMode = (0 == strcmp(m_config.m_pOutputMode, "SPLIT") ? 0 : 2) + (m_config.m_bIsGenotypeMatch ? 0 : 1);
     m_resultLogger.WriteStatistics(logMode);
@@ -404,6 +407,7 @@ bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
     const char* PARAM_THREAD_COUNT = "-thread-count";
     const char* PARAM_OUTPUT_MODE = "-output-mode";
     const char* PARAM_ALLELE_MATCH = "--allele-match";
+    const char* PARAM_GENERATE_SYNC_POINT = "--generate-sync-point";
     const char* PARAM_MAX_PATH_SIZE = "-max-path-size";
     const char* PARAM_MAX_ITERATION_COUNT = "-max-iteration-count";
     const char* PARAM_MAX_BP_LENGTH = "-max-bp-length";
@@ -539,6 +543,12 @@ bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
         else if(0 == strcmp(argv[it], PARAM_ALLELE_MATCH))
         {
             m_config.m_bIsGenotypeMatch = false;
+            it++;
+        }
+        
+        else if(0 == strcmp(argv[it], PARAM_GENERATE_SYNC_POINT))
+        {
+            m_config.m_bGenerateSyncPoints = true;
             it++;
         }
         
