@@ -64,7 +64,7 @@ void CSplitOutputProvider::GenerateTpBaseVcf(const std::vector<SChrIdTuple>& a_r
     {
         const std::vector<const core::COrientedVariant*> ovarList = m_aBestPaths[tuple.m_nTupleIndex].m_baseSemiPath.GetIncludedVariants();
         std::vector<const core::COrientedVariant*> sortedOvarList(ovarList);
-        std::sort(sortedOvarList.begin(), sortedOvarList.end(), [](const core::COrientedVariant* ovar1, const core::COrientedVariant* ovar2){return ovar1->GetVariant().m_nOriginalPos < ovar2->GetVariant().m_nOriginalPos;});
+        std::sort(sortedOvarList.begin(), sortedOvarList.end(), [](const core::COrientedVariant* ovar1, const core::COrientedVariant* ovar2){return ovar1->GetVariant().m_nId < ovar2->GetVariant().m_nId;});
         AddRecords(&m_TPBaseWriter, sortedOvarList);
     }
     
