@@ -418,8 +418,8 @@ void CVariant::TrimVariant(int a_nAlleleIndex, unsigned int trimLengthFromBeginn
         compSize -= trimLengthFromBeginning;
     }
     
-    if(trimLengthFromEnd > compSize)
-        canTrimFromEnd = false;
+    //Update trimming size from the end
+    trimLengthFromEnd = std::min(trimLengthFromEnd, compSize);
     
     //Trim from the end
     for(int k = static_cast<int>(m_refSequence.size()) - 1, p = static_cast<int>(m_alleles[a_nAlleleIndex].m_sequence.size()) - 1; k >= 0;  k--, p--)
