@@ -11,6 +11,7 @@
 #include "CSimpleBEDParser.h"
 #include <algorithm>
 #include <iostream>
+#include <fstream>
 
 using namespace duocomparison;
 
@@ -18,8 +19,12 @@ using namespace duocomparison;
 bool isOverlap(int left1, int right1, int left2, int right2)
 {
     //If the interval length is 0 (eg. 974791-974791) we need to check if the boundaries matches
-    if(right1-left1 == 0 || right2-left2 == 0)
-        return left1==left2 || right1 == right2;
+    if(left1 == left2)
+        return true;
+    if(right1 == left1)
+        return (right2 > left1 && left2 <= left1);
+    else if(right2 == left2)
+        return (right1 > left2 && left1 <= left2);
     else
         return std::min(right1, right2) - std::max(left1, left2) > 0;
 }
@@ -179,15 +184,16 @@ bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
     }
     
     return bIsSuccess;
-    
 }
 
 bool CVariantProvider::CompareVariants(const CVariant& var1, const CVariant& var2)
 {
     if(var1.m_nStartPos != var2.m_nStartPos)
         return var1.m_nStartPos < var2.m_nStartPos;
-    else
+    else if(var1.m_nEndPos != var2.m_nEndPos)
         return var1.m_nEndPos < var2.m_nEndPos;
+    else
+        return var1.m_nId < var2.m_nId;
 }
 
 void CVariantProvider::FillVariantsFromBED()
@@ -210,7 +216,7 @@ void CVariantProvider::FillVariantsFromBED()
     
     unsigned int regionIterator = 0;
     
-    std::string lastChrNameBed;
+    //std::string lastChrNameBed;
     
     while(m_baseVCF.GetNextRecord(&variant, id++, m_config))
     {
@@ -356,7 +362,6 @@ void CVariantProvider::FillVariantLists()
     std::vector<CVariant> multiTrimmableVarListBase;
     std::vector<CVariant> multiTrimmableVarListCalled;
 
-    
     while(m_baseVCF.GetNextRecord(&variant, id++, m_config))
     {
         if(preChrId != variant.m_chrName)
@@ -395,7 +400,7 @@ void CVariantProvider::FillVariantLists()
         std::sort(m_aBaseNotAssessedVariantList[k].begin(), m_aBaseNotAssessedVariantList[k].end(), CompareVariants);
         std::sort(m_aBaseVariantList[k].begin(), m_aBaseVariantList[k].end(), CompareVariants);
     }
-    
+
     preChrId = "";
     
     while(m_calledVCF.GetNextRecord(&variant, id++, m_config))
@@ -436,7 +441,6 @@ void CVariantProvider::FillVariantLists()
         std::sort(m_aCalledNotAssessedVariantList[k].begin(), m_aCalledNotAssessedVariantList[k].end(), CompareVariants);
         std::sort(m_aCalledVariantList[k].begin(), m_aCalledVariantList[k].end(), CompareVariants);
     }
-
 }
 
 void CVariantProvider::FillOrientedVariantLists()
@@ -703,6 +707,9 @@ bool CVariantProvider::IsHomRef(const CVariant& a_rVariant) const
 
 void CVariantProvider::FindOptimalTrimmings(std::vector<CVariant>& a_rVariantList, EVcfName a_uFrom)
 {
+    if(a_rVariantList.size() == 0)
+        return;
+    
     std::vector<std::vector<CVariant>>* allVarList = a_uFrom == eBASE ? &m_aBaseVariantList : &m_aCalledVariantList;
     
     unsigned int varItr[2];
@@ -716,19 +723,25 @@ void CVariantProvider::FindOptimalTrimmings(std::vector<CVariant>& a_rVariantLis
     
     for(unsigned int k = 0; k < a_rVariantList.size(); k++)
     {
+
         for(int i = 0; i < 2; i++)
         {
             if(a_rVariantList[k].m_alleles[i].m_bIsIgnored || a_rVariantList[k].m_alleles[i].m_bIsTrimmed)
                 continue;
             
+            //The maximum possible trimming nucleotide count from start and end of each allele
+            unsigned int canTrimStart, canTrimEnd;
+            a_rVariantList[k].GetMaxTrimStartEnd(i, canTrimStart, canTrimEnd);
+            
             std::vector<CVariant> tmpoverlapVariants;
             
             if(currentChrId != a_rVariantList[k].m_nChrId)
             {
-                varItr[i] = 0;
+                varItr[0] = 0;
+                varItr[1] = 0;
                 currentChrId = a_rVariantList[k].m_nChrId;
             }
-
+            
             while(varItr[i] < (*allVarList)[currentChrId].size() && a_rVariantList[k].m_alleles[i].m_nStartPos > (*allVarList)[currentChrId][varItr[i]].m_nEndPos)
                 varItr[i]++;
             
@@ -739,7 +752,10 @@ void CVariantProvider::FindOptimalTrimmings(std::vector<CVariant>& a_rVariantLis
 
             while(secondItr < (*allVarList)[currentChrId].size() && a_rVariantList[k].m_alleles[i].m_nEndPos >= (*allVarList)[currentChrId][secondItr].m_nStartPos)
             {
-                if(isOverlap(a_rVariantList[k].m_alleles[i].m_nStartPos, a_rVariantList[k].m_alleles[i].m_nEndPos, (*allVarList)[currentChrId][secondItr].m_nStartPos, (*allVarList)[currentChrId][secondItr].m_nEndPos))
+                if(isOverlap(a_rVariantList[k].m_alleles[i].m_nStartPos,
+                             a_rVariantList[k].m_alleles[i].m_nEndPos,
+                             (*allVarList)[currentChrId][secondItr].m_nStartPos,
+                             (*allVarList)[currentChrId][secondItr].m_nEndPos))
                     tmpoverlapVariants.push_back((*allVarList)[currentChrId][secondItr]);
                 secondItr++;
             }
@@ -748,25 +764,14 @@ void CVariantProvider::FindOptimalTrimmings(std::vector<CVariant>& a_rVariantLis
             if(tmpoverlapVariants.size() == 0)
                 a_rVariantList[k].TrimVariant(i);
             
-            //If our allele overlap with single variant
             else
             {
-                if(a_rVariantList[k].m_nStartPos > 15099000)
-                {
-                    int asdas = 0;
-                    asdas++;
-                }
-                
                 affectedVariants.push_back(a_rVariantList[k]);
                 for(unsigned int ovarItr = 0; ovarItr < tmpoverlapVariants.size(); ovarItr++)
                 {
                     //Check each allele of overlapping variant
                     for(int tmpItr = 0; tmpItr < 2; tmpItr++)
                     {
-                        //The maximum possible trimming nucleotide count from start and end of each allele
-                        unsigned int canTrimStart, canTrimEnd;
-                        a_rVariantList[k].GetMaxTrimStartEnd(i, canTrimStart, canTrimEnd);
-                        
                         unsigned int overlapStart = std::max(a_rVariantList[k].m_alleles[i].m_nStartPos, tmpoverlapVariants[ovarItr].m_alleles[tmpItr].m_nStartPos);
                         unsigned int overlapEnd = std::min(a_rVariantList[k].m_alleles[i].m_nEndPos, tmpoverlapVariants[ovarItr].m_alleles[tmpItr].m_nEndPos);
                         
@@ -776,37 +781,39 @@ void CVariantProvider::FindOptimalTrimmings(std::vector<CVariant>& a_rVariantLis
                             {
                                 //Trim from beginning
                                 int toClip = overlapEnd - a_rVariantList[k].m_alleles[i].m_nStartPos;
-                                if(toClip <= 0 || toClip > canTrimStart)
-                                    std::cout << "wrong clip Front!!" << std::endl;
-                                else
-                                a_rVariantList[k].TrimVariant(i, toClip, 0);
+                                if(toClip > 0 && toClip <= (int)canTrimStart)
+                                {
+                                    a_rVariantList[k].TrimVariant(i, toClip, 0);
+                                    canTrimStart -= toClip;
+                                    continue;
+                                }
                             }
                             //Else No Trim
                         }
                         
-                        else if(a_rVariantList[k].m_alleles[i].m_nStartPos < tmpoverlapVariants[ovarItr].m_alleles[tmpItr].m_nStartPos)
+                        if(a_rVariantList[k].m_alleles[i].m_nStartPos < tmpoverlapVariants[ovarItr].m_alleles[tmpItr].m_nStartPos)
                         {
                             if(a_rVariantList[k].m_alleles[i].m_nEndPos - (int)canTrimEnd < tmpoverlapVariants[ovarItr].m_alleles[tmpItr].m_nStartPos)
                             {
                                 //Trim from end
                                 int toClip = a_rVariantList[k].m_alleles[i].m_nEndPos - overlapStart;
-                                if(toClip <= 0 || toClip > canTrimEnd)
-                                    std::cout << "wrong clip End!!" << std::endl;
-                                else
+                                if(toClip > 0 & toClip <= (int)canTrimEnd)
+                                {
                                     a_rVariantList[k].TrimVariant(i, 0, toClip);
+                                    canTrimEnd -= toClip;
+                                    continue;
+                                }
                             }
                             //Else No Trim
                         }
                     }
                 }
+                
+                if(!a_rVariantList[k].m_alleles[i].m_bIsTrimmed)
+                    a_rVariantList[k].TrimVariant(i);
             }
         }
         
-        for(int i = 0; i < 2; i++)
-        {
-            if(a_rVariantList[k].m_alleles[i].m_sequence != "")
-                a_rVariantList[k].TrimVariant(i);
-        }
         
         //Update Variant Range
         int minStart = INT_MAX;
@@ -826,12 +833,7 @@ void CVariantProvider::FindOptimalTrimmings(std::vector<CVariant>& a_rVariantLis
         
     }
     
-    std::cout << affectedVariants.size() << " " << genotypeAffectedVariants.size() << std::endl;
-//    for(CVariant var : affectedVariants)
-//        std::cout << var.ToString() << std::endl;
-    
 }
-
 
 void CVariantProvider::AppendTrimmedVariants(std::vector<CVariant>& a_rVariantList, EVcfName a_uFrom)
 {
