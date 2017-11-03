@@ -723,6 +723,12 @@ void CVariantProvider::FindOptimalTrimmings(std::vector<CVariant>& a_rVariantLis
     
     for(unsigned int k = 0; k < a_rVariantList.size(); k++)
     {
+        if(a_rVariantList[k].m_chrName == "1" && a_rVariantList[k].m_nOriginalPos == 44776634)
+        {
+            int asd = 0;
+            asd ++;
+        }
+        
 
         for(int i = 0; i < 2; i++)
         {
@@ -772,14 +778,21 @@ void CVariantProvider::FindOptimalTrimmings(std::vector<CVariant>& a_rVariantLis
                     //Check each allele of overlapping variant
                     for(int tmpItr = 0; tmpItr < 2; tmpItr++)
                     {
+                        //If the allele does not overlap, continue
+                        if(!isOverlap(a_rVariantList[k].m_alleles[i].m_nStartPos,
+                                     a_rVariantList[k].m_alleles[i].m_nEndPos,
+                                     tmpoverlapVariants[ovarItr].m_alleles[tmpItr].m_nStartPos,
+                                     tmpoverlapVariants[ovarItr].m_alleles[tmpItr].m_nEndPos))
+                            continue;
+                        
                         unsigned int overlapStart = std::max(a_rVariantList[k].m_alleles[i].m_nStartPos, tmpoverlapVariants[ovarItr].m_alleles[tmpItr].m_nStartPos);
                         unsigned int overlapEnd = std::min(a_rVariantList[k].m_alleles[i].m_nEndPos, tmpoverlapVariants[ovarItr].m_alleles[tmpItr].m_nEndPos);
                         
-                        if(a_rVariantList[k].m_alleles[i].m_nStartPos >= tmpoverlapVariants[ovarItr].m_alleles[tmpItr].m_nStartPos)
+                        //Trim from beginning
+                        if(a_rVariantList[k].m_alleles[i].m_nStartPos == (int)overlapStart)
                         {
                             if(a_rVariantList[k].m_alleles[i].m_nStartPos + (int)canTrimStart >= tmpoverlapVariants[ovarItr].m_alleles[tmpItr].m_nEndPos)
                             {
-                                //Trim from beginning
                                 int toClip = overlapEnd - a_rVariantList[k].m_alleles[i].m_nStartPos;
                                 if(toClip > 0 && toClip <= (int)canTrimStart)
                                 {
@@ -788,14 +801,14 @@ void CVariantProvider::FindOptimalTrimmings(std::vector<CVariant>& a_rVariantLis
                                     continue;
                                 }
                             }
-                            //Else No Trim
                         }
                         
-                        if(a_rVariantList[k].m_alleles[i].m_nStartPos < tmpoverlapVariants[ovarItr].m_alleles[tmpItr].m_nStartPos)
+                        //Trim from beginning or end --
+                        else if(a_rVariantList[k].m_alleles[i].m_nEndPos > (int) overlapEnd)
                         {
-                            if(a_rVariantList[k].m_alleles[i].m_nEndPos - (int)canTrimEnd < tmpoverlapVariants[ovarItr].m_alleles[tmpItr].m_nStartPos)
+                            //Try to trim from end
+                            if(a_rVariantList[k].m_alleles[i].m_nEndPos - (int)canTrimEnd <= tmpoverlapVariants[ovarItr].m_alleles[tmpItr].m_nStartPos)
                             {
-                                //Trim from end
                                 int toClip = a_rVariantList[k].m_alleles[i].m_nEndPos - overlapStart;
                                 if(toClip > 0 & toClip <= (int)canTrimEnd)
                                 {
@@ -804,13 +817,42 @@ void CVariantProvider::FindOptimalTrimmings(std::vector<CVariant>& a_rVariantLis
                                     continue;
                                 }
                             }
-                            //Else No Trim
+                            
+                            //Try to trim from front
+                            if(a_rVariantList[k].m_alleles[i].m_nStartPos + (int)canTrimStart >= tmpoverlapVariants[ovarItr].m_alleles[tmpItr].m_nEndPos)
+                            {
+                                int toClip = overlapEnd - a_rVariantList[k].m_alleles[i].m_nStartPos;
+                                if(toClip > 0 && toClip <= (int)canTrimStart)
+                                {
+                                    a_rVariantList[k].TrimVariant(i, toClip, 0);
+                                    canTrimStart -= toClip;
+                                    continue;
+                                }
+                            }
+
+                        }
+                        
+                        //Trim from end
+                        else
+                        {
+                            if(a_rVariantList[k].m_alleles[i].m_nEndPos - (int)canTrimEnd < tmpoverlapVariants[ovarItr].m_alleles[tmpItr].m_nStartPos)
+                            {
+                                int toClip = a_rVariantList[k].m_alleles[i].m_nEndPos - overlapStart;
+                                if(toClip > 0 & toClip <= (int)canTrimEnd)
+                                {
+                                    a_rVariantList[k].TrimVariant(i, 0, toClip);
+                                    canTrimEnd -= toClip;
+                                    continue;
+                                }
+                            }
                         }
                     }
                 }
                 
                 if(!a_rVariantList[k].m_alleles[i].m_bIsTrimmed)
                     a_rVariantList[k].TrimVariant(i);
+                else
+                    a_rVariantList[k].TrimVariant(i, canTrimStart, canTrimEnd);
             }
         }
         
