@@ -15,6 +15,9 @@
 
 using namespace mendelian;
 
+extern bool isOverlap(int left1, int right1, int left2, int right2);
+
+
 bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildConfig, const SConfig& a_rMotherChildConfig)
 {
     bool bIsSuccessFather = true;
@@ -155,8 +158,10 @@ bool CMendelianVariantProvider::CompareVariants(const CVariant& var1, const CVar
 {
     if(var1.m_nStartPos != var2.m_nStartPos)
         return var1.m_nStartPos < var2.m_nStartPos;
-    else
+    else if(var1.m_nEndPos != var2.m_nEndPos)
         return var1.m_nEndPos < var2.m_nEndPos;
+    else
+        return var1.m_nId < var2.m_nId;
 }
 
 void CMendelianVariantProvider::FillVariantsFromBED()
@@ -164,13 +169,6 @@ void CMendelianVariantProvider::FillVariantsFromBED()
     CSimpleBEDParser bedParser;
     bedParser.InitBEDFile(m_motherChildConfig.m_pBedFileName);
 
-    SBedRegion bedRegion;
-    bool hasNextRegion = bedParser.GetNextRegion(bedRegion);
-    
-    //There is no region in BED file
-    if(false == hasNextRegion)
-        return;
-    
     CVariant variant;
     int id = 0;
     std::string preChrId = "";
@@ -188,39 +186,44 @@ void CMendelianVariantProvider::FillVariantsFromBED()
     m_nFatherAsteriskCount = 0;
     m_nChildAsteriskCount  = 0;
     
+    std::vector<CVariant> multiTrimmableVarListMother;
+    std::vector<CVariant> multiTrimmableVarListFather;
+    std::vector<CVariant> multiTrimmableVarListChild;
+
+    unsigned int regionIterator = 0;
+    
     //READ VARIANTS OF FATHER
     while(m_FatherVcf.GetNextRecord(&variant, id, m_fatherChildConfig))
     {
-        bool regionsEnded = false;
-        
         if(preChrId != variant.m_chrName)
         {
             preChrId = variant.m_chrName;
             std::cout << "Reading chromosome " << preChrId << " of Parent[FATHER] vcf" << std::endl;
             id = 0;
             variant.m_nId = id;
-        }
-
-        //Pass to the next region
-        while((bedRegion.m_chrName == variant.m_chrName && variant.m_nOriginalPos >= bedRegion.m_nEndPos)
-            ||
-            m_FatherVcf.m_chrIndexMap[variant.m_chrName] > m_FatherVcf.m_chrIndexMap[bedRegion.m_chrName])
-        {
-            hasNextRegion = bedParser.GetNextRegion(bedRegion);
-            if(false == hasNextRegion)
-            {
-                regionsEnded = true;
-                break;
-            }
+            regionIterator = 0;
         }
         
-        if(true == regionsEnded)
-            break;
-        
-        //Variant Could not pass from BED region
-        if(bedRegion.m_chrName != variant.m_chrName || bedRegion.m_nStartPos >= variant.m_nEndPos)
+        //No Region exist for this chromosome
+        if(bedParser.m_regionMap[variant.m_chrName].size() == 0)
             continue;
         
+        //Skip to next region
+        while(regionIterator < bedParser.m_regionMap[variant.m_chrName].size()
+              &&
+              variant.m_nOriginalPos >= bedParser.m_regionMap[variant.m_chrName][regionIterator].m_nEndPos)
+        {
+            regionIterator++;
+        }
+        
+        //Skip if regions are finished for given chromosome
+        if(regionIterator == bedParser.m_regionMap[variant.m_chrName].size())
+            continue;
+        
+        //Variant Could not pass from BED region
+        if(bedParser.m_regionMap[variant.m_chrName][regionIterator].m_nStartPos >= variant.m_nEndPos)
+            continue;
+
         if(!variant.m_bIsNoCall && IsHomRef(variant))
             continue;
         
@@ -237,6 +240,9 @@ void CMendelianVariantProvider::FillVariantsFromBED()
         else if(IsStructuralVariant(variant, m_fatherChildConfig.m_nMaxVariantSize))
             m_nFatherNotAssessedVariantCount++;
         
+        else if(true == variant.m_bHaveMultipleTrimOption)
+            multiTrimmableVarListFather.push_back(variant);
+        
         else
         {
             m_aFatherVariantList[variant.m_nChrId].push_back(variant);
@@ -246,9 +252,10 @@ void CMendelianVariantProvider::FillVariantsFromBED()
     
     preChrId = "";
     id = 0;
-    bedParser.ResetIterator();
-    bedParser.GetNextRegion(bedRegion);
+    regionIterator = 0;
     
+    FindOptimalTrimmings(multiTrimmableVarListFather, eFATHER);
+    AppendTrimmedVariants(multiTrimmableVarListFather, eFATHER);
     
     for(unsigned int k = 0; k < m_FatherVcf.GetContigs().size(); k++)
         std::sort(m_aFatherVariantList[k].begin(), m_aFatherVariantList[k].end(), CompareVariants);
@@ -256,34 +263,33 @@ void CMendelianVariantProvider::FillVariantsFromBED()
     //READ VARIANTS OF MOTHER
     while(m_MotherVcf.GetNextRecord(&variant, id, m_motherChildConfig))
     {
-        bool regionsEnded = false;
-        
         if(preChrId != variant.m_chrName)
         {
             preChrId = variant.m_chrName;
             std::cout << "Reading chromosome " << preChrId << " of Parent[MOTHER] vcf" << std::endl;
             id = 0;
             variant.m_nId = id;
+            regionIterator = 0;
         }
         
-        //Pass to the next region
-        while((bedRegion.m_chrName == variant.m_chrName && variant.m_nOriginalPos >= bedRegion.m_nEndPos)
-           ||
-           m_MotherVcf.m_chrIndexMap[variant.m_chrName] > m_MotherVcf.m_chrIndexMap[bedRegion.m_chrName])
+        //No Region exist for this chromosome
+        if(bedParser.m_regionMap[variant.m_chrName].size() == 0)
+            continue;
+        
+        //Skip to next region
+        while(regionIterator < bedParser.m_regionMap[variant.m_chrName].size()
+              &&
+              variant.m_nOriginalPos >= bedParser.m_regionMap[variant.m_chrName][regionIterator].m_nEndPos)
         {
-            hasNextRegion = bedParser.GetNextRegion(bedRegion);
-            if(false == hasNextRegion)
-            {
-                regionsEnded = true;
-                break;
-            }
+            regionIterator++;
         }
         
-        if(true == regionsEnded)
-            break;
+        //Skip if regions are finished for given chromosome
+        if(regionIterator == bedParser.m_regionMap[variant.m_chrName].size())
+            continue;
         
         //Variant Could not pass from BED region
-        if(bedRegion.m_chrName != variant.m_chrName || bedRegion.m_nStartPos >= variant.m_nEndPos)
+        if(bedParser.m_regionMap[variant.m_chrName][regionIterator].m_nStartPos >= variant.m_nEndPos)
             continue;
         
         if(!variant.m_bIsNoCall &&  IsHomRef(variant))
@@ -302,6 +308,9 @@ void CMendelianVariantProvider::FillVariantsFromBED()
         else if(IsStructuralVariant(variant, m_motherChildConfig.m_nMaxVariantSize))
             m_nMotherNotAssessedVariantCount++;
         
+        else if(true == variant.m_bHaveMultipleTrimOption)
+            multiTrimmableVarListMother.push_back(variant);
+        
         else
         {
             m_aMotherVariantList[variant.m_nChrId].push_back(variant);
@@ -311,43 +320,44 @@ void CMendelianVariantProvider::FillVariantsFromBED()
     
     preChrId = "";
     id = 0;
-    bedParser.ResetIterator();
-    bedParser.GetNextRegion(bedRegion);
+    regionIterator = 0;
+
+    FindOptimalTrimmings(multiTrimmableVarListMother, eMOTHER);
+    AppendTrimmedVariants(multiTrimmableVarListMother, eMOTHER);
     
     for(unsigned int k = 0; k < m_MotherVcf.GetContigs().size(); k++)
         std::sort(m_aMotherVariantList[k].begin(), m_aMotherVariantList[k].end(), CompareVariants);
 
     //READ VARIANTS OF CHILD
     while(m_ChildVcf.GetNextRecord(&variant, id, m_motherChildConfig))
-    {
-        bool regionsEnded = false;
-        
+    {        
         if(preChrId != variant.m_chrName)
         {
             preChrId = variant.m_chrName;
             std::cout << "Reading chromosome " << preChrId << " of child vcf" << std::endl;
             id = 0;
             variant.m_nId = id;
+            regionIterator = 0;
         }
 
-        //Pass to the next region
-        while((bedRegion.m_chrName == variant.m_chrName && variant.m_nOriginalPos >= bedRegion.m_nEndPos)
-           ||
-           m_ChildVcf.m_chrIndexMap[variant.m_chrName] > m_ChildVcf.m_chrIndexMap[bedRegion.m_chrName])
+        //No Region exist for this chromosome
+        if(bedParser.m_regionMap[variant.m_chrName].size() == 0)
+            continue;
+        
+        //Skip to next region
+        while(regionIterator < bedParser.m_regionMap[variant.m_chrName].size()
+              &&
+              variant.m_nOriginalPos >= bedParser.m_regionMap[variant.m_chrName][regionIterator].m_nEndPos)
         {
-            hasNextRegion = bedParser.GetNextRegion(bedRegion);
-            if(false == hasNextRegion)
-            {
-                regionsEnded = true;
-                break;
-            }
+            regionIterator++;
         }
         
-        if(true == regionsEnded)
-            break;
+        //Skip if regions are finished for given chromosome
+        if(regionIterator == bedParser.m_regionMap[variant.m_chrName].size())
+            continue;
         
         //Variant Could not pass from BED region
-        if(bedRegion.m_chrName != variant.m_chrName || bedRegion.m_nStartPos >= variant.m_nEndPos)
+        if(bedParser.m_regionMap[variant.m_chrName][regionIterator].m_nStartPos >= variant.m_nEndPos)
             continue;
 
         if(!variant.m_bIsNoCall && IsHomRef(variant))
@@ -366,6 +376,9 @@ void CMendelianVariantProvider::FillVariantsFromBED()
         else if(IsStructuralVariant(variant, m_motherChildConfig.m_nMaxVariantSize))
             m_nChildNotAssessedVariantCount++;
         
+        else if(true == variant.m_bHaveMultipleTrimOption)
+            multiTrimmableVarListChild.push_back(variant);
+        
         else
         {
             m_aChildVariantList[variant.m_nChrId].push_back(variant);
@@ -373,6 +386,9 @@ void CMendelianVariantProvider::FillVariantsFromBED()
         }
     }
     
+    FindOptimalTrimmings(multiTrimmableVarListChild, eCHILD);
+    AppendTrimmedVariants(multiTrimmableVarListChild, eCHILD);
+
     for(unsigned int k = 0; k < m_ChildVcf.GetContigs().size(); k++)
         std::sort(m_aChildVariantList[k].begin(), m_aChildVariantList[k].end(), CompareVariants);
 }
@@ -397,6 +413,10 @@ void CMendelianVariantProvider::FillVariants()
     m_nMotherAsteriskCount = 0;
     m_nFatherAsteriskCount = 0;
     m_nChildAsteriskCount  = 0;
+    
+    std::vector<CVariant> multiTrimmableVarListMother;
+    std::vector<CVariant> multiTrimmableVarListFather;
+    std::vector<CVariant> multiTrimmableVarListChild;
     
     //READ VARIANTS OF FATHER
     while(m_FatherVcf.GetNextRecord(&variant, id, m_fatherChildConfig))
@@ -424,6 +444,9 @@ void CMendelianVariantProvider::FillVariants()
         
         else if(IsStructuralVariant(variant, m_fatherChildConfig.m_nMaxVariantSize))
             m_nFatherNotAssessedVariantCount++;
+        
+        else if(true == variant.m_bHaveMultipleTrimOption)
+            multiTrimmableVarListFather.push_back(variant);
 
         else
         {
@@ -434,7 +457,9 @@ void CMendelianVariantProvider::FillVariants()
     
     preChrId = "";
     id = 0;
-
+    
+    FindOptimalTrimmings(multiTrimmableVarListFather, eFATHER);
+    AppendTrimmedVariants(multiTrimmableVarListFather, eFATHER);
     
     for(unsigned int k = 0; k < m_FatherVcf.GetContigs().size(); k++)
         std::sort(m_aFatherVariantList[k].begin(), m_aFatherVariantList[k].end(), CompareVariants);
@@ -466,6 +491,9 @@ void CMendelianVariantProvider::FillVariants()
         else if(IsStructuralVariant(variant, m_motherChildConfig.m_nMaxVariantSize))
             m_nMotherNotAssessedVariantCount++;
         
+        else if(true == variant.m_bHaveMultipleTrimOption)
+            multiTrimmableVarListMother.push_back(variant);
+        
         else
         {
             m_aMotherVariantList[variant.m_nChrId].push_back(variant);
@@ -476,6 +504,8 @@ void CMendelianVariantProvider::FillVariants()
     preChrId = "";
     id = 0;
 
+    FindOptimalTrimmings(multiTrimmableVarListMother, eMOTHER);
+    AppendTrimmedVariants(multiTrimmableVarListMother, eMOTHER);
     
     for(unsigned int k = 0; k < m_MotherVcf.GetContigs().size(); k++)
         std::sort(m_aMotherVariantList[k].begin(), m_aMotherVariantList[k].end(), CompareVariants);
@@ -507,12 +537,18 @@ void CMendelianVariantProvider::FillVariants()
         else if(IsStructuralVariant(variant, m_motherChildConfig.m_nMaxVariantSize))
             m_nChildNotAssessedVariantCount++;
         
+        else if(true == variant.m_bHaveMultipleTrimOption)
+            multiTrimmableVarListChild.push_back(variant);
+        
         else
         {
             m_aChildVariantList[variant.m_nChrId].push_back(variant);
             id++;
         }
     }
+    
+    FindOptimalTrimmings(multiTrimmableVarListChild, eCHILD);
+    AppendTrimmedVariants(multiTrimmableVarListChild, eCHILD);
     
     for(unsigned int k = 0; k < m_ChildVcf.GetContigs().size(); k++)
         std::sort(m_aChildVariantList[k].begin(), m_aChildVariantList[k].end(), CompareVariants);
@@ -1055,6 +1091,200 @@ int CMendelianVariantProvider::GetNotAssessedVariantCount(EMendelianVcfName a_uF
     return static_cast<int>(skippedVariantCount);
 }
 
+void CMendelianVariantProvider::FindOptimalTrimmings(std::vector<CVariant>& a_rVariantList, EMendelianVcfName a_uFrom)
+{
+    if(a_rVariantList.size() == 0)
+        return;
+    
+    std::vector<std::vector<CVariant>>* allVarList;
+    
+    switch (a_uFrom)
+    {
+        case eCHILD:
+            allVarList = &m_aChildVariantList;
+            break;
+        case eFATHER:
+            allVarList = &m_aFatherVariantList;
+            break;
+        case eMOTHER:
+            allVarList = &m_aMotherVariantList;
+        default:
+            break;
+    }
+    
+    unsigned int varItr[2];
+    varItr[0] = 0;
+    varItr[1] = 0;
+    
+    int currentChrId = a_rVariantList[0].m_nChrId;
+    
+    for(unsigned int k = 0; k < a_rVariantList.size(); k++)
+    {
+        for(int i = 0; i < 2; i++)
+        {
+            if(a_rVariantList[k].m_alleles[i].m_bIsIgnored || a_rVariantList[k].m_alleles[i].m_bIsTrimmed)
+                continue;
+            
+            //The maximum possible trimming nucleotide count from start and end of each allele
+            unsigned int canTrimStart, canTrimEnd;
+            a_rVariantList[k].GetMaxTrimStartEnd(i, canTrimStart, canTrimEnd);
+            
+            std::vector<CVariant> tmpoverlapVariants;
+            
+            if(currentChrId != a_rVariantList[k].m_nChrId)
+            {
+                varItr[0] = 0;
+                varItr[1] = 0;
+                currentChrId = a_rVariantList[k].m_nChrId;
+            }
+            
+            while(varItr[i] < (*allVarList)[currentChrId].size() && a_rVariantList[k].m_alleles[i].m_nStartPos > (*allVarList)[currentChrId][varItr[i]].m_nEndPos)
+                varItr[i]++;
+            
+            if(varItr[i] == (*allVarList)[currentChrId].size())
+                continue;
+            
+            unsigned int secondItr = varItr[i];
+            
+            while(secondItr < (*allVarList)[currentChrId].size() && a_rVariantList[k].m_alleles[i].m_nEndPos >= (*allVarList)[currentChrId][secondItr].m_nStartPos)
+            {
+                if(isOverlap(a_rVariantList[k].m_alleles[i].m_nStartPos,
+                             a_rVariantList[k].m_alleles[i].m_nEndPos,
+                             (*allVarList)[currentChrId][secondItr].m_nStartPos,
+                             (*allVarList)[currentChrId][secondItr].m_nEndPos))
+                    tmpoverlapVariants.push_back((*allVarList)[currentChrId][secondItr]);
+                secondItr++;
+            }
+            
+            //Trim variants as standard if there is no overlap
+            if(tmpoverlapVariants.size() == 0)
+                a_rVariantList[k].TrimVariant(i);
+            
+            else
+            {
+                for(unsigned int ovarItr = 0; ovarItr < tmpoverlapVariants.size(); ovarItr++)
+                {
+                    //Check each allele of overlapping variant
+                    for(int tmpItr = 0; tmpItr < 2; tmpItr++)
+                    {
+                        //If the allele does not overlap (anymore), continue
+                        if(!isOverlap(a_rVariantList[k].m_alleles[i].m_nStartPos,
+                                      a_rVariantList[k].m_alleles[i].m_nEndPos,
+                                      tmpoverlapVariants[ovarItr].m_alleles[tmpItr].m_nStartPos,
+                                      tmpoverlapVariants[ovarItr].m_alleles[tmpItr].m_nEndPos))
+                            continue;
+                        
+                        unsigned int overlapStart = std::max(a_rVariantList[k].m_alleles[i].m_nStartPos, tmpoverlapVariants[ovarItr].m_alleles[tmpItr].m_nStartPos);
+                        unsigned int overlapEnd = std::min(a_rVariantList[k].m_alleles[i].m_nEndPos, tmpoverlapVariants[ovarItr].m_alleles[tmpItr].m_nEndPos);
+                        
+                        //Trim from beginning
+                        if(a_rVariantList[k].m_alleles[i].m_nStartPos == (int)overlapStart)
+                        {
+                            if(a_rVariantList[k].m_alleles[i].m_nStartPos + (int)canTrimStart >= tmpoverlapVariants[ovarItr].m_alleles[tmpItr].m_nEndPos)
+                            {
+                                int toClip = overlapEnd - a_rVariantList[k].m_alleles[i].m_nStartPos;
+                                if(toClip > 0 && toClip <= (int)canTrimStart)
+                                {
+                                    a_rVariantList[k].TrimVariant(i, toClip, 0);
+                                    canTrimStart -= toClip;
+                                    continue;
+                                }
+                            }
+                        }
+                        
+                        //Trim from beginning or end --
+                        else if(a_rVariantList[k].m_alleles[i].m_nEndPos > (int) overlapEnd)
+                        {
+                            //Try to trim from end
+                            if(a_rVariantList[k].m_alleles[i].m_nEndPos - (int)canTrimEnd <= tmpoverlapVariants[ovarItr].m_alleles[tmpItr].m_nStartPos)
+                            {
+                                int toClip = a_rVariantList[k].m_alleles[i].m_nEndPos - overlapStart;
+                                if(toClip > 0 & toClip <= (int)canTrimEnd)
+                                {
+                                    a_rVariantList[k].TrimVariant(i, 0, toClip);
+                                    canTrimEnd -= toClip;
+                                    continue;
+                                }
+                            }
+                            
+                            //Try to trim from front
+                            if(a_rVariantList[k].m_alleles[i].m_nStartPos + (int)canTrimStart >= tmpoverlapVariants[ovarItr].m_alleles[tmpItr].m_nEndPos)
+                            {
+                                int toClip = overlapEnd - a_rVariantList[k].m_alleles[i].m_nStartPos;
+                                if(toClip > 0 && toClip <= (int)canTrimStart)
+                                {
+                                    a_rVariantList[k].TrimVariant(i, toClip, 0);
+                                    canTrimStart -= toClip;
+                                    continue;
+                                }
+                            }
+                            
+                        }
+                        
+                        //Trim from end
+                        else
+                        {
+                            if(a_rVariantList[k].m_alleles[i].m_nEndPos - (int)canTrimEnd < tmpoverlapVariants[ovarItr].m_alleles[tmpItr].m_nStartPos)
+                            {
+                                int toClip = a_rVariantList[k].m_alleles[i].m_nEndPos - overlapStart;
+                                if(toClip > 0 & toClip <= (int)canTrimEnd)
+                                {
+                                    a_rVariantList[k].TrimVariant(i, 0, toClip);
+                                    canTrimEnd -= toClip;
+                                    continue;
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                if(!a_rVariantList[k].m_alleles[i].m_bIsTrimmed)
+                    a_rVariantList[k].TrimVariant(i);
+                else
+                    a_rVariantList[k].TrimVariant(i, canTrimStart, canTrimEnd);
+            }
+        }
+        
+        
+        //Update Variant Ranges
+        int minStart = INT_MAX;
+        int maxEnd = -1;
+        
+        for(int i =0; i < a_rVariantList[k].m_nAlleleCount; i++)
+        {
+            if(!a_rVariantList[k].m_alleles[i].m_bIsIgnored)
+            {
+                maxEnd = std::max(maxEnd, static_cast<int>(a_rVariantList[k].m_alleles[i].m_nEndPos));
+                minStart = std::min(minStart, static_cast<int>(a_rVariantList[k].m_alleles[i].m_nStartPos));
+            }
+        }
+        
+        a_rVariantList[k].m_nEndPos = maxEnd == -1 ? a_rVariantList[k].m_nOriginalPos : maxEnd;
+        a_rVariantList[k].m_nStartPos = minStart == INT_MAX ? a_rVariantList[k].m_nOriginalPos : minStart;
+        
+    }
+    
+}
 
 
-
+void CMendelianVariantProvider::AppendTrimmedVariants(std::vector<CVariant>& a_rVariantList, EMendelianVcfName a_uFrom)
+{
+    std::vector<std::vector<CVariant>>* variantList;
+    
+    switch (a_uFrom)
+    {
+        case eCHILD:
+            variantList = &m_aChildVariantList;
+            break;
+        case eFATHER:
+            variantList = &m_aFatherVariantList;
+            break;
+        case eMOTHER:
+            variantList = &m_aMotherVariantList;
+        default:
+            break;
+    }
+    
+    for(unsigned int k = 0; k < a_rVariantList.size(); k++)
+        (*variantList)[a_rVariantList[k].m_nChrId].push_back(a_rVariantList[k]);
+}

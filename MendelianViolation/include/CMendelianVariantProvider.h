@@ -107,6 +107,13 @@ private:
     
     static bool CompareVariants(const CVariant& var1, const CVariant& var2);
     
+    //Find the optimal trimmings for given variant list
+    void FindOptimalTrimmings(std::vector<CVariant>& a_rVariantList, EMendelianVcfName a_uFrom);
+    
+    //Merge trimmed variants with the original variant list
+    void AppendTrimmedVariants(std::vector<CVariant>& a_rVariantList, EMendelianVcfName a_uFrom);
+
+    
     //VCF FILES FOR COMPARISON
     CVcfReader m_FatherVcf;
     CVcfReader m_MotherVcf;
