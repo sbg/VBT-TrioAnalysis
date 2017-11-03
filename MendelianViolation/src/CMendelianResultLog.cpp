@@ -17,7 +17,6 @@ void CMendelianResultLog::SetLogDirectory(std::string a_rLogDirectory)
     m_aLogDirectory = a_rLogDirectory;
 }
 
-
 void CMendelianResultLog::WriteRow(std::ofstream* a_pOutput, const std::string& a_name, int* a_pColumns)
 {
     const char separator = ' ';
@@ -35,7 +34,6 @@ void CMendelianResultLog::WriteRow(std::ofstream* a_pOutput, const std::string& 
     (*a_pOutput) << std::left << std::setw(5)  << std::setfill(separator) << "|";
     (*a_pOutput) << std::endl;
 }
-
 
 void CMendelianResultLog::WriteRowSum(std::ofstream* a_pOutput, const std::string& a_name)
 {
@@ -65,8 +63,6 @@ void CMendelianResultLog::WriteRowSum(std::ofstream* a_pOutput, const std::strin
     (*a_pOutput) << std::endl;
     
 }
-
-
 
 void CMendelianResultLog::WriteGenotypeRow(std::ofstream* a_pOutput,
                                            const std::string& a_name,
@@ -144,9 +140,6 @@ void CMendelianResultLog::WriteGenotypeRowSum(std::ofstream* a_pOutput, const st
     (*a_pOutput) << "GRAND TOTAL:" << grandTotal << std::endl;
 
 }
-
-
-
 
 void CMendelianResultLog::LogBestPathStatistic(bool a_bIsFatherChild, SChrIdTriplet a_triplet, int a_nTpCalled, int a_nTpBaseline, int a_nFalsePositive, int a_nFalseNegative)
 {
@@ -418,8 +411,6 @@ void CMendelianResultLog::WriteDetailedReportTabDelimited(const std::string& a_r
     outputTSV.close();
 }
 
-
-
 void CMendelianResultLog::WriteShortReportTable(const std::string& a_rPrefixName)
 {
     const char separator    = ' ';
@@ -498,7 +489,6 @@ void SMendelianDetailedLogGenotypes::clear()
         }
 }
 
-
 void CMendelianResultLog::LogSkippedVariantCounts(int a_nChildSkipped, int a_nFatherSkipped, int a_nMotherSkipped)
 {
     m_nTotalSkippedCountChild = a_nChildSkipped;
@@ -512,10 +502,3 @@ void CMendelianResultLog::LogFilteredComplexVariantCounts(int a_nChildFiltered, 
     m_nTotalNonAssessedVarCountFather = a_nFatherFiltered;
     m_nTotalNonAssessedVarCountMother = a_nMotherFiltered;
 }
-
-
-
-
-
-
-
