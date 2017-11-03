@@ -718,18 +718,8 @@ void CVariantProvider::FindOptimalTrimmings(std::vector<CVariant>& a_rVariantLis
     
     int currentChrId = a_rVariantList[0].m_nChrId;
     
-    std::vector<CVariant> affectedVariants;
-    std::vector<CVariant> genotypeAffectedVariants;
-    
     for(unsigned int k = 0; k < a_rVariantList.size(); k++)
     {
-        if(a_rVariantList[k].m_chrName == "1" && a_rVariantList[k].m_nOriginalPos == 44776634)
-        {
-            int asd = 0;
-            asd ++;
-        }
-        
-
         for(int i = 0; i < 2; i++)
         {
             if(a_rVariantList[k].m_alleles[i].m_bIsIgnored || a_rVariantList[k].m_alleles[i].m_bIsTrimmed)
@@ -772,7 +762,6 @@ void CVariantProvider::FindOptimalTrimmings(std::vector<CVariant>& a_rVariantLis
             
             else
             {
-                affectedVariants.push_back(a_rVariantList[k]);
                 for(unsigned int ovarItr = 0; ovarItr < tmpoverlapVariants.size(); ovarItr++)
                 {
                     //Check each allele of overlapping variant
