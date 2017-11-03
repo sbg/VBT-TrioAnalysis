@@ -392,20 +392,20 @@ void CVariant::TrimVariant(int a_nAlleleIndex)
 void CVariant::TrimVariant(int a_nAlleleIndex, unsigned int trimLengthFromBeginning, unsigned int trimLengthFromEnd)
 {
     m_alleles[a_nAlleleIndex].m_bIsTrimmed = true;
+
+    //Update maximum trim size from begininning in case it already trimmed from the end
+    unsigned int compSize = std::min(int(m_alleles[a_nAlleleIndex].m_nEndPos - m_alleles[a_nAlleleIndex].m_nStartPos), (int)m_alleles[a_nAlleleIndex].m_sequence.size());
+    trimLengthFromBeginning =  std::min(compSize, trimLengthFromBeginning);
     
     bool canTrimFromBegin = true;
     bool canTrimFromEnd = true;
     
     //Trim from the beginning
-    unsigned int compSize = static_cast<unsigned int>(std::min(m_refSequence.size(), m_alleles[a_nAlleleIndex].m_sequence.size()));
-    
-    if(trimLengthFromBeginning > compSize)
-        canTrimFromBegin = false;
-    
     for(unsigned int k = 0; k < trimLengthFromBeginning ; k++)
     {
-        if(m_alleles[a_nAlleleIndex].m_sequence[k] != m_refSequence[k])
+        if(m_alleles[a_nAlleleIndex].m_sequence[k] != m_refSequence[m_alleles[a_nAlleleIndex].m_nStartPos - m_nOriginalPos + k])
         {
+            std::cerr << "Unable to Trim : " << ToString() << std::endl;
             canTrimFromBegin = false;
             break;
         }
@@ -420,9 +420,10 @@ void CVariant::TrimVariant(int a_nAlleleIndex, unsigned int trimLengthFromBeginn
     
     //Update trimming size from the end
     trimLengthFromEnd = std::min(trimLengthFromEnd, compSize);
+    unsigned int originalEndPos = m_nOriginalPos + (int)m_refSequence.length();
     
     //Trim from the end
-    for(int k = static_cast<int>(m_refSequence.size()) - 1, p = static_cast<int>(m_alleles[a_nAlleleIndex].m_sequence.size()) - 1; k >= 0;  k--, p--)
+    for(int k = originalEndPos - m_nEndPos - 1, p = static_cast<int>(m_alleles[a_nAlleleIndex].m_sequence.size()) - 1; k >= 0;  k--, p--)
     {
         if(p == (int)m_alleles[a_nAlleleIndex].m_sequence.size() - (int)trimLengthFromEnd - 1)
            break;
@@ -430,6 +431,7 @@ void CVariant::TrimVariant(int a_nAlleleIndex, unsigned int trimLengthFromBeginn
         if(m_alleles[a_nAlleleIndex].m_sequence[p] != m_refSequence[k])
         {
             canTrimFromEnd = false;
+            std::cerr << "Unable to Trim : " << ToString() << std::endl;
             break;
         }
     }
