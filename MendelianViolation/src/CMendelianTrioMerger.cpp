@@ -17,9 +17,12 @@ using namespace mendelian;
 //Checks if the given two range is overlapping
 bool IsOverlap(SVcfRecord& rec1, SVcfRecord& rec2)
 {
-    //If the interval length is 0 (eg. 974791-974791) we need to check if the boundaries matches
-    if(rec1.right - rec1.left == 0 || rec2.right - rec2.left == 0)
-        return std::min(rec1.right, rec2.right) - std::max(rec1.left, rec2.left) >= 0;
+    if(rec1.left == rec2.left)
+        return true;
+    else if(rec1.right == rec1.left)
+        return (rec2.right > rec1.left && rec2.left <= rec1.left);
+    else if(rec2.right == rec2.left)
+        return (rec1.right > rec2.left && rec1.left <= rec2.left);
     else
         return std::min(rec1.right, rec2.right) - std::max(rec1.left, rec2.left) > 0;
 }
