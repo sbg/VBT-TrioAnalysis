@@ -14,8 +14,16 @@
 #include "CVariantIterator.h"
 #include "CSyncPoint.h"
 #include <algorithm>
+#include <fstream>
 
 using namespace mendelian;
+
+inline bool IsFileExists (const std::string& name)
+{
+    std::ifstream f(name.c_str());
+    return f.good();
+}
+
 
 CMendelianAnalyzer::CMendelianAnalyzer() :
 m_mendelianDecider(m_aBestPathsFatherChildGT, m_aBestPathsFatherChildAM, m_aBestPathsMotherChildGT, m_aBestPathsMotherChildAM, m_provider, m_resultLog)
@@ -43,11 +51,9 @@ int CMendelianAnalyzer::run(int argc, char **argv)
         return -1;
 
     duration = std::difftime(std::time(0), start);
-    std::cout << "Vcf and fasta Parser read completed in " << duration << " secs" << std::endl;
     std::cerr << "[stderr] Vcf and fasta Parser read completed in " << duration << " secs" << std::endl;
     start1 = std::time(0);
     
-    std::cout << "Initializing output writer..." << std::endl;
     std::cerr << "[stderr] initializing output writer" << std::endl;
     
     //Initialize output writer
@@ -63,13 +69,11 @@ int CMendelianAnalyzer::run(int argc, char **argv)
                                m_provider.GetContigCount(eFATHER),
                                m_provider.GetContigCount(eMOTHER));
     
-    std::cout << "Running best path algorithm pipeline for each chromosome..." << std::endl;
     std::cerr << "[stderr] Running best path algorithm pipeline for each chromosome..." << std::endl;
     
     //Run core comparison engine on parallel
     AssignJobsToThreads(m_fatherChildConfig.m_nThreadCount);
     
-    std::cout << "Evaluating mendelian consistency of variants..." << std::endl;
     std::cerr << "[stderr] Evaluating mendelian consistency of variants..." << std::endl;
     
     //Perform merge process
@@ -89,12 +93,10 @@ int CMendelianAnalyzer::run(int argc, char **argv)
         m_trioWriter.SetDecisionsAndVariants(chrIds[k], eFATHER, fatherDecisions, m_provider.GetSortedVariantList(eFATHER, chrIds[k].m_nFid));
     }
     
-    std::cout << "Generating the output trio vcf..." << std::endl;
     std::cerr << "[stderr] Generating the output trio vcf..." << std::endl;
     //Generate trio output vcf from common chromosomes
     m_trioWriter.GenerateTrioVcf(chrIds);
     
-    std::cout << "Generating detailed output logs.." << std::endl;
     std::cerr << "[stderr] Generating detailed output logs.." << std::endl;
     
     m_resultLog.LogSkippedVariantCounts(m_provider.GetSkippedVariantCount(eCHILD),
@@ -113,10 +115,8 @@ int CMendelianAnalyzer::run(int argc, char **argv)
     m_resultLog.WriteShortReportTable(m_fatherChildConfig.m_output_prefix);
     
     duration = std::difftime(std::time(0), start1);
-    std::cout << "Processing Chromosomes completed in " << duration << " secs" << std::endl;
     std::cerr << "[stderr] Processing Chromosomes completed in " << duration << " secs" << std::endl;
     duration = std::difftime(std::time(0), start);
-    std::cout << "Total execution time is " << duration << " secs" << std::endl;
     std::cerr << "[stderr] Total execution time is " << duration << " secs" << std::endl;
     
     return 0;
@@ -308,19 +308,25 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
         it += 2;
     }
     
+    bool bIsVcfFilesAccesible = true;
+    
     if(!bChildSet)
-        std::cout << "Child vcf file is not set" << std::endl;
+        std::cerr << "Child vcf file is not set" << std::endl;
     else if(!bFatherSet)
-        std::cout << "Father vcf file is not set" << std::endl;
+        std::cerr << "Father vcf file is not set" << std::endl;
     else if(!bMotherSet)
-        std::cout << "Mother vcf file is not set" << std::endl;
+        std::cerr << "Mother vcf file is not set" << std::endl;
     else if(!bReferenceSet)
-        std::cout << "Reference fasta file is not set" << std::endl;
+        std::cerr << "Reference fasta file is not set" << std::endl;
     else if(!bOutputDirSet)
-        std::cout << "Output Directory is not set" << std::endl;
+        std::cerr << "Output Directory is not set" << std::endl;
+    else if(!IsFileExists(m_motherChildConfig.m_pBaseVcfFileName) || !IsFileExists(m_motherChildConfig.m_pCalledVcfFileName) || !IsFileExists(m_fatherChildConfig.m_pBaseVcfFileName))
+    {
+        bIsVcfFilesAccesible = false;
+        std::cerr << "One of vcf file paths is wrong" << std::endl;
+    }
     
-    
-    return bFatherSet && bMotherSet && bChildSet && bReferenceSet && bOutputDirSet;
+    return bFatherSet && bMotherSet && bChildSet && bReferenceSet && bOutputDirSet && bIsVcfFilesAccesible;
     
 }
 
