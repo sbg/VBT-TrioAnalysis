@@ -168,6 +168,8 @@ void CMendelianVariantProvider::FillVariantsFromBED()
 {
     CSimpleBEDParser bedParser;
     bedParser.InitBEDFile(m_motherChildConfig.m_pBedFileName);
+    
+    unsigned int remainingBedContigCount = bedParser.m_nTotalContigCount;
 
     CVariant variant;
     int id = 0;
@@ -201,8 +203,17 @@ void CMendelianVariantProvider::FillVariantsFromBED()
             std::cout << "Reading chromosome " << preChrId << " of Parent[FATHER] vcf" << std::endl;
             id = 0;
             variant.m_nId = id;
+            
+            //We update the remaining contig count in BED file
+            if(regionIterator > 0)
+                remainingBedContigCount--;
+            
             regionIterator = 0;
         }
+        
+        //All BED regions are finished
+        if(remainingBedContigCount == 0)
+            break;
         
         //No Region exist for this chromosome
         if(bedParser.m_regionMap[variant.m_chrName].size() == 0)
@@ -241,7 +252,10 @@ void CMendelianVariantProvider::FillVariantsFromBED()
             m_nFatherNotAssessedVariantCount++;
         
         else if(true == variant.m_bHaveMultipleTrimOption)
+        {
             multiTrimmableVarListFather.push_back(variant);
+            id++;
+        }
         
         else
         {
@@ -253,6 +267,7 @@ void CMendelianVariantProvider::FillVariantsFromBED()
     preChrId = "";
     id = 0;
     regionIterator = 0;
+    remainingBedContigCount = bedParser.m_nTotalContigCount;
     
     FindOptimalTrimmings(multiTrimmableVarListFather, eFATHER);
     AppendTrimmedVariants(multiTrimmableVarListFather, eFATHER);
@@ -269,8 +284,17 @@ void CMendelianVariantProvider::FillVariantsFromBED()
             std::cout << "Reading chromosome " << preChrId << " of Parent[MOTHER] vcf" << std::endl;
             id = 0;
             variant.m_nId = id;
+            
+            //We update the remaining contig count in BED file
+            if(regionIterator > 0)
+                remainingBedContigCount--;
+            
             regionIterator = 0;
         }
+        
+        //All BED regions are finished
+        if(remainingBedContigCount == 0)
+            break;
         
         //No Region exist for this chromosome
         if(bedParser.m_regionMap[variant.m_chrName].size() == 0)
@@ -309,7 +333,10 @@ void CMendelianVariantProvider::FillVariantsFromBED()
             m_nMotherNotAssessedVariantCount++;
         
         else if(true == variant.m_bHaveMultipleTrimOption)
+        {
             multiTrimmableVarListMother.push_back(variant);
+            id++;
+        }
         
         else
         {
@@ -321,6 +348,7 @@ void CMendelianVariantProvider::FillVariantsFromBED()
     preChrId = "";
     id = 0;
     regionIterator = 0;
+    remainingBedContigCount = bedParser.m_nTotalContigCount;
 
     FindOptimalTrimmings(multiTrimmableVarListMother, eMOTHER);
     AppendTrimmedVariants(multiTrimmableVarListMother, eMOTHER);
@@ -337,9 +365,18 @@ void CMendelianVariantProvider::FillVariantsFromBED()
             std::cout << "Reading chromosome " << preChrId << " of child vcf" << std::endl;
             id = 0;
             variant.m_nId = id;
+            
+            //We update the remaining contig count in BED file
+            if(regionIterator > 0)
+                remainingBedContigCount--;
+            
             regionIterator = 0;
         }
 
+        //All BED regions are finished
+        if(remainingBedContigCount == 0)
+            break;
+        
         //No Region exist for this chromosome
         if(bedParser.m_regionMap[variant.m_chrName].size() == 0)
             continue;
@@ -377,7 +414,10 @@ void CMendelianVariantProvider::FillVariantsFromBED()
             m_nChildNotAssessedVariantCount++;
         
         else if(true == variant.m_bHaveMultipleTrimOption)
+        {
             multiTrimmableVarListChild.push_back(variant);
+            id++;
+        }
         
         else
         {
@@ -446,7 +486,10 @@ void CMendelianVariantProvider::FillVariants()
             m_nFatherNotAssessedVariantCount++;
         
         else if(true == variant.m_bHaveMultipleTrimOption)
+        {
             multiTrimmableVarListFather.push_back(variant);
+            id++;
+        }
 
         else
         {
@@ -492,7 +535,10 @@ void CMendelianVariantProvider::FillVariants()
             m_nMotherNotAssessedVariantCount++;
         
         else if(true == variant.m_bHaveMultipleTrimOption)
+        {
             multiTrimmableVarListMother.push_back(variant);
+            id++;
+        }
         
         else
         {
@@ -538,7 +584,10 @@ void CMendelianVariantProvider::FillVariants()
             m_nChildNotAssessedVariantCount++;
         
         else if(true == variant.m_bHaveMultipleTrimOption)
+        {
             multiTrimmableVarListChild.push_back(variant);
+            id++;
+        }
         
         else
         {
@@ -734,17 +783,14 @@ void CMendelianVariantProvider::SetCommonChromosomes()
         
     std::sort(m_aCommonChromosomes.begin(), m_aCommonChromosomes.end(), [](const SChrIdTriplet& t1, const SChrIdTriplet& t2){ return t1.m_nCid < t2.m_nCid; });
     
-    //Clear redundant variants TODO: We can remove redundant variants. Following part of code should be arranged to eliminate unique chromosomes
-/*    for(int k = 0; k < m_aCommonChromosomes.size(); k++)
-    {
-        std::cerr << "Warning! Chromosome " << m_aCommonChromosomes[k].m_chrName << " is not contained by all three vcf files. Variants will be filtered out from comparison" << std::endl;
-        m_aChildVariantList[m_aCommonChromosomes[k].m_nCid].clear();
-        m_aFatherVariantList[m_aCommonChromosomes[k].m_nFid].clear();
-        m_aMotherVariantList[m_aCommonChromosomes[k].m_nMid].clear();
-    }
- */
-    
-    
+//Clear redundant variants TODO: We can remove redundant variants. Following part of code should be arranged to eliminate unique chromosomes
+//    for(unsigned int k = 0; k < m_aCommonChromosomes.size(); k++)
+//    {
+//        std::cerr << "Warning! Chromosome " << m_aCommonChromosomes[k].m_chrName << " is not contained by all three vcf files. Variants will be filtered out from comparison" << std::endl;
+//        m_aChildVariantList[m_aCommonChromosomes[k].m_nCid].clear();
+//        m_aFatherVariantList[m_aCommonChromosomes[k].m_nFid].clear();
+//        m_aMotherVariantList[m_aCommonChromosomes[k].m_nMid].clear();
+//    }
     
 }
 
