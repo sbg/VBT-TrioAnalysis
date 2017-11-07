@@ -39,13 +39,8 @@ public:
     ///Bed Region map use chromosome name as key [This one is not accesible with GetNextRegion]
     std::unordered_map<std::string, std::vector<SBedRegion>> m_regionMap;
     
-private:
-    
-    ///List of regions from BED file
-    std::vector<SBedRegion> m_regionArray;
-    
-    ///Points to the Next Region in m_regionArray
-    unsigned int m_nIterator;
+    //Total number of contigs in BED file
+    unsigned int m_nTotalContigCount;
     
 };
 

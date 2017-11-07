@@ -14,7 +14,6 @@
 bool CSimpleBEDParser::InitBEDFile(const std::string& a_rBEDFilePath)
 {
     bool bIsSuccess = true;
-    m_nIterator = 0;
     
     //Open bed file
     std::ifstream bedFile;
@@ -62,7 +61,12 @@ bool CSimpleBEDParser::InitBEDFile(const std::string& a_rBEDFilePath)
     }
         
     bedFile.close();
-   
+
+    //Specify the total contig count
+    m_nTotalContigCount = 0;
+    for (auto it= m_regionMap.begin(); it!=m_regionMap.end(); ++it)
+        m_nTotalContigCount++;
+    
     return bIsSuccess;
 }
 
