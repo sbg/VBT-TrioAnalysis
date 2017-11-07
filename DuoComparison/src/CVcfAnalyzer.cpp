@@ -604,6 +604,7 @@ void CVcfAnalyzer::PrintHelp() const
     std::cout << "-sample-base <sample_name>   [Optional.Read only the given sample in base VCF. Default value is the first sample.]" << std::endl;
     std::cout << "-sample-called <sample_name> [Optional.Read only the given sample in called VCF. Default value is the first sample.]" << std::endl;
     std::cout << "--ref-overlap                [Optional.Allow reference overlapping by trimming nucleotides and ignoring 0 genotype.]" << std::endl;
+    std::cout << "--generate-sync-point        [Optional.Prints the sync point list of two vcf file. Default value is false.]" << std::endl;
     std::cout << "--platform-mode              [Optional.Allow to run program with the thread number of different chromosome count.]" << std::endl;
     std::cout << "-thread-count                [Optional.Specify the number of threads that program will use. Default value is 2]" << std::endl;
     std::cout << "-max-bp-length               [*Optional.Specify the maximum base pair length of variant to process. Default value is 1000]" << std::endl;
