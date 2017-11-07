@@ -67,17 +67,12 @@ void CGraphSplitOutputProvider::GenerateVcfs(const std::string& a_rIncludeName, 
     
     //BED region parameters if there is a defined bed file
     CSimpleBEDParser bedParser;
-    SBedRegion bedRegion;
-    bool hasNextRegion = true;
+    unsigned int regionIterator;
     
     if(m_bIsBEDFileEnabled)
     {
         bedParser.InitBEDFile(m_bedFilePath);
-        hasNextRegion = bedParser.GetNextRegion(bedRegion);
     }
-    
-    if(m_bIsBEDFileEnabled && hasNextRegion == false)
-        return;
     
     CVariant variant;
     bcf1_t* pRecord = inputReader.GetRecordPointer();
@@ -94,23 +89,30 @@ void CGraphSplitOutputProvider::GenerateVcfs(const std::string& a_rIncludeName, 
             variant.m_nId = 0;
             id = 0;
             excludeIndexItr = 0;
+            regionIterator++;
         }
         
-        //Pass to the next region
-        if(m_bIsBEDFileEnabled &&
-           ((bedRegion.m_chrName == variant.m_chrName && variant.m_nStartPos > bedRegion.m_nEndPos)
-            ||
-            inputReader.m_chrIndexMap[variant.m_chrName] > inputReader.m_chrIndexMap[bedRegion.m_chrName]))
+
+        //No Region exist for this chromosome
+        if(bedParser.m_regionMap[variant.m_chrName].size() == 0)
+            continue;
+        
+        //Skip to next region
+        while(regionIterator < bedParser.m_regionMap[variant.m_chrName].size()
+              &&
+              variant.m_nOriginalPos >= bedParser.m_regionMap[variant.m_chrName][regionIterator].m_nEndPos)
         {
-            hasNextRegion = bedParser.GetNextRegion(bedRegion);
-            if(false == hasNextRegion)
-                break;
+            regionIterator++;
         }
+        
+        //Skip if regions are finished for given chromosome
+        if(regionIterator == bedParser.m_regionMap[variant.m_chrName].size())
+            continue;
         
         //Variant Could not pass from BED region
-        if(m_bIsBEDFileEnabled &&
-           (bedRegion.m_chrName != variant.m_chrName || std::min(bedRegion.m_nEndPos, variant.m_nOriginalPos + static_cast<int>(variant.m_refSequence.length())) - std::max(bedRegion.m_nStartPos, variant.m_nOriginalPos) < 0))
+        if(bedParser.m_regionMap[variant.m_chrName][regionIterator].m_nStartPos >= variant.m_nEndPos)
             continue;
+        
         //Variant Count not pass from PASS filtering
         else if(m_bPassFilterEnabled && variant.m_bIsFilterPASS == false)
             continue;
