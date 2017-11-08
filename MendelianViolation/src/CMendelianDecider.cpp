@@ -521,6 +521,13 @@ void CMendelianDecider::AssignDecisionToParentVars(EMendelianVcfName a_checkSide
         if(a_rParentDecisions[varListToCheckParent[k]->m_nId] != eUnknown)
             continue;
         
+        //If variant is no match and has no reference allele, mark it as violation
+        if(varListToCheckParent[k]->m_variantStatus == eNO_MATCH && varListToCheckParent[k]->m_genotype[0] != 0 && varListToCheckParent[k]->m_genotype[1] != 0)
+        {
+            a_rParentDecisions[varListToCheckParent[k]->m_nId] = eViolation;
+            continue;
+        }
+        
         //Skip irrelevant sync points
         while(itrSyncPList < syncPoints.size() && syncPoints[itrSyncPList] <= varListToCheckParent[k]->m_nStartPos)
             itrSyncPList++;
