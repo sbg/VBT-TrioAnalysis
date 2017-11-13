@@ -1160,6 +1160,7 @@ void CMendelianVariantProvider::FindOptimalTrimmings(std::vector<CVariant>& a_rV
         case eMOTHER:
             allVarList = &m_aMotherVariantList;
         default:
+            allVarList = 0;
             break;
     }
     
@@ -1250,7 +1251,7 @@ void CMendelianVariantProvider::FindOptimalTrimmings(std::vector<CVariant>& a_rV
                             if(a_rVariantList[k].m_alleles[i].m_nEndPos - (int)canTrimEnd <= tmpoverlapVariants[ovarItr].m_alleles[tmpItr].m_nStartPos)
                             {
                                 int toClip = a_rVariantList[k].m_alleles[i].m_nEndPos - overlapStart;
-                                if(toClip > 0 & toClip <= (int)canTrimEnd)
+                                if(toClip > 0 && toClip <= (int)canTrimEnd)
                                 {
                                     a_rVariantList[k].TrimVariant(i, 0, toClip);
                                     canTrimEnd -= toClip;
@@ -1278,7 +1279,7 @@ void CMendelianVariantProvider::FindOptimalTrimmings(std::vector<CVariant>& a_rV
                             if(a_rVariantList[k].m_alleles[i].m_nEndPos - (int)canTrimEnd < tmpoverlapVariants[ovarItr].m_alleles[tmpItr].m_nStartPos)
                             {
                                 int toClip = a_rVariantList[k].m_alleles[i].m_nEndPos - overlapStart;
-                                if(toClip > 0 & toClip <= (int)canTrimEnd)
+                                if(toClip > 0 && toClip <= (int)canTrimEnd)
                                 {
                                     a_rVariantList[k].TrimVariant(i, 0, toClip);
                                     canTrimEnd -= toClip;
@@ -1333,6 +1334,7 @@ void CMendelianVariantProvider::AppendTrimmedVariants(std::vector<CVariant>& a_r
         case eMOTHER:
             variantList = &m_aMotherVariantList;
         default:
+            variantList = 0;
             break;
     }
     

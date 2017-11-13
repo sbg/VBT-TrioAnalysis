@@ -67,7 +67,7 @@ void CGraphSplitOutputProvider::GenerateVcfs(const std::string& a_rIncludeName, 
     
     //BED region parameters if there is a defined bed file
     CSimpleBEDParser bedParser;
-    unsigned int regionIterator;
+    unsigned int regionIterator = 0;
     
     if(m_bIsBEDFileEnabled)
     {
