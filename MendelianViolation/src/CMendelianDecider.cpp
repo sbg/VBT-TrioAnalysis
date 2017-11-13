@@ -64,12 +64,6 @@ void CMendelianDecider::CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTri
     
     for(unsigned int k = 0; k < a_rVariantList.size(); k++)
     {
-        if(a_rVariantList[k]->m_nOriginalPos == 761956)
-        {
-            int asdas = 0;
-            asdas++;
-        }
-        
         
         //Check if the variant is already marked
         if(a_rParentSelfDecisions[a_rVariantList[k]->m_nId] != eUnknown)
