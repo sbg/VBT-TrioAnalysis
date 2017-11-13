@@ -39,6 +39,7 @@ int CMendelianAnalyzer::run(int argc, char **argv)
     //Reads the command line parameters
     bool isSuccess = ReadParameters(argc, argv);
     
+    //Parameter Read fails, return
     if(!isSuccess)
         return -1;
     
@@ -47,6 +48,7 @@ int CMendelianAnalyzer::run(int argc, char **argv)
     //Initialize variant provider
     isSuccess = m_provider.InitializeReaders(m_fatherChildConfig, m_motherChildConfig);
     
+    //Variant Initialization fails, return
     if(!isSuccess)
         return -1;
 
@@ -85,12 +87,22 @@ int CMendelianAnalyzer::run(int argc, char **argv)
         std::vector<EMendelianDecision> childDecisions  = std::vector<EMendelianDecision>(m_provider.GetVariantCount(eCHILD,  chrIds[k].m_nCid));
         std::vector<EMendelianDecision> motherDecisions = std::vector<EMendelianDecision>(m_provider.GetVariantCount(eMOTHER, chrIds[k].m_nMid));
         std::vector<EMendelianDecision> fatherDecisions = std::vector<EMendelianDecision>(m_provider.GetVariantCount(eFATHER, chrIds[k].m_nFid));
+        
+        //Set all decisions to unknown at the beginning
+        for(unsigned int m = 0; m < childDecisions.size(); m++)
+            childDecisions[m] = eUnknown;
+        for(unsigned int m = 0; m < motherDecisions.size(); m++)
+            motherDecisions[m] = eUnknown;
+        for(unsigned int m = 0; m < fatherDecisions.size(); m++)
+            fatherDecisions[m] = eUnknown;
+        
+        //Merge the chromosome and fill the decisions arrays
         m_mendelianDecider.MergeFunc(chrIds[k], motherDecisions, fatherDecisions, childDecisions);
         
-        //Set decision arrays
-        m_trioWriter.SetDecisionsAndVariants(chrIds[k], eCHILD,  childDecisions, m_provider.GetSortedVariantList(eCHILD, chrIds[k].m_nCid));
-        m_trioWriter.SetDecisionsAndVariants(chrIds[k], eMOTHER, motherDecisions, m_provider.GetSortedVariantList(eMOTHER, chrIds[k].m_nMid));
-        m_trioWriter.SetDecisionsAndVariants(chrIds[k], eFATHER, fatherDecisions, m_provider.GetSortedVariantList(eFATHER, chrIds[k].m_nFid));
+        //Set decision arrays and variants to the output Trio Merger
+        m_trioWriter.SetDecisionsAndVariants(chrIds[k], eCHILD,  childDecisions, m_provider.GetVariantList(eCHILD, chrIds[k].m_nCid));
+        m_trioWriter.SetDecisionsAndVariants(chrIds[k], eMOTHER, motherDecisions, m_provider.GetVariantList(eMOTHER, chrIds[k].m_nMid));
+        m_trioWriter.SetDecisionsAndVariants(chrIds[k], eFATHER, fatherDecisions, m_provider.GetVariantList(eFATHER, chrIds[k].m_nFid));
     }
     
     std::cerr << "[stderr] Generating the output trio vcf..." << std::endl;

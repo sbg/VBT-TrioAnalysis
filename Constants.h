@@ -42,6 +42,6 @@ const int MEDIUM_VARIANT_SIZE = 15;
 const int GRAPH_REPLAY_MAX_ITERATION = 100;
 
 //VBT VERSION AND YEAR TO BE COPIED OUTPUT VCFS
-const std::string VBT_VERSION = "v0.6.7 (2017)";
+const std::string VBT_VERSION = "v0.6.8 (2017)";
 
 #endif //_CONSTANTS_H_

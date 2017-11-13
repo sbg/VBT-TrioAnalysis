@@ -78,7 +78,6 @@ private:
                          const std::vector<const CVariant*>& a_rVariantList,
                          std::vector<bool>& a_rSideDecisions,
                          const std::vector<EMendelianDecision>& a_rParentSelfDecisions,
-                         const std::vector<EMendelianDecision>& a_rParentOtherDecisions,
                          const std::vector<EMendelianDecision>& a_rChildDecisions);
     
     ///Check each parent variant and assign all unassigned parent variants as violation or consistent

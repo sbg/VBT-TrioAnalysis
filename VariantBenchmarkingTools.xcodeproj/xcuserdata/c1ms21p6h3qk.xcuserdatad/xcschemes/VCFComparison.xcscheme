@@ -65,11 +65,11 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "mendelian"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "varcomp"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "graphcomp"
@@ -77,34 +77,38 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-father"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest7/UG_CEU_MERGED_realigned.base_recalibrated.merged.merged.vcf"
-            isEnabled = "NO">
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest7/UG_CEU_MERGED_cleaned.vcf"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-child"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest7/UG_CEU_MERGED_realigned.base_recalibrated.merged.merged.vcf"
-            isEnabled = "NO">
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest7/UG_CEU_MERGED_cleaned.vcf"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-mother"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest7/UG_CEU_MERGED_realigned.base_recalibrated.merged.merged.vcf"
-            isEnabled = "NO">
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest7/UG_CEU_MERGED_cleaned.vcf"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-outDir"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest7/"
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/JohnComparison/wholeGenHG001_HC/GIABvsSBG_All"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest9"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -125,11 +129,11 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-pedigree"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest7/ceu.ped"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--ref-overlap"
@@ -137,27 +141,35 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-base"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/JohnComparison/GIAB_HG001.vcf.gz"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest7/gral.SBG_HG001.fp.vcf"
-            isEnabled = "YES">
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest8/autosomesOnly_jointCalled_trio_hg001_bwa_gatk.cat.vcf.gz"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/JohnComparison/gral.SBG_Caller_HG001_filtered.vcf.gz"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-called"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/JohnComparison/gral.Haplotype_Caller_HG001.vcf.gz"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest7/gral.HC_HG001.fp.vcf.gz"
-            isEnabled = "YES">
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/JohnComparison/gral.SBG_Caller_HG001_filtered.vcf.gz"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest8/autosomesOnly_jointCalled_trio_hg001_bwa_gatk.cat.vcf.gz"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--allele-match"
@@ -165,30 +177,34 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--autosome-only"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-bed"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest6/chr1.bed"
-            isEnabled = "YES">
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest8/chr1.bed"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest7/HG001_GRCh37_GIAB_highconf_CG-IllFB-IllGATKHC-Ion-10X-SOLID_CHROM1-X_v.3.3.2_highconf.bed"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-out-prefix"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "VBT_0.6.5_UG_CEU"
-            isEnabled = "NO">
+            argument = "VBT_0.6.7_UG_CEU_testHome"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-thread-count"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "4"
+            argument = "2"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -213,6 +229,22 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "1000"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-sample-base"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "NA12891"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-sample-called"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "NA12878"
             isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>

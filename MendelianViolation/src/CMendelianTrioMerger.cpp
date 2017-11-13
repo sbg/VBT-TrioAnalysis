@@ -7,10 +7,12 @@
 //
 
 #include "CMendelianTrioMerger.h"
+#include "CTrioVcfMerge.h"
 #include "Constants.h"
 #include <algorithm>
 #include <iostream>
 #include <sstream>
+
 
 using namespace mendelian;
 
@@ -147,230 +149,36 @@ void CMendelianTrioMerger::GenerateTrioVcf(std::vector<SChrIdTriplet>& a_rCommon
 }
 
 
-
-void CMendelianTrioMerger::AddRecords(SChrIdTriplet& a_rTriplet)
+void CMendelianTrioMerger::AddRecords(SChrIdTriplet &a_rTriplet)
 {
     std::vector<SVcfRecord> recordList;
     std::vector<EVariantCategory> recordCategoryList;
     std::vector<EMendelianDecision> recordDecisionList;
     
+    CTrioVcfMerge trioMerger(m_aMotherVariants[a_rTriplet.m_nMid], m_aFatherVariants[a_rTriplet.m_nFid], m_aChildVariants[a_rTriplet.m_nCid]);
     
+    const CVariant* motherVariant;
+    const CVariant* fatherVariant;
+    const CVariant* childVariant;
     
-    unsigned int childItr = 0, motherItr = 0, fatherItr = 0;
-    
-    while(childItr < m_aChildVariants[a_rTriplet.m_nCid].size() || motherItr < m_aMotherVariants[a_rTriplet.m_nMid].size() || fatherItr < m_aFatherVariants[a_rTriplet.m_nFid].size())
+    while(true == trioMerger.GetNext(&motherVariant, &fatherVariant, &childVariant))
     {
-        bool mergeMotherChild;
-        bool mergeFatherChild;
+        //Determine the decision of the record
+        EMendelianDecision decision = GetMendelianDecision(motherVariant, fatherVariant, childVariant, a_rTriplet);
         
-        if(childItr == m_aChildVariants[a_rTriplet.m_nCid].size() || motherItr == m_aMotherVariants[a_rTriplet.m_nMid].size())
-            mergeMotherChild = false;
-        else
-            mergeMotherChild = IsMerge(m_aChildVariants[a_rTriplet.m_nCid][childItr], m_aMotherVariants[a_rTriplet.m_nMid][motherItr]);
-        if(childItr == m_aChildVariants[a_rTriplet.m_nCid].size() || fatherItr == m_aFatherVariants[a_rTriplet.m_nFid].size())
-            mergeFatherChild = false;
-        else
-            mergeFatherChild = IsMerge(m_aChildVariants[a_rTriplet.m_nCid][childItr], m_aFatherVariants[a_rTriplet.m_nFid][fatherItr]);
-        
-        if(mergeFatherChild && mergeMotherChild)
-        {
-            EMendelianDecision decision = GetMendelianDecision(m_aMotherVariants[a_rTriplet.m_nMid][motherItr],
-                                                               m_aFatherVariants[a_rTriplet.m_nFid][fatherItr],
-                                                               m_aChildVariants[a_rTriplet.m_nCid][childItr],
-                                                               m_aChildDecisions[a_rTriplet.m_nTripleIndex][childItr]);
-            
-            if(decision == eSkipped)
-            {
-                fatherItr++;
-                motherItr++;
-                childItr++;
-                continue;
-            }
-
-            recordDecisionList.push_back(decision);
-            recordCategoryList.push_back(m_aChildVariants[a_rTriplet.m_nCid][childItr]->GetVariantCategory());
-            
-            DoTripleMerge(a_rTriplet, childItr, fatherItr, motherItr, decision, recordList);
+        //Ignore complex-skipped variants
+        if(decision == eSkipped)
             continue;
-        }
         
-        else if(mergeMotherChild)
-        {
-            //CHECK IF FATHER IS SMALLER
-            if(fatherItr != m_aFatherVariants[a_rTriplet.m_nFid].size() && m_aFatherVariants[a_rTriplet.m_nFid][fatherItr]->m_nOriginalPos < m_aChildVariants[a_rTriplet.m_nCid][childItr]->m_nOriginalPos)
-            {
-                EMendelianDecision decision = GetMendelianDecision(0, m_aFatherVariants[a_rTriplet.m_nFid][fatherItr], 0, m_aFatherDecisions[a_rTriplet.m_nTripleIndex][fatherItr]);
-                
-                if(decision == eSkipped)
-                {
-                    fatherItr++;
-                    continue;
-                }
-                
-                recordDecisionList.push_back(decision);
-                recordCategoryList.push_back(m_aFatherVariants[a_rTriplet.m_nFid][fatherItr]->GetVariantCategory());
-                
-                DoSingleVar(a_rTriplet, fatherItr, eFATHER, decision, recordList);
-                
-            }
-            //DO MOTHER CHILD MERGE
-            else
-            {
-                EMendelianDecision decision = GetMendelianDecision(m_aMotherVariants[a_rTriplet.m_nMid][motherItr], 0, m_aChildVariants[a_rTriplet.m_nCid][childItr], m_aChildDecisions[a_rTriplet.m_nTripleIndex][childItr]);
-
-                if(decision == eSkipped)
-                {
-                    motherItr++;
-                    childItr++;
-                    continue;
-                }
-                
-                recordDecisionList.push_back(decision);
-                recordCategoryList.push_back(m_aChildVariants[a_rTriplet.m_nCid][childItr]->GetVariantCategory());
-                
-                DoDoubleMerge(a_rTriplet, motherItr, childItr, eMOTHER, eCHILD, decision, recordList);
-                
-            }
-            continue;
-        }
+        //Push record decision
+        recordDecisionList.push_back(decision);
         
-        else if(mergeFatherChild)
-        {
-            //CHECK IF MOTHER IS SMALLER
-            if(motherItr != m_aMotherVariants[a_rTriplet.m_nMid].size() && m_aMotherVariants[a_rTriplet.m_nMid][motherItr]->m_nOriginalPos < m_aChildVariants[a_rTriplet.m_nCid][childItr]->m_nOriginalPos)
-            {
-                EMendelianDecision decision = GetMendelianDecision(m_aMotherVariants[a_rTriplet.m_nMid][motherItr], 0, 0, m_aMotherDecisions[a_rTriplet.m_nTripleIndex][motherItr]);
-                
-                if(decision == eSkipped)
-                {
-                    motherItr++;
-                    continue;
-                }
-                
-                recordDecisionList.push_back(decision);
-                recordCategoryList.push_back(m_aMotherVariants[a_rTriplet.m_nMid][motherItr]->GetVariantCategory());
-                
-                DoSingleVar(a_rTriplet, motherItr, eMOTHER, decision, recordList);
-                
-            }
-            //DO FATHER CHILD MERGE
-            else
-            {
-                EMendelianDecision decision = GetMendelianDecision(0, m_aFatherVariants[a_rTriplet.m_nFid][fatherItr] , m_aChildVariants[a_rTriplet.m_nCid][childItr], m_aChildDecisions[a_rTriplet.m_nTripleIndex][childItr]);
-
-                if(decision == eSkipped)
-                {
-                    fatherItr++;
-                    childItr++;
-                    continue;
-                }
-                
-                recordDecisionList.push_back(decision);
-                recordCategoryList.push_back(m_aChildVariants[a_rTriplet.m_nCid][childItr]->GetVariantCategory());
-    
-                DoDoubleMerge(a_rTriplet, fatherItr, childItr, eFATHER, eCHILD, decision, recordList);
-                
-            }
-            
-            continue;
-        }
-        
-        // No Child variant is merged check for father-mother merge
-        bool mergeMotherFather;
-        if(motherItr == m_aMotherVariants[a_rTriplet.m_nMid].size() || fatherItr == m_aFatherVariants[a_rTriplet.m_nFid].size())
-            mergeMotherFather = false;
-        else
-            mergeMotherFather = IsMerge(m_aMotherVariants[a_rTriplet.m_nMid][motherItr], m_aFatherVariants[a_rTriplet.m_nFid][fatherItr]);
-        
-        if(mergeMotherFather)
-        {
-            //CHECK IF CHILD IS SMALLER
-            if(childItr != m_aChildVariants[a_rTriplet.m_nCid].size() && m_aChildVariants[a_rTriplet.m_nCid][childItr]->m_nOriginalPos < m_aMotherVariants[a_rTriplet.m_nMid][motherItr]->m_nOriginalPos)
-            {
-                EMendelianDecision decision = GetMendelianDecision(0, 0, m_aChildVariants[a_rTriplet.m_nCid][childItr], m_aChildDecisions[a_rTriplet.m_nTripleIndex][childItr]);
-                
-                if(decision == eSkipped)
-                {
-                    childItr++;
-                    continue;
-                }
-                
-                recordDecisionList.push_back(decision);
-                recordCategoryList.push_back(m_aChildVariants[a_rTriplet.m_nCid][childItr]->GetVariantCategory());
-                
-                DoSingleVar(a_rTriplet, childItr, eCHILD, decision, recordList);
-            }
-            
-            //DO MOTHER FATHER MERGE
-            else
-            {
-                EMendelianDecision decision;
-                
-                if(m_aFatherVariants[a_rTriplet.m_nFid][fatherItr]->m_variantStatus == eCOMPLEX_SKIPPED || m_aMotherVariants[a_rTriplet.m_nMid][motherItr]->m_variantStatus == eCOMPLEX_SKIPPED)
-                {
-                    fatherItr++;
-                    motherItr++;
-                    continue;
-                }
-                else if(m_noCallMode == ENoCallMode::eImplicitNoCall)
-                    decision = eNoCallChild;
-                else if(m_noCallMode == ENoCallMode::eExplicitNoCall && (m_aFatherDecisions[a_rTriplet.m_nTripleIndex][fatherItr] == eNoCallParent || m_aMotherDecisions[a_rTriplet.m_nTripleIndex][motherItr] == eNoCallParent))
-                    decision = eNoCallParent;
-                else if(m_aMotherDecisions[a_rTriplet.m_nTripleIndex][motherItr] == eViolation || m_aFatherDecisions[a_rTriplet.m_nTripleIndex][fatherItr] == eViolation)
-                    decision = eViolation;
-                else if(m_aMotherDecisions[a_rTriplet.m_nTripleIndex][motherItr] == eCompliant || m_aFatherDecisions[a_rTriplet.m_nTripleIndex][fatherItr] == eCompliant)
-                    decision = eCompliant;
-                else if(m_aMotherDecisions[a_rTriplet.m_nTripleIndex][motherItr] == eNoCallParent || m_aFatherDecisions[a_rTriplet.m_nTripleIndex][fatherItr] == eNoCallParent)
-                    decision = eNoCallParent;
-                else
-                    decision = eUnknown;
-                
-                recordDecisionList.push_back(decision);
-                recordCategoryList.push_back(m_aFatherVariants[a_rTriplet.m_nFid][fatherItr]->GetVariantCategory());
-                
-                DoDoubleMerge(a_rTriplet, motherItr, fatherItr, eMOTHER, eFATHER, decision, recordList);
-                
-            }
-            continue;
-        }
-        
-        //There is no merge between three variant print the smallest one
-        else
-        {
-            int motherPos = motherItr != m_aMotherVariants[a_rTriplet.m_nMid].size() ? m_aMotherVariants[a_rTriplet.m_nMid][motherItr]->m_nOriginalPos : INT_MAX;
-            int fatherPos = fatherItr != m_aFatherVariants[a_rTriplet.m_nFid].size() ? m_aFatherVariants[a_rTriplet.m_nFid][fatherItr]->m_nOriginalPos : INT_MAX;
-            int childPos  = childItr  != m_aChildVariants[a_rTriplet.m_nCid].size()  ? m_aChildVariants[a_rTriplet.m_nCid][childItr]->m_nOriginalPos   : INT_MAX;
-        
-            if(motherPos <= fatherPos && motherPos <= childPos)
-            {
-                EMendelianDecision decision = m_noCallMode == ENoCallMode::eImplicitNoCall ? EMendelianDecision::eNoCallChild : m_aMotherDecisions[a_rTriplet.m_nTripleIndex][motherItr];
-                
-                recordDecisionList.push_back(decision);
-                recordCategoryList.push_back(m_aMotherVariants[a_rTriplet.m_nMid][motherItr]->GetVariantCategory());
-                
-                DoSingleVar(a_rTriplet, motherItr, eMOTHER, decision, recordList);
-            }
-            else if(fatherPos <= motherPos && fatherPos <= childPos)
-            {
-                EMendelianDecision decision = m_noCallMode == ENoCallMode::eImplicitNoCall ? EMendelianDecision::eNoCallChild : m_aFatherDecisions[a_rTriplet.m_nTripleIndex][fatherItr];
-                
-                recordDecisionList.push_back(decision);
-                recordCategoryList.push_back(m_aFatherVariants[a_rTriplet.m_nFid][fatherItr]->GetVariantCategory());
-
-                DoSingleVar(a_rTriplet, fatherItr, eFATHER, decision, recordList);
-
-            }
-            else
-            {
-                EMendelianDecision decision = m_noCallMode == ENoCallMode::eImplicitNoCall ? EMendelianDecision::eNoCallParent : m_aChildDecisions[a_rTriplet.m_nTripleIndex][childItr];
-
-                recordDecisionList.push_back(decision);
-                recordCategoryList.push_back(m_aChildVariants[a_rTriplet.m_nCid][childItr]->GetVariantCategory());
-
-                DoSingleVar(a_rTriplet, childItr, eCHILD, decision, recordList);
-            }
-        }
-    
+        //Push record category -> TODO: We should do it for final record?
+        EVariantCategory category = motherVariant == 0 ? ((fatherVariant == 0) ? childVariant->GetVariantCategory() : fatherVariant->GetVariantCategory()) : motherVariant->GetVariantCategory();
+        recordCategoryList.push_back(category);
+   
+        //Merge variant and push it to the recordList
+        DoMerge(motherVariant, fatherVariant, childVariant, decision, recordList);
     }
     
     std::cerr << "Processing Overlapping Regions..." << std::endl;
@@ -387,194 +195,124 @@ void CMendelianTrioMerger::AddRecords(SChrIdTriplet& a_rTriplet)
         RegisterMergedLine(recordDecisionList[k], recordCategoryList[k]);
         RegisterGenotype(recordList[k], recordCategoryList[k], recordDecisionList[k]);
     }
+    
 }
 
-
-bool CMendelianTrioMerger::IsMerge(const CVariant* a_pVar1, const CVariant* a_pVar2)
+void CMendelianTrioMerger::AddSample(const CVariant* a_pVariant, std::vector<std::string>& a_rAlleles, SPerSampleData& a_rSampleData)
 {
-    if(a_pVar1->m_nOriginalPos == a_pVar2->m_nOriginalPos && a_pVar1->m_refSequence == a_pVar2->m_refSequence)
-        return true;
-    else
-        return false;
-}
-
-void CMendelianTrioMerger::DoTripleMerge(SChrIdTriplet& a_rTriplet, unsigned int& a_nChildItr, unsigned int& a_nFatherItr, unsigned int& a_nMotherItr, EMendelianDecision a_decision, std::vector<SVcfRecord>& a_rRecordList)
-{
-    SVcfRecord vcfrecord;
-    
-    vcfrecord.m_nPosition = m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_nOriginalPos;
-    vcfrecord.m_chrName = m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_chrName;
-    vcfrecord.m_mendelianDecision = std::to_string(a_decision);
-    vcfrecord.left = m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_nStartPos;
-    vcfrecord.right = m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_nEndPos;
-    
-    std::vector<std::string> alleles;
-    
-    //Push reference sequence
-    alleles.push_back(m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_refSequence);
-    
-    //Add different child alleles
-    for(unsigned int k= 0; k < (unsigned int)m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_nAlleleCount; k++)
-    {
-        std::string childAllele = m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->GetOriginalAlleleStr(k);
-        if(childAllele != "" && std::find(alleles.begin(), alleles.end(), childAllele) == alleles.end())
-            alleles.push_back(childAllele);
-    }
-    
-    //Add different mother alleles
-    for(unsigned int k= 0; k < (unsigned int)m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->m_nAlleleCount; k++)
-    {
-        std::string motherAllele = m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->GetOriginalAlleleStr(k);
-        if(motherAllele != "" && std::find(alleles.begin(), alleles.end(), motherAllele) == alleles.end())
-            alleles.push_back(motherAllele);
-    }
-    
-    //Add different father alleles
-    for(unsigned int k= 0; k < (unsigned int)m_aFatherVariants[a_rTriplet.m_nFid][a_nFatherItr]->m_nAlleleCount; k++)
-    {
-        std::string fatherAllele = m_aFatherVariants[a_rTriplet.m_nFid][a_nFatherItr]->GetOriginalAlleleStr(k);
-        if(fatherAllele != "" && std::find(alleles.begin(), alleles.end(), fatherAllele) == alleles.end())
-            alleles.push_back(fatherAllele);
-    }
-    
-    //Generate final allele string
-    std::string alleleString = "";
-    for(unsigned int k=0; k < alleles.size(); k++)
-    {
-        if(k != 0)
-            alleleString = alleleString + ",";
-        alleleString = alleleString + alleles[k];
-    }
-    vcfrecord.m_alleles = alleleString;
-    
-    //ADD MOTHER
-    SPerSampleData dataMother;
-    dataMother.m_nHaplotypeCount = m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->m_nZygotCount;
-    dataMother.m_bIsPhased = m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->m_bIsPhased; // Feature Work: Phasings of variants we found can be written to output
-    dataMother.m_bIsNoCallVariant = m_noCallMode == ENoCallMode::eNone ? false : m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->m_bIsNoCall;
-    for(unsigned int k = 0; k < (unsigned int)m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->m_nZygotCount; k++)
-    {
-        for(unsigned int m = 0; m < alleles.size(); m++)
-        {
-            if(m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->GetOriginalAlleleStr(k) == alleles[m])
-            {
-                dataMother.m_aGenotype[k] = (int)m;
-                break;
-            }
-        }
-    }
-    
-    //ADD FATHER
     SPerSampleData dataFather;
-    dataFather.m_nHaplotypeCount = m_aFatherVariants[a_rTriplet.m_nFid][a_nFatherItr]->m_nZygotCount;
-    dataFather.m_bIsPhased = m_aFatherVariants[a_rTriplet.m_nFid][a_nFatherItr]->m_bIsPhased; // Feature Work: Phasings of variants we found can be written to output
-    dataFather.m_bIsNoCallVariant = m_noCallMode == ENoCallMode::eNone ? false : m_aFatherVariants[a_rTriplet.m_nFid][a_nFatherItr]->m_bIsNoCall;
-    for(unsigned int k = 0; k < (unsigned int)m_aFatherVariants[a_rTriplet.m_nFid][a_nFatherItr]->m_nZygotCount; k++)
+    if(a_pVariant != NULL)
     {
-        for(unsigned int m = 0; m < alleles.size(); m++)
+        a_rSampleData.m_nHaplotypeCount = a_pVariant->m_nZygotCount;
+        a_rSampleData.m_bIsPhased = a_pVariant->m_bIsPhased; // Future Work: Phasings of variants we found can be written to output
+        a_rSampleData.m_bIsNoCallVariant = m_noCallMode == eNone ? false : a_pVariant->m_bIsNoCall;
+        int additionalBasePairCount = static_cast<int>(a_rAlleles[0].length() - a_pVariant->m_refSequence.length());
+        
+        for(unsigned int k = 0; k < (unsigned int)a_pVariant->m_nZygotCount; k++)
         {
-            if(m_aFatherVariants[a_rTriplet.m_nFid][a_nFatherItr]->GetOriginalAlleleStr(k) == alleles[m])
+            std::string currentAllele = a_pVariant->GetOriginalAlleleStr(k) + a_rAlleles[0].substr((int)a_rAlleles[0].length() - additionalBasePairCount);
+            
+            for(unsigned int m = 0; m < a_rAlleles.size(); m++)
             {
-                dataFather.m_aGenotype[k] = (int)m;
-                break;
+                if(currentAllele == a_rAlleles[m])
+                {
+                    a_rSampleData.m_aGenotype[k] = (int)m;
+                    break;
+                }
             }
         }
     }
-    
-    //ADD CHILD
-    SPerSampleData dataChild;
-    dataChild.m_nHaplotypeCount = m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_nZygotCount;
-    dataChild.m_bIsPhased = m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_bIsPhased; // Feature Work: Phasings of variants we found can be written to output
-    dataChild.m_bIsNoCallVariant = m_noCallMode == ENoCallMode::eNone ? false : m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->m_bIsNoCall;
-    for(unsigned int k = 0; k < (unsigned int)m_aMotherVariants[a_rTriplet.m_nMid][a_nMotherItr]->m_nZygotCount; k++)
+    else if(m_noCallMode == eImplicitNoCall)
+        a_rSampleData.m_bIsNoCallVariant = true;
+    else
     {
-        for(unsigned int m = 0; m < alleles.size(); m++)
-        {
-            if(m_aChildVariants[a_rTriplet.m_nCid][a_nChildItr]->GetOriginalAlleleStr(k) == alleles[m])
-            {
-                dataChild.m_aGenotype[k] = (int)m;
-                break;
-            }
-        }
+        a_rSampleData.m_aGenotype[0] = 0;
+        a_rSampleData.m_aGenotype[1] = 0;
+        a_rSampleData.m_bIsNoCallVariant = false;
     }
-    
-    //Push trip genotypes to the vcfrecord
-    vcfrecord.m_aSampleData.push_back(dataMother);
-    vcfrecord.m_aSampleData.push_back(dataFather);
-    vcfrecord.m_aSampleData.push_back(dataChild);
-    
-    //Add record to the trio
-    a_rRecordList.push_back(vcfrecord);
-    
-    a_nChildItr++;
-    a_nFatherItr++;
-    a_nMotherItr++;
 }
 
-
-void CMendelianTrioMerger::DoDoubleMerge(SChrIdTriplet& a_rTriplet,
-                                         unsigned int& a_nItr1,
-                                         unsigned int& a_nItr2,
-                                         EMendelianVcfName a_name1,
-                                         EMendelianVcfName a_name2,
-                                         EMendelianDecision a_decision,
-                                         std::vector<SVcfRecord>& a_rRecordList)
+void CMendelianTrioMerger::DoMerge(const CVariant* a_pVarMother,
+                                   const CVariant* a_pVarFather,
+                                   const CVariant* a_pVarChild,
+                                   EMendelianDecision a_decision,
+                                   std::vector<SVcfRecord>& a_rRecordList)
 {
-    const CVariant* pVarMother = (a_name1 == eMOTHER) ? m_aMotherVariants[a_rTriplet.m_nMid][a_nItr1] : ((a_name2 == eMOTHER) ? m_aMotherVariants[a_rTriplet.m_nMid][a_nItr2] : NULL);
-    const CVariant* pVarFather = (a_name1 == eFATHER) ? m_aFatherVariants[a_rTriplet.m_nFid][a_nItr1] : ((a_name2 == eFATHER) ? m_aFatherVariants[a_rTriplet.m_nFid][a_nItr2] : NULL);
-    const CVariant* pVarChild  = (a_name1 == eCHILD)  ? m_aChildVariants[a_rTriplet.m_nCid][a_nItr1]  : ((a_name2 == eCHILD)  ? m_aChildVariants[a_rTriplet.m_nCid][a_nItr2]  : NULL);
-    
     SVcfRecord vcfrecord;
-    
-    vcfrecord.m_nPosition = (pVarChild != NULL) ? pVarChild->m_nOriginalPos : pVarMother->m_nOriginalPos;
-    vcfrecord.m_chrName = (pVarChild != NULL) ? pVarChild->m_chrName : pVarMother->m_chrName;
-    vcfrecord.m_mendelianDecision = std::to_string(a_decision);
-    vcfrecord.left = (pVarChild != NULL) ? pVarChild->m_nStartPos : pVarMother->m_nStartPos;
-    vcfrecord.right = (pVarChild != NULL) ? pVarChild->m_nEndPos : pVarMother->m_nEndPos;
 
+    vcfrecord.m_nPosition = a_pVarMother == NULL ? (a_pVarFather != NULL ? a_pVarFather->m_nOriginalPos : a_pVarChild->m_nOriginalPos) : a_pVarMother->m_nOriginalPos;
+    vcfrecord.m_chrName = a_pVarMother == NULL ? (a_pVarFather != NULL ? a_pVarFather->m_chrName : a_pVarChild->m_chrName) : a_pVarMother->m_chrName;
+    vcfrecord.m_mendelianDecision = std::to_string(a_decision);
+    
+    //Left most position of vcf record
+    vcfrecord.left = std::min({a_pVarMother != 0 ? a_pVarMother->m_nStartPos : INT_MAX,
+                               a_pVarFather != 0 ? a_pVarFather->m_nStartPos : INT_MAX,
+                               a_pVarChild  != 0 ? a_pVarChild->m_nStartPos : INT_MAX});
+    
+    //Right most position of vcf record
+    vcfrecord.right = std::max({a_pVarMother != 0 ? a_pVarMother->m_nEndPos : INT_MIN,
+                                a_pVarFather != 0 ? a_pVarFather->m_nEndPos : INT_MIN,
+                                a_pVarChild  != 0 ? a_pVarChild->m_nEndPos : INT_MIN});
+    
     //Fill the alleles part according to trio
     std::vector<std::string> alleles;
     
-    //Push reference sequence
-    if(pVarChild != NULL)
-        alleles.push_back(pVarChild->m_refSequence);
-    else
-        alleles.push_back(pVarMother->m_refSequence);
+    //Detect the longest reference sequence
+    int maxRefSequenceLength = std::max({a_pVarMother != 0 ? (int)a_pVarMother->m_refSequence.length() : INT_MIN,
+                                         a_pVarFather != 0 ? (int)a_pVarFather->m_refSequence.length() : INT_MIN,
+                                         a_pVarChild  != 0 ? (int)a_pVarChild->m_refSequence.length() : INT_MIN});
     
+    //Push the longest reference sequence as our reference
+    if(a_pVarChild != NULL && (int)a_pVarChild->m_refSequence.length() == maxRefSequenceLength)
+        alleles.push_back(a_pVarChild->m_refSequence);
+    else if (a_pVarMother != NULL && (int)a_pVarMother->m_refSequence.length() == maxRefSequenceLength)
+        alleles.push_back(a_pVarMother->m_refSequence);
+    else
+        alleles.push_back(a_pVarFather->m_refSequence);
     
     //Add child allele
-    if(pVarChild != NULL)
+    if(a_pVarChild != NULL)
     {
-        for(unsigned int k= 0; k < (unsigned int)pVarChild->m_nAlleleCount; k++)
+        //If child reference is shorter than the the records reference, we complete all of its alleles with the missing Base pairs
+        int additionalBasePairCount = maxRefSequenceLength - (int)a_pVarChild->m_refSequence.length();
+        
+        for(unsigned int k= 0; k < (unsigned int)a_pVarChild->m_nAlleleCount; k++)
         {
-            std::string childAllele = pVarChild->GetOriginalAlleleStr(k);
+            std::string childAllele = a_pVarChild->GetOriginalAlleleStr(k) + alleles[0].substr(maxRefSequenceLength-additionalBasePairCount);
             if(childAllele != "" && std::find(alleles.begin(), alleles.end(), childAllele) == alleles.end())
                 alleles.push_back(childAllele);
         }
     }
     
     //Add different mother alleles
-    if(pVarMother != NULL)
+    if(a_pVarMother != NULL)
     {
-        for(unsigned int k= 0; k < (unsigned int)pVarMother->m_nAlleleCount; k++)
+        //If mother reference is shorter than the the records reference, we complete all of its alleles with the missing Base pairs
+        int additionalBasePairCount = maxRefSequenceLength - (int)a_pVarMother->m_refSequence.length();
+        
+        for(unsigned int k= 0; k < (unsigned int)a_pVarMother->m_nAlleleCount; k++)
         {
-            std::string motherAllele = pVarMother->GetOriginalAlleleStr(k);
+            std::string motherAllele = a_pVarMother->GetOriginalAlleleStr(k) + alleles[0].substr(maxRefSequenceLength-additionalBasePairCount);
             if(motherAllele != "" && std::find(alleles.begin(), alleles.end(), motherAllele) == alleles.end())
                 alleles.push_back(motherAllele);
         }
     }
     
     //Add different father alleles
-    if(pVarFather != NULL)
+    if(a_pVarFather != NULL)
     {
-        for(unsigned int k= 0; k < (unsigned int)pVarFather->m_nAlleleCount; k++)
+        //If father reference is shorter than the the records reference, we complete all of its alleles with the missing Base pairs
+        int additionalBasePairCount = maxRefSequenceLength - (int)a_pVarFather->m_refSequence.length();
+        
+        for(unsigned int k= 0; k < (unsigned int)a_pVarFather->m_nAlleleCount; k++)
         {
-            std::string fatherAllele = pVarFather->GetOriginalAlleleStr(k);
+            std::string fatherAllele = a_pVarFather->GetOriginalAlleleStr(k) + alleles[0].substr(maxRefSequenceLength-additionalBasePairCount);
             if(fatherAllele != "" && std::find(alleles.begin(), alleles.end(), fatherAllele) == alleles.end())
                 alleles.push_back(fatherAllele);
         }
     }
     
+    //Write alleles to the vcf record
     std::string alleleString = "";
     for(unsigned int k=0; k < alleles.size(); k++)
     {
@@ -583,90 +321,12 @@ void CMendelianTrioMerger::DoDoubleMerge(SChrIdTriplet& a_rTriplet,
         alleleString = alleleString + alleles[k];
     }
     vcfrecord.m_alleles = alleleString;
-
-    //ADD MOTHER
-    SPerSampleData dataMother;
-    if(pVarMother != NULL)
-    {
-        dataMother.m_nHaplotypeCount = pVarMother->m_nZygotCount;
-        dataMother.m_bIsPhased = pVarMother->m_bIsPhased; // Feature Work: Phasings of variants we found can be written to output
-        dataMother.m_bIsNoCallVariant = m_noCallMode == eNone ? false : pVarMother->m_bIsNoCall;
-        for(unsigned int k = 0; k < (unsigned int)pVarMother->m_nZygotCount; k++)
-        {
-            for(unsigned int m = 0; m < alleles.size(); m++)
-            {
-                if(pVarMother->GetOriginalAlleleStr(k) == alleles[m])
-                {
-                    dataMother.m_aGenotype[k] = (int)m;
-                    break;
-                }
-            }
-        }
-    }
-    else if(m_noCallMode == eImplicitNoCall)
-        dataMother.m_bIsNoCallVariant = true;
-    else
-    {
-        dataMother.m_aGenotype[0] = 0;
-        dataMother.m_aGenotype[1] = 0;
-        dataMother.m_bIsNoCallVariant = false;
-    }
     
-    //ADD FATHER
-    SPerSampleData dataFather;
-    if(pVarFather != NULL)
-    {
-        dataFather.m_nHaplotypeCount = pVarFather->m_nZygotCount;
-        dataFather.m_bIsPhased = pVarFather->m_bIsPhased; // Feature Work: Phasings of variants we found can be written to output
-        dataFather.m_bIsNoCallVariant = m_noCallMode == eNone ? false : pVarFather->m_bIsNoCall;
-        for(unsigned int k = 0; k < (unsigned int)pVarFather->m_nZygotCount; k++)
-        {
-            for(unsigned int m = 0; m < alleles.size(); m++)
-            {
-                if(pVarFather->GetOriginalAlleleStr(k) == alleles[m])
-                {
-                    dataFather.m_aGenotype[k] = (int)m;
-                    break;
-                }
-            }
-        }
-    }
-    else if(m_noCallMode == eImplicitNoCall)
-        dataFather.m_bIsNoCallVariant = true;
-    else
-    {
-        dataFather.m_aGenotype[0] = 0;
-        dataFather.m_aGenotype[1] = 0;
-        dataFather.m_bIsNoCallVariant = false;
-    }
-    
-    //ADD CHILD
-    SPerSampleData dataChild;
-    if(pVarChild != NULL)
-    {
-        dataChild.m_nHaplotypeCount = pVarChild->m_nZygotCount;
-        dataChild.m_bIsPhased = pVarChild->m_bIsPhased; // Feature Work: Phasings of variants we found can be written to output
-        dataChild.m_bIsNoCallVariant = m_noCallMode == eNone ? false : pVarChild->m_bIsNoCall;
-        for(unsigned int k = 0; k < (unsigned int)pVarChild->m_nZygotCount; k++)
-        {
-            for(unsigned int m = 0; m < alleles.size(); m++)
-            {
-                if(pVarChild->GetOriginalAlleleStr(k) == alleles[m])
-                {
-                    dataChild.m_aGenotype[k] = (int)m;
-                    break;
-                }
-            }
-        }
-    }
-    else if(m_noCallMode == eImplicitNoCall)
-        dataChild.m_bIsNoCallVariant = true;
-    else
-    {
-        dataChild.m_aGenotype[0] = 0;
-        dataChild.m_aGenotype[1] = 0;
-        dataChild.m_bIsNoCallVariant = false;
-    }
+    //Add Samples
+    SPerSampleData dataMother, dataFather, dataChild;
+    AddSample(a_pVarMother, alleles, dataMother);
+    AddSample(a_pVarFather, alleles, dataFather);
+    AddSample(a_pVarChild, alleles, dataChild);
     
     //Push trip genotypes to the vcfrecord
     vcfrecord.m_aSampleData.push_back(dataMother);
@@ -675,98 +335,6 @@ void CMendelianTrioMerger::DoDoubleMerge(SChrIdTriplet& a_rTriplet,
     
     //Add record to the trio
     a_rRecordList.push_back(vcfrecord);
-    
-    //Increment counters
-    a_nItr1++;
-    a_nItr2++;
-    
-}
-
-
-void CMendelianTrioMerger::DoSingleVar(SChrIdTriplet& a_rTriplet,
-                                       unsigned int& a_nItr,
-                                       EMendelianVcfName a_name,
-                                       EMendelianDecision a_decision,
-                                       std::vector<SVcfRecord>& a_rRecordList)
-{
-    const CVariant* pVariant = (a_name == eMOTHER) ? m_aMotherVariants[a_rTriplet.m_nMid][a_nItr] : ((a_name == eFATHER) ? m_aFatherVariants[a_rTriplet.m_nFid][a_nItr] : m_aChildVariants[a_rTriplet.m_nCid][a_nItr]);
-    
-    SVcfRecord vcfrecord;
-    
-    vcfrecord.m_nPosition = pVariant->m_nOriginalPos;
-    vcfrecord.m_chrName = pVariant->m_chrName;
-    vcfrecord.m_mendelianDecision = std::to_string(a_decision);
-    vcfrecord.m_alleles = pVariant->m_allelesStr;
-    vcfrecord.left = pVariant->m_nStartPos;
-    vcfrecord.right = pVariant->m_nEndPos;
-    
-    SPerSampleData dataMother;
-    SPerSampleData dataFather;
-    SPerSampleData dataChild;
-    
-    if(a_name == eMOTHER)
-    {
-        dataMother.m_nHaplotypeCount = pVariant->m_nZygotCount;
-        dataMother.m_bIsPhased = pVariant->m_bIsPhased; // Feature Work: Phasings of variants we found can be written to output
-        dataMother.m_bIsNoCallVariant = m_noCallMode == ENoCallMode::eNone ? false : pVariant->m_bIsNoCall;
-        for(int k = 0; k < pVariant->m_nZygotCount; k++)
-            dataMother.m_aGenotype[k] = pVariant->m_genotype[k];
-    }
-    else if(m_noCallMode == ENoCallMode::eNone || m_noCallMode == ENoCallMode::eExplicitNoCall)
-    {
-        dataMother.m_aGenotype[0] = 0;
-        dataMother.m_aGenotype[1] = 0;
-        dataMother.m_bIsNoCallVariant = false;
-    }
-    else
-        dataMother.m_bIsNoCallVariant = true;
-    
-    if(a_name == eFATHER)
-    {
-        dataFather.m_nHaplotypeCount = pVariant->m_nZygotCount;
-        dataFather.m_bIsPhased = pVariant->m_bIsPhased; // Feature Work: Phasings of variants we found can be written to output
-        dataFather.m_bIsNoCallVariant = m_noCallMode == ENoCallMode::eNone ? false : pVariant->m_bIsNoCall;
-        for(int k = 0; k < pVariant->m_nZygotCount; k++)
-            dataFather.m_aGenotype[k] = pVariant->m_genotype[k];
-    
-    }
-    else if(m_noCallMode == ENoCallMode::eNone || m_noCallMode == ENoCallMode::eExplicitNoCall)
-    {
-        dataFather.m_aGenotype[0] = 0;
-        dataFather.m_aGenotype[1] = 0;
-        dataFather.m_bIsNoCallVariant = false;
-    }
-    else
-        dataFather.m_bIsNoCallVariant = true;
-
-    if(a_name == eCHILD)
-    {
-        dataChild.m_nHaplotypeCount = pVariant->m_nZygotCount;
-        dataChild.m_bIsPhased = pVariant->m_bIsPhased; // Feature Work: Phasings of variants we found can be written to output
-        dataChild.m_bIsNoCallVariant = m_noCallMode == ENoCallMode::eNone ? false : pVariant->m_bIsNoCall;
-        for(int k = 0; k < pVariant->m_nZygotCount; k++)
-            dataChild.m_aGenotype[k] = pVariant->m_genotype[k];
-    }
-    else if(m_noCallMode == ENoCallMode::eNone || m_noCallMode == ENoCallMode::eExplicitNoCall)
-    {
-        dataChild.m_aGenotype[0] = 0;
-        dataChild.m_aGenotype[1] = 0;
-        dataChild.m_bIsNoCallVariant = false;
-    }
-    else
-        dataChild.m_bIsNoCallVariant = true;
-    
-    //Push trip genotypes to the vcfrecord
-    vcfrecord.m_aSampleData.push_back(dataMother);
-    vcfrecord.m_aSampleData.push_back(dataFather);
-    vcfrecord.m_aSampleData.push_back(dataChild);
-    
-    //Add record to the trio
-    a_rRecordList.push_back(vcfrecord);
-    
-    //Increment the counter
-    a_nItr++;
-    
 }
 
 void CMendelianTrioMerger::RegisterMergedLine(EMendelianDecision a_decision, EVariantCategory a_category)
@@ -814,9 +382,9 @@ void CMendelianTrioMerger::RegisterMergedLine(EMendelianDecision a_decision, EVa
     
 }
 
-EMendelianDecision CMendelianTrioMerger::GetMendelianDecision(const CVariant* a_pVarMother, const CVariant* a_pVarFather, const CVariant* a_pVarChild, EMendelianDecision a_initDecision)
+EMendelianDecision CMendelianTrioMerger::GetMendelianDecision(const CVariant* a_pVarMother, const CVariant* a_pVarFather, const CVariant* a_pVarChild, SChrIdTriplet& a_rTriplet)
 {
-    EMendelianDecision decision;
+    EMendelianDecision decision = eUnknown;
     
     if(a_pVarMother != 0 && a_pVarMother->m_variantStatus == eCOMPLEX_SKIPPED)
         decision = eSkipped;
@@ -825,6 +393,7 @@ EMendelianDecision CMendelianTrioMerger::GetMendelianDecision(const CVariant* a_
     else if(a_pVarChild != 0 && a_pVarChild->m_variantStatus == eCOMPLEX_SKIPPED)
         decision = eSkipped;
     
+    //Check for nocall - Implicit Mode
     else if(m_noCallMode == ENoCallMode::eImplicitNoCall)
     {
         if(a_pVarChild == 0 || a_pVarChild->m_bIsNoCall)
@@ -833,10 +402,9 @@ EMendelianDecision CMendelianTrioMerger::GetMendelianDecision(const CVariant* a_
             decision = EMendelianDecision::eNoCallParent;
         else if(a_pVarFather == 0 || a_pVarFather->m_bIsNoCall)
             decision = EMendelianDecision::eNoCallParent;
-        else
-            decision = a_initDecision;
     }
     
+    //Check for nocall - Eplicit Mode
     else if(m_noCallMode == ENoCallMode::eExplicitNoCall)
     {
         if(a_pVarChild !=0 && a_pVarChild->m_bIsNoCall)
@@ -845,18 +413,23 @@ EMendelianDecision CMendelianTrioMerger::GetMendelianDecision(const CVariant* a_
             decision = EMendelianDecision::eNoCallParent;
         else if(a_pVarFather != 0 && a_pVarFather->m_bIsNoCall)
             decision = EMendelianDecision::eNoCallParent;
-        else
-            decision = a_initDecision;
     }
     
-    else // m_noCallMode == eNone
+    //If variant is not no-call
+    if(decision == eUnknown)
     {
-        decision = a_initDecision;
+        EMendelianDecision childDecision = a_pVarChild   != 0 ? m_aChildDecisions[a_rTriplet.m_nTripleIndex][a_pVarChild->m_nId]   : EMendelianDecision::eUnknown;
+        EMendelianDecision fatherDecision = a_pVarFather != 0 ? m_aFatherDecisions[a_rTriplet.m_nTripleIndex][a_pVarFather->m_nId] : EMendelianDecision::eUnknown;
+        EMendelianDecision motherDecision = a_pVarMother != 0 ? m_aMotherDecisions[a_rTriplet.m_nTripleIndex][a_pVarMother->m_nId] : EMendelianDecision::eUnknown;
+        
+        if(childDecision == eViolation || motherDecision == eViolation || fatherDecision == eViolation)
+            decision = eViolation;
+        else
+            decision = eCompliant;
     }
     
     return decision;
 }
-
 
 void CMendelianTrioMerger::RegisterGenotype(const SVcfRecord& a_rRecord, EVariantCategory a_uCategory, EMendelianDecision a_uDecision)
 {
@@ -867,7 +440,6 @@ void CMendelianTrioMerger::RegisterGenotype(const SVcfRecord& a_rRecord, EVarian
     bool bIsMotherMultiAllelic = !(a_rRecord.m_aSampleData[0].m_aGenotype[0] < 2 && a_rRecord.m_aSampleData[0].m_aGenotype[1] < 2);
     bool bIsFatherMultiAllelic = !(a_rRecord.m_aSampleData[1].m_aGenotype[0] < 2 && a_rRecord.m_aSampleData[1].m_aGenotype[1] < 2);
     bool bIsChildMultiAllelic =  !(a_rRecord.m_aSampleData[2].m_aGenotype[0] < 2 && a_rRecord.m_aSampleData[2].m_aGenotype[1] < 2);
-    
     
     int motherGT = a_rRecord.m_aSampleData[0].m_aGenotype[0] + a_rRecord.m_aSampleData[0].m_aGenotype[1];
     int fatherGT = a_rRecord.m_aSampleData[1].m_aGenotype[0] + a_rRecord.m_aSampleData[1].m_aGenotype[1];
@@ -939,14 +511,3 @@ void CMendelianTrioMerger::ProcessRefOverlappedRegions(std::vector<SVcfRecord>& 
         recordItr++;
     }
 }
-
-
-
-
-
-
-
-
-
-
-

@@ -61,45 +61,28 @@ private:
     ///Merge 3 variant set into one trio.vcf that mendelian decisions are marked
     void AddRecords(SChrIdTriplet& a_rTriplet);
     
+    
     ///Fill the header part of the trio vcf
     void FillHeader();
     
-    ///Check if the given two variant share the same position and reference
-    bool IsMerge(const CVariant* a_pVar1, const CVariant* a_pVar2);
+    //Merge given three variant to a single record
+    void DoMerge(const CVariant* a_pVarMother,
+                 const CVariant* a_pVarFather,
+                 const CVariant* a_pVarChild,
+                 EMendelianDecision a_initDecision,
+                 std::vector<SVcfRecord>& a_rRecordList);
     
-    ///Merge 3 variant to single vcf record
-    void DoTripleMerge(SChrIdTriplet& a_rTriplet,
-                       unsigned int& a_nChildItr,
-                       unsigned int& a_nFatherItr,
-                       unsigned int& a_nMotherItr,
-                       EMendelianDecision a_decision,
-                       std::vector<SVcfRecord>& a_rRecordList);
-
-    ///Merge 2 variant to single vcf record
-    void DoDoubleMerge(SChrIdTriplet& a_rTriplet,
-                       unsigned int& a_nItr1,
-                       unsigned int& a_nItr2,
-                       EMendelianVcfName a_name1,
-                       EMendelianVcfName a_name2,
-                       EMendelianDecision a_decision,
-                       std::vector<SVcfRecord>& a_rRecordList);
- 
-    ///Write single variant to vcf record
-    void DoSingleVar(SChrIdTriplet& a_rTriplet,
-                     unsigned int& a_nItr,
-                     EMendelianVcfName a_name,
-                     EMendelianDecision a_decision,
-                     std::vector<SVcfRecord>& a_rRecordList);
+    ///Fill a_rSample with the information of variant
+    void AddSample(const CVariant* a_pVariant, std::vector<std::string>& a_rAlleles, SPerSampleData& a_rSample);
     
     ///Decide the mendelian type of the given three variant in a row
     EMendelianDecision GetMendelianDecision(const CVariant* a_pVarMother,
                                             const CVariant* a_pVarFather,
                                             const CVariant* a_pVarChild,
-                                            EMendelianDecision a_initDecision);
+                                            SChrIdTriplet& a_rTriplet);
     
     ///Register a line of merged vcf to the detailed report table [updates m_logEntry]
     void RegisterMergedLine(EMendelianDecision a_decision, EVariantCategory a_category);
-    
     
     ///Register the genotype of merged vcf to genotype table [updates m_logGenotypes]
     void RegisterGenotype(const CVariant* a_pMother,
