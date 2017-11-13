@@ -2,7 +2,7 @@
 # GRAPH VARIANT COMPARISON
 **Author:** Berke Cagkan Toptas
 
-Graph Variant Comparison tool is written using the algorithm of [vcfeval](https://github.com/RealTimeGenomics/rtg-tools "vcfeval github page") using [this](http://biorxiv.org/content/early/2015/08/02/023754) paper. Please see command line parameters below.
+Graph Variant Comparison tool is written using the algorithm of [vcfeval](https://github.com/RealTimeGenomics/rtg-tools "vcfeval github page") using [this](http://biorxiv.org/content/early/2015/08/02/023754) paper. VBT uses [htslib](http://www.htslib.org/) to read/write vcf files and read fasta files. Please see command line parameters below.
 
 ### Parameter Format:
 
