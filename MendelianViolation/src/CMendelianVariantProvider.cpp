@@ -1159,6 +1159,7 @@ void CMendelianVariantProvider::FindOptimalTrimmings(std::vector<CVariant>& a_rV
             break;
         case eMOTHER:
             allVarList = &m_aMotherVariantList;
+            break;
         default:
             allVarList = 0;
             break;
@@ -1333,6 +1334,7 @@ void CMendelianVariantProvider::AppendTrimmedVariants(std::vector<CVariant>& a_r
             break;
         case eMOTHER:
             variantList = &m_aMotherVariantList;
+            break;
         default:
             variantList = 0;
             break;

@@ -27,6 +27,7 @@
 		551662191E82EBC5002436FA /* CVariant.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 551662181E82EBC5002436FA /* CVariant.cpp */; };
 		5516621D1E82F271002436FA /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5516621B1E82F271002436FA /* main.cpp */; };
 		5530FA7B1FB955F700563591 /* CVariantIterator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5530FA7A1FB955F700563591 /* CVariantIterator.cpp */; };
+		5530FA7D1FBA03A400563591 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 5530FA7C1FBA03A400563591 /* README.md */; };
 		553B0F861E36A2FE00E7186C /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 553B0F851E36A2FE00E7186C /* README.md */; };
 		556D39941DD3AF2E00551040 /* libhts.1.3.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 556D39811DD3AF2E00551040 /* libhts.1.3.2.dylib */; };
 		556D39951DD3AF2E00551040 /* libhts.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 556D39821DD3AF2E00551040 /* libhts.1.dylib */; };
@@ -111,6 +112,8 @@
 		5516621A1E82F09E002436FA /* EVariantMatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EVariantMatch.h; path = VcfIO/include/EVariantMatch.h; sourceTree = SOURCE_ROOT; };
 		5516621B1E82F271002436FA /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = SOURCE_ROOT; };
 		5530FA7A1FB955F700563591 /* CVariantIterator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CVariantIterator.cpp; path = MendelianViolation/src/CVariantIterator.cpp; sourceTree = SOURCE_ROOT; };
+		5530FA7C1FBA03A400563591 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = Core/README.md; sourceTree = SOURCE_ROOT; };
+		5530FA7E1FBA03B300563591 /* VariantRepresentationDifference.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = VariantRepresentationDifference.png; path = MendelianViolation/VariantRepresentationDifference.png; sourceTree = SOURCE_ROOT; };
 		553B0F851E36A2FE00E7186C /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 		55647EF01EA810DB00D2625D /* CVariantIterator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CVariantIterator.h; path = MendelianViolation/include/CVariantIterator.h; sourceTree = SOURCE_ROOT; };
 		556D39761DD3AEA400551040 /* VariantBenchmarkingTools */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = VariantBenchmarkingTools; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -187,6 +190,7 @@
 		551661B01E82BD39002436FA /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				5530FA7C1FBA03A400563591 /* README.md */,
 				551661B11E82BE4C002436FA /* Include */,
 				551661B21E82BE6B002436FA /* src */,
 			);
@@ -299,6 +303,7 @@
 		551661BA1E82C230002436FA /* MendelianViolation */ = {
 			isa = PBXGroup;
 			children = (
+				5530FA7E1FBA03B300563591 /* VariantRepresentationDifference.png */,
 				55F4FCA01F7C270500C7673F /* README.md */,
 				551661BC1E82C272002436FA /* include */,
 				551661BB1E82C269002436FA /* src */,
@@ -540,6 +545,7 @@
 				551661DE1E82C967002436FA /* COrientedVariant.cpp in Sources */,
 				5530FA7B1FB955F700563591 /* CVariantIterator.cpp in Sources */,
 				551661FD1E82E8EB002436FA /* CMendelianTrioMerger.cpp in Sources */,
+				5530FA7D1FBA03A400563591 /* README.md in Sources */,
 				55BDF8751F3E06BF0095669B /* CGraphVariantProvider.cpp in Sources */,
 				55DE31921F1012F1009D385D /* CSimpleBEDParser.cpp in Sources */,
 				551661E21E82C967002436FA /* CSemiPath.cpp in Sources */,
