@@ -170,7 +170,7 @@ void CHaplotypeSequence::MoveForward(int a_nPosition)
 {
     if (!IsOnTemplate()) 
     {
-        std::cout << "Attempt to move forward while still in a variant" << std::endl;
+        std::cerr << "Attempt to move forward while still in a variant" << std::endl;
         assert(IsOnTemplate());
     }
 
@@ -206,7 +206,7 @@ void CHaplotypeSequence::Next()
     
     if(!(!m_nextVariant.IsNull() || m_nPositionInVariant == -1))
     {
-        std::cout << "Next Variant is NULL" << std::endl;
+        std::cerr << "Next Variant is NULL" << std::endl;
     }
     assert(!m_nextVariant.IsNull() || m_nPositionInVariant == -1);
 
@@ -245,8 +245,8 @@ void CHaplotypeSequence::Next()
 
                 if(m_nTemplatePosition != m_nextVariant.GetAllele().m_nStartPos)
                 {
-                    std::cout << "templatePosition=" << m_nTemplatePosition << " varStartPosition=" << m_nextVariant.GetVariant().GetStart() << std::endl;
-                    std::cout << "Out of order variants during replay" << std::endl;
+                    std::cerr << "templatePosition=" << m_nTemplatePosition << " varStartPosition=" << m_nextVariant.GetVariant().GetStart() << std::endl;
+                    std::cerr << "Out of order variants during replay" << std::endl;
                     assert(m_nTemplatePosition == m_nextVariant.GetAllele().m_nStartPos);
                 }
             }

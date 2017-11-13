@@ -876,10 +876,10 @@ void CMendelianDecider::MergeFunc(SChrIdTriplet& a_triplet,
     
     ReportChildChromosomeData(a_triplet, compliants, violations);
     
-    std::cout << "===================== STATISTICS " << a_triplet.m_chrName << " ===================" << std::endl;
-    std::cout << "Total Compliants:" << compliants.size() << std::endl;
-    std::cout << "Total Violations:" << violations.size() << std::endl;
-    std::cout << "Child Var Size:" << childVariants.size()<< std::endl;
-    std::cout << "=====================================================" << std::endl << std::endl;
+    std::cerr << "===================== STATISTICS " << a_triplet.m_chrName << " ===================" << std::endl;
+    std::cerr << "Total Compliants:" << compliants.size() << std::endl;
+    std::cerr << "Total Violations:" << violations.size() << std::endl;
+    std::cerr << "Child Var Size:" << childVariants.size()<< std::endl;
+    std::cerr << "=====================================================" << std::endl << std::endl;
     
 }

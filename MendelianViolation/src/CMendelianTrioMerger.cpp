@@ -135,7 +135,6 @@ void CMendelianTrioMerger::GenerateTrioVcf(std::vector<SChrIdTriplet>& a_rCommon
     
     for(unsigned int k = 0; k < a_rCommonChromosomes.size(); k++)
     {
-        std::cout << "Writing chromosome " << a_rCommonChromosomes[k].m_chrName << std::endl;
         std::cerr << "[stderr] Writing chromosome " << a_rCommonChromosomes[k].m_chrName << std::endl;
         AddRecords(a_rCommonChromosomes[k]);
     }

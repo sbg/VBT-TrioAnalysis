@@ -197,7 +197,7 @@ void CMendelianVariantProvider::FillVariantsFromBED()
         if(preChrId != variant.m_chrName)
         {
             preChrId = variant.m_chrName;
-            std::cout << "Reading chromosome " << preChrId << " of Parent[FATHER] vcf" << std::endl;
+            std::cerr << "Reading chromosome " << preChrId << " of Parent[FATHER] vcf" << std::endl;
             id = 0;
             variant.m_nId = id;
             
@@ -278,7 +278,7 @@ void CMendelianVariantProvider::FillVariantsFromBED()
         if(preChrId != variant.m_chrName)
         {
             preChrId = variant.m_chrName;
-            std::cout << "Reading chromosome " << preChrId << " of Parent[MOTHER] vcf" << std::endl;
+            std::cerr << "Reading chromosome " << preChrId << " of Parent[MOTHER] vcf" << std::endl;
             id = 0;
             variant.m_nId = id;
             
@@ -359,7 +359,7 @@ void CMendelianVariantProvider::FillVariantsFromBED()
         if(preChrId != variant.m_chrName)
         {
             preChrId = variant.m_chrName;
-            std::cout << "Reading chromosome " << preChrId << " of child vcf" << std::endl;
+            std::cerr << "Reading chromosome " << preChrId << " of child vcf" << std::endl;
             id = 0;
             variant.m_nId = id;
             
@@ -461,7 +461,7 @@ void CMendelianVariantProvider::FillVariants()
         if(preChrId != variant.m_chrName)
         {
             preChrId = variant.m_chrName;
-            std::cout << "Processing chromosome " << preChrId << " of Parent[FATHER] vcf" << std::endl;
+            std::cerr << "Processing chromosome " << preChrId << " of Parent[FATHER] vcf" << std::endl;
             id = 0;
             variant.m_nId = id;
         }
@@ -510,7 +510,7 @@ void CMendelianVariantProvider::FillVariants()
         if(preChrId != variant.m_chrName)
         {
             preChrId = variant.m_chrName;
-            std::cout << "Processing chromosome " << preChrId << " of Parent[MOTHER] vcf" << std::endl;
+            std::cerr << "Processing chromosome " << preChrId << " of Parent[MOTHER] vcf" << std::endl;
             id = 0;
             variant.m_nId = id;
         }
@@ -559,7 +559,7 @@ void CMendelianVariantProvider::FillVariants()
         if(preChrId != variant.m_chrName)
         {
             preChrId = variant.m_chrName;
-            std::cout << "Processing chromosome " << preChrId << " of child vcf" << std::endl;
+            std::cerr << "Processing chromosome " << preChrId << " of child vcf" << std::endl;
             id = 0;
             variant.m_nId = id;
         }
