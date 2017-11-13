@@ -102,7 +102,6 @@ void CMendelianTrioMerger::FillHeader()
     
     //ADD MENDELIAN VIOLATION INFO TYPE
     m_vcfWriter.AddHeaderLine("##INFO=<ID=MD,Number=1,Type=Integer,Description=\"Mendelian Violation Decision. (0)-complex, (1)-compliant, (2)-violation (3)-NoCall Parent (4)-NoCall Child \">");
-    //m_vcfWriter.AddHeaderLine("##INFO=<ID=POS,Number=1,Type=Integer,Description=\"Complex variant decision position. Shows the position of child variant that is connected\">");
     
     //ADD GT COLUMN
     m_vcfWriter.AddHeaderLine("##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">");

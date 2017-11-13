@@ -66,7 +66,6 @@ CHaplotypeSequence::CHaplotypeSequence(const CHaplotypeSequence& a_rObj)
 
 void CHaplotypeSequence::AddVariant(const COrientedVariant& a_rVariant)
 {
-    //assert(a_rVariant.GetStartPos() > m_nTemplatePosition);
     
     const SAllele a = a_rVariant.GetAllele();
     
@@ -243,7 +242,6 @@ void CHaplotypeSequence::Next()
                     break;
 
                 m_nPositionInVariant = 0;
-                //std::cout << "templatePosition=" << m_nTemplatePosition << " varStartPosition=" << m_nextVariant.GetVariant().GetStart() << std::endl;
 
                 if(m_nTemplatePosition != m_nextVariant.GetAllele().m_nStartPos)
                 {
@@ -260,10 +258,6 @@ void CHaplotypeSequence::Next()
 bool CHaplotypeSequence::IsNew(const COrientedVariant& a_rVar) const
 {
     return a_rVar.GetAllele().m_bIsIgnored || a_rVar.GetAllele().m_nStartPos >= m_nLastVariantEnd;
-    
-    //bool res1 = a_rVar.GetAllele().m_sequence == "";
-    //bool res2 = a_rVar.GetAllele().m_nStartPos > m_nLastVariantEnd;
-    //return (res1 || res2);
 }
 
 bool CHaplotypeSequence::WantsFutureVariantBases() const

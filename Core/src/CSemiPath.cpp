@@ -92,9 +92,6 @@ void CSemiPath::IncludeVariant(const COrientedVariant& a_rVariant, int a_nVarian
     m_nVariantIndex = a_nVariantIndex;
     m_nVariantEndPosition = max(m_nVariantEndPosition, a_rVariant.GetVariant().GetEnd());
     m_nIncludedVariantEndPosition = std::max(m_nIncludedVariantEndPosition, a_rVariant.GetVariant().GetEnd());
-
-    //std::cout << "New Last included Var End Pos:" << m_nIncludedVariantEndPosition << std::endl;
-    //std::cout << "Template Pos:" << GetPosition() << std::endl;
     
     m_haplotypeA.AddVariant(a_rVariant);
     m_haplotypeB.AddVariant(a_rVariant.Other());
@@ -187,9 +184,6 @@ void CSemiPath::MoveForward(int a_nPosition)
 
 bool CSemiPath::IsNew(const COrientedVariant& a_rVar) const
 {
-    //std::cout << "Last Var end pos :" << m_nIncludedVariantEndPosition << std::endl;
-    //std::cout << "Variant to add start pos :" << a_rVar.GetStartPos() << std::endl;
-    
     if(a_rVar.GetStartPos() >= m_nIncludedVariantEndPosition)
         return true;
     else
@@ -198,10 +192,7 @@ bool CSemiPath::IsNew(const COrientedVariant& a_rVar) const
 
 
 bool CSemiPath::Matches(const CSemiPath& a_rOther)
-{
-    //std::cout << NextHaplotypeABase() << " " << a_rOther.NextHaplotypeABase() << std::endl;
-    //std::cout << NextHaplotypeBBase() << " " << a_rOther.NextHaplotypeBBase() << std::endl;
-    
+{    
     if (!FinishedHaplotypeA() && !a_rOther.FinishedHaplotypeA() && toupper(NextHaplotypeABase()) != toupper(a_rOther.NextHaplotypeABase()))
         return false;
     else if (!FinishedHaplotypeB() && !a_rOther.FinishedHaplotypeB() && toupper(NextHaplotypeBBase()) != toupper(a_rOther.NextHaplotypeBBase()))

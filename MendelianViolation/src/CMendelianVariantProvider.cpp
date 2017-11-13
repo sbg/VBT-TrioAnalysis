@@ -140,9 +140,6 @@ bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildC
         //Get the common chromosome ids and clear the uncommon variants from provider
         SetCommonChromosomes();
         
-        //Filter NonAssessed variants coming from dependent sites. Update the variant ids
-        //RemoveNonAssessedSites();
-
         //Fill the oriented variants of 3 vcf for genotype matching
         FillGenotypeMatchOrientedVariants(m_aCommonChromosomes);
         
@@ -782,16 +779,6 @@ void CMendelianVariantProvider::SetCommonChromosomes()
     }
         
     std::sort(m_aCommonChromosomes.begin(), m_aCommonChromosomes.end(), [](const SChrIdTriplet& t1, const SChrIdTriplet& t2){ return t1.m_nCid < t2.m_nCid; });
-    
-//Clear redundant variants TODO: We can remove redundant variants. Following part of code should be arranged to eliminate unique chromosomes
-//    for(unsigned int k = 0; k < m_aCommonChromosomes.size(); k++)
-//    {
-//        std::cerr << "Warning! Chromosome " << m_aCommonChromosomes[k].m_chrName << " is not contained by all three vcf files. Variants will be filtered out from comparison" << std::endl;
-//        m_aChildVariantList[m_aCommonChromosomes[k].m_nCid].clear();
-//        m_aFatherVariantList[m_aCommonChromosomes[k].m_nFid].clear();
-//        m_aMotherVariantList[m_aCommonChromosomes[k].m_nMid].clear();
-//    }
-    
 }
 
 std::vector<SChrIdTriplet>& CMendelianVariantProvider::GetCommonChromosomes()

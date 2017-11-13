@@ -87,9 +87,6 @@ CPath CPathReplay::FindBestPath(SContig a_contig, bool a_bIsGenotypeMatch)
         currentMaxIterations = std::max(currentMaxIterations, currentIterations++);
         m_pathList.GetLeastAdvanced(processedPath);
         
-        //std::cout << "====" << TestID++ << "====" << "PathID:" << processedPath.m_pPath->m_nPathId << std::endl;
-        //std::cout << "Size:" << m_pathList.Size() + 1 << " Range:" << lastSyncPos + 1 << "-" << m_nCurrentPosition + 1 << " LocalIterations:" << currentIterations << std::endl;
-       
         if(m_pathList.Size() == 0)
         {
             const std::vector<const COrientedVariant*>* calledIncluded;
@@ -121,15 +118,11 @@ CPath CPathReplay::FindBestPath(SContig a_contig, bool a_bIsGenotypeMatch)
                 processedPath.m_pPath->ClearIncludedVariants();
                 processedPath.m_pPath->ClearExcludedVariants();
             }
-
-            //std::cout << TestID << "Included Size:" << processedPath.m_pPath->m_baseSemiPath.GetIncludedVariants().size() << " Excluded Size:" << processedPath.m_pPath->m_baseSemiPath.GetExcluded().size() << std::endl;
             
             int currentSyncPos = processedPath.m_pPath->m_calledSemiPath.GetPosition();
             if(currentMax > maxPaths)
             {
                 maxPaths = currentMax;
-                //maxPathRegion =  "chr21:" + std::to_string(lastSyncPos + 1) + "-" + std::to_string(currentSyncPos + 1);
-                //std::cout << "Maximum path complexity now " << maxPaths << ", at " << maxPathRegion << " with "  << currentIterations << " iterations" << std::endl;
             }
             currentMax = 0;
             currentMaxIterations = std::max(currentIterations, currentMaxIterations);
@@ -155,7 +148,6 @@ CPath CPathReplay::FindBestPath(SContig a_contig, bool a_bIsGenotypeMatch)
 
         if(processedPath.m_pPath->HasFinished())
         {
-            //std::cout << "processed path is finished" << std::endl;
             //Path is done. Update the Best Path if it is better
             CPathContainer processedCopy(*processedPath.m_pPath, processedPath.m_pPath->m_calledSemiPath.GetPosition());
             best = FindBetter(best, processedCopy) ? best : processedCopy;
@@ -175,9 +167,6 @@ CPath CPathReplay::FindBestPath(SContig a_contig, bool a_bIsGenotypeMatch)
         }
 
         processedPath.m_pPath->Step();
-        
-        //processedPath.m_pPath->Print();
-
         
         if(processedPath.m_pPath->InSync())
         {
@@ -424,8 +413,6 @@ void CPathReplay::SkipToNextVariant(CPath& a_rProcessedPath, const SContig& a_rC
     // -1 because we want to be before the position
     int nextPos = std::min(std::min(aNext,bNext), lastTemplatePos) -1;
 
-    //std::cout << "Next Position is:" << nextPos << std::endl;
-
     assert (a_rProcessedPath.m_calledSemiPath.GetPosition() == a_rProcessedPath.m_baseSemiPath.GetPosition());
     
     if(nextPos > a_rProcessedPath.m_calledSemiPath.GetPosition())
@@ -487,8 +474,6 @@ int CPathReplay::SkipVariantsTo(CPath& a_rPath, const SContig& a_rContig, int a_
     a_rPath.m_baseSemiPath.SetVariantIndex(varIndex);
     a_rPath.m_baseSemiPath.MoveForward(std::min(a_nMaxPos, a_rContig.m_nRefLength -1));
     
-    //std::cerr << "Baseline skipped Variant Count:" << baseSkippedCount << std::endl;
-    
     //CALLED SEMIPATH
     varIndex = a_rPath.m_calledSemiPath.GetVariantIndex();
     
@@ -501,9 +486,6 @@ int CPathReplay::SkipVariantsTo(CPath& a_rPath, const SContig& a_rContig, int a_
     varIndex--;
     a_rPath.m_calledSemiPath.SetVariantIndex(varIndex);
     a_rPath.m_calledSemiPath.MoveForward(std::min(a_nMaxPos, a_rContig.m_nRefLength-1));
-    
-    //std::cerr << "Called skipped Variant Count:" <<  calledSkippedCount << std::endl;
-
     
     return calledSkippedCount + baseSkippedCount;
 }
