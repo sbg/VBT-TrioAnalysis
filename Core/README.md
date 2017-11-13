@@ -25,4 +25,5 @@ or
 4582988      **CTCT***  *****      Trimmed Range : 4582990 - 4582994
 ```
 
+We implemented a smart trimming method to catch these variants.
 
