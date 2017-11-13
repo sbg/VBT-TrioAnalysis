@@ -761,7 +761,7 @@ void CMendelianDecider::MergeFunc(SChrIdTriplet& a_triplet,
     violations.insert(std::end(violations), std::begin(motherChildOnly), std::end(motherChildOnly));
     
     //Find Child Unique variants
-    std::vector<const CVariant*> childVariants = m_provider.GetSortedVariantList(eCHILD, a_triplet.m_nCid);
+    std::vector<const CVariant*> childVariants = m_provider.GetSortedVariantListByID(eCHILD, a_triplet.m_nCid);
     std::vector<int>childProcessedArray(childVariants.size());
     for(unsigned int k = 0; k < childProcessedArray.size(); k++)
         childProcessedArray[k] = 0;
