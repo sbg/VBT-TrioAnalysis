@@ -100,9 +100,9 @@ int CMendelianAnalyzer::run(int argc, char **argv)
         m_mendelianDecider.MergeFunc(chrIds[k], motherDecisions, fatherDecisions, childDecisions);
         
         //Set decision arrays and variants to the output Trio Merger
-        m_trioWriter.SetDecisionsAndVariants(chrIds[k], eCHILD,  childDecisions, m_provider.GetVariantList(eCHILD, chrIds[k].m_nCid));
-        m_trioWriter.SetDecisionsAndVariants(chrIds[k], eMOTHER, motherDecisions, m_provider.GetVariantList(eMOTHER, chrIds[k].m_nMid));
-        m_trioWriter.SetDecisionsAndVariants(chrIds[k], eFATHER, fatherDecisions, m_provider.GetVariantList(eFATHER, chrIds[k].m_nFid));
+        m_trioWriter.SetDecisionsAndVariants(chrIds[k], eCHILD,  childDecisions, m_provider.GetSortedVariantListByIDandStartPos(eCHILD, chrIds[k].m_nCid));
+        m_trioWriter.SetDecisionsAndVariants(chrIds[k], eMOTHER, motherDecisions, m_provider.GetSortedVariantListByIDandStartPos(eMOTHER, chrIds[k].m_nMid));
+        m_trioWriter.SetDecisionsAndVariants(chrIds[k], eFATHER, fatherDecisions, m_provider.GetSortedVariantListByIDandStartPos(eFATHER, chrIds[k].m_nFid));
     }
     
     std::cerr << "[stderr] Generating the output trio vcf..." << std::endl;
