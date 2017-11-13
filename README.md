@@ -3,7 +3,10 @@
 **Author:** Berke Cagkan Toptas  
 **Project Language:** C++11
 
-VBT provides set of tools that is used for aligner/variant calling benchmarking. Currently there are three tools implemented:
+VBT provides a set of tools that is used for aligner/variant calling benchmarking. VBT uses an improved version of [vcfeval](https://github.com/RealTimeGenomics/rtg-tools) as its core variant comparison library and uses [htslib](https://htslib.org) to read/write VCF and FASTA files. 
+
+
+Currently there are three tools implemented:
 
     1. VARIANT COMPARISON
     2. MENDELIAN VIOLATION DETECTOR
@@ -32,7 +35,7 @@ For additional help, please use the following commands:
 ./vbt --help
 ./vbt [module_name] --help
 ```
-Links to parameter structure of tools:
+Additional information can be found at each tools folder:
 
 [Variant Comparison](DuoComparison/README.md)
 
