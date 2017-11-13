@@ -838,12 +838,30 @@ std::vector<const CVariant*> CMendelianVariantProvider::GetVariantList(EMendelia
     return varList;
 }
 
-std::vector<const CVariant*> CMendelianVariantProvider::GetSortedVariantList(EMendelianVcfName a_uFrom, int a_nChrNo) const
+std::vector<const CVariant*> CMendelianVariantProvider::GetSortedVariantListByID(EMendelianVcfName a_uFrom, int a_nChrNo) const
 {
     std::vector<const CVariant*> varList = GetVariantList(a_uFrom, a_nChrNo);
     std::sort(varList.begin(), varList.end(), [](const CVariant* pVar1, const CVariant* pVar2){return pVar1->m_nId < pVar2->m_nId;});
     return varList;
 }
+
+std::vector<const CVariant*> CMendelianVariantProvider::GetSortedVariantListByIDandStartPos(EMendelianVcfName a_uFrom, int a_nChrNo) const
+{
+    std::vector<const CVariant*> varList = GetVariantList(a_uFrom, a_nChrNo);
+    std::sort(varList.begin(), varList.end(), [](const CVariant* pVar1, const CVariant* pVar2)
+    {
+        if(pVar1->m_nOriginalPos != pVar2->m_nOriginalPos)
+            return pVar1->m_nOriginalPos < pVar2->m_nOriginalPos;
+        else if(pVar1->m_nStartPos != pVar2->m_nStartPos)
+            return pVar1->m_nStartPos < pVar2->m_nStartPos;
+        else if(pVar1->m_nEndPos != pVar2->m_nEndPos)
+            return pVar1->m_nEndPos < pVar2->m_nEndPos;
+        else
+            return pVar1->m_nId < pVar2->m_nId;
+    });
+    return varList;
+}
+
 
 std::vector<const core::COrientedVariant*> CMendelianVariantProvider::GetOrientedVariantList(EMendelianVcfName a_uFrom, int a_nChrNo, bool a_bIsAlleleMatch) const
 {
