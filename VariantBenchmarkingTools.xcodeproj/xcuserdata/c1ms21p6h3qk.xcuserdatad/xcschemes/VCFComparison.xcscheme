@@ -181,11 +181,11 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-bed"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest8/chr1.bed"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest7/HG001_GRCh37_GIAB_highconf_CG-IllFB-IllGATKHC-Ion-10X-SOLID_CHROM1-X_v.3.3.2_highconf.bed"
@@ -196,7 +196,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "VBT_0.6.7_UG_CEU_testHome"
+            argument = "VBT_0.6.7_UG_CEU_test_order"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

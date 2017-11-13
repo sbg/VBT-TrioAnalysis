@@ -9,22 +9,6 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "MendelianViolation/src/CMendelianAnalyzer.cpp"
-            timestampString = "532227222.359459"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "375"
-            endingLineNumber = "375"
-            landmarkName = "CMendelianAnalyzer::AssignJobsToThreads(int a_nThreadCount)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "VcfIO/src/CVcfReader.cpp"
             timestampString = "531260555.696809"
             startingColumnNumber = "9223372036854775807"
@@ -32,38 +16,6 @@
             startingLineNumber = "452"
             endingLineNumber = "452"
             landmarkName = "CVcfReader::GetFilterInfo(std::vector&lt;std::string&gt; &amp;a_rFilterNames, std::vector&lt;std::string&gt; &amp;a_rFilterDescriptions)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MendelianViolation/src/CMendelianVariantProvider.cpp"
-            timestampString = "531781928.584075"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "208"
-            endingLineNumber = "208"
-            landmarkName = "CMendelianVariantProvider::FillVariantsFromBED()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MendelianViolation/src/CMendelianVariantProvider.cpp"
-            timestampString = "531781943.882425"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "203"
-            endingLineNumber = "203"
-            landmarkName = "CMendelianVariantProvider::FillVariantsFromBED()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
