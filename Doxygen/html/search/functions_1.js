@@ -19,6 +19,7 @@ var searchData=
   ['cpathreplay',['CPathReplay',['../classcore_1_1_c_path_replay.html#ac0de3edb771d888045fa26a2c91534e2',1,'core::CPathReplay']]],
   ['createvcf',['CreateVcf',['../class_c_vcf_writer.html#a65fa7d908734775e3df9d8f8fb60d799',1,'CVcfWriter']]],
   ['csplitoutputprovider',['CSplitOutputProvider',['../classduocomparison_1_1_c_split_output_provider.html#a8215f3c60a399e20259d667edaa233ba',1,'duocomparison::CSplitOutputProvider']]],
+  ['ctriovcfmerge',['CTrioVcfMerge',['../classmendelian_1_1_c_trio_vcf_merge.html#a9c52b6547f082a3f60aabf9689cb7dbf',1,'mendelian::CTrioVcfMerge']]],
   ['cvariant',['CVariant',['../class_c_variant.html#a8dec728411cc0d31d29b2475146d298b',1,'CVariant::CVariant()'],['../class_c_variant.html#a5a0ac7949809ed3e2745abb3ce3d312d',1,'CVariant::CVariant(const CVariant &amp;a_rObj)']]],
   ['cvariantiteratorv2',['CVariantIteratorV2',['../classduocomparison_1_1_c_variant_iterator_v2.html#a533471dccf7cab86917a565080ab07fc',1,'duocomparison::CVariantIteratorV2']]],
   ['cvariantprovider',['CVariantProvider',['../classduocomparison_1_1_c_variant_provider.html#ad3dda3863d1a84ec9cceeb78001066f3',1,'duocomparison::CVariantProvider']]]

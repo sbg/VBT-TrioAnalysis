@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Variant Benchmarking Tools: mendelian::CMendelianVariantProvider Class Reference</title>
+<title>Variant Benchmarking Tools (VBT): mendelian::CMendelianVariantProvider Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,10 +21,8 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Variant Benchmarking Tools
-   &#160;<span id="projectnumber">1.0.0</span>
+   <div id="projectname">Variant Benchmarking Tools (VBT)
    </div>
-   <div id="projectbrief">Variant Benchmarking Tools (VBT) is a set of tools that is used for variant calling pipeline benchmarking.</div>
   </td>
  </tr>
  </tbody>
@@ -87,10 +85,14 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 std::vector&lt; const <a class="el" href="class_c_variant.html">CVariant</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmendelian_1_1_c_mendelian_variant_provider.html#aaec72202d6f08266deecc259c387158b">GetVariantList</a> (EMendelianVcfName a_uFrom, int a_nChrNo) const</td></tr>
 <tr class="memdesc:aaec72202d6f08266deecc259c387158b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return all the variants belongs to given chromosome. <br /></td></tr>
 <tr class="separator:aaec72202d6f08266deecc259c387158b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaf3a7fdd0d93e71cdfb93003aca9f79b"><td class="memItemLeft" align="right" valign="top"><a id="aaf3a7fdd0d93e71cdfb93003aca9f79b"></a>
-std::vector&lt; const <a class="el" href="class_c_variant.html">CVariant</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmendelian_1_1_c_mendelian_variant_provider.html#aaf3a7fdd0d93e71cdfb93003aca9f79b">GetSortedVariantList</a> (EMendelianVcfName a_uFrom, int a_nChrNo) const</td></tr>
-<tr class="memdesc:aaf3a7fdd0d93e71cdfb93003aca9f79b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return all the variants belongs to given chromosome sorted by variant ids. <br /></td></tr>
-<tr class="separator:aaf3a7fdd0d93e71cdfb93003aca9f79b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68763ae18d29b93a2cbe52c231155eeb"><td class="memItemLeft" align="right" valign="top"><a id="a68763ae18d29b93a2cbe52c231155eeb"></a>
+std::vector&lt; const <a class="el" href="class_c_variant.html">CVariant</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmendelian_1_1_c_mendelian_variant_provider.html#a68763ae18d29b93a2cbe52c231155eeb">GetSortedVariantListByID</a> (EMendelianVcfName a_uFrom, int a_nChrNo) const</td></tr>
+<tr class="memdesc:a68763ae18d29b93a2cbe52c231155eeb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return all the variants belongs to given chromosome sorted by variant ids. <br /></td></tr>
+<tr class="separator:a68763ae18d29b93a2cbe52c231155eeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7b56f0dfb52618ccdf485fe8d84d0b8"><td class="memItemLeft" align="right" valign="top"><a id="ab7b56f0dfb52618ccdf485fe8d84d0b8"></a>
+std::vector&lt; const <a class="el" href="class_c_variant.html">CVariant</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmendelian_1_1_c_mendelian_variant_provider.html#ab7b56f0dfb52618ccdf485fe8d84d0b8">GetSortedVariantListByIDandStartPos</a> (EMendelianVcfName a_uFrom, int a_nChrNo) const</td></tr>
+<tr class="memdesc:ab7b56f0dfb52618ccdf485fe8d84d0b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return all the variants belongs to given chromosome sorted by variant ids. <br /></td></tr>
+<tr class="separator:ab7b56f0dfb52618ccdf485fe8d84d0b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae1580dbf511a3e7a2c996606974d6270"><td class="memItemLeft" align="right" valign="top"><a id="ae1580dbf511a3e7a2c996606974d6270"></a>
 std::vector&lt; const <a class="el" href="class_c_variant.html">CVariant</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmendelian_1_1_c_mendelian_variant_provider.html#ae1580dbf511a3e7a2c996606974d6270">GetVariantList</a> (EMendelianVcfName a_uFrom, int a_nChrNo, const std::vector&lt; int &gt; &amp;a_nIndexList) const</td></tr>
 <tr class="memdesc:ae1580dbf511a3e7a2c996606974d6270"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return all the variants belongs to given chromosome according to given index list. <br /></td></tr>
@@ -146,8 +148,8 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>GetSkippedVariantCount
 <div class="textblock"><p>Reads and stores variants of family members. </p>
 <p><a class="el" href="classmendelian_1_1_c_mendelian_variant_provider.html" title="Reads and stores variants of family members. ">CMendelianVariantProvider</a> contains functions to parse vcf files of family members. All variants are stored in this object and other classes can get access variant lists via this class. </p>
 </div><hr/>The documentation for this class was generated from the following files:<ul>
-<li>MendelianViolation/include/<a class="el" href="_c_mendelian_variant_provider_8h_source.html">CMendelianVariantProvider.h</a></li>
-<li>MendelianViolation/src/CMendelianVariantProvider.cpp</li>
+<li>/Users/c1ms21p6h3qk/Desktop/VBT/vbt/MendelianViolation/include/<a class="el" href="_c_mendelian_variant_provider_8h_source.html">CMendelianVariantProvider.h</a></li>
+<li>/Users/c1ms21p6h3qk/Desktop/VBT/vbt/MendelianViolation/src/CMendelianVariantProvider.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

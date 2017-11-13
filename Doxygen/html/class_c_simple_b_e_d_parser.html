@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Variant Benchmarking Tools: CSimpleBEDParser Class Reference</title>
+<title>Variant Benchmarking Tools (VBT): CSimpleBEDParser Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,10 +21,8 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Variant Benchmarking Tools
-   &#160;<span id="projectnumber">1.0.0</span>
+   <div id="projectname">Variant Benchmarking Tools (VBT)
    </div>
-   <div id="projectbrief">Variant Benchmarking Tools (VBT) is a set of tools that is used for variant calling pipeline benchmarking.</div>
   </td>
  </tr>
  </tbody>
@@ -62,6 +60,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="class_c_simple_b_e_d_parser-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">CSimpleBEDParser Class Reference</div>  </div>
@@ -79,20 +78,22 @@ Public Member Functions</h2></td></tr>
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_simple_b_e_d_parser.html#af64d529724eb4a548716025efdc53a44">InitBEDFile</a> (const std::string &amp;a_rBEDFilePath)</td></tr>
 <tr class="memdesc:af64d529724eb4a548716025efdc53a44"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads the bed file and save it inside. If there is an unknown region format, it returns FALSE. <br /></td></tr>
 <tr class="separator:af64d529724eb4a548716025efdc53a44"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2bf401a2ed3b2f5ce30df95b7b11a413"><td class="memItemLeft" align="right" valign="top"><a id="a2bf401a2ed3b2f5ce30df95b7b11a413"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_simple_b_e_d_parser.html#a2bf401a2ed3b2f5ce30df95b7b11a413">GetNextRegion</a> (<a class="el" href="struct_s_bed_region.html">SBedRegion</a> &amp;a_rRegion)</td></tr>
-<tr class="memdesc:a2bf401a2ed3b2f5ce30df95b7b11a413"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the next region from bed file. <br /></td></tr>
-<tr class="separator:a2bf401a2ed3b2f5ce30df95b7b11a413"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af74dd9e57db14d37ccca1a7ecdd0ddcc"><td class="memItemLeft" align="right" valign="top"><a id="af74dd9e57db14d37ccca1a7ecdd0ddcc"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_simple_b_e_d_parser.html#af74dd9e57db14d37ccca1a7ecdd0ddcc">ResetIterator</a> ()</td></tr>
-<tr class="memdesc:af74dd9e57db14d37ccca1a7ecdd0ddcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the next Region as first region. <br /></td></tr>
-<tr class="separator:af74dd9e57db14d37ccca1a7ecdd0ddcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:afd6881a42d63b518caefbbfd1a03a9cc"><td class="memItemLeft" align="right" valign="top"><a id="afd6881a42d63b518caefbbfd1a03a9cc"></a>
+std::unordered_map&lt; std::string, std::vector&lt; <a class="el" href="struct_s_bed_region.html">SBedRegion</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_simple_b_e_d_parser.html#afd6881a42d63b518caefbbfd1a03a9cc">m_regionMap</a></td></tr>
+<tr class="memdesc:afd6881a42d63b518caefbbfd1a03a9cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bed Region map use chromosome name as key [This one is not accesible with GetNextRegion]. <br /></td></tr>
+<tr class="separator:afd6881a42d63b518caefbbfd1a03a9cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ee7e9c42a385541d1003e36c2c8202b"><td class="memItemLeft" align="right" valign="top"><a id="a1ee7e9c42a385541d1003e36c2c8202b"></a>
+unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>m_nTotalContigCount</b></td></tr>
+<tr class="separator:a1ee7e9c42a385541d1003e36c2c8202b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Parse BED region for input filtering. </p>
 </div><hr/>The documentation for this class was generated from the following files:<ul>
-<li>VcfIO/include/<a class="el" href="_c_simple_b_e_d_parser_8h_source.html">CSimpleBEDParser.h</a></li>
-<li>VcfIO/src/CSimpleBEDParser.cpp</li>
+<li>/Users/c1ms21p6h3qk/Desktop/VBT/vbt/VcfIO/include/<a class="el" href="_c_simple_b_e_d_parser_8h_source.html">CSimpleBEDParser.h</a></li>
+<li>/Users/c1ms21p6h3qk/Desktop/VBT/vbt/VcfIO/src/CSimpleBEDParser.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

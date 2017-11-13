@@ -12,6 +12,8 @@ var searchData=
   ['m_5fbautosomeonly',['m_bAutosomeOnly',['../struct_s_config.html#a43a5e040d227e7fd561eac33894a0ac7',1,'SConfig']]],
   ['m_5fbbasesampleenabled',['m_bBaseSampleEnabled',['../struct_s_config.html#a73213a4c9b82ddcb25108dcc0c2498bd',1,'SConfig']]],
   ['m_5fbcalledsampleenabled',['m_bCalledSampleEnabled',['../struct_s_config.html#a71d96fff90251792472c1f2097bd4a34',1,'SConfig']]],
+  ['m_5fbgeneratesyncpoints',['m_bGenerateSyncPoints',['../struct_s_config.html#a9e06f653210e15d4114bf39fbc08e41b',1,'SConfig']]],
+  ['m_5fbhavemultipletrimoption',['m_bHaveMultipleTrimOption',['../class_c_variant.html#a091c9b95b494b22b12732666ae731c84',1,'CVariant']]],
   ['m_5fbindelonly',['m_bINDELOnly',['../struct_s_config.html#a5e20135e3c410acae6ec79c65c840322',1,'SConfig']]],
   ['m_5fbisfilterenabled',['m_bIsFilterEnabled',['../struct_s_config.html#aa87e3cf8fbc88919f9671b68f1fc20d3',1,'SConfig']]],
   ['m_5fbisfilterpass',['m_bIsFilterPASS',['../class_c_variant.html#a26cdaefec2b7831f09e9a1d43e9a3234',1,'CVariant']]],
@@ -72,8 +74,8 @@ var searchData=
   ['m_5fpoutputmode',['m_pOutputMode',['../struct_s_config.html#a4ec01510aba9ae9d083c9fcb30ee644e',1,'SConfig']]],
   ['m_5fppedigreefilename',['m_pPedigreeFileName',['../struct_s_config.html#a11caf78a78a7c63f2ab796bea306efc0',1,'SConfig']]],
   ['m_5frefsequence',['m_refSequence',['../class_c_variant.html#a5b3c5b7c0d145b2bc7338ecdd2d313f2',1,'CVariant']]],
+  ['m_5fregionmap',['m_regionMap',['../class_c_simple_b_e_d_parser.html#afd6881a42d63b518caefbbfd1a03a9cc',1,'CSimpleBEDParser']]],
   ['matches',['Matches',['../classcore_1_1_c_path.html#a58444ed728c79f99b3663a6c6510030a',1,'core::CPath::Matches()'],['../classcore_1_1_c_semi_path.html#a55e1187add37220002d160b40da91303',1,'core::CSemiPath::Matches()']]],
-  ['mendelian_20violation_20detector',['MENDELIAN VIOLATION DETECTOR',['../md__mendelian_violation__r_e_a_d_m_e.html',1,'']]],
   ['mergefunc',['MergeFunc',['../classmendelian_1_1_c_mendelian_decider.html#a61ec143df7aa32f7d81e49c03a177d87',1,'mendelian::CMendelianDecider']]],
   ['moveforward',['MoveForward',['../classcore_1_1_c_haplotype_sequence.html#a397f70b1ace4975bcbed6786fd0e2e88',1,'core::CHaplotypeSequence::MoveForward()'],['../classcore_1_1_c_path.html#a9b1bd5e58c5910bd3eff0d04ffad8327',1,'core::CPath::MoveForward()'],['../classcore_1_1_c_semi_path.html#a548dc49a5c1174727d130ba44722298f',1,'core::CSemiPath::MoveForward()']]]
 ];

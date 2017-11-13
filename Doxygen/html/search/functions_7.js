@@ -6,5 +6,5 @@ var searchData=
   ['loggenotypematrix',['LogGenotypeMatrix',['../classmendelian_1_1_c_mendelian_result_log.html#a18561bd5205771d30610586d0a7d5d19',1,'mendelian::CMendelianResultLog']]],
   ['logshortreport',['LogShortReport',['../classmendelian_1_1_c_mendelian_result_log.html#aeb7cb9cedc910f96bf1d13b327590135',1,'mendelian::CMendelianResultLog']]],
   ['logskippedvariantcounts',['LogSkippedVariantCounts',['../classmendelian_1_1_c_mendelian_result_log.html#a3ae3d0c92465e46181b1f842d6af7b4f',1,'mendelian::CMendelianResultLog']]],
-  ['logstatistic',['LogStatistic',['../classduocomparison_1_1_c_result_log.html#acf6c1f80e4539b59d69c28eaec06d362',1,'duocomparison::CResultLog']]]
+  ['logstatistic',['LogStatistic',['../classduocomparison_1_1_c_result_log.html#a1d7198520420b18ba4d3cf7bbc56599a',1,'duocomparison::CResultLog']]]
 ];

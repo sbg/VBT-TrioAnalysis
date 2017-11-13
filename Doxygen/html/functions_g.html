@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Variant Benchmarking Tools: Class Members</title>
+<title>Variant Benchmarking Tools (VBT): Class Members</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,10 +21,8 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Variant Benchmarking Tools
-   &#160;<span id="projectnumber">1.0.0</span>
+   <div id="projectname">Variant Benchmarking Tools (VBT)
    </div>
-   <div id="projectbrief">Variant Benchmarking Tools (VBT) is a set of tools that is used for variant calling pipeline benchmarking.</div>
   </td>
  </tr>
  </tbody>
@@ -163,15 +161,18 @@ $(function() {
 <li>GetLeastAdvanced()
 : <a class="el" href="classcore_1_1_c_path_set.html#a6d156d8bf310218844fbc933fd6771bb">core::CPathSet</a>
 </li>
+<li>GetMaxTrimStartEnd()
+: <a class="el" href="class_c_variant.html#a06cab98a71ae09d7911a74dae9bdd248">CVariant</a>
+</li>
+<li>GetNext()
+: <a class="el" href="classmendelian_1_1_c_trio_vcf_merge.html#ac272c8be22c7ca915a738914493ef3f4">mendelian::CTrioVcfMerge</a>
+</li>
 <li>GetNextRecord()
 : <a class="el" href="class_c_vcf_reader.html#adaa6178838e0b5d1ac7572c3645d8328">CVcfReader</a>
 , <a class="el" href="classgraphcomparison_1_1_c_graph_vcf_reader.html#afe5a11e1b1d5c69655e6634453585fb7">graphcomparison::CGraphVcfReader</a>
 </li>
 <li>GetNextRecordMultiSample()
 : <a class="el" href="class_c_vcf_reader.html#a5dd971dde633623292202e899c472e5c">CVcfReader</a>
-</li>
-<li>GetNextRegion()
-: <a class="el" href="class_c_simple_b_e_d_parser.html#a2bf401a2ed3b2f5ce30df95b7b11a413">CSimpleBEDParser</a>
 </li>
 <li>GetNotAssessedVariantCount()
 : <a class="el" href="classmendelian_1_1_c_mendelian_variant_provider.html#a2dbe6c94c7336b73d6c03b99388c30ec">mendelian::CMendelianVariantProvider</a>
@@ -185,10 +186,10 @@ $(function() {
 <li>GetOrientedVariantList()
 : <a class="el" href="classduocomparison_1_1_c_variant_provider.html#ab345c46ba89b26dfc8339fc60dad392e">duocomparison::CVariantProvider</a>
 , <a class="el" href="classgraphcomparison_1_1_c_graph_variant_provider.html#ad0d684a1bdd33afde9550e54c04ed8a7">graphcomparison::CGraphVariantProvider</a>
-, <a class="el" href="classmendelian_1_1_c_mendelian_variant_provider.html#a385559b0806db8b91fb8f7f60d8cad5d">mendelian::CMendelianVariantProvider</a>
+, <a class="el" href="classmendelian_1_1_c_mendelian_variant_provider.html#a79c4049e5cb02fecc5656afb179eaea9">mendelian::CMendelianVariantProvider</a>
 </li>
 <li>GetOriginalAlleleStr()
-: <a class="el" href="class_c_variant.html#a09d2fa056872f786618bdd81ae3c9c65">CVariant</a>
+: <a class="el" href="class_c_variant.html#ae735e75c01402d9ee15b9ddf005c5557">CVariant</a>
 </li>
 <li>GetOriginalPos()
 : <a class="el" href="class_c_variant.html#ab52d67d665f71b0947641a5229ec5edd">CVariant</a>
@@ -205,8 +206,11 @@ $(function() {
 <li>GetSampleNames()
 : <a class="el" href="class_c_vcf_reader.html#a3bab3e2dcf5e5b0f445bcae27868907a">CVcfReader</a>
 </li>
-<li>GetSortedVariantList()
-: <a class="el" href="classmendelian_1_1_c_mendelian_variant_provider.html#aaf3a7fdd0d93e71cdfb93003aca9f79b">mendelian::CMendelianVariantProvider</a>
+<li>GetSortedVariantListByID()
+: <a class="el" href="classmendelian_1_1_c_mendelian_variant_provider.html#a68763ae18d29b93a2cbe52c231155eeb">mendelian::CMendelianVariantProvider</a>
+</li>
+<li>GetSortedVariantListByIDandStartPos()
+: <a class="el" href="classmendelian_1_1_c_mendelian_variant_provider.html#ab7b56f0dfb52618ccdf485fe8d84d0b8">mendelian::CMendelianVariantProvider</a>
 </li>
 <li>GetStart()
 : <a class="el" href="class_c_variant.html#ae5e33ee8ee849a4b2ca0f0780c8e7bbb">CVariant</a>
@@ -238,7 +242,7 @@ $(function() {
 <li>GetVariantList()
 : <a class="el" href="classduocomparison_1_1_c_variant_provider.html#a99e354bb998908914f5de6f6a331621e">duocomparison::CVariantProvider</a>
 , <a class="el" href="classgraphcomparison_1_1_c_graph_variant_provider.html#aa57658f01f72943a7e92244917be2dcf">graphcomparison::CGraphVariantProvider</a>
-, <a class="el" href="classmendelian_1_1_c_mendelian_variant_provider.html#aaec72202d6f08266deecc259c387158b">mendelian::CMendelianVariantProvider</a>
+, <a class="el" href="classmendelian_1_1_c_mendelian_variant_provider.html#a6d7e4daa12c9ca325b022425bdf31491">mendelian::CMendelianVariantProvider</a>
 </li>
 <li>GetVariantType()
 : <a class="el" href="class_c_variant.html#a5bf282c0f3fdd73eb22cb773be6dd5b3">CVariant</a>

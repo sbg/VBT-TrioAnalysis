@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Variant Benchmarking Tools: Member List</title>
+<title>Variant Benchmarking Tools (VBT): Member List</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,10 +21,8 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Variant Benchmarking Tools
-   &#160;<span id="projectnumber">1.0.0</span>
+   <div id="projectname">Variant Benchmarking Tools (VBT)
    </div>
-   <div id="projectbrief">Variant Benchmarking Tools (VBT) is a set of tools that is used for variant calling pipeline benchmarking.</div>
   </td>
  </tr>
  </tbody>
@@ -75,18 +73,20 @@ $(function() {
   <tr><td class="entry"><a class="el" href="class_c_variant.html#ac71c09ba7acb6edc3364db8cd46b4c06">GetEnd</a>() const</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="class_c_variant.html#a58e053132a175be80541f968ec4a91d6">GetGenotypeArr</a>(int *a_pGenotypeList, int &amp;a_rGenotypeCount)</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="class_c_variant.html#a1d47eae2bd731693f555af5818f168a7">GetId</a>() const</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_c_variant.html#a09d2fa056872f786618bdd81ae3c9c65">GetOriginalAlleleStr</a>(int a_nAlleleIndex) const</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="class_c_variant.html#ab52d67d665f71b0947641a5229ec5edd">GetOriginalPos</a>() const</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_c_variant.html#a214fbfed5529e0f7189c5e4e3cbc1614">GetRefSeq</a>() const</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="class_c_variant.html#ae5e33ee8ee849a4b2ca0f0780c8e7bbb">GetStart</a>() const</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_c_variant.html#ae141c863c736f12302bd8b9f24c7b4c2">GetVariantCategory</a>() const</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="class_c_variant.html#a5bf282c0f3fdd73eb22cb773be6dd5b3">GetVariantType</a>() const</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_c_variant.html#a6b8854be5475ca0857a5f3fa740bd18d">IsFilterPASS</a>() const</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="class_c_variant.html#a2e68348e9a50458bccd7c863a4c3269a">IsHeterozygous</a>() const</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_c_variant.html#a32f32f487dc4e79483fdb3240e932d43">IsNull</a>() const</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="class_c_variant.html#ae604c4b9ad5adb6d2212a9f93d44b539">IsPhased</a>() const</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_c_variant.html#aabc06e2661a97fe9aaaa1de67459fdd1">m_alleles</a></td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="class_c_variant.html#a609fff1b972280c7e413e668991dfe2a">m_allelesStr</a></td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_variant.html#a06cab98a71ae09d7911a74dae9bdd248">GetMaxTrimStartEnd</a>(int a_nAlleleIndex, unsigned int &amp;trimLengthFromBeginning, unsigned int &amp;trimLengthFromEnd)</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_variant.html#ae735e75c01402d9ee15b9ddf005c5557">GetOriginalAlleleStr</a>(unsigned int a_nAlleleIndex) const</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_variant.html#ab52d67d665f71b0947641a5229ec5edd">GetOriginalPos</a>() const</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_variant.html#a214fbfed5529e0f7189c5e4e3cbc1614">GetRefSeq</a>() const</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_variant.html#ae5e33ee8ee849a4b2ca0f0780c8e7bbb">GetStart</a>() const</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_variant.html#ae141c863c736f12302bd8b9f24c7b4c2">GetVariantCategory</a>() const</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_variant.html#a5bf282c0f3fdd73eb22cb773be6dd5b3">GetVariantType</a>() const</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_variant.html#a6b8854be5475ca0857a5f3fa740bd18d">IsFilterPASS</a>() const</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_variant.html#a2e68348e9a50458bccd7c863a4c3269a">IsHeterozygous</a>() const</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_variant.html#a32f32f487dc4e79483fdb3240e932d43">IsNull</a>() const</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_variant.html#ae604c4b9ad5adb6d2212a9f93d44b539">IsPhased</a>() const</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_variant.html#aabc06e2661a97fe9aaaa1de67459fdd1">m_alleles</a></td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_variant.html#a609fff1b972280c7e413e668991dfe2a">m_allelesStr</a></td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_variant.html#a091c9b95b494b22b12732666ae731c84">m_bHaveMultipleTrimOption</a></td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="class_c_variant.html#a26cdaefec2b7831f09e9a1d43e9a3234">m_bIsFilterPASS</a></td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="class_c_variant.html#af8a629628e2960a4f6aa416abe468dd3">m_bIsFirstNucleotideTrimmed</a></td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="class_c_variant.html#a584b4e62c45f2d173da5fc8e224655a2">m_bIsHeterozygous</a></td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
@@ -107,6 +107,8 @@ $(function() {
   <tr bgcolor="#f0f0f0"><td class="entry"><b>m_variantStatus</b> (defined in <a class="el" href="class_c_variant.html">CVariant</a>)</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"><span class="mlabel">mutable</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="class_c_variant.html#a1018380af3b5ad539e827e4c66733e1b">Print</a>() const</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="class_c_variant.html#a69b6142175c739399467dd0969a1db3a">ToString</a>() const</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_variant.html#a5415fc6f7ea4d01de323d918066721f0">TrimVariant</a>(int a_nAlleleIndex)</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_variant.html#a3ddba7df62d8bc15730fa4123893c9e3">TrimVariant</a>(int a_nAlleleIndex, unsigned int trimLengthFromBeginning, unsigned int trimLengthFromEnd)</td><td class="entry"><a class="el" href="class_c_variant.html">CVariant</a></td><td class="entry"></td></tr>
 </table></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

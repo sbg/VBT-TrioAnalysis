@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Variant Benchmarking Tools: CVariant Class Reference</title>
+<title>Variant Benchmarking Tools (VBT): CVariant Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,10 +21,8 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Variant Benchmarking Tools
-   &#160;<span id="projectnumber">1.0.0</span>
+   <div id="projectname">Variant Benchmarking Tools (VBT)
    </div>
-   <div id="projectbrief">Variant Benchmarking Tools (VBT) is a set of tools that is used for variant calling pipeline benchmarking.</div>
   </td>
  </tr>
  </tbody>
@@ -128,10 +126,10 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_variant.html#a6b8854be5475ca0857a5f3fa740bd18d">IsFilterPASS</a> () const</td></tr>
 <tr class="memdesc:a6b8854be5475ca0857a5f3fa740bd18d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the variant filter column is PASS. <br /></td></tr>
 <tr class="separator:a6b8854be5475ca0857a5f3fa740bd18d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a09d2fa056872f786618bdd81ae3c9c65"><td class="memItemLeft" align="right" valign="top"><a id="a09d2fa056872f786618bdd81ae3c9c65"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_variant.html#a09d2fa056872f786618bdd81ae3c9c65">GetOriginalAlleleStr</a> (int a_nAlleleIndex) const</td></tr>
-<tr class="memdesc:a09d2fa056872f786618bdd81ae3c9c65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the original Alt string with the given index (Take back trim operation) <br /></td></tr>
-<tr class="separator:a09d2fa056872f786618bdd81ae3c9c65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae735e75c01402d9ee15b9ddf005c5557"><td class="memItemLeft" align="right" valign="top"><a id="ae735e75c01402d9ee15b9ddf005c5557"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_variant.html#ae735e75c01402d9ee15b9ddf005c5557">GetOriginalAlleleStr</a> (unsigned int a_nAlleleIndex) const</td></tr>
+<tr class="memdesc:ae735e75c01402d9ee15b9ddf005c5557"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the original Alt string with the given index (Take back trim operation) <br /></td></tr>
+<tr class="separator:ae735e75c01402d9ee15b9ddf005c5557"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a214fbfed5529e0f7189c5e4e3cbc1614"><td class="memItemLeft" align="right" valign="top"><a id="a214fbfed5529e0f7189c5e4e3cbc1614"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_variant.html#a214fbfed5529e0f7189c5e4e3cbc1614">GetRefSeq</a> () const</td></tr>
 <tr class="memdesc:a214fbfed5529e0f7189c5e4e3cbc1614"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the reference sequences. <br /></td></tr>
@@ -156,6 +154,18 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_variant.html#a69b6142175c739399467dd0969a1db3a">ToString</a> () const</td></tr>
 <tr class="memdesc:a69b6142175c739399467dd0969a1db3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print the variant [For Test Purpose]. <br /></td></tr>
 <tr class="separator:a69b6142175c739399467dd0969a1db3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06cab98a71ae09d7911a74dae9bdd248"><td class="memItemLeft" align="right" valign="top"><a id="a06cab98a71ae09d7911a74dae9bdd248"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_variant.html#a06cab98a71ae09d7911a74dae9bdd248">GetMaxTrimStartEnd</a> (int a_nAlleleIndex, unsigned int &amp;trimLengthFromBeginning, unsigned int &amp;trimLengthFromEnd)</td></tr>
+<tr class="memdesc:a06cab98a71ae09d7911a74dae9bdd248"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the maximum number of nucleotides can be trimmed from beginning and ending of selected allele. <br /></td></tr>
+<tr class="separator:a06cab98a71ae09d7911a74dae9bdd248"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5415fc6f7ea4d01de323d918066721f0"><td class="memItemLeft" align="right" valign="top"><a id="a5415fc6f7ea4d01de323d918066721f0"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_variant.html#a5415fc6f7ea4d01de323d918066721f0">TrimVariant</a> (int a_nAlleleIndex)</td></tr>
+<tr class="memdesc:a5415fc6f7ea4d01de323d918066721f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Trim the redundant nucleotides from beginning and ending of given allele (Beginning nucleotides will be trimmed first) <br /></td></tr>
+<tr class="separator:a5415fc6f7ea4d01de323d918066721f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ddba7df62d8bc15730fa4123893c9e3"><td class="memItemLeft" align="right" valign="top"><a id="a3ddba7df62d8bc15730fa4123893c9e3"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_variant.html#a3ddba7df62d8bc15730fa4123893c9e3">TrimVariant</a> (int a_nAlleleIndex, unsigned int trimLengthFromBeginning, unsigned int trimLengthFromEnd)</td></tr>
+<tr class="memdesc:a3ddba7df62d8bc15730fa4123893c9e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Trim the redundant nucleotides from beginning and ending of given allele. Nucleotides to be clipped from beginning and ending of the allele are specified as parameter. <br /></td></tr>
+<tr class="separator:a3ddba7df62d8bc15730fa4123893c9e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -214,6 +224,10 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_variant.html#a54274d28ccf03a181f3a1f3f64668309">m_bIsNoCall</a></td></tr>
 <tr class="memdesc:a54274d28ccf03a181f3a1f3f64668309"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if genotype is ./. <br /></td></tr>
 <tr class="separator:a54274d28ccf03a181f3a1f3f64668309"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a091c9b95b494b22b12732666ae731c84"><td class="memItemLeft" align="right" valign="top"><a id="a091c9b95b494b22b12732666ae731c84"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_variant.html#a091c9b95b494b22b12732666ae731c84">m_bHaveMultipleTrimOption</a></td></tr>
+<tr class="memdesc:a091c9b95b494b22b12732666ae731c84"><td class="mdescLeft">&#160;</td><td class="mdescRight">If the variant can be trimmed more than 1 way (for -ref-overlap mode) <br /></td></tr>
+<tr class="separator:a091c9b95b494b22b12732666ae731c84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aabc06e2661a97fe9aaaa1de67459fdd1"><td class="memItemLeft" align="right" valign="top"><a id="aabc06e2661a97fe9aaaa1de67459fdd1"></a>
 <a class="el" href="struct_s_allele.html">SAllele</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_variant.html#aabc06e2661a97fe9aaaa1de67459fdd1">m_alleles</a> [2]</td></tr>
 <tr class="memdesc:aabc06e2661a97fe9aaaa1de67459fdd1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allele array of the variant. <br /></td></tr>
@@ -242,8 +256,8 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 <div class="textblock"><p>A Container that stores the necessary information of variant. </p>
 <p><a class="el" href="class_c_variant.html" title="A Container that stores the necessary information of variant. ">CVariant</a> is a container for variants that stores necessary vcfrecord information read with htslib </p>
 </div><hr/>The documentation for this class was generated from the following files:<ul>
-<li>VcfIO/include/<a class="el" href="_c_variant_8h_source.html">CVariant.h</a></li>
-<li>VcfIO/src/CVariant.cpp</li>
+<li>/Users/c1ms21p6h3qk/Desktop/VBT/vbt/VcfIO/include/<a class="el" href="_c_variant_8h_source.html">CVariant.h</a></li>
+<li>/Users/c1ms21p6h3qk/Desktop/VBT/vbt/VcfIO/src/CVariant.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

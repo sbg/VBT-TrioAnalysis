@@ -37,6 +37,7 @@ var searchData=
   ['csimplepedparser',['CSimplePEDParser',['../class_c_simple_p_e_d_parser.html',1,'']]],
   ['csplitoutputprovider',['CSplitOutputProvider',['../classduocomparison_1_1_c_split_output_provider.html',1,'duocomparison::CSplitOutputProvider'],['../classduocomparison_1_1_c_split_output_provider.html#a8215f3c60a399e20259d667edaa233ba',1,'duocomparison::CSplitOutputProvider::CSplitOutputProvider()']]],
   ['csyncpoint',['CSyncPoint',['../classcore_1_1_c_sync_point.html',1,'core']]],
+  ['ctriovcfmerge',['CTrioVcfMerge',['../classmendelian_1_1_c_trio_vcf_merge.html',1,'mendelian::CTrioVcfMerge'],['../classmendelian_1_1_c_trio_vcf_merge.html#a9c52b6547f082a3f60aabf9689cb7dbf',1,'mendelian::CTrioVcfMerge::CTrioVcfMerge()']]],
   ['cvariant',['CVariant',['../class_c_variant.html',1,'CVariant'],['../class_c_variant.html#a8dec728411cc0d31d29b2475146d298b',1,'CVariant::CVariant()'],['../class_c_variant.html#a5a0ac7949809ed3e2745abb3ce3d312d',1,'CVariant::CVariant(const CVariant &amp;a_rObj)']]],
   ['cvariantiterator',['CVariantIterator',['../classmendelian_1_1_c_variant_iterator.html',1,'mendelian']]],
   ['cvariantiteratorv2',['CVariantIteratorV2',['../classduocomparison_1_1_c_variant_iterator_v2.html',1,'duocomparison::CVariantIteratorV2'],['../classduocomparison_1_1_c_variant_iterator_v2.html#a533471dccf7cab86917a565080ab07fc',1,'duocomparison::CVariantIteratorV2::CVariantIteratorV2()']]],
