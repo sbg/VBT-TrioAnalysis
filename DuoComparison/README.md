@@ -38,11 +38,11 @@ A **required** parameter which specifies the output directory for program/error 
 
 ### -output-mode <Output_Mode>
 
-An **optional** parameter which specifies the way output will generated. **SPLIT** mode creates 4 vcf files(TPbase, TPcalled, FP, FN). **GA4GH** mode creates a single merged vcf file. Default valus is **SPLIT**.
+An **optional** parameter which specifies the way output will generated. **SPLIT** mode creates 4 vcf files(TPbase, TPcalled, FP, FN). **GA4GH** mode creates a single merged vcf file. Default value is **SPLIT**.
 
 ### --allele-match
 
-An **optinal** parameter which changes comparison mode to Allele Matching
+An **optional** parameter which changes comparison mode to Allele Matching
 
 ### -sample-base <Baseline_vcf_sample_name>
 
@@ -73,7 +73,7 @@ An **optional** parameter which is used to eliminate all of SNPs and SVs from in
 An **optional** parameter which tolerates reference overlapping variants.
 
 ### -thread-count <[1-25]>
-An **optional** parameter to specify number of threads. Default value is 1
+An **optional** parameter to specify number of threads. Default value is 2
 
 ### -max-path-size <Unsigned_Integer>
 
