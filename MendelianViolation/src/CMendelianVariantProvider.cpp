@@ -1211,7 +1211,7 @@ void CMendelianVariantProvider::FindOptimalTrimmings(std::vector<CVariant>& a_rV
             
             //Trim variants as standard if there is no overlap
             if(tmpoverlapVariants.size() == 0)
-                a_rVariantList[k].TrimVariant(i);
+                a_rVariantList[k].TrimVariant(i, m_motherChildConfig.m_bTrimBeginningFirst);
             
             else
             {
@@ -1292,7 +1292,7 @@ void CMendelianVariantProvider::FindOptimalTrimmings(std::vector<CVariant>& a_rV
                 }
                 
                 if(!a_rVariantList[k].m_alleles[i].m_bIsTrimmed)
-                    a_rVariantList[k].TrimVariant(i);
+                    a_rVariantList[k].TrimVariant(i, m_motherChildConfig.m_bTrimBeginningFirst);
                 else
                     a_rVariantList[k].TrimVariant(i, canTrimStart, canTrimEnd);
             }

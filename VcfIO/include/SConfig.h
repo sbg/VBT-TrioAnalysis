@@ -77,6 +77,9 @@ struct SConfig
     ///Enable REF Overlap mode
     bool m_bIsRefOverlap = false;
     
+    ///When a variant allele has multiple trimming option, TRUE: clips from beginning first FALSE: clips from ending first
+    bool m_bTrimBeginningFirst = true;
+    
     ///Enable generating syncpoint files which is the intermediate output of core module
     bool m_bGenerateSyncPoints = false;
     

@@ -104,10 +104,10 @@ class CVariant
     
     ///Gets the maximum number of nucleotides can be trimmed from beginning and ending of selected allele
     void GetMaxTrimStartEnd(int a_nAlleleIndex, unsigned int& trimLengthFromBeginning, unsigned int& trimLengthFromEnd);
-
-    ///Trim the redundant nucleotides from beginning and ending of given allele (Beginning nucleotides will be trimmed first)
-    void TrimVariant(int a_nAlleleIndex);
-
+    
+    ///Trim the redundant nucleotides from beginning and ending of given allele (If allele can be trim multiple way, use the second parameter for order)
+    void TrimVariant(int a_nAlleleIndex, bool a_bIsBeginFirst);
+    
     ///Trim the redundant nucleotides from beginning and ending of given allele. Nucleotides to be clipped from beginning and ending of the allele are specified as parameter
     void TrimVariant(int a_nAlleleIndex, unsigned int trimLengthFromBeginning, unsigned int trimLengthFromEnd);
     
@@ -170,6 +170,15 @@ class CVariant
     
     ///Original Alleles string read from vcf file
     std::string m_allelesStr;
+    
+private:
+    
+    ///Trim the redundant nucleotides from beginning and ending of given allele (Beginning nucleotides will be trimmed first)
+    void TrimVariantBeginFirst(int a_nAlleleIndex);
+    
+    ///Trim the redundant nucleotides from beginning and ending of given allele (Ending nucleotides will be trimmed first)
+    void TrimVariantEndFirst(int a_nAlleleIndex);
+
     
 };
 

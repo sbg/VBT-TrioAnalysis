@@ -182,7 +182,7 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
                 else if(HasMultipleTrimming(a_pVariant->m_alleles[i]))
                     a_pVariant->m_bHaveMultipleTrimOption = true;
                 else
-                    a_pVariant->TrimVariant(i);
+                    a_pVariant->TrimVariant(i, a_rConfig.m_bTrimBeginningFirst);
             }
         }
         

@@ -318,7 +318,88 @@ void CVariant::GetMaxTrimStartEnd(int a_nAlleleIndex, unsigned int& trimLengthFr
     }
 }
 
-void CVariant::TrimVariant(int a_nAlleleIndex)
+void CVariant::TrimVariant(int a_nAlleleIndex, bool a_bIsBeginFirst)
+{
+    if(true == a_bIsBeginFirst)
+        TrimVariantBeginFirst(a_nAlleleIndex);
+    else
+        TrimVariantEndFirst(a_nAlleleIndex);
+
+}
+
+void CVariant::TrimVariantEndFirst(int a_nAlleleIndex)
+{
+    if(m_alleles[a_nAlleleIndex].m_sequence == "*")
+        return;
+    
+    //Ref string
+    std::string refString = m_refSequence;
+    
+    int trimLengthFromBeginning = 0;
+    int trimLengthFromEnd = 0;
+    
+    //Trim from the end
+    for(int k = static_cast<int>(refString.size() - 1), p = static_cast<int>(m_alleles[a_nAlleleIndex].m_sequence.size() - 1); k >= 0 && p >= 0;  k--, p--)
+    {
+        if(m_alleles[a_nAlleleIndex].m_sequence[p] == refString[k] && p == 0)
+        {
+            trimLengthFromEnd = static_cast<int>(m_alleles[a_nAlleleIndex].m_sequence.size());
+            m_alleles[a_nAlleleIndex].m_nEndPos -= trimLengthFromEnd;
+            break;
+        }
+        
+        else if(m_alleles[a_nAlleleIndex].m_sequence[p] == refString[k] && k == 0)
+        {
+            trimLengthFromEnd = static_cast<int>(refString.size());
+            m_alleles[a_nAlleleIndex].m_nEndPos -= trimLengthFromEnd;
+            break;
+        }
+        
+        else if(m_alleles[a_nAlleleIndex].m_sequence[p] != refString[k])
+        {
+            m_alleles[a_nAlleleIndex].m_nEndPos -= trimLengthFromEnd;
+            break;
+        }
+        else
+            trimLengthFromEnd++;
+    }
+    
+    //Cut the end of the string
+    m_alleles[a_nAlleleIndex].m_sequence = m_alleles[a_nAlleleIndex].m_sequence.substr(0, m_alleles[a_nAlleleIndex].m_sequence.length() - trimLengthFromEnd);
+    
+    //Trim from the beginning
+    int compSize = static_cast<int>(std::min(refString.size() - trimLengthFromEnd, m_alleles[a_nAlleleIndex].m_sequence.size()));
+    for(int k = 0; k < compSize; k++)
+    {
+        if(m_alleles[a_nAlleleIndex].m_sequence[k] == refString[k] && k == compSize -1)
+        {
+            trimLengthFromBeginning++;
+            m_alleles[a_nAlleleIndex].m_nStartPos += trimLengthFromBeginning;
+            break;
+        }
+        
+        else if(m_alleles[a_nAlleleIndex].m_sequence[k] != refString[k])
+        {
+            m_alleles[a_nAlleleIndex].m_nStartPos += trimLengthFromBeginning;
+            break;
+        }
+        
+        else
+            trimLengthFromBeginning++;
+    }
+    
+    //Cut the beginning of the string
+    m_alleles[a_nAlleleIndex].m_sequence = m_alleles[a_nAlleleIndex].m_sequence.substr(trimLengthFromBeginning);
+
+    
+    //Set the trimming check as true
+    m_alleles[a_nAlleleIndex].m_bIsTrimmed = true;
+    
+    return;
+}
+
+
+void CVariant::TrimVariantBeginFirst(int a_nAlleleIndex)
 {    
     if(m_alleles[a_nAlleleIndex].m_sequence == "*")
         return;

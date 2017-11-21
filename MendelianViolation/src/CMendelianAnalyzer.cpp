@@ -152,6 +152,7 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
     
     const char* PARAM_OUTPUT_DIR = "-outDir";
     const char* PARAM_REF_OVERLAP = "--ref-overlap";
+    const char* PARAM_CLIP_FROM_END = "--trim-endings-first";
     const char* PARAM_PLATFORM = "--platform-mode";
     const char* PARAM_THREAD_COUNT = "-thread-count";
     const char* PARAM_NO_CALL = "-no-call";
@@ -230,6 +231,13 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
         {
             m_motherChildConfig.m_bIsRefOverlap = true;
             m_fatherChildConfig.m_bIsRefOverlap = true;
+            it--;
+        }
+        
+        else if(0 == strcmp(argv[it], PARAM_CLIP_FROM_END))
+        {
+            m_motherChildConfig.m_bTrimBeginningFirst = false;
+            m_fatherChildConfig.m_bTrimBeginningFirst = false;
             it--;
         }
         
@@ -551,6 +559,8 @@ void CMendelianAnalyzer::PrintHelp() const
     std::cout << "\t" << "explicit : mark explicit no call variants only as NoCall. Implicit no call variants will be treated as 0/0" << std::endl;
     std::cout << "\t" << "none : [Default Value] Treat all of no call variants as 0/0" << std::endl;
     std::cout << "-filter <filter_name>        [Optional.Filter variants based on filter column. Default value is PASS. Use 'none' to unfilter]" << std::endl;
+    std::cout << "--ref-overlap                [Optional.Allow reference overlapping by trimming nucleotides and ignoring 0 genotype.]" << std::endl;
+    std::cout << "--trim-endings-first         [Optional.If set, starts trimming variants from ending base pairs. Default is from beginning]" << std::endl;
     std::cout << "-sample-father <sample_name>  [Optional.Read only the given sample in father VCF. Default value is the first sample.]" << std::endl;
     std::cout << "-sample-mother <sample_name>  [Optional.Read only the given sample in mother VCF. Default value is the first sample.]" << std::endl;
     std::cout << "-sample-child <sample_name>   [Optional.Read only the given sample in child VCF. Default value is the first sample.]" << std::endl;
