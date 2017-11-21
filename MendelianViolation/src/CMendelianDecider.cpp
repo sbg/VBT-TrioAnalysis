@@ -383,8 +383,7 @@ void CMendelianDecider::CheckFor0Path(SChrIdTriplet& a_rTriplet,
                         if(a_bIsUpdateDecisionList)
                         {
                             //We are marking decision of mother/father variant as violation
-                            if(true == a_bIsFatherChild)
-                                a_rParentDecisions[pVar->m_nId] = eViolation;
+                            a_rParentDecisions[pVar->m_nId] = eViolation;
                         }
                         
                         bIsCompliant = false;
@@ -396,8 +395,7 @@ void CMendelianDecider::CheckFor0Path(SChrIdTriplet& a_rTriplet,
                         if(a_bIsUpdateDecisionList)
                         {
                             //We are marking decision of mother/father variant as compliant
-                            if(true == a_bIsFatherChild)
-                                a_rParentDecisions[pVar->m_nId] = eCompliant;
+                            a_rParentDecisions[pVar->m_nId] = eCompliant;
                         }
                     }
                 }
@@ -528,17 +526,10 @@ void CMendelianDecider::AssignDecisionToParentVars(EMendelianVcfName a_checkSide
         while (secondChildItr < varListToCheckChild.size() && varListToCheckChild[secondChildItr]->m_nEndPos < syncPoints[itrSyncPList])
             betweenSyncChildVars.push_back(varListToCheckChild[secondChildItr++]);
         
-        //If there is no corresponding child variant between the sync points
-        if(betweenSyncChildVars.size() == 0 && varListToCheckParent[k]->m_genotype[0] != 0 && varListToCheckParent[k]->m_genotype[1] != 0)
-        {
-            a_rParentDecisions[varListToCheckParent[k]->m_nId] = eViolation;
-            bIsViolationFound = true;
-            continue;
-        }
-        
+        //Check if there is a reference path formed by child variant
         for(unsigned int m = 0; m < betweenSyncChildVars.size(); m++)
         {
-            if(a_rChildDecisions[betweenSyncChildVars[m]->m_nId] == eViolation)
+            if(betweenSyncChildVars[m]->m_genotype[0] != 0 && betweenSyncChildVars[m]->m_genotype[0] != 0)
             {
                 a_rParentDecisions[varListToCheckParent[k]->m_nId] = eViolation;
                 bIsViolationFound = true;
