@@ -80,7 +80,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/VBTValidationToolTest/CEU_BWA_FreeBayes.merged.vcf"
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/VBTValidationToolTest/CEU_BWA_FreeBayes.merged_LBLannotated.vcf"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -88,7 +88,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/VBTValidationToolTest/CEU_BWA_FreeBayes.merged.vcf"
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/VBTValidationToolTest/CEU_BWA_FreeBayes.merged_LBLannotated.vcf"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -96,7 +96,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/VBTValidationToolTest/CEU_BWA_FreeBayes.merged.vcf"
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/VBTValidationToolTest/CEU_BWA_FreeBayes.merged_LBLannotated.vcf"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -181,11 +181,11 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-bed"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest8/chr1.bed"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest7/HG001_GRCh37_GIAB_highconf_CG-IllFB-IllGATKHC-Ion-10X-SOLID_CHROM1-X_v.3.3.2_highconf.bed"
@@ -196,7 +196,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "VBT_0.7.0_FB_CEU_"
+            argument = "VBT_0.7.2_FreeBayes_CEU_"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -205,6 +205,10 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "2"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--trim-endings-first"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

@@ -71,7 +71,7 @@ private:
                        std::vector<const CVariant*>& a_rCompliantList,
                        std::vector<EMendelianDecision>& a_rParentDecisions,
                        bool a_bIsUpdateDecisionList = true);
-    
+        
     ///Check each unique vars and seek for 0 path at the requested side and fills the a_rSideDecisionList
     void CheckUniqueVars(EMendelianVcfName a_checkSide,
                          SChrIdTriplet& a_rTriplet,
@@ -82,25 +82,8 @@ private:
     
     ///Check each parent variant and assign all unassigned parent variants as violation or consistent
     void AssignDecisionToParentVars(EMendelianVcfName a_checkSide,
-                                    SChrIdTriplet& a_rTriplet, std::vector<EMendelianDecision>& a_rParentDecisions,
-                                    std::vector<EMendelianDecision>& a_rChildDecisions);
+                                    SChrIdTriplet& a_rTriplet, std::vector<EMendelianDecision>& a_rParentDecisions);
     
-    ///Check sync points which child excluded contains 0 Allele variant. If that 0 allele is playable for the parent, we mark variants as compliant, violation otherwise
-    void CheckFor0PathFor00(SChrIdTriplet& a_rTriplet,
-                            bool a_bIsFatherChild,
-                            std::vector<const CVariant*>& a_rOvarList,
-                            std::vector<const CVariant*>& a_rViolationList,
-                            std::vector<const CVariant*>& a_rCompliantList);
-    
-    ///Check sync points which child excluded variant is 0/0. If that is playable for the both parent, we mark variants as compliant, violation otherwise
-    void CheckFor00Child(SChrIdTriplet& a_rTriplet,
-                         std::vector<const CVariant*>& a_rOvarList,
-                         std::vector<const CVariant*>& a_rViolationList,
-                         std::vector<const CVariant*>& a_rCompliantList,
-                         bool a_bIsGTMatch,
-                         std::vector<EMendelianDecision>& a_rMotherDecisions,
-                         std::vector<EMendelianDecision>& a_rFatherDecisions);
-
     ///Report short output table (Non 0/0 child variants only)
     void ReportChildChromosomeData(SChrIdTriplet& a_rTriplet,
                                    std::vector<const CVariant*>& a_rCompliants,
