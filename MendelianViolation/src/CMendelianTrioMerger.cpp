@@ -236,11 +236,12 @@ void CMendelianTrioMerger::DoMerge(const CVariant* a_pVarMother,
                                    EMendelianDecision a_decision,
                                    std::vector<SVcfRecord>& a_rRecordList)
 {
+    
     SVcfRecord vcfrecord;
 
     vcfrecord.m_nPosition = a_pVarMother == NULL ? (a_pVarFather != NULL ? a_pVarFather->m_nOriginalPos : a_pVarChild->m_nOriginalPos) : a_pVarMother->m_nOriginalPos;
     vcfrecord.m_chrName = a_pVarMother == NULL ? (a_pVarFather != NULL ? a_pVarFather->m_chrName : a_pVarChild->m_chrName) : a_pVarMother->m_chrName;
-    vcfrecord.m_mendelianDecision = std::to_string(a_decision);
+    vcfrecord.m_mendelianDecision = std::to_string(static_cast<int>(a_decision));
     
     //Left most position of vcf record
     vcfrecord.left = std::min({a_pVarMother != 0 ? a_pVarMother->m_nStartPos : INT_MAX,
@@ -468,14 +469,13 @@ void CMendelianTrioMerger::ProcessRefOverlappedRegions(std::vector<SVcfRecord>& 
 {
 
     unsigned int recordItr = 0;
-    std::string curVariantDecision;
     
     while(recordItr < a_rRecordList.size())
     {
-        curVariantDecision = a_rRecordList[recordItr].m_mendelianDecision;
+        EMendelianDecision curVariantDecision = static_cast<EMendelianDecision>(std::stoi(a_rRecordList[recordItr].m_mendelianDecision));
         
-        //Skip consistent and unknown variants
-        if(curVariantDecision != "1" && curVariantDecision != "0")
+        //Skip consistent variants
+        if(curVariantDecision != eCompliant && curVariantDecision != eUnknown)
         {
             //Go Backward and use a second iterator
             int temporaryItr = (int)recordItr-1;
@@ -483,10 +483,21 @@ void CMendelianTrioMerger::ProcessRefOverlappedRegions(std::vector<SVcfRecord>& 
             {
                 if(IsOverlap(a_rRecordList[recordItr], a_rRecordList[temporaryItr]))
                 {
-                    a_rRecordDecisionList[temporaryItr] = static_cast<EMendelianDecision>(std::stoi(curVariantDecision));
-                    a_rRecordList[temporaryItr].m_mendelianDecision = curVariantDecision;
+                    if(a_rRecordDecisionList[temporaryItr] == eCompliant)
+                    {
+                        a_rRecordDecisionList[temporaryItr] = curVariantDecision;
+                        a_rRecordList[temporaryItr].m_mendelianDecision = a_rRecordList[recordItr].m_mendelianDecision;
+                    }
+                    
+                    else if(a_rRecordDecisionList[temporaryItr] == eViolation && curVariantDecision != eViolation)
+                    {
+                        a_rRecordDecisionList[temporaryItr] = curVariantDecision;
+                        a_rRecordList[temporaryItr].m_mendelianDecision = a_rRecordList[recordItr].m_mendelianDecision;
+                    }
+                    
                     temporaryItr--;
                 }
+                
                 else
                     break;
             }
@@ -497,8 +508,18 @@ void CMendelianTrioMerger::ProcessRefOverlappedRegions(std::vector<SVcfRecord>& 
             {
                 if(IsOverlap(a_rRecordList[recordItr], a_rRecordList[temporaryItr]))
                 {
-                    a_rRecordDecisionList[temporaryItr] = static_cast<EMendelianDecision>(std::stoi(curVariantDecision));
-                    a_rRecordList[temporaryItr].m_mendelianDecision = curVariantDecision;
+                    if(a_rRecordDecisionList[temporaryItr] == eCompliant)
+                    {
+                        a_rRecordDecisionList[temporaryItr] = curVariantDecision;
+                        a_rRecordList[temporaryItr].m_mendelianDecision = a_rRecordList[recordItr].m_mendelianDecision;
+                    }
+                    
+                    else if(a_rRecordDecisionList[temporaryItr] == eViolation && curVariantDecision != eViolation)
+                    {
+                        a_rRecordDecisionList[temporaryItr] = curVariantDecision;
+                        a_rRecordList[temporaryItr].m_mendelianDecision = a_rRecordList[recordItr].m_mendelianDecision;
+                    }
+                    
                     temporaryItr++;
                 }
                 else

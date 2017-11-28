@@ -80,7 +80,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/VBTValidationToolTest/CEU_BWA_FreeBayes.merged_LBLannotated.vcf"
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/VBTValidationToolTest/HC_Joint_LBLAnnotated.vcf"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -88,7 +88,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/VBTValidationToolTest/CEU_BWA_FreeBayes.merged_LBLannotated.vcf"
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/VBTValidationToolTest/HC_Joint_LBLAnnotated.vcf"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -96,7 +96,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/VBTValidationToolTest/CEU_BWA_FreeBayes.merged_LBLannotated.vcf"
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/VBTValidationToolTest/HC_Joint_LBLAnnotated.vcf"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -196,7 +196,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "VBT_0.7.2_FreeBayes_CEU_"
+            argument = "VBT_0.7.2_HC_Joint_"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
