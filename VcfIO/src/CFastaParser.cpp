@@ -97,6 +97,7 @@ bool SContig::Clean()
     try
     {
         delete[] m_pRefSeq;
+        m_pRefSeq = 0;
     }
     catch(std::exception ex)
     {
