@@ -141,7 +141,6 @@ void CVcfAnalyzer::ThreadFunctionGA4GH(std::vector<SChrIdTuple> a_aTuples)
 {
     for(unsigned int k = 0; k < a_aTuples.size(); k++)
     {
-        mtx.lock();
         std::vector<const CVariant*> varListBase = m_provider.GetVariantList(eBASE, a_aTuples[k].m_nBaseId);
         std::vector<const CVariant*> varListCalled = m_provider.GetVariantList(eCALLED, a_aTuples[k].m_nCalledId);
         std::vector<const core::COrientedVariant*> ovarListBase = m_provider.GetOrientedVariantList(eBASE, a_aTuples[k].m_nBaseId, true);
@@ -151,7 +150,6 @@ void CVcfAnalyzer::ThreadFunctionGA4GH(std::vector<SChrIdTuple> a_aTuples)
         pathReplay.SetMaxPathAndIteration(m_config.m_nMaxPathSize, m_config.m_nMaxIterationCount);
         SContig ctg;
         m_provider.GetContig(a_aTuples[k].m_chrName, ctg);
-        mtx.unlock();
         
         //Find Best Path [GENOTYPE MATCH]
         m_aBestPaths[a_aTuples[k].m_nTupleIndex] = pathReplay.FindBestPath(ctg,true);
@@ -252,7 +250,7 @@ void CVcfAnalyzer::ThreadFunctionSPLIT(std::vector<SChrIdTuple> a_aTuples, bool 
         std::vector<const CVariant*> excludedVarsBase = m_provider.GetVariantList(eBASE, a_aTuples[k].m_nBaseId, m_aBestPaths[a_aTuples[k].m_nTupleIndex].m_baseSemiPath.GetExcluded());
         std::vector<const CVariant*> excludedVarsCall = m_provider.GetVariantList(eCALLED, a_aTuples[k].m_nCalledId, m_aBestPaths[a_aTuples[k].m_nTupleIndex].m_calledSemiPath.GetExcluded());
         
-        
+        mtx.lock();
         m_resultLogger.LogStatistic(a_aTuples[k].m_chrName,
                                     a_aTuples[k].m_nBaseId,
                                     static_cast<int>(includedVarsCall.size()),
@@ -261,6 +259,7 @@ void CVcfAnalyzer::ThreadFunctionSPLIT(std::vector<SChrIdTuple> a_aTuples, bool 
                                     static_cast<int>(0),
                                     static_cast<int>(excludedVarsCall.size()),
                                     static_cast<int>(excludedVarsBase.size()));
+        mtx.unlock();
         
         EVariantMatch match = a_bIsGenotypeMatch ? eGENOTYPE_MATCH : eALLELE_MATCH;
         m_provider.SetVariantStatus(excludedVarsBase, eNO_MATCH);

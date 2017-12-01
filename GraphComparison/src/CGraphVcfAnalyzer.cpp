@@ -128,8 +128,10 @@ void CGraphVcfAnalyzer::ThreadFunctionSPLIT(std::vector<duocomparison::SChrIdTup
         std::vector<const core::COrientedVariant*> ovarListBase = m_provider.GetOrientedVariantList(BaseOrientedVariantList);
         std::vector<const core::COrientedVariant*> ovarListCalled = m_provider.GetOrientedVariantList(CalledOrientedVariantList);
         
+        mtx.lock();
         SContig ctg;
         m_provider.GetContig(a_aTuples[k].m_chrName, ctg);
+        mtx.unlock();
         
         core::CPath path;
         int replayIterationCount = 0;

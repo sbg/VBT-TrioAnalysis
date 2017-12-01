@@ -15,6 +15,7 @@
 #include "CPath.h"
 #include "CSyncPoint.h"
 #include <unordered_map>
+#include <mutex>
 
 namespace graphcomparison
 {
@@ -82,6 +83,9 @@ namespace graphcomparison
         int m_nMaxBasePairLength;
         int m_nMaxPathSize;
         int m_nMaxIterationCount;
+        
+        //lock mechanisim to prevent data racing for FASTA contig reader
+        std::mutex mtx;
         
     };
     
