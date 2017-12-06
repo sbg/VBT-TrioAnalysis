@@ -9,7 +9,7 @@
 #include "CVariantProvider.h"
 #include "COrientedVariant.h"
 #include "CSimpleBEDParser.h"
-#include "Base/CUtils.h"
+#include "Utils/CUtils.h"
 #include <algorithm>
 #include <iostream>
 #include <fstream>

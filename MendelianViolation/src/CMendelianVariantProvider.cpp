@@ -10,7 +10,7 @@
 #include "CMendelianVariantProvider.h"
 #include "CSimplePEDParser.h"
 #include "CSimpleBEDParser.h"
-#include "Base/CUtils.h"
+#include "Utils/CUtils.h"
 #include <iostream>
 #include <sstream>
 
