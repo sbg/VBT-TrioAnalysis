@@ -18,9 +18,9 @@ namespace mendelian
  */
 enum EMendelianVcfName
 {
-    eFATHER,
-    eMOTHER,
-    eCHILD
+    eFATHER = 0,
+    eMOTHER = 1,
+    eCHILD = 2
 };
 
 }
