@@ -9,7 +9,7 @@
 #include "CGa4ghOutputProvider.h"
 #include <sstream>
 #include "CPath.h"
-#include "CVariantIteratorV2.h"
+#include "CVariantIteratorGa4gh.h"
 #include "CVariantProvider.h"
 #include "Constants.h"
 #include <iostream>
@@ -97,8 +97,8 @@ void CGa4ghOutputProvider::AddRecords(const core::CPath& a_rBestPath, SChrIdTupl
     std::vector<CVariant>& notAssessedCalled = m_pVariantProvider->GetNotAssessedVariantList(eCALLED, a_rTuple.m_nCalledId);
 
     //Variant Iterators
-    CVariantIteratorV2 baseVariants(includedVarsBase, excludedVarsBase, notAssessedBase);
-    CVariantIteratorV2 calledVariants(includedVarsCall, excludedVarsCall, notAssessedCalled);
+    CVariantIteratorGa4gh baseVariants(includedVarsBase, excludedVarsBase, notAssessedBase);
+    CVariantIteratorGa4gh calledVariants(includedVarsCall, excludedVarsCall, notAssessedCalled);
     
     std::vector<SVariantSummary> nextVarBaseList;
     std::vector<SVariantSummary> nextVarCalledList;
