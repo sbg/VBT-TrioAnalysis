@@ -12,8 +12,8 @@
  */
 enum EVcfName
 {
-    eBASE,
-    eCALLED
+    eBASE = 0,
+    eCALLED = 1
 };
 
 
