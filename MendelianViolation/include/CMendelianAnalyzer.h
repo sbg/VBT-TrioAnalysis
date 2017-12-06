@@ -49,7 +49,6 @@ private:
     ///Read the parameters if the execution mode is mendelian. If all mandatory parameters are set, return true.
     bool ReadParameters(int argc, char** argv);
     
-        
     ///A Function to process mendelian violation pipeline for given chromosome id
     void ProcessChromosome(const std::vector<SChrIdTriplet>& a_rChromosomeIds);
         

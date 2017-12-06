@@ -9,6 +9,7 @@
 #include "CMendelianTrioMerger.h"
 #include "CTrioVcfMerge.h"
 #include "Constants.h"
+#include "CUtils.h"
 #include <algorithm>
 #include <iostream>
 #include <sstream>
@@ -19,14 +20,7 @@ using namespace mendelian;
 //Checks if the given two range is overlapping
 bool IsOverlap(SVcfRecord& rec1, SVcfRecord& rec2)
 {
-    if(rec1.left == rec2.left)
-        return true;
-    else if(rec1.right == rec1.left)
-        return (rec2.right > rec1.left && rec2.left <= rec1.left);
-    else if(rec2.right == rec2.left)
-        return (rec1.right > rec2.left && rec1.left <= rec2.left);
-    else
-        return std::min(rec1.right, rec2.right) - std::max(rec1.left, rec2.left) > 0;
+    return CUtils::IsOverlap(rec1.left, rec1.right, rec2.left, rec2.right);
 }
 
 void CMendelianTrioMerger::SetTrioPath(const std::string& a_nTrioPath)

@@ -153,7 +153,6 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
     const char* PARAM_OUTPUT_DIR = "-outDir";
     const char* PARAM_REF_OVERLAP = "--ref-overlap";
     const char* PARAM_CLIP_FROM_END = "--trim-endings-first";
-    const char* PARAM_PLATFORM = "--platform-mode";
     const char* PARAM_THREAD_COUNT = "-thread-count";
     const char* PARAM_NO_CALL = "-no-call";
     
@@ -302,13 +301,6 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
             
             m_fatherChildConfig.m_bCalledSampleEnabled = true;
             m_fatherChildConfig.m_pCalledSample = argv[it+1];
-        }
-        
-        else if(0 == strcmp(argv[it], PARAM_PLATFORM))
-        {
-            m_motherChildConfig.m_nThreadCount = MAX_THREAD_COUNT;
-            m_fatherChildConfig.m_nThreadCount = MAX_THREAD_COUNT;
-            it--;
         }
         
         else if(0 == strcmp(argv[it], PARAM_THREAD_COUNT))
@@ -539,9 +531,7 @@ void CMendelianAnalyzer::ProcessChromosome(const std::vector<SChrIdTriplet>& a_n
         {
             std::cerr << ctg.m_chromosomeName << " not cleaned.." << std::endl;
         }
-        
     }
-    
 }
 
 void CMendelianAnalyzer::PrintHelp() const

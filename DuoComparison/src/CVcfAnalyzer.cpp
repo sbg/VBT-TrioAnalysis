@@ -101,7 +101,6 @@ int CVcfAnalyzer::AssignJobsToThreads(int a_nThreadCount)
     m_aBestPaths = std::vector<core::CPath>(chromosomeListToProcess.size());
     m_aBestPathsAllele = std::vector<core::CPath>(chromosomeListToProcess.size());
     
-    
     int exactThreadCount = std::min(a_nThreadCount, (int)chromosomeListToProcess.size());
         
     //Allocate threads

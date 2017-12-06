@@ -9,25 +9,12 @@
 #include "CVariantProvider.h"
 #include "COrientedVariant.h"
 #include "CSimpleBEDParser.h"
+#include "Base/CUtils.h"
 #include <algorithm>
 #include <iostream>
 #include <fstream>
 
 using namespace duocomparison;
-
-//Checks if the given two range is overlapping
-bool isOverlap(int left1, int right1, int left2, int right2)
-{
-    //If the interval length is 0 (eg. 974791-974791) we need to check if the boundaries matches
-    if(left1 == left2)
-        return true;
-    if(right1 == left1)
-        return (right2 > left1 && left2 <= left1);
-    else if(right2 == left2)
-        return (right1 > left2 && left1 <= left2);
-    else
-        return std::min(right1, right2) - std::max(left1, left2) > 0;
-}
 
 CVariantProvider::CVariantProvider()
 {
@@ -131,10 +118,7 @@ bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
     
     if(bIsSuccess)
     {
-        if(m_config.m_bInitializeFromBed)
-            FillVariantsFromBED();
-        else
-            FillVariantLists();
+        FillVariantLists();
         FillOrientedVariantLists();
         
         //Set the common chromosome list for parsing
@@ -186,261 +170,107 @@ bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
     return bIsSuccess;
 }
 
-bool CVariantProvider::CompareVariants(const CVariant& var1, const CVariant& var2)
+void CVariantProvider::FillVariantForSample(int a_nSampleId, SConfig& a_rConfig)
 {
-    if(var1.m_nStartPos != var2.m_nStartPos)
-        return var1.m_nStartPos < var2.m_nStartPos;
-    else if(var1.m_nEndPos != var2.m_nEndPos)
-        return var1.m_nEndPos < var2.m_nEndPos;
-    else
-        return var1.m_nId < var2.m_nId;
-}
+    CSimpleBEDParser bedParser;
+    if(true == a_rConfig.m_bInitializeFromBed)
+        bedParser.InitBEDFile(a_rConfig.m_pBedFileName);
+    unsigned int remainingBedContigCount = bedParser.m_nTotalContigCount;
 
-void CVariantProvider::FillVariantsFromBED()
-{
+    EVcfName sampleName = static_cast<EVcfName>(a_nSampleId);
+    std::string sampleNameStr = sampleName == eBASE ? "base" : "called";
+    
+    CVcfReader* pReader = a_nSampleId == 0 ? &m_baseVCF : &m_calledVCF;
+    std::vector<std::vector<CVariant>>* pNonAssessedVariants = a_nSampleId == 0 ? &m_aBaseNotAssessedVariantList : &m_aCalledNotAssessedVariantList;
+    std::vector<std::vector<CVariant>>* pVariants = a_nSampleId == 0 ? &m_aBaseVariantList : &m_aCalledVariantList;
+    
+    
     CVariant variant;
     int id = 0;
     std::string preChrId = "";
-
-    //Initialize variantLists
-    m_aBaseVariantList = std::vector<std::vector<CVariant>>(m_baseVCF.GetContigs().size());
-    m_aCalledVariantList = std::vector<std::vector<CVariant>>(m_calledVCF.GetContigs().size());
-    m_aBaseNotAssessedVariantList = std::vector<std::vector<CVariant>>(m_baseVCF.GetContigs().size());
-    m_aCalledNotAssessedVariantList = std::vector<std::vector<CVariant>>(m_calledVCF.GetContigs().size());
-
-    std::vector<CVariant> multiTrimmableVarListBase;
-    std::vector<CVariant> multiTrimmableVarListCalled;
-    
-    CSimpleBEDParser bedParser;
-    bedParser.InitBEDFile(m_config.m_pBedFileName);
-    
     unsigned int regionIterator = 0;
     
-    //std::string lastChrNameBed;
+    std::vector<CVariant> multiTrimmableVarList;
     
-    while(m_baseVCF.GetNextRecord(&variant, id++, m_config))
+    while(pReader->GetNextRecord(&variant, id++, a_rConfig))
     {
-        
         if(preChrId != variant.m_chrName)
         {
-            preChrId = variant.m_chrName;
+            //We update the remaining contig count in BED file
+            if(bedParser.m_regionMap[preChrId].size() > 0)
+                remainingBedContigCount--;
+            
             regionIterator = 0;
-            std::cout << "Processing chromosome " << preChrId << " of base vcf" << std::endl;
+            preChrId = variant.m_chrName;
+            std::cout << "Processing chromosome " << preChrId << " of " << sampleNameStr  << " vcf" << std::endl;
         }
         
-        //No Region exist for this chromosome
-        if(bedParser.m_regionMap[variant.m_chrName].size() == 0)
-            continue;
-        
-        //Skip to next region
-        while(regionIterator < bedParser.m_regionMap[variant.m_chrName].size()
-              &&
-              variant.m_nOriginalPos >= bedParser.m_regionMap[variant.m_chrName][regionIterator].m_nEndPos)
+        if(a_rConfig.m_bInitializeFromBed)
         {
-            regionIterator++;
+            //All BED regions are finished
+            if(remainingBedContigCount == 0)
+                break;
+
+            //No Region exist for this chromosome
+            if(bedParser.m_regionMap[variant.m_chrName].size() == 0)
+                continue;
+            
+            //Skip to next region
+            while(regionIterator < bedParser.m_regionMap[variant.m_chrName].size()
+                  &&
+                  variant.m_nOriginalPos >= bedParser.m_regionMap[variant.m_chrName][regionIterator].m_nEndPos)
+            {
+                regionIterator++;
+            }
+            
+            //Variant Could not pass from BED region
+            if(bedParser.m_regionMap[variant.m_chrName][regionIterator].m_nStartPos >= variant.m_nEndPos)
+                continue;
         }
         
-        //Skip if regions are finished for given chromosome
-        if(regionIterator == bedParser.m_regionMap[variant.m_chrName].size())
+        if(!variant.m_bIsNoCall && CUtils::IsHomRef(variant))
             continue;
         
-        //Variant Could not pass from BED region
-        if(bedParser.m_regionMap[variant.m_chrName][regionIterator].m_nStartPos >= variant.m_nEndPos)
-            continue;
+        if(a_rConfig.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
+            (*pNonAssessedVariants)[variant.m_nChrId].push_back(variant);
         
-        if(!variant.m_bIsNoCall && IsHomRef(variant))
-            continue;
+        else if(a_rConfig.m_bSNPOnly && variant.GetVariantType() != eSNP)
+            (*pNonAssessedVariants)[variant.m_nChrId].push_back(variant);
         
-        if(m_config.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
-            m_aBaseNotAssessedVariantList[variant.m_nChrId].push_back(variant);
+        else if(a_rConfig.m_bINDELOnly && variant.GetVariantType() != eINDEL)
+            (*pNonAssessedVariants)[variant.m_nChrId].push_back(variant);
         
-        else if(m_config.m_bSNPOnly && variant.GetVariantType() != eSNP)
-            m_aBaseNotAssessedVariantList[variant.m_nChrId].push_back(variant);
+        else if(CUtils::IsStructuralVariant(variant, a_rConfig.m_nMaxVariantSize))
+            (*pNonAssessedVariants)[variant.m_nChrId].push_back(variant);
         
-        else if(m_config.m_bINDELOnly && variant.GetVariantType() != eINDEL)
-            m_aBaseNotAssessedVariantList[variant.m_nChrId].push_back(variant);
-        
-        else if(IsStructuralVariant(variant, m_config.m_nMaxVariantSize))
-            m_aBaseNotAssessedVariantList[variant.m_nChrId].push_back(variant);
-
         else if(true == variant.m_bHaveMultipleTrimOption)
-            multiTrimmableVarListBase.push_back(variant);
+            multiTrimmableVarList.push_back(variant);
         
         else
-            m_aBaseVariantList[variant.m_nChrId].push_back(variant);
-        
+            (*pVariants)[variant.m_nChrId].push_back(variant);
     }
     
-    FindOptimalTrimmings(multiTrimmableVarListBase, eBASE);
-    AppendTrimmedVariants(multiTrimmableVarListBase, eBASE);
-
+    FindOptimalTrimmings(multiTrimmableVarList, sampleName);
+    AppendTrimmedVariants(multiTrimmableVarList, sampleName);
     
-    for(unsigned int k = 0; k < m_baseVCF.GetContigs().size(); k++)
+    for(unsigned int k = 0; k < pReader->GetContigs().size(); k++)
     {
-        std::sort(m_aBaseNotAssessedVariantList[k].begin(), m_aBaseNotAssessedVariantList[k].end(), CompareVariants);
-        std::sort(m_aBaseVariantList[k].begin(), m_aBaseVariantList[k].end(), CompareVariants);
+        std::sort((*pNonAssessedVariants)[k].begin(), (*pNonAssessedVariants)[k].end(), CUtils::CompareVariants);
+        std::sort((*pVariants)[k].begin(), (*pVariants)[k].end(), CUtils::CompareVariants);
     }
-    
-    preChrId = "";
-    
-    while(m_calledVCF.GetNextRecord(&variant, id++, m_config))
-    {
-        if(preChrId != variant.m_chrName)
-        {
-            preChrId = variant.m_chrName;
-            regionIterator = 0;
-            std::cout << "Processing chromosome " << preChrId << " of called vcf" << std::endl;
-        }
-
-        //No Region exist for this chromosome
-        if(bedParser.m_regionMap[variant.m_chrName].size() == 0)
-            continue;
-        
-        //Skip to next region
-        while(regionIterator < bedParser.m_regionMap[variant.m_chrName].size()
-              &&
-              variant.m_nOriginalPos >= bedParser.m_regionMap[variant.m_chrName][regionIterator].m_nEndPos)
-        {
-            regionIterator++;
-        }
-        
-        //Skip if regions are finished for given chromosome
-        if(regionIterator == bedParser.m_regionMap[variant.m_chrName].size())
-            continue;
-        
-        //Variant Could not pass from BED region
-        if(bedParser.m_regionMap[variant.m_chrName][regionIterator].m_nStartPos >= variant.m_nEndPos)
-            continue;
-        
-        if(!variant.m_bIsNoCall && IsHomRef(variant))
-            continue;
-        
-        else if(m_config.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
-            m_aCalledNotAssessedVariantList[variant.m_nChrId].push_back(variant);
-        
-        else if(m_config.m_bSNPOnly && variant.GetVariantType() != eSNP)
-            m_aCalledNotAssessedVariantList[variant.m_nChrId].push_back(variant);
-        
-        else if(m_config.m_bINDELOnly && variant.GetVariantType() != eINDEL)
-            m_aCalledNotAssessedVariantList[variant.m_nChrId].push_back(variant);
-        
-        else if(IsStructuralVariant(variant, m_config.m_nMaxVariantSize))
-            m_aCalledNotAssessedVariantList[variant.m_nChrId].push_back(variant);
-        
-        else if(variant.m_bHaveMultipleTrimOption)
-            multiTrimmableVarListCalled.push_back(variant);
-        
-        else
-            m_aCalledVariantList[variant.m_nChrId].push_back(variant);
-
-    }
-    
-    FindOptimalTrimmings(multiTrimmableVarListCalled, eCALLED);
-    AppendTrimmedVariants(multiTrimmableVarListCalled, eCALLED);
-    
-    for(unsigned int k = 0; k < m_calledVCF.GetContigs().size(); k++)
-    {
-        std::sort(m_aCalledNotAssessedVariantList[k].begin(), m_aCalledNotAssessedVariantList[k].end(), CompareVariants);
-        std::sort(m_aCalledVariantList[k].begin(), m_aCalledVariantList[k].end(), CompareVariants);
-    }
-        
 }
 
 
 void CVariantProvider::FillVariantLists()
 {
-    CVariant variant;
-    int id = 0;
-    std::string preChrId = "";
-    
     //Initialize variantLists
     m_aBaseVariantList = std::vector<std::vector<CVariant>>(m_baseVCF.GetContigs().size());
     m_aCalledVariantList = std::vector<std::vector<CVariant>>(m_calledVCF.GetContigs().size());
     m_aBaseNotAssessedVariantList = std::vector<std::vector<CVariant>>(m_baseVCF.GetContigs().size());
     m_aCalledNotAssessedVariantList = std::vector<std::vector<CVariant>>(m_calledVCF.GetContigs().size());
     
-    std::vector<CVariant> multiTrimmableVarListBase;
-    std::vector<CVariant> multiTrimmableVarListCalled;
-
-    while(m_baseVCF.GetNextRecord(&variant, id++, m_config))
-    {
-        if(preChrId != variant.m_chrName)
-        {
-            preChrId = variant.m_chrName;
-            std::cout << "Processing chromosome " << preChrId << " of base vcf" << std::endl;
-        }
-        
-        if(!variant.m_bIsNoCall && IsHomRef(variant))
-            continue;
-        
-        if(m_config.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
-            m_aBaseNotAssessedVariantList[variant.m_nChrId].push_back(variant);
-        
-        else if(m_config.m_bSNPOnly && variant.GetVariantType() != eSNP)
-            m_aBaseNotAssessedVariantList[variant.m_nChrId].push_back(variant);
-        
-        else if(m_config.m_bINDELOnly && variant.GetVariantType() != eINDEL)
-            m_aBaseNotAssessedVariantList[variant.m_nChrId].push_back(variant);
-        
-        else if(IsStructuralVariant(variant, m_config.m_nMaxVariantSize))
-            m_aBaseNotAssessedVariantList[variant.m_nChrId].push_back(variant);
-        
-        else if(true == variant.m_bHaveMultipleTrimOption)
-            multiTrimmableVarListBase.push_back(variant);
-        
-        else
-            m_aBaseVariantList[variant.m_nChrId].push_back(variant);
-    }
-    
-    FindOptimalTrimmings(multiTrimmableVarListBase, eBASE);
-    AppendTrimmedVariants(multiTrimmableVarListBase, eBASE);
-    
-    for(unsigned int k = 0; k < m_baseVCF.GetContigs().size(); k++)
-    {
-        std::sort(m_aBaseNotAssessedVariantList[k].begin(), m_aBaseNotAssessedVariantList[k].end(), CompareVariants);
-        std::sort(m_aBaseVariantList[k].begin(), m_aBaseVariantList[k].end(), CompareVariants);
-    }
-
-    preChrId = "";
-    
-    while(m_calledVCF.GetNextRecord(&variant, id++, m_config))
-    {
-        if(preChrId != variant.m_chrName)
-        {
-            preChrId = variant.m_chrName;
-            std::cout << "Processing chromosome " << preChrId << " of called vcf" << std::endl;
-        }
-        
-        if(!variant.m_bIsNoCall && IsHomRef(variant))
-            continue;
-        
-        else if(m_config.m_bIsFilterEnabled && variant.m_bIsFilterPASS == false)
-            m_aCalledNotAssessedVariantList[variant.m_nChrId].push_back(variant);
-        
-        else if(m_config.m_bSNPOnly && variant.GetVariantType() != eSNP)
-            m_aCalledNotAssessedVariantList[variant.m_nChrId].push_back(variant);
-        
-        else if(m_config.m_bINDELOnly && variant.GetVariantType() != eINDEL)
-            m_aCalledNotAssessedVariantList[variant.m_nChrId].push_back(variant);
-        
-        else if(IsStructuralVariant(variant, m_config.m_nMaxVariantSize))
-            m_aCalledNotAssessedVariantList[variant.m_nChrId].push_back(variant);
-        
-        else if(true == variant.m_bHaveMultipleTrimOption)
-            multiTrimmableVarListCalled.push_back(variant);
-        
-        else
-            m_aCalledVariantList[variant.m_nChrId].push_back(variant);
-    }
-    
-    FindOptimalTrimmings(multiTrimmableVarListCalled, eCALLED);
-    AppendTrimmedVariants(multiTrimmableVarListCalled, eCALLED);
-    
-    for(unsigned int k = 0; k < m_calledVCF.GetContigs().size(); k++)
-    {
-        std::sort(m_aCalledNotAssessedVariantList[k].begin(), m_aCalledNotAssessedVariantList[k].end(), CompareVariants);
-        std::sort(m_aCalledVariantList[k].begin(), m_aCalledVariantList[k].end(), CompareVariants);
-    }
+    FillVariantForSample(eBASE, m_config);
+    FillVariantForSample(eCALLED, m_config);
 }
 
 void CVariantProvider::FillOrientedVariantLists()
@@ -600,33 +430,6 @@ std::vector<const core::COrientedVariant*> CVariantProvider::GetOrientedVariantL
     
 }
 
-
-bool CVariantProvider::IsStructuralVariant(const CVariant& a_rVariant, int a_nMaxLength) const
-{
-    std::size_t found;
-    
-    for(int k = 0; k < a_rVariant.m_nAlleleCount; k++)
-    {
-        std::string allele = a_rVariant.m_alleles[k].m_sequence;
-        
-        if((int)allele.size() > a_nMaxLength)
-            return true;
-        found = allele.find('[');
-        if(found != std::string::npos)
-            return true;
-        found = allele.find('<');
-        if(found != std::string::npos)
-            return true;
-        found = allele.find('*');
-        if(found != std::string::npos)
-            return true;
-        found = allele.find('.');
-        if(found != std::string::npos)
-            return true;
-    }
-    return false;
-}
-
 std::vector<SChrIdTuple>& CVariantProvider::GetChromosomeIdTuples()
 {
     return m_aCommonChrTupleList;
@@ -690,21 +493,6 @@ const std::vector<SVcfContig>& CVariantProvider::GetContigs() const
     return m_calledVCF.GetContigs();
 }
 
-bool CVariantProvider::IsHomRef(const CVariant& a_rVariant) const
-{
-    bool res = true;
-    
-    for(int k = 0; k < a_rVariant.m_nZygotCount; k++)
-    {
-        if(a_rVariant.m_genotype[k] != 0)
-        {
-            res = false;
-            break;
-        }
-    }
-    return res;
-}
-
 void CVariantProvider::FindOptimalTrimmings(std::vector<CVariant>& a_rVariantList, EVcfName a_uFrom)
 {
     if(a_rVariantList.size() == 0)
@@ -748,7 +536,7 @@ void CVariantProvider::FindOptimalTrimmings(std::vector<CVariant>& a_rVariantLis
 
             while(secondItr < (*allVarList)[currentChrId].size() && a_rVariantList[k].m_alleles[i].m_nEndPos >= (*allVarList)[currentChrId][secondItr].m_nStartPos)
             {
-                if(isOverlap(a_rVariantList[k].m_alleles[i].m_nStartPos,
+                if(CUtils::IsOverlap(a_rVariantList[k].m_alleles[i].m_nStartPos,
                              a_rVariantList[k].m_alleles[i].m_nEndPos,
                              (*allVarList)[currentChrId][secondItr].m_nStartPos,
                              (*allVarList)[currentChrId][secondItr].m_nEndPos))
@@ -768,7 +556,7 @@ void CVariantProvider::FindOptimalTrimmings(std::vector<CVariant>& a_rVariantLis
                     for(int tmpItr = 0; tmpItr < 2; tmpItr++)
                     {
                         //If the allele does not overlap, continue
-                        if(!isOverlap(a_rVariantList[k].m_alleles[i].m_nStartPos,
+                        if(!CUtils::IsOverlap(a_rVariantList[k].m_alleles[i].m_nStartPos,
                                      a_rVariantList[k].m_alleles[i].m_nEndPos,
                                      tmpoverlapVariants[ovarItr].m_alleles[tmpItr].m_nStartPos,
                                      tmpoverlapVariants[ovarItr].m_alleles[tmpItr].m_nEndPos))

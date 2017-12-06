@@ -12,6 +12,7 @@
 #include "CVariantIterator.h"
 #include "ENoCallMode.h"
 #include "CMendelianResultLog.h"
+#include "Base/CUtils.h"
 #include <iostream>
 #include <algorithm>
 
@@ -35,17 +36,6 @@ m_resultLog(a_rResultLog)
 void CMendelianDecider::SetNocallMode(ENoCallMode a_nMode)
 {
     m_nocallMode = a_nMode;
-}
-
-
-//Checks if the given two range is overlapping
-extern bool isOverlap(int left1, int right1, int left2, int right2);
-
-
-//Compare variants according to id for sort operation
-bool variantCompare(const CVariant* v1, const CVariant* v2)
-{
-    return v1->m_nId < v2->m_nId;
 }
 
 void CMendelianDecider::CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTriplet& a_rTriplet,
@@ -96,7 +86,7 @@ void CMendelianDecider::CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTri
         //Get All overlapping variants in child side
         while(varItrChild + counterChild < varListToCheckChild.size() && varListToCheckChild[varItrChild+counterChild]->m_nStartPos < a_rVariantList[k]->m_nEndPos)
         {
-            if(isOverlap(a_rVariantList[k]->m_nStartPos, a_rVariantList[k]->m_nEndPos, varListToCheckChild[varItrChild+counterChild]->m_nStartPos, varListToCheckChild[varItrChild+counterChild]->m_nEndPos))
+            if(CUtils::IsOverlap(a_rVariantList[k]->m_nStartPos, a_rVariantList[k]->m_nEndPos, varListToCheckChild[varItrChild+counterChild]->m_nStartPos, varListToCheckChild[varItrChild+counterChild]->m_nEndPos))
                 childSideMatches.push_back(varListToCheckChild[varItrChild+counterChild]);
             counterChild++;
         }
@@ -104,7 +94,7 @@ void CMendelianDecider::CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTri
         //Get All overlapping variants in self side
         while(varItrSelf + counterSelf < varListToCheckSelf.size() && varListToCheckSelf[varItrSelf+counterSelf]->m_nStartPos < a_rVariantList[k]->m_nEndPos)
         {
-            if(isOverlap(a_rVariantList[k]->m_nStartPos, a_rVariantList[k]->m_nEndPos, varListToCheckSelf[varItrSelf+counterSelf]->m_nStartPos, varListToCheckSelf[varItrSelf+counterSelf]->m_nEndPos))
+            if(CUtils::IsOverlap(a_rVariantList[k]->m_nStartPos, a_rVariantList[k]->m_nEndPos, varListToCheckSelf[varItrSelf+counterSelf]->m_nStartPos, varListToCheckSelf[varItrSelf+counterSelf]->m_nEndPos))
                 selfSideMatches.push_back(varListToCheckSelf[varItrSelf+counterSelf]);
             counterSelf++;
         }
@@ -144,7 +134,7 @@ void CMendelianDecider::CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTri
                         continue;
 
                     int sideJallele = selfSideMatches[j]->m_genotype[0] == 0 ? 0 : 1;
-                    if(isOverlap(selfSideMatches[i]->m_alleles[sideIallele].m_nStartPos,
+                    if(CUtils::IsOverlap(selfSideMatches[i]->m_alleles[sideIallele].m_nStartPos,
                                  selfSideMatches[i]->m_alleles[sideIallele].m_nEndPos,
                                  selfSideMatches[j]->m_alleles[sideJallele].m_nStartPos,
                                  selfSideMatches[j]->m_alleles[sideJallele].m_nEndPos))
@@ -335,7 +325,7 @@ void CMendelianDecider::CheckFor0Path(SChrIdTriplet& a_rTriplet,
             {
                 const CVariant* pVar = a_rSyncPointList[k].m_baseVariantsExcluded[m];
                 
-                if(isOverlap(pVar->GetStart(), pVar->GetEnd(), tmpVarList[0]->GetStart(), tmpVarList[0]->GetEnd()))
+                if(CUtils::IsOverlap(pVar->GetStart(), pVar->GetEnd(), tmpVarList[0]->GetStart(), tmpVarList[0]->GetEnd()))
                 {
                     
                     if(pVar->m_genotype[0] != 0 && pVar->m_genotype[1] != 0)
@@ -657,7 +647,7 @@ void CMendelianDecider::MergeFunc(SChrIdTriplet& a_triplet,
     compliants.insert(std::end(compliants), std::begin(MendelianCompliantVars), std::end(MendelianCompliantVars));
     compliants.insert(std::end(compliants), std::begin(compliantVarsFrom0CheckFather), std::end(compliantVarsFrom0CheckFather));
     compliants.insert(std::end(compliants), std::begin(compliantVarsFrom0CheckMother), std::end(compliantVarsFrom0CheckMother));
-    std::sort(compliants.begin(), compliants.end(), variantCompare);
+    std::sort(compliants.begin(), compliants.end(), CUtils::CompareVariantsById);
     
     //Gather all violation variants of child we found so far
     violations.insert(std::end(violations), std::begin(SameAlleleMatchViolationVars), std::end(SameAlleleMatchViolationVars));
@@ -702,7 +692,7 @@ void CMendelianDecider::MergeFunc(SChrIdTriplet& a_triplet,
     
     //Add the new violations we found to violation list
     violations.insert(std::end(violations), std::begin(childUniqueList), std::end(childUniqueList));
-    std::sort(violations.begin(), violations.end(), variantCompare);
+    std::sort(violations.begin(), violations.end(), CUtils::CompareVariantsById);
     
     //We looked up all child variants. Now, we will look at parent variants where there is no corresponding child variant exist in the child.vcf (check for hidden 0/0 child variants)
     

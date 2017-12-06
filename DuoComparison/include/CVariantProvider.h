@@ -80,22 +80,13 @@ private:
     //Finds the tuple index list of chromosome which is contained by both baseline and called vcf
     void SetChromosomeIdTuples();
 
+    void FillVariantForSample(int a_nSampleId, SConfig& a_rConfig);
+    
     //Read through the variant file and fill the variant lists. It assumes that positions are sorted.
     void FillVariantLists();
-
-    //Fill Variant sets for parent and child using a BED file
-    void FillVariantsFromBED();
     
     //Read through the variant lists and generate oriented variant list for call and base
     void FillOrientedVariantLists();
-
-    //Checks whether given variant is a structural variant type (A complex type)
-    bool IsStructuralVariant(const CVariant& a_rVariant, int a_nMaxLength) const;
-
-    static bool CompareVariants(const CVariant& var1, const CVariant& var2);
-
-    //Checks if the variant genotype is 0/0 (homref)
-    bool IsHomRef(const CVariant& a_rVariant) const;
     
     //Find the optimal trimmings for given variant list
     void FindOptimalTrimmings(std::vector<CVariant>& a_rVariantList, EVcfName a_uFrom);

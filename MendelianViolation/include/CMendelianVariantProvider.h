@@ -90,26 +90,18 @@ private:
     //Fill the common chromosome list
     void SetCommonChromosomes();
     
-    //Checks whether given variant is a structural variant type (A complex type)
-    bool IsStructuralVariant(const CVariant& a_rVariant, int a_nMaxLength) const;
-    
-    //Checks if the variant genotype is 0/0 (homref)
-    bool IsHomRef(const CVariant& a_rVariant) const;
+    //Fill Variants for given sample Id
+    void FillVariantForSample(int a_nSampleId, SConfig& a_rConfig);
     
     //Fill Variant sets for parent and child
     void FillVariants();
-    
-    //Fill Variant sets for parent and child using a BED file
-    void FillVariantsFromBED();
-    
+        
     //Fill Oriented variant sets for parent and child
     void FillGenotypeMatchOrientedVariants(std::vector<SChrIdTriplet>& a_aCommonChromosomes);
 
     //Fill Oriented variant sets for parent and child
     void FillAlleleMatchOrientedVariants(std::vector<SChrIdTriplet>& a_aCommonChromosomes);
-    
-    static bool CompareVariants(const CVariant& var1, const CVariant& var2);
-    
+        
     //Find the optimal trimmings for given variant list
     void FindOptimalTrimmings(std::vector<CVariant>& a_rVariantList, EMendelianVcfName a_uFrom);
     
