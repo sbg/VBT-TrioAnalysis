@@ -8,6 +8,7 @@
 
 #include "Utils/CUtils.h"
 #include "CVariant.h"
+#include "COrientedVariant.h"
 #include <fstream>
 
 //Checks if the given two range is overlapping
@@ -82,6 +83,10 @@ bool CUtils::CompareVariantsById(const CVariant* v1, const CVariant* v2)
     return v1->m_nId < v2->m_nId;
 }
 
+bool CUtils::CompareOrientedVariantsById(const core::COrientedVariant* v1, const core::COrientedVariant* v2)
+{
+    return v1->GetVariant().m_nId < v2->GetVariant().m_nId;
+}
 
 bool CUtils::IsFileExists (const std::string& name)
 {

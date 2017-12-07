@@ -12,6 +12,10 @@
 #include <string>
 
 class CVariant;
+namespace core
+{
+    class COrientedVariant;
+}
 
 
 class CUtils
@@ -33,6 +37,10 @@ public:
     
     ///Compare variants according to id for sort operation
     static bool CompareVariantsById(const CVariant* v1, const CVariant* v2);
+    
+    ///Compare  oriented variants according to id for sort operation
+    static bool CompareOrientedVariantsById(const core::COrientedVariant* v1, const core::COrientedVariant* v2);
+    
     
     ///Return true if the given file path exists
     static bool IsFileExists (const std::string& name);
