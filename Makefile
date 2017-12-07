@@ -11,16 +11,19 @@ INCTRIO := MendelianViolation/include
 INCVCFIO := VcfIO/include
 INCGRAPH := GraphComparison/include
 INCUTIL := Utils
+INCBASE := Base
 
 CFLAGS := -std=c++11 -Wall -O2 -g
 LIB := -lz -pthread -lhts
-INC := -I $(INCCORE) -I htslib -I $(INCDUO) -I $(INCTRIO) -I $(INCVCFIO) -I $(INCGRAPH) -I $(INCUTIL) -I $(shell pwd)
+INC := -I $(INCCORE) -I htslib -I $(INCDUO) -I $(INCTRIO) -I $(INCVCFIO) -I $(INCGRAPH) -I $(INCUTIL) -I $(INCBASE) -I $(shell pwd)
 
 SRCCORE := Core/src
 SRCDUO := DuoComparison/src
 SRCTRIO := MendelianViolation/src
 SRCVCFIO := VcfIO/src
 SRCGRAPH := GraphComparison/src
+SRCUTIL := Utils
+SRCBASE := Base
  
 SOURCESCORE := $(shell find $(SRCCORE) -type f -name '*.cpp')
 SOURCESDUO := $(shell find $(SRCDUO) -type f -name '*.cpp')
@@ -28,14 +31,16 @@ SOURCESTRIO := $(shell find $(SRCTRIO) -type f -name '*.cpp')
 SOURCESVCFIO := $(shell find $(SRCVCFIO) -type f -name '*.cpp')
 SOURCESGRAPH := $(shell find $(SRCGRAPH) -type f -name '*.cpp')
 
+
 OBJECTSCORE := $(subst $(SRCCORE), $(BUILDDIR), $(SOURCESCORE:.cpp=.o))
 OBJECTSDUO := $(subst $(SRCDUO), $(BUILDDIR), $(SOURCESDUO:.cpp=.o))
 OBJECTSTRIO := $(subst $(SRCTRIO), $(BUILDDIR), $(SOURCESTRIO:.cpp=.o))
 OBJECTSVCFIO := $(subst $(SRCVCFIO), $(BUILDDIR), $(SOURCESVCFIO:.cpp=.o))
 OBJECTSGRAPH := $(subst $(SRCGRAPH), $(BUILDDIR), $(SOURCESGRAPH:.cpp=.o))
 OBJECTSUTIL := $(BUILDDIR)/CUtils.o
+OBJECTSBASE := $(BUILDDIR)/CBaseVariantProvider.o
 
-OBJECTS := $(OBJECTSCORE) $(OBJECTSDUO) $(OBJECTSTRIO) $(OBJECTSVCFIO) $(OBJECTSGRAPH) $(OBJECTSUTIL) $(BUILDDIR)/main.o
+OBJECTS := $(OBJECTSCORE) $(OBJECTSDUO) $(OBJECTSTRIO) $(OBJECTSVCFIO) $(OBJECTSGRAPH) $(OBJECTSUTIL) $(OBJECTSBASE) $(BUILDDIR)/main.o
 #SOURCES := $(SOURCESCORE) $(SOURCESDUO) $(SOURCESTRIO) $(SOURCESVCFIO) $(SOURCESGRAPH) $(SOURCESUTIL) main.cpp
 
 all: $(TARGET)
@@ -70,7 +75,11 @@ $(BUILDDIR)/%.o: $(SRCGRAPH)/%.cpp Constants.h
 	@mkdir -p $(BUILDDIR)
 	@echo " GRAPH: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
 
-$(BUILDDIR)/%.o: Utils/CUtils.cpp
+$(BUILDDIR)/%.o: $(SRCBASE)/%.cpp
+	@mkdir -p $(BUILDDIR)
+	@echo " BASE: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
+
+$(BUILDDIR)/%.o: $(SRCUTIL)/%.cpp
 	@mkdir -p $(BUILDDIR)
 	@echo " UTILS: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
 
