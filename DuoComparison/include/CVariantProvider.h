@@ -48,6 +48,9 @@ public:
     ///Return the list of variants from varlist according to given variant indexes
     std::vector<const CVariant*> GetVariantList(std::vector<const CVariant*>& a_varList, const std::vector<int>& a_VariantIndexes);
 
+    ///Return the variants that are not assessed due to being in a complex regions during variant comparison operation
+    std::vector<const CVariant*> GetSkippedComplexVariantList(EVcfName a_uFrom, int a_nChrNo);
+    
     ///Return all the oriented variants belongs to given chromosome
     std::vector<const core::COrientedVariant*> GetOrientedVariantList(EVcfName a_uFrom, int a_nChrNo, bool a_bIsGenotypeMatch);
 
@@ -61,7 +64,7 @@ public:
     void GetFilterInfo(EVcfName a_vcfType, std::vector<std::string>& a_rFilterNames, std::vector<std::string>& a_rFilterDescriptions);
 
     ///Return the access of not-asessed variants
-    std::vector<CVariant>& GetNotAssessedVariantList(EVcfName a_uFrom, int a_nChrNo);
+    std::vector<const CVariant*> GetNotAssessedVariantList(EVcfName a_uFrom, int a_nChrNo);
 
     ///Initialize Homozygous Oriented Variant Lists with given base and called variant set
     void FillAlleleMatchVariantList(SChrIdTuple& a_rTuple,

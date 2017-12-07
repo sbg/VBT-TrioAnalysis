@@ -415,13 +415,44 @@ void CVariantProvider::GetFilterInfo(EVcfName a_vcfType, std::vector<std::string
     }
 }
 
-std::vector<CVariant>& CVariantProvider::GetNotAssessedVariantList(EVcfName a_uFrom, int a_nChrNo)
+std::vector<const CVariant*> CVariantProvider::GetNotAssessedVariantList(EVcfName a_uFrom, int a_nChrNo)
 {
+    std::vector<const CVariant*> result;
+    
+    
     if(eBASE == a_uFrom)
-        return m_aBaseNotAssessedVariantList[a_nChrNo];
+    {
+        for(int k = 0; k < (int)m_aBaseNotAssessedVariantList[a_nChrNo].size(); k++)
+            result.push_back(&m_aBaseNotAssessedVariantList[a_nChrNo][k]);
+    }
     else
-        return m_aCalledNotAssessedVariantList[a_nChrNo];
+    {
+        for(int k = 0; k < (int)m_aCalledNotAssessedVariantList[a_nChrNo].size(); k++)
+            result.push_back(&m_aCalledNotAssessedVariantList[a_nChrNo][k]);
+    }
+    
+    return result;
 }
+
+std::vector<const CVariant*> CVariantProvider::GetSkippedComplexVariantList(EVcfName a_uFrom, int a_nChrNo)
+{
+    std::vector<const CVariant*> result;
+    
+    if(a_uFrom == eBASE)
+    {
+        for(CVariant var : m_aBaseVariantList[a_nChrNo])
+        {
+            if(var.m_variantStatus == eCOMPLEX_SKIPPED)
+            {
+                var.m_variantStatus = eNOT_ASSESSED;
+                result.push_back(&var);
+            }
+        }
+    }
+
+    return result;
+}
+
 
 const std::vector<SVcfContig>& CVariantProvider::GetContigs() const
 {
@@ -596,15 +627,3 @@ void CVariantProvider::AppendTrimmedVariants(std::vector<CVariant>& a_rVariantLi
     for(unsigned int k = 0; k < a_rVariantList.size(); k++)
         variantList[a_rVariantList[k].m_nChrId].push_back(a_rVariantList[k]);
 }
-
-
-
-
-
-
-
-
-
-
-
-
