@@ -26,7 +26,7 @@ class CVariantIteratorGa4gh
 public:
     
     ///Constructor
-    CVariantIteratorGa4gh(std::vector<const core::COrientedVariant*>& included, std::vector<const CVariant*>& excluded, std::vector<CVariant>& notAssessed);
+    CVariantIteratorGa4gh(std::vector<const core::COrientedVariant*>& included, std::vector<const CVariant*>& excluded, std::vector<const CVariant*>& notAssessed);
     
     ///Return true if the iterator is not at the end of variant list
     bool hasNext();
@@ -40,12 +40,11 @@ private:
     
     std::vector<const core::COrientedVariant*>::iterator it_Included;
     std::vector<const CVariant*>::iterator it_Excluded;
-    std::vector<CVariant>::iterator it_NotAssessed;
+    std::vector<const CVariant*>::iterator it_NotAssessed;
     
     std::vector<const core::COrientedVariant*>& m_aIncluded;
     std::vector<const CVariant*>& m_aExcluded;
-    
-    std::vector<CVariant>& m_aNotAssessed;
+    std::vector<const CVariant*>& m_aNotAssessed;
     
 };
 

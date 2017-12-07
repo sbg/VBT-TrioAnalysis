@@ -11,7 +11,7 @@
 using namespace duocomparison;
 
 ///Constructor
-CVariantIteratorGa4gh::CVariantIteratorGa4gh(std::vector<const core::COrientedVariant*>& included, std::vector<const CVariant*>& excluded, std::vector<CVariant>& notAssessed)
+CVariantIteratorGa4gh::CVariantIteratorGa4gh(std::vector<const core::COrientedVariant*>& included, std::vector<const CVariant*>& excluded, std::vector<const CVariant*>& notAssessed)
 : m_aIncluded(included),
 m_aExcluded(excluded),
 m_aNotAssessed(notAssessed)
@@ -39,7 +39,7 @@ bool CVariantIteratorGa4gh::FillNext(std::vector<SVariantSummary>& a_rResultsVec
     {
         int includeStart = it_Included != m_aIncluded.end() ? (*it_Included)->GetVariant().GetOriginalPos() : INT_MAX;
         int excludeStart = it_Excluded != m_aExcluded.end() ? (*it_Excluded)->GetOriginalPos() : INT_MAX;
-        int notAssessedStart = it_NotAssessed != m_aNotAssessed.end() ? it_NotAssessed->GetOriginalPos() : INT_MAX;
+        int notAssessedStart = it_NotAssessed != m_aNotAssessed.end() ? (*it_NotAssessed)->GetOriginalPos() : INT_MAX;
         
         //All lists are finished return false
         if(includeStart == INT_MAX && excludeStart == INT_MAX && notAssessedStart == INT_MAX)
@@ -66,7 +66,7 @@ bool CVariantIteratorGa4gh::FillNext(std::vector<SVariantSummary>& a_rResultsVec
                 it_Excluded++;
                 break;
             case 3:
-                result = SVariantSummary(*it_NotAssessed, false, false);
+                result = SVariantSummary(*(*it_NotAssessed), false, false);
                 it_NotAssessed++;
                 a_rResultsVec.push_back(result);
                 nLastPosition = notAssessedStart;
