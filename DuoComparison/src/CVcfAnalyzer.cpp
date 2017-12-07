@@ -434,7 +434,6 @@ bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
     const char* PARAM_OUTPUT_DIR = "-outDir";
     const char* PARAM_REF_OVERLAP = "--ref-overlap";
     const char* PARAM_CLIP_FROM_END = "--trim-endings-first";
-    const char* PARAM_PLATFORM = "--platform-mode";
     const char* PARAM_THREAD_COUNT = "-thread-count";
     const char* PARAM_OUTPUT_MODE = "-output-mode";
     const char* PARAM_ALLELE_MATCH = "--allele-match";
@@ -565,12 +564,6 @@ bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
             it++;
         }
         
-        else if(0 == strcmp(argv[it], PARAM_PLATFORM))
-        {
-            m_config.m_nThreadCount = MAX_THREAD_COUNT;
-            it++;
-        }
-        
         else if(0 == strcmp(argv[it], PARAM_THREAD_COUNT))
         {
             m_config.m_nThreadCount = std::min(std::max(1, atoi(argv[it+1])), MAX_THREAD_COUNT);
@@ -643,7 +636,6 @@ void CVcfAnalyzer::PrintHelp() const
     std::cout << "--ref-overlap                [Optional.Allow reference overlapping by trimming nucleotides and ignoring 0 genotype.]" << std::endl;
     std::cout << "--generate-sync-point        [Optional.Prints the sync point list of two vcf file. Default value is false.]" << std::endl;
     std::cout << "--trim-endings-first         [Optional.If set, starts trimming variants from ending base pairs. Default is from beginning]" << std::endl;
-    std::cout << "--platform-mode              [Optional.Allow to run program with the thread number of different chromosome count.]" << std::endl;
     std::cout << "-thread-count                [Optional.Specify the number of threads that program will use. Default value is 2]" << std::endl;
     std::cout << "-max-bp-length               [*Optional.Specify the maximum base pair length of variant to process. Default value is 1000]" << std::endl;
     std::cout << "-max-path-size <size>        [*Optional.Specify the maximum size of path that core algorithm can store inside. Default value is 150,000]" << std::endl;
