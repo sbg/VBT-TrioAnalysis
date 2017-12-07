@@ -26,6 +26,7 @@ namespace duocomparison
  * The differences:
  * 1. Variants with 0/0 genotype is eliminated from output while vcfeval keeps them
  * 2. Cutoff limits during variant replay is configurable with VBT while it is fixed in vcfeval
+ * 3. In -ref-overlap mode, VBT does a clever trimming strategy that can find more TPs in repetitive regions rather than naive approach of vcfeval
  */
 class CVcfAnalyzer
 {
