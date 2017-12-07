@@ -6,7 +6,7 @@
 //  Copyright © 2017 Seven Bridges Genomics. All rights reserved.
 //
 
-#include "CUtils.h"
+#include "Utils/CUtils.h"
 #include "CVariant.h"
 
 //Checks if the given two range is overlapping

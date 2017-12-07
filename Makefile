@@ -10,17 +10,17 @@ INCDUO := DuoComparison/include
 INCTRIO := MendelianViolation/include
 INCVCFIO := VcfIO/include
 INCGRAPH := GraphComparison/include
+INCUTIL := Utils
 
 CFLAGS := -std=c++11 -Wall -O2 -g
 LIB := -lz -pthread -lhts
-INC := -I $(INCCORE) -I htslib -I $(INCDUO) -I $(INCTRIO) -I $(INCVCFIO) -I $(INCGRAPH) -I $(shell pwd)
+INC := -I $(INCCORE) -I htslib -I $(INCDUO) -I $(INCTRIO) -I $(INCVCFIO) -I $(INCGRAPH) -I $(INCUTIL) -I $(shell pwd)
 
 SRCCORE := Core/src
 SRCDUO := DuoComparison/src
 SRCTRIO := MendelianViolation/src
 SRCVCFIO := VcfIO/src
 SRCGRAPH := GraphComparison/src
-
  
 SOURCESCORE := $(shell find $(SRCCORE) -type f -name '*.cpp')
 SOURCESDUO := $(shell find $(SRCDUO) -type f -name '*.cpp')
@@ -33,9 +33,10 @@ OBJECTSDUO := $(subst $(SRCDUO), $(BUILDDIR), $(SOURCESDUO:.cpp=.o))
 OBJECTSTRIO := $(subst $(SRCTRIO), $(BUILDDIR), $(SOURCESTRIO:.cpp=.o))
 OBJECTSVCFIO := $(subst $(SRCVCFIO), $(BUILDDIR), $(SOURCESVCFIO:.cpp=.o))
 OBJECTSGRAPH := $(subst $(SRCGRAPH), $(BUILDDIR), $(SOURCESGRAPH:.cpp=.o))
+OBJECTSUTIL := $(BUILDDIR)/CUtils.o
 
-OBJECTS := $(OBJECTSCORE) $(OBJECTSDUO) $(OBJECTSTRIO) $(OBJECTSVCFIO) $(OBJECTSGRAPH) $(BUILDDIR)/main.o
-SOURCES := $(SOURCESCORE) $(SOURCESDUO) $(SOURCESTRIO) $(SOURCESVCFIO) $(SOURCESGRAPH) main.cpp
+OBJECTS := $(OBJECTSCORE) $(OBJECTSDUO) $(OBJECTSTRIO) $(OBJECTSVCFIO) $(OBJECTSGRAPH) $(OBJECTSUTIL) $(BUILDDIR)/main.o
+#SOURCES := $(SOURCESCORE) $(SOURCESDUO) $(SOURCESTRIO) $(SOURCESVCFIO) $(SOURCESGRAPH) $(SOURCESUTIL) main.cpp
 
 all: $(TARGET)
 	@echo "SUCCESSFULLY COMPILED!!"
@@ -46,7 +47,8 @@ $(TARGET): $(OBJECTS)
 	@echo " OBJECTS CORE: $(OBJECTSCORE)"
 	@echo " OBJECTS DUO : $(OBJECTSDUO)"
 	@echo " OBJECTS TRIO: $(OBJECTSTRIO)"
-	@echo " $(CC) $^ -o $(TARGET) $(LIB)"; $(CC) $^ -o $(TARGET) $(LIB)
+	@echo " OBJECTS GRAPH: $(OBJECTSGRAPH)"
+	@echo " $(CC) $^ -o $(TARGET) $(LIB)"; $(CC) $^ -o $(TARGET) $(LIB) $(INC)
 
 $(BUILDDIR)/%.o: $(SRCCORE)/%.cpp Constants.h
 	@mkdir -p $(BUILDDIR)
@@ -67,6 +69,10 @@ $(BUILDDIR)/%.o: $(SRCVCFIO)/%.cpp Constants.h
 $(BUILDDIR)/%.o: $(SRCGRAPH)/%.cpp Constants.h
 	@mkdir -p $(BUILDDIR)
 	@echo " GRAPH: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
+
+$(BUILDDIR)/%.o: Utils/CUtils.cpp
+	@mkdir -p $(BUILDDIR)
+	@echo " UTILS: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
 
 $(BUILDDIR)/main.o: main.cpp
 	@mkdir -p $(BUILDDIR)

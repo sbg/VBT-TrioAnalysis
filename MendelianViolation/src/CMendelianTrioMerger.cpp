@@ -9,7 +9,7 @@
 #include "CMendelianTrioMerger.h"
 #include "CTrioVcfMerge.h"
 #include "Constants.h"
-#include "CUtils.h"
+#include "Utils/CUtils.h"
 #include <algorithm>
 #include <iostream>
 #include <sstream>
