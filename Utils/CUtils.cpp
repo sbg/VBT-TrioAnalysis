@@ -16,7 +16,7 @@ bool CUtils::IsOverlap(int left1, int right1, int left2, int right2)
     //If the interval length is 0 (eg. 974791-974791) we need to check if the boundaries matches
     if(left1 == left2)
         return true;
-    if(right1 == left1)
+    else if(right1 == left1)
         return (right2 > left1 && left2 <= left1);
     else if(right2 == left2)
         return (right1 > left2 && left1 <= left2);

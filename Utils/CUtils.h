@@ -36,7 +36,6 @@ public:
     
     ///Return true if the given file path exists
     static bool IsFileExists (const std::string& name);
-
     
 };
 
