@@ -13,6 +13,8 @@
 #include "CVariantProvider.h"
 #include "Constants.h"
 #include <iostream>
+#include <algorithm>
+#include <Utils/CUtils.h>
 
 using namespace duocomparison;
 
@@ -36,7 +38,6 @@ void CGa4ghOutputProvider::SetContigList(const std::vector<SVcfContig>& a_rConti
 {
     m_contigs = a_rContigs;
 }
-
 
 void CGa4ghOutputProvider::GenerateGa4ghVcf(const std::vector<SChrIdTuple>& a_rCommonChromosomes)
 {
@@ -85,17 +86,38 @@ void CGa4ghOutputProvider::FillHeader()
 
 void CGa4ghOutputProvider::AddRecords(const core::CPath& a_rBestPath, SChrIdTuple a_rTuple)
 {
-    //Best Path included/excluded variants
+    //Best Path excluded variants
     std::vector<const CVariant*> excludedVarsBase = m_pVariantProvider->GetVariantList(eBASE, a_rTuple.m_nBaseId, a_rBestPath.m_baseSemiPath.GetExcluded());
     std::vector<const CVariant*> excludedVarsCall = m_pVariantProvider->GetVariantList(eCALLED, a_rTuple.m_nCalledId, a_rBestPath.m_calledSemiPath.GetExcluded());
     
+    //Sort excluded variants by original positions
+    std::sort(excludedVarsBase.begin(), excludedVarsBase.end(), CUtils::CompareVariantsById);
+    std::sort(excludedVarsCall.begin(), excludedVarsCall.end(), CUtils::CompareVariantsById);
+    
+    //Best Path included variants
     std::vector<const core::COrientedVariant*> includedVarsBase = a_rBestPath.m_baseSemiPath.GetIncludedVariants();
     std::vector<const core::COrientedVariant*> includedVarsCall = a_rBestPath.m_calledSemiPath.GetIncludedVariants();
     
-    //Not Asessed variants
-    std::vector<CVariant>& notAssessedBase = m_pVariantProvider->GetNotAssessedVariantList(eBASE, a_rTuple.m_nBaseId);
-    std::vector<CVariant>& notAssessedCalled = m_pVariantProvider->GetNotAssessedVariantList(eCALLED, a_rTuple.m_nCalledId);
+    //Sort included variants by original positions
+    std::sort(includedVarsBase.begin(), includedVarsBase.end(), CUtils::CompareOrientedVariantsById);
+    std::sort(includedVarsCall.begin(), includedVarsCall.end(), CUtils::CompareOrientedVariantsById);
+    
+    //Not Assessed variants
+    std::vector<const CVariant*> notAssessedBase = m_pVariantProvider->GetNotAssessedVariantList(eBASE, a_rTuple.m_nBaseId);
+    std::vector<const CVariant*> notAssessedCalled = m_pVariantProvider->GetNotAssessedVariantList(eCALLED, a_rTuple.m_nCalledId);
 
+    //Get Skipped variants in Complex Regions (Will be marked as Non Assessed Variant)
+    std::vector<const CVariant*> skippedComplexBase = m_pVariantProvider->GetSkippedComplexVariantList(eBASE, a_rTuple.m_nBaseId);
+    std::vector<const CVariant*> skippedComplexCalled = m_pVariantProvider->GetSkippedComplexVariantList(eCALLED, a_rTuple.m_nCalledId);
+    
+    //Merge skipped complex and non assessed variants
+    notAssessedBase.insert(std::end(notAssessedBase), std::begin(skippedComplexBase), std::end(skippedComplexBase));
+    notAssessedCalled.insert(std::end(notAssessedCalled), std::begin(skippedComplexCalled), std::end(skippedComplexCalled));
+    
+    //Sort non assessed variants by original positions
+    std::sort(notAssessedBase.begin(), notAssessedBase.end(), CUtils::CompareVariantsById);
+    std::sort(notAssessedCalled.begin(), notAssessedCalled.end(), CUtils::CompareVariantsById);
+    
     //Variant Iterators
     CVariantIteratorGa4gh baseVariants(includedVarsBase, excludedVarsBase, notAssessedBase);
     CVariantIteratorGa4gh calledVariants(includedVarsCall, excludedVarsCall, notAssessedCalled);
@@ -154,7 +176,6 @@ void CGa4ghOutputProvider::AddRecords(const core::CPath& a_rBestPath, SChrIdTupl
             nextVarCalledList.clear();
             calledVariants.FillNext(nextVarCalledList);
             
-
             //If there are called variants exists which doesnt merge already
             for(SVariantSummary var : nextVarBaseList)
             {
@@ -173,9 +194,6 @@ void CGa4ghOutputProvider::AddRecords(const core::CPath& a_rBestPath, SChrIdTupl
         
         else if (basePosition > calledPosition)
         {
-            //std::cout << "GREATER: ENTER" << std::endl;
-
-            
             for (SVariantSummary var : nextVarCalledList)
             {
                 SVcfRecord record;
