@@ -385,8 +385,6 @@ void CMendelianAnalyzer::ProcessChromosome(const std::vector<SChrIdTriplet>& a_n
 {    
     for(SChrIdTriplet triplet : a_nChromosomeIds)
     {
-        //Lock data read
-        mtx.lock();
         //Get variant list of parent-child for given chromosome
         std::vector<const CVariant*> varListFather = m_provider.GetVariantList(eFATHER, triplet.m_nFid);
         std::vector<const CVariant*> varListMother = m_provider.GetVariantList(eMOTHER, triplet.m_nMid);
@@ -399,8 +397,10 @@ void CMendelianAnalyzer::ProcessChromosome(const std::vector<SChrIdTriplet>& a_n
 
         //Get the chromosome ref seq
         SContig ctg;
-        m_provider.ReadContig(triplet.m_chrName, ctg);
-        //Unlock data read
+        mtx.lock();
+        bool bIsContigAvailable = m_provider.ReadContig(triplet.m_chrName, ctg);
+        if(false == bIsContigAvailable)
+            continue;
         mtx.unlock();
 
         // === PROCESS FATHER-CHILD ===
