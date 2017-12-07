@@ -121,7 +121,7 @@ bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildC
     }
 
     // OPEN FASTA FILE
-    bIsSuccessFasta = m_fastaParser.OpenFastaFile(a_rFatherChildConfig.m_pFastaFileName);
+    bIsSuccessFasta = m_referenceFasta.OpenFastaFile(a_rFatherChildConfig.m_pFastaFileName);
     if(!bIsSuccessFasta)
         std::cerr << "FASTA file is unable to open!: " << a_rFatherChildConfig.m_pFastaFileName << std::endl;
     
@@ -219,7 +219,7 @@ void CMendelianVariantProvider::FillVariantForSample(int a_nSampleId, SConfig& a
                 break;
             
             //No Region exist for this chromosome
-            if(bedParser.m_regionMap[variant.m_chrName].size() == 0)
+            if(regionIterator == bedParser.m_regionMap[variant.m_chrName].size())
                 continue;
             
             //Skip to next region
@@ -235,7 +235,7 @@ void CMendelianVariantProvider::FillVariantForSample(int a_nSampleId, SConfig& a
                 continue;
             
             //Variant Could not pass from BED region
-            if(bedParser.m_regionMap[variant.m_chrName][regionIterator].m_nStartPos >= variant.m_nEndPos)
+            if(bedParser.m_regionMap[variant.m_chrName][regionIterator].m_nStartPos >= (variant.m_nOriginalPos + (int)variant.m_refSequence.length()))
                 continue;
         }
             
@@ -641,11 +641,6 @@ std::vector<const core::COrientedVariant*> CMendelianVariantProvider::GetOriente
 
 }
 
-void CMendelianVariantProvider::ReadContig(std::string a_chrId, SContig& a_rContig)
-{
-    m_fastaParser.FetchNewChromosome(a_chrId, a_rContig);
-}
-
 void CMendelianVariantProvider::SetVariantStatus(const std::vector<const CVariant*>& a_rVariantList, EVariantMatch a_status) const
 {
     for(const CVariant* pVar : a_rVariantList)
@@ -754,7 +749,7 @@ int CMendelianVariantProvider::GetSkippedVariantCount(EMendelianVcfName a_uFrom)
 }
 
 
-const std::vector<SVcfContig>& CMendelianVariantProvider::GetContigs()
+const std::vector<SVcfContig>& CMendelianVariantProvider::GetContigs() const
 {
     return m_ChildVcf.GetContigs();
 }

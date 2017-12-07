@@ -12,6 +12,7 @@
 #include "CFastaParser.h"
 #include "Constants.h"
 #include "SChrIdTuple.h"
+#include "CBaseVariantProvider.h"
 
 namespace core
 {
@@ -27,7 +28,7 @@ namespace duocomparison
  * CVariantProvider contains functions to parse vcf files of truth and query. All variants are stored in this object and
  * other classes can get access variant lists via this class.
  */
-class CVariantProvider
+class CVariantProvider : public CBaseVariantProvider
 {
 public:
     ///Destructor
@@ -53,9 +54,6 @@ public:
     ///Return the index tuples of chromosomes which both contained by baseline and called VCF
     std::vector<SChrIdTuple>& GetChromosomeIdTuples();
 
-    ///Get the contig from fasta file with given chromosome name
-    void GetContig(std::string a_chrName, SContig& a_rCtg);
-
     ///Return contig information from header of query vcf
     const std::vector<SVcfContig>& GetContigs() const;
 
@@ -69,11 +67,6 @@ public:
     void FillAlleleMatchVariantList(SChrIdTuple& a_rTuple,
                                     std::vector<const CVariant*>& a_rBaseVariants,
                                     std::vector<const CVariant*>& a_rCalledVariants);
-
-    ///Set the status of each variant in the given list
-    void SetVariantStatus(const std::vector<const CVariant*>& a_rVariantList, EVariantMatch a_status) const;
-    ///Set the status of each variant in the given list
-    void SetVariantStatus(const std::vector<const core::COrientedVariant*>& a_rVariantList, EVariantMatch a_status) const;
 
 private:
 
@@ -124,8 +117,6 @@ private:
     //Parameters come from command line arguments
     SConfig m_config;
 
-    //Reference to the fasta reader object
-    CFastaParser m_fastaParser;
     //Reference contig list
     std::vector<SContig> m_aContigList;
 

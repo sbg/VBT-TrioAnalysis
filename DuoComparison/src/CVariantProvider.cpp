@@ -109,7 +109,7 @@ bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
 
     
     // OPEN FASTA FILE
-    bIsSuccess = m_fastaParser.OpenFastaFile(a_rConfig.m_pFastaFileName);
+    bIsSuccess = m_referenceFasta.OpenFastaFile(a_rConfig.m_pFastaFileName);
     if(!bIsSuccess)
     {
         std::cerr << "FASTA file is unable to open!: " << a_rConfig.m_pFastaFileName << std::endl;
@@ -118,53 +118,14 @@ bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
     
     if(bIsSuccess)
     {
+        //Fill variant lists from VCF files
         FillVariantLists();
+        
+        //Generate OrientedVariant list using the variant list
         FillOrientedVariantLists();
         
-        //Set the common chromosome list for parsing
+        //Set the common chromosome list for processing
         SetChromosomeIdTuples();
-        
-        //Initialize contig list
-        m_aContigList = std::vector<SContig>(m_aCommonChrTupleList.size());
-    
-        for(SChrIdTuple tuple : m_aCommonChrTupleList)
-        {
-            if(m_aBaseVariantList[tuple.m_nBaseId].size() >= LEAST_VARIANT_THRESHOLD && m_aCalledVariantList[tuple.m_nCalledId].size() < LEAST_VARIANT_THRESHOLD)
-            {
-                std::cout << "Called VCF does not contain Chromosome " << tuple.m_chrName << ".The chromosome will be filtered out from the comparison!" << std::endl;
-                m_aCalledVariantList[tuple.m_nCalledId].clear();
-                m_aCalledOrientedVariantList[tuple.m_nCalledId].clear();
-            }
-            else if(m_aBaseVariantList[tuple.m_nBaseId].size() < LEAST_VARIANT_THRESHOLD && m_aCalledVariantList[tuple.m_nCalledId].size() >= LEAST_VARIANT_THRESHOLD)
-            {
-                std::cout << "Baseline VCF does not contain Chromosome " << tuple.m_chrName << ".The chromosome will be filtered out from the comparison!" << std::endl;
-                m_aBaseVariantList[tuple.m_nBaseId].clear();
-                m_aBaseOrientedVariantList[tuple.m_nBaseId].clear();
-            }
-            else if(m_aBaseVariantList[tuple.m_nBaseId].size() > LEAST_VARIANT_THRESHOLD && m_aCalledVariantList[tuple.m_nCalledId].size() > LEAST_VARIANT_THRESHOLD)
-            {
-                //Read contig from FASTA file for the given chromosome
-                std::cout << "Reading reference of chromosome " << tuple.m_chrName << " from the FASTA file" << std::endl;
-                bool bIsSuccess2 = m_fastaParser.FetchNewChromosome(tuple.m_chrName, m_aContigList[tuple.m_nTupleIndex]);
-                if(!bIsSuccess2)
-                {
-                    std::cerr << "Chromosome " << m_aCommonChrTupleList[tuple.m_nTupleIndex].m_chrName << "will be filtered out from the comparison since reference FASTA could not read or it does not contain given chromosome" << std::endl;
-                    m_aCalledVariantList[tuple.m_nCalledId].clear();
-                    m_aBaseVariantList[tuple.m_nBaseId].clear();
-                    m_aBaseOrientedVariantList[tuple.m_nBaseId].clear();
-                    m_aCalledOrientedVariantList[tuple.m_nCalledId].clear();
-                }
-                else
-                {
-                    //Trim the variants which are out of bound according to FASTA file
-                    while(m_aBaseVariantList[tuple.m_nBaseId].back().GetEnd() > m_aContigList[tuple.m_nTupleIndex].m_nRefLength)
-                        m_aBaseVariantList[tuple.m_nBaseId].pop_back();
-                    while(m_aCalledVariantList[tuple.m_nCalledId].back().GetEnd() > m_aContigList[tuple.m_nTupleIndex].m_nRefLength)
-                        m_aCalledVariantList[tuple.m_nCalledId].pop_back();
-                }
-            }
-        }
-        
     }
     
     return bIsSuccess;
@@ -212,7 +173,7 @@ void CVariantProvider::FillVariantForSample(int a_nSampleId, SConfig& a_rConfig)
                 break;
 
             //No Region exist for this chromosome
-            if(bedParser.m_regionMap[variant.m_chrName].size() == 0)
+            if(regionIterator == bedParser.m_regionMap[variant.m_chrName].size())
                 continue;
             
             //Skip to next region
@@ -223,8 +184,12 @@ void CVariantProvider::FillVariantForSample(int a_nSampleId, SConfig& a_rConfig)
                 regionIterator++;
             }
             
+            //No remaining Region exist for this chromosome
+            if(regionIterator == bedParser.m_regionMap[variant.m_chrName].size())
+                continue;
+
             //Variant Could not pass from BED region
-            if(bedParser.m_regionMap[variant.m_chrName][regionIterator].m_nStartPos >= variant.m_nEndPos)
+            if(bedParser.m_regionMap[variant.m_chrName][regionIterator].m_nStartPos >= (variant.m_nOriginalPos + (int)variant.m_refSequence.length()))
                 continue;
         }
         
@@ -456,36 +421,6 @@ std::vector<CVariant>& CVariantProvider::GetNotAssessedVariantList(EVcfName a_uF
         return m_aBaseNotAssessedVariantList[a_nChrNo];
     else
         return m_aCalledNotAssessedVariantList[a_nChrNo];
-}
-
-
-
-void CVariantProvider::SetVariantStatus(const std::vector<const CVariant*>& a_rVariantList, EVariantMatch a_status) const
-{
-    for(const CVariant* pVar : a_rVariantList)
-        pVar->m_variantStatus = a_status;
-}
-
-
-void CVariantProvider::SetVariantStatus(const std::vector<const core::COrientedVariant*>& a_rVariantList, EVariantMatch a_status) const
-{
-    for(const core::COrientedVariant* pOvar : a_rVariantList)
-        pOvar->GetVariant().m_variantStatus = a_status;
-}
-
-
-void CVariantProvider::GetContig(std::string a_chrName, SContig& a_rCtg)
-{
-    for(unsigned int k = 0; k < m_aContigList.size(); k++)
-    {
-        if(m_aContigList[k].m_chromosomeName == a_chrName)
-        {
-            a_rCtg.m_chromosomeName = a_chrName;
-            a_rCtg.m_pRefSeq = m_aContigList[k].m_pRefSeq;
-            a_rCtg.m_nRefLength = m_aContigList[k].m_nRefLength;
-            break;
-        }
-    }
 }
 
 const std::vector<SVcfContig>& CVariantProvider::GetContigs() const

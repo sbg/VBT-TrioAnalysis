@@ -10,11 +10,11 @@
 #define _C_MENDELIAN_VARIANT_PROVIDER_H_
 
 #include "CVcfReader.h"
-#include "CFastaParser.h"
 #include "COrientedVariant.h"
 #include "Constants.h"
 #include "EMendelianVcfName.h"
 #include "SChrIdTriplet.h"
+#include "CBaseVariantProvider.h"
 
 namespace mendelian
 {
@@ -25,7 +25,7 @@ namespace mendelian
  * CMendelianVariantProvider contains functions to parse vcf files of family members. All variants are stored in this object and
  * other classes can get access variant lists via this class.
  */
-class CMendelianVariantProvider
+class CMendelianVariantProvider : public CBaseVariantProvider
 {
 
 public:
@@ -52,7 +52,7 @@ public:
     int GetNotAssessedVariantCount(EMendelianVcfName a_uFrom);
     
     ///Return contig information from header of child vcf
-    const std::vector<SVcfContig>& GetContigs();
+    const std::vector<SVcfContig>& GetContigs() const;
     
     ///Return the total contig count of requested vcf
     int GetContigCount(EMendelianVcfName a_uFrom);
@@ -68,13 +68,7 @@ public:
                                                                       int a_nChrNo,
                                                                       bool a_bIsAlleleMatch,
                                                                       const std::vector<int>& a_nIndexList) const;
-    
-    //Return contig object given by the chromosome Id
-    void GetContig(int a_nChrId, SContig& a_rContig) const;
-    
-    //Read contig given by the chromosome id
-    void ReadContig(std::string a_chrId, SContig& a_rContig);
-    
+        
     //Return a list of common chromosome id triplets found in all 3 vcf file
     std::vector<SChrIdTriplet>& GetCommonChromosomes();
 
@@ -114,9 +108,6 @@ private:
     CVcfReader m_MotherVcf;
     CVcfReader m_ChildVcf;
     
-    //REFERENCE FASTA
-    CFastaParser m_referenceFasta;
-    
     //Config objects for variant provider
     SConfig m_motherChildConfig;
     SConfig m_fatherChildConfig;
@@ -149,8 +140,7 @@ private:
     //Child variants which are filtered out from comparison
     int m_nChildNotAssessedVariantCount;
     
-    //Reference to the fasta reader object
-    CFastaParser m_fastaParser;
+    //Chromosomes that all three samples shares variant
     std::vector<SChrIdTriplet> m_aCommonChromosomes;
     
     //Variant counts contains asterisk which will are eliminated from comparison
