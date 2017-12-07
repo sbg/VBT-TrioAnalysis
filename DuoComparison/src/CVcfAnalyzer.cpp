@@ -148,7 +148,18 @@ void CVcfAnalyzer::ThreadFunctionGA4GH(std::vector<SChrIdTuple> a_aTuples)
         core::CPathReplay pathReplay(varListBase, varListCalled, ovarListBase, ovarListCalled);
         pathReplay.SetMaxPathAndIteration(m_config.m_nMaxPathSize, m_config.m_nMaxIterationCount);
         SContig ctg;
-        m_provider.GetContig(a_aTuples[k].m_chrName, ctg);
+        mtx.lock();
+        bool IsContigAvailable = m_provider.ReadContig(a_aTuples[k].m_chrName, ctg);
+        if(false == IsContigAvailable)
+            continue;
+        mtx.unlock();
+        
+        //Check if the FASTA file covers all variants in VCF file
+        if(ctg.m_nRefLength < varListBase[varListBase.size()-1]->m_nEndPos || ctg.m_nRefLength < varListCalled[varListCalled.size()-1]->m_nEndPos)
+        {
+            std::cerr << "Not all variants are in the Range of FASTA reference! Skipping Contig: " << ctg.m_chromosomeName << std::endl;
+            continue;
+        }
         
         //Find Best Path [GENOTYPE MATCH]
         m_aBestPaths[a_aTuples[k].m_nTupleIndex] = pathReplay.FindBestPath(ctg,true);
@@ -208,6 +219,11 @@ void CVcfAnalyzer::ThreadFunctionGA4GH(std::vector<SChrIdTuple> a_aTuples)
         m_provider.SetVariantStatus(includedVarsCall2, eALLELE_MATCH);
         m_provider.SetVariantStatus(includedVarsBase2, eALLELE_MATCH);
         
+        if(!ctg.Clean())
+        {
+            std::cerr << ctg.m_chromosomeName << " not cleaned.." << std::endl;
+        }
+        
         //PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("FP_") + std::to_string(a_nChrArr[k] + 1) + std::string(".txt")  , excludedVarsCall);
         //PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("TP_BASE_") + std::to_string(a_nChrArr[k] +1) + std::string(".txt")  , includedVarsBase);
         //PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("TP_CALLED_") + std::to_string(a_nChrArr[k] + 1) + std::string(".txt")  , includedVarsCall);
@@ -236,8 +252,19 @@ void CVcfAnalyzer::ThreadFunctionSPLIT(std::vector<SChrIdTuple> a_aTuples, bool 
         
         core::CPathReplay pathReplay(varListBase, varListCalled, ovarListBase, ovarListCalled);
         pathReplay.SetMaxPathAndIteration(m_config.m_nMaxPathSize, m_config.m_nMaxIterationCount);
+        
         SContig ctg;
-        m_provider.GetContig(a_aTuples[k].m_chrName, ctg);
+        mtx.lock();
+        bool IsContigAvailable = m_provider.ReadContig(a_aTuples[k].m_chrName, ctg);
+        if(false == IsContigAvailable)
+            continue;
+        mtx.unlock();
+        
+        //Check if the FASTA file covers all variants in VCF file
+        if(ctg.m_nRefLength < varListBase[varListBase.size()-1]->m_nEndPos || ctg.m_nRefLength < varListCalled[varListCalled.size()-1]->m_nEndPos)
+        {
+            std::cerr << "Not all variants are in the Range of FASTA reference" << std::endl;
+        }
         
         m_aBestPaths[a_aTuples[k].m_nTupleIndex] = pathReplay.FindBestPath(ctg,a_bIsGenotypeMatch);
         
@@ -265,6 +292,11 @@ void CVcfAnalyzer::ThreadFunctionSPLIT(std::vector<SChrIdTuple> a_aTuples, bool 
         m_provider.SetVariantStatus(excludedVarsCall, eNO_MATCH);
         m_provider.SetVariantStatus(includedVarsCall,  match);
         m_provider.SetVariantStatus(includedVarsBase,  match);
+        
+        if(!ctg.Clean())
+        {
+            std::cerr << ctg.m_chromosomeName << " not cleaned.." << std::endl;
+        }
         
         //PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("FP_") + std::to_string(a_nChrArr[k] + 1) + std::string(".txt")  , excludedVarsCall);
         //PrintVariants(std::string(m_config.m_pOutputDirectory), std::string("TP_BASE_") + std::to_string(a_nChrArr[k] +1) + std::string(".txt")  , includedVarsBase);
