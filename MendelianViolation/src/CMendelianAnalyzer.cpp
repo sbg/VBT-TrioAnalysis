@@ -13,17 +13,10 @@
 #include <iostream>
 #include "CVariantIterator.h"
 #include "CSyncPoint.h"
+#include "Utils/CUtils.h"
 #include <algorithm>
-#include <fstream>
 
 using namespace mendelian;
-
-inline bool IsFileExists (const std::string& name)
-{
-    std::ifstream f(name.c_str());
-    return f.good();
-}
-
 
 CMendelianAnalyzer::CMendelianAnalyzer() :
 m_mendelianDecider(m_aBestPathsFatherChildGT, m_aBestPathsFatherChildAM, m_aBestPathsMotherChildGT, m_aBestPathsMotherChildAM, m_provider, m_resultLog)
@@ -332,7 +325,7 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
         std::cerr << "Reference fasta file is not set" << std::endl;
     else if(!bOutputDirSet)
         std::cerr << "Output Directory is not set" << std::endl;
-    else if(!IsFileExists(m_motherChildConfig.m_pBaseVcfFileName) || !IsFileExists(m_motherChildConfig.m_pCalledVcfFileName) || !IsFileExists(m_fatherChildConfig.m_pBaseVcfFileName))
+    else if(!CUtils::IsFileExists(m_motherChildConfig.m_pBaseVcfFileName) || !CUtils::IsFileExists(m_motherChildConfig.m_pCalledVcfFileName) || !CUtils::IsFileExists(m_fatherChildConfig.m_pBaseVcfFileName))
     {
         bIsVcfFilesAccesible = false;
         std::cerr << "One of vcf file paths is wrong" << std::endl;

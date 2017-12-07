@@ -8,6 +8,7 @@
 
 #include "Utils/CUtils.h"
 #include "CVariant.h"
+#include <fstream>
 
 //Checks if the given two range is overlapping
 bool CUtils::IsOverlap(int left1, int right1, int left2, int right2)
@@ -80,3 +81,11 @@ bool CUtils::CompareVariantsById(const CVariant* v1, const CVariant* v2)
 {
     return v1->m_nId < v2->m_nId;
 }
+
+
+bool CUtils::IsFileExists (const std::string& name)
+{
+    std::ifstream f(name.c_str());
+    return f.good();
+}
+
