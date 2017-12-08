@@ -23,11 +23,8 @@ CVariantProvider::CVariantProvider()
 
 CVariantProvider::~CVariantProvider()
 {
-    for(unsigned int k= 0; k < m_aContigList.size(); k++)
-    {
-        if(m_aContigList[k].m_nRefLength > 0 && m_aContigList[k].m_pRefSeq != 0)
-            delete[] m_aContigList[k].m_pRefSeq;
-    }
+    m_baseVCF.Close();
+    m_calledVCF.Close();
 }
 
 void CVariantProvider::SetChromosomeIdTuples()

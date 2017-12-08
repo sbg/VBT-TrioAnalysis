@@ -120,9 +120,6 @@ private:
     //Parameters come from command line arguments
     SConfig m_config;
 
-    //Reference contig list
-    std::vector<SContig> m_aContigList;
-
     //Chromosome id tuples for each common chromosome
     std::vector<SChrIdTuple> m_aCommonChrTupleList;
 };
