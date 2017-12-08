@@ -9,19 +9,17 @@ INCCORE := Core/include
 INCDUO := DuoComparison/include
 INCTRIO := MendelianViolation/include
 INCVCFIO := VcfIO/include
-INCGRAPH := GraphComparison/include
 INCUTIL := Utils
 INCBASE := Base
 
 CFLAGS := -std=c++11 -Wall -O2 -g
 LIB := -lz -pthread -lhts
-INC := -I $(INCCORE) -I htslib -I $(INCDUO) -I $(INCTRIO) -I $(INCVCFIO) -I $(INCGRAPH) -I $(INCUTIL) -I $(INCBASE) -I $(shell pwd)
+INC := -I $(INCCORE) -I htslib -I $(INCDUO) -I $(INCTRIO) -I $(INCVCFIO) -I $(INCUTIL) -I $(INCBASE) -I $(shell pwd)
 
 SRCCORE := Core/src
 SRCDUO := DuoComparison/src
 SRCTRIO := MendelianViolation/src
 SRCVCFIO := VcfIO/src
-SRCGRAPH := GraphComparison/src
 SRCUTIL := Utils
 SRCBASE := Base
  
@@ -29,19 +27,16 @@ SOURCESCORE := $(shell find $(SRCCORE) -type f -name '*.cpp')
 SOURCESDUO := $(shell find $(SRCDUO) -type f -name '*.cpp')
 SOURCESTRIO := $(shell find $(SRCTRIO) -type f -name '*.cpp')
 SOURCESVCFIO := $(shell find $(SRCVCFIO) -type f -name '*.cpp')
-SOURCESGRAPH := $(shell find $(SRCGRAPH) -type f -name '*.cpp')
 
 
 OBJECTSCORE := $(subst $(SRCCORE), $(BUILDDIR), $(SOURCESCORE:.cpp=.o))
 OBJECTSDUO := $(subst $(SRCDUO), $(BUILDDIR), $(SOURCESDUO:.cpp=.o))
 OBJECTSTRIO := $(subst $(SRCTRIO), $(BUILDDIR), $(SOURCESTRIO:.cpp=.o))
 OBJECTSVCFIO := $(subst $(SRCVCFIO), $(BUILDDIR), $(SOURCESVCFIO:.cpp=.o))
-OBJECTSGRAPH := $(subst $(SRCGRAPH), $(BUILDDIR), $(SOURCESGRAPH:.cpp=.o))
 OBJECTSUTIL := $(BUILDDIR)/CUtils.o
 OBJECTSBASE := $(BUILDDIR)/CBaseVariantProvider.o
 
-OBJECTS := $(OBJECTSCORE) $(OBJECTSDUO) $(OBJECTSTRIO) $(OBJECTSVCFIO) $(OBJECTSGRAPH) $(OBJECTSUTIL) $(OBJECTSBASE) $(BUILDDIR)/main.o
-#SOURCES := $(SOURCESCORE) $(SOURCESDUO) $(SOURCESTRIO) $(SOURCESVCFIO) $(SOURCESGRAPH) $(SOURCESUTIL) main.cpp
+OBJECTS := $(OBJECTSCORE) $(OBJECTSDUO) $(OBJECTSTRIO) $(OBJECTSVCFIO) $(OBJECTSUTIL) $(OBJECTSBASE) $(BUILDDIR)/main.o
 
 all: $(TARGET)
 	@echo "SUCCESSFULLY COMPILED!!"
@@ -52,7 +47,6 @@ $(TARGET): $(OBJECTS)
 	@echo " OBJECTS CORE: $(OBJECTSCORE)"
 	@echo " OBJECTS DUO : $(OBJECTSDUO)"
 	@echo " OBJECTS TRIO: $(OBJECTSTRIO)"
-	@echo " OBJECTS GRAPH: $(OBJECTSGRAPH)"
 	@echo " $(CC) $^ -o $(TARGET) $(LIB)"; $(CC) $^ -o $(TARGET) $(LIB) $(INC)
 
 $(BUILDDIR)/%.o: $(SRCCORE)/%.cpp Constants.h
@@ -70,10 +64,6 @@ $(BUILDDIR)/%.o: $(SRCTRIO)/%.cpp Constants.h
 $(BUILDDIR)/%.o: $(SRCVCFIO)/%.cpp Constants.h
 	@mkdir -p $(BUILDDIR)
 	@echo " VCFIO: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
-
-$(BUILDDIR)/%.o: $(SRCGRAPH)/%.cpp Constants.h
-	@mkdir -p $(BUILDDIR)
-	@echo " GRAPH: $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c $< -o $@
 
 $(BUILDDIR)/%.o: $(SRCBASE)/%.cpp
 	@mkdir -p $(BUILDDIR)
