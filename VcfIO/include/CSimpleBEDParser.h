@@ -3,7 +3,9 @@
 //  VariantBenchmarkingTools
 //
 //  Created by Berke.Toptas on 7/7/17.
-//  Copyright © 2017 Seven Bridges Genomics. All rights reserved.
+//  Copyright © 2016 Seven Bridges Genomics.
+//            © 2017 SBGD Inc.
+//  All rights reserved.
 //
 
 #ifndef _C_SIMPLE_BED_PARSER_H_

@@ -1,13 +1,12 @@
 //
 //  SChrIdTriplet.h
-//  VCFComparison
+//  VariantBenchmarkingTools
 //
 //  Created by Berke.Toptas on 5/1/17.
-//  Copyright © 2017 Seven Bridges Genomics. All rights reserved.
+//  Copyright © 2016 Seven Bridges Genomics.
+//            © 2017 SBGD Inc.
+//  All rights reserved.
 //
-
-// This triplet stores the indexes of a common chromosome for trio. Eg. chromosome MT indexes can be 19, 7, 25 for mother father and child vcfs.
-
 
 #ifndef _S_CHROMOSOME_ID_TRIPLET_H_
 #define _S_CHROMOSOME_ID_TRIPLET_H_

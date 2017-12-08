@@ -1,7 +1,12 @@
-/*
- * Copyright (c) 2016 Seven Bridges Genomics
- * Author: Berke Cagkan Toptas
- */
+//
+//  CVariantProvider.h
+//  VariantBenchmarkingTools
+//
+//  Created by Berke.Toptas on 12/20/16.
+//  Copyright © 2016 Seven Bridges Genomics.
+//            © 2017 SBGD Inc.
+//  All rights reserved.
+//
 
 #ifndef _C_VARIANT_PROVIDER_H_
 #define _C_VARIANT_PROVIDER_H_

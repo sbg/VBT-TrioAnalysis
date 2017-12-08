@@ -1,9 +1,11 @@
 //
 //  CGa4ghOutputProvider.cpp
-//  VCFComparison
+//  VariantBenchmarkingTools
 //
 //  Created by Berke.Toptas on 12/20/16.
-//  Copyright © 2016 Seven Bridges Genomics. All rights reserved.
+//  Copyright © 2016 Seven Bridges Genomics.
+//            © 2017 SBGD Inc.
+//  All rights reserved.
 //
 
 #include "CGa4ghOutputProvider.h"

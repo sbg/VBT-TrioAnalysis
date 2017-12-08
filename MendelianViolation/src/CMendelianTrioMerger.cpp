@@ -1,9 +1,11 @@
 //
 //  CMendelianTrioMerger.cpp
-//  VCFComparison
+//  VariantBenchmarkingTools
 //
 //  Created by Berke.Toptas on 3/9/17.
-//  Copyright © 2017 Seven Bridges Genomics. All rights reserved.
+//  Copyright © 2016 Seven Bridges Genomics.
+//            © 2017 SBGD Inc.
+//  All rights reserved.
 //
 
 #include "CMendelianTrioMerger.h"

@@ -1,9 +1,11 @@
 //
 //  SChrIdTuple.h
-//  VCFComparison
+//  VariantBenchmarkingTools
 //
 //  Created by Berke.Toptas on 5/2/17.
-//  Copyright © 2017 Seven Bridges Genomics. All rights reserved.
+//  Copyright © 2016 Seven Bridges Genomics.
+//            © 2017 SBGD Inc.
+//  All rights reserved.
 //
 
 #ifndef _S_CHR_ID_TUPLE_H_

@@ -1,9 +1,11 @@
 //
 //  CVariant.cpp
-//  VCFComparison
+//  VariantBenchmarkingTools
 //
 //  Created by Berke.Toptas
-//  Copyright © 2016 Seven Bridges Genomics. All rights reserved.
+//  Copyright © 2016 Seven Bridges Genomics.
+//            © 2017 SBGD Inc.
+//  All rights reserved.
 //
 
 #include "CVariant.h"

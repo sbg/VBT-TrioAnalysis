@@ -1,9 +1,11 @@
 //
 //  CMendelianAnalyzer.h
-//  VCFComparison
+//  VariantBenchmarkingTools
 //
 //  Created by Berke.Toptas on 1/31/17.
-//  Copyright © 2017 Seven Bridges Genomics. All rights reserved.
+//  Copyright © 2016 Seven Bridges Genomics.
+//            © 2017 SBGD Inc.
+//  All rights reserved.
 //
 
 #ifndef C_MENDELIAN_ANALYZER_H_

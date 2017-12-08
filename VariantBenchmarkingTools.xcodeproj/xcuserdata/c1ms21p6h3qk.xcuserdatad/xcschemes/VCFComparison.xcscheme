@@ -65,11 +65,11 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "mendelian"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "varcomp"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "graphcomp"
@@ -77,27 +77,27 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-father"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/VBTValidationToolTest/HC_Joint_LBLAnnotated.vcf"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-child"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/VBTValidationToolTest/HC_Joint_LBLAnnotated.vcf"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-mother"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/VBTValidationToolTest/HC_Joint_LBLAnnotated.vcf"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-outDir"
@@ -105,11 +105,11 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/JohnComparison/wholeGenHG001_SBGvsHC_default_maxpath"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest9"
-            isEnabled = "NO">
+            argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTestRefactor"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-filter"
@@ -129,11 +129,11 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-pedigree"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/MendelianTest7/ceu.ped"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--ref-overlap"
@@ -141,7 +141,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-base"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/JohnComparison/GIAB_HG001.vcf.gz"
@@ -153,15 +153,15 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/JohnComparison/gral.SBG_Caller_HG001_filtered.vcf.gz"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-called"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/JohnComparison/gral.Haplotype_Caller_HG001.vcf.gz"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/c1ms21p6h3qk/Desktop/VBT_Test/JohnComparison/gral.SBG_Caller_HG001_filtered.vcf.gz"
@@ -193,11 +193,11 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-out-prefix"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "VBT_0.7.2_HC_Joint_"
-            isEnabled = "NO">
+            argument = "VBT_0.7.3_HC_Joint_"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-thread-count"
@@ -210,6 +210,14 @@
          <CommandLineArgument
             argument = "--trim-endings-first"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-output-mode"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "GA4GH"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-max-iteration-count"

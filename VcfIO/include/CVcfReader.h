@@ -1,7 +1,12 @@
-/*
- * Copyright (c) 2016 Seven Bridges Genomics
- * Author: Berke Cagkan Toptas
- */
+//
+//  CVcfReader.h
+//  VariantBenchmarkingTools
+//
+//  Created by Berke Cagkan Toptas
+//  Copyright © 2016 Seven Bridges Genomics.
+//            © 2017 SBGD Inc.
+//  All rights reserved.
+//
 
 #ifndef VCF_READER_H_
 #define VCF_READER_H_

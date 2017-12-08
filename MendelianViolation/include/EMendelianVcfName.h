@@ -1,9 +1,11 @@
 //
 //  EMendelianVcfName.h
-//  VCFComparison
+//  VariantBenchmarkingTools
 //
 //  Created by Berke.Toptas on 3/9/17.
-//  Copyright © 2017 Seven Bridges Genomics. All rights reserved.
+//  Copyright © 2016 Seven Bridges Genomics.
+//            © 2017 SBGD Inc.
+//  All rights reserved.
 //
 
 #ifndef _E_MENDELIAN_VCF_NAME_H_

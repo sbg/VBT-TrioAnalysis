@@ -3,7 +3,9 @@
 //  VCFComparison
 //
 //  Created by Berke.Toptas on 12/16/16.
-//  Copyright © 2016 Seven Bridges Genomics. All rights reserved.
+//  Copyright © 2016 Seven Bridges Genomics.
+//            © 2017 SBGD Inc.
+//  All rights reserved.
 //
 
 #ifndef _C_VCF_WRITER_H_

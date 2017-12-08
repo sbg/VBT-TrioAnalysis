@@ -1,9 +1,11 @@
 //
 //  Constants.h
-//  VCFComparison
+//  VariantBenchmarkingTools
 //
 //  Created by Berke.Toptas on 2/1/17.
-//  Copyright © 2017 Seven Bridges Genomics. All rights reserved.
+//  Copyright © 2016 Seven Bridges Genomics.
+//            © 2017 SBGD Inc.
+//All rights reserved.
 //
 
 #ifndef _CONSTANTS_H_

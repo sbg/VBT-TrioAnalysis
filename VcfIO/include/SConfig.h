@@ -1,6 +1,11 @@
-//  Created by Berke.Toptas on 11/11/16.
-//  Copyright © 2016 Seven Bridges Genomics. All rights reserved.
 //
+//  SConfig.h
+//  VariantBenchmarkingTools
+//
+//  Created by Berke.Toptas on 11/11/16.
+//  Copyright © 2016 Seven Bridges Genomics.
+//            © 2017 SBGD Inc.
+//  All rights reserved.
 
 #ifndef _S_CONFIG_H_
 #define _S_CONFIG_H_

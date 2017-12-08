@@ -1,3 +1,13 @@
+//
+//  main.cpp
+//  VariantBenchmarkingTools
+//
+//  Created by Berke.Toptas
+//  Copyright © 2016 Seven Bridges Genomics.
+//            © 2017 SBGD Inc.
+//  All rights reserved.
+//
+
 #include <iostream>
 #include "CVcfAnalyzer.h"
 #include "CMendelianAnalyzer.h"

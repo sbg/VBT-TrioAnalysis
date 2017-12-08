@@ -1,11 +1,12 @@
 //
-//  CCallIteratorV2.h
-//  VCFComparison
+//  CVariantIterator.h
+//  VariantBenchmarkingTools
 //
 //  Created by Berke.Toptas on 1/13/17.
-//  Copyright © 2016 Seven Bridges Genomics. All rights reserved.
+//  Copyright © 2016 Seven Bridges Genomics.
+//            © 2017 SBGD Inc.
+//  All rights reserved.
 //
-//Combines included/excluded calls into one stream
 
 #ifndef _C_CALL_ITERATOR_H_
 #define _C_CALL_ITERATOR_H_

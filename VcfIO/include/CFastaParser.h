@@ -1,13 +1,12 @@
 //
 //  CFastaParser.h
+//  VariantBenchmarkingTools
 //
 //  Created by John Browning on 4/10/14.
-//  Copyright (c) 2014 John Browning. All rights reserved.
-//
 //  Modified by: Berke Cagkan Toptas
-//
-//  Header file, opens a FASTA file and stores it in a string. It also contains a subroutine
-//  to fetch a base given the index.
+//  Copyright © 2016 Seven Bridges Genomics.
+//            © 2017 SBGD Inc.
+//  All rights reserved.
 //
 
 #ifndef _C_FASTA_PARSER_H_
