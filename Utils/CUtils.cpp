@@ -76,7 +76,6 @@ bool CUtils::IsStructuralVariant(const CVariant& a_rVariant, int a_nMaxLength)
     return false;
 }
 
-
 //Compare variants according to id for sort operation
 bool CUtils::CompareVariantsById(const CVariant* v1, const CVariant* v2)
 {
@@ -93,4 +92,3 @@ bool CUtils::IsFileExists (const std::string& name)
     std::ifstream f(name.c_str());
     return f.good();
 }
-
