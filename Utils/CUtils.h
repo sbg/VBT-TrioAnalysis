@@ -41,7 +41,6 @@ public:
     ///Compare  oriented variants according to id for sort operation
     static bool CompareOrientedVariantsById(const core::COrientedVariant* v1, const core::COrientedVariant* v2);
     
-    
     ///Return true if the given file path exists
     static bool IsFileExists (const std::string& name);
     
