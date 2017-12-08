@@ -42,14 +42,9 @@
 		5596B3201F4F201B00B6BFC3 /* CMendelianDecider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5596B31F1F4F201B00B6BFC3 /* CMendelianDecider.cpp */; };
 		5596B3221F4F220600B6BFC3 /* CMendelianAnalyzer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5596B3211F4F220600B6BFC3 /* CMendelianAnalyzer.cpp */; };
 		559BA2941E97D63F0018D734 /* CSplitOutputProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 559BA2931E97D63F0018D734 /* CSplitOutputProvider.cpp */; };
-		55BDF86F1F3CEC470095669B /* CGraphVcfAnalyzer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55BDF86E1F3CEC470095669B /* CGraphVcfAnalyzer.cpp */; };
-		55BDF8731F3DFDAA0095669B /* CGraphVcfReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55BDF8721F3DFDAA0095669B /* CGraphVcfReader.cpp */; };
-		55BDF8751F3E06BF0095669B /* CGraphVariantProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55BDF8741F3E06BF0095669B /* CGraphVariantProvider.cpp */; };
-		55BDF8781F43714E0095669B /* CGraphSplitOutputProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55BDF8771F43714E0095669B /* CGraphSplitOutputProvider.cpp */; };
 		55DE31921F1012F1009D385D /* CSimpleBEDParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55DE31911F1012F1009D385D /* CSimpleBEDParser.cpp */; };
 		55F4FC9F1F7C26F400C7673F /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 55F4FC9E1F7C26F400C7673F /* README.md */; };
 		55F4FCA11F7C270500C7673F /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 55F4FCA01F7C270500C7673F /* README.md */; };
-		55F4FCA31F7C271A00C7673F /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 55F4FCA21F7C271A00C7673F /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -163,20 +158,10 @@
 		559BA2AA1E982DFE0018D734 /* vcf_sweep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vcf_sweep.h; sourceTree = "<group>"; };
 		559BA2AB1E982DFE0018D734 /* vcfutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vcfutils.h; sourceTree = "<group>"; };
 		55B3ED9A1EB7B8300096501D /* SChrIdTriplet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SChrIdTriplet.h; path = MendelianViolation/include/SChrIdTriplet.h; sourceTree = SOURCE_ROOT; };
-		55BDF86C1F3CEC470095669B /* CGraphVcfAnalyzer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGraphVcfAnalyzer.h; sourceTree = "<group>"; };
-		55BDF86E1F3CEC470095669B /* CGraphVcfAnalyzer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CGraphVcfAnalyzer.cpp; sourceTree = "<group>"; };
-		55BDF8701F3DF32F0095669B /* CGraphVariantProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGraphVariantProvider.h; sourceTree = "<group>"; };
-		55BDF8711F3DFA6B0095669B /* CGraphVcfReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGraphVcfReader.h; sourceTree = "<group>"; };
-		55BDF8721F3DFDAA0095669B /* CGraphVcfReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CGraphVcfReader.cpp; sourceTree = "<group>"; };
-		55BDF8741F3E06BF0095669B /* CGraphVariantProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CGraphVariantProvider.cpp; sourceTree = "<group>"; };
-		55BDF8761F436E830095669B /* CGraphSplitOutputProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGraphSplitOutputProvider.h; sourceTree = "<group>"; };
-		55BDF8771F43714E0095669B /* CGraphSplitOutputProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CGraphSplitOutputProvider.cpp; sourceTree = "<group>"; };
-		55BDF8791F4375030095669B /* SGraphVarContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGraphVarContainer.h; sourceTree = "<group>"; };
 		55DE31901F101038009D385D /* CSimpleBEDParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CSimpleBEDParser.h; path = VcfIO/include/CSimpleBEDParser.h; sourceTree = SOURCE_ROOT; };
 		55DE31911F1012F1009D385D /* CSimpleBEDParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CSimpleBEDParser.cpp; path = VcfIO/src/CSimpleBEDParser.cpp; sourceTree = SOURCE_ROOT; };
 		55F4FC9E1F7C26F400C7673F /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = DuoComparison/README.md; sourceTree = SOURCE_ROOT; };
 		55F4FCA01F7C270500C7673F /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = MendelianViolation/README.md; sourceTree = SOURCE_ROOT; };
-		55F4FCA21F7C271A00C7673F /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = GraphComparison/README.md; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -402,7 +387,6 @@
 				551661B01E82BD39002436FA /* Core */,
 				551661B41E82C02B002436FA /* DuoComparison */,
 				551661BA1E82C230002436FA /* MendelianViolation */,
-				55BDF8651F3CEAE30095669B /* GraphComparison */,
 			);
 			name = VariantBenchmarkingTools;
 			path = VCFComparison;
@@ -465,41 +449,6 @@
 			path = htslib;
 			sourceTree = SOURCE_ROOT;
 		};
-		55BDF8651F3CEAE30095669B /* GraphComparison */ = {
-			isa = PBXGroup;
-			children = (
-				55F4FCA21F7C271A00C7673F /* README.md */,
-				55BDF86B1F3CEC470095669B /* include */,
-				55BDF86D1F3CEC470095669B /* src */,
-			);
-			name = GraphComparison;
-			sourceTree = "<group>";
-		};
-		55BDF86B1F3CEC470095669B /* include */ = {
-			isa = PBXGroup;
-			children = (
-				55BDF86C1F3CEC470095669B /* CGraphVcfAnalyzer.h */,
-				55BDF8701F3DF32F0095669B /* CGraphVariantProvider.h */,
-				55BDF8711F3DFA6B0095669B /* CGraphVcfReader.h */,
-				55BDF8761F436E830095669B /* CGraphSplitOutputProvider.h */,
-				55BDF8791F4375030095669B /* SGraphVarContainer.h */,
-			);
-			name = include;
-			path = GraphComparison/include;
-			sourceTree = SOURCE_ROOT;
-		};
-		55BDF86D1F3CEC470095669B /* src */ = {
-			isa = PBXGroup;
-			children = (
-				55BDF86E1F3CEC470095669B /* CGraphVcfAnalyzer.cpp */,
-				55BDF8721F3DFDAA0095669B /* CGraphVcfReader.cpp */,
-				55BDF8741F3E06BF0095669B /* CGraphVariantProvider.cpp */,
-				55BDF8771F43714E0095669B /* CGraphSplitOutputProvider.cpp */,
-			);
-			name = src;
-			path = GraphComparison/src;
-			sourceTree = SOURCE_ROOT;
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -558,7 +507,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				55F4FCA11F7C270500C7673F /* README.md in Sources */,
-				55BDF86F1F3CEC470095669B /* CGraphVcfAnalyzer.cpp in Sources */,
 				558A41741E92EDA900575FA6 /* Makefile in Sources */,
 				5596B3221F4F220600B6BFC3 /* CMendelianAnalyzer.cpp in Sources */,
 				551661CB1E82C51B002436FA /* CVcfWriter.cpp in Sources */,
@@ -577,14 +525,11 @@
 				5530FA7B1FB955F700563591 /* CVariantIterator.cpp in Sources */,
 				551661FD1E82E8EB002436FA /* CMendelianTrioMerger.cpp in Sources */,
 				5530FA7D1FBA03A400563591 /* README.md in Sources */,
-				55BDF8751F3E06BF0095669B /* CGraphVariantProvider.cpp in Sources */,
 				55DE31921F1012F1009D385D /* CSimpleBEDParser.cpp in Sources */,
 				551661E21E82C967002436FA /* CSemiPath.cpp in Sources */,
-				55F4FCA31F7C271A00C7673F /* README.md in Sources */,
 				551661DD1E82C967002436FA /* CHaplotypeSequence.cpp in Sources */,
 				551661DF1E82C967002436FA /* CPath.cpp in Sources */,
 				550E1F601E8ABE8B00AEFB0B /* CMendelianResultLog.cpp in Sources */,
-				55BDF8781F43714E0095669B /* CGraphSplitOutputProvider.cpp in Sources */,
 				551661ED1E82E7D9002436FA /* CGa4ghOutputProvider.cpp in Sources */,
 				551661FE1E82E8EB002436FA /* CMendelianVariantProvider.cpp in Sources */,
 				551661CA1E82C51B002436FA /* CVcfReader.cpp in Sources */,
@@ -594,7 +539,6 @@
 				5596B3201F4F201B00B6BFC3 /* CMendelianDecider.cpp in Sources */,
 				550759BA1EF96C4600780569 /* CSimplePEDParser.cpp in Sources */,
 				551661E11E82C967002436FA /* CPathSet.cpp in Sources */,
-				55BDF8731F3DFDAA0095669B /* CGraphVcfReader.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
