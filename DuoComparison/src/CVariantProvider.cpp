@@ -439,12 +439,24 @@ std::vector<const CVariant*> CVariantProvider::GetSkippedComplexVariantList(EVcf
     
     if(a_uFrom == eBASE)
     {
-        for(CVariant var : m_aBaseVariantList[a_nChrNo])
+        for(int k = 0; k < (int)m_aBaseVariantList[a_nChrNo].size(); k++)
         {
-            if(var.m_variantStatus == eCOMPLEX_SKIPPED)
+            if(m_aBaseVariantList[a_nChrNo][k].m_variantStatus == eCOMPLEX_SKIPPED)
             {
-                var.m_variantStatus = eNOT_ASSESSED;
-                result.push_back(&var);
+                m_aBaseVariantList[a_nChrNo][k].m_variantStatus = eNOT_ASSESSED;
+                result.push_back(&m_aBaseVariantList[a_nChrNo][k]);
+            }
+        }
+    }
+
+    else // eCALLED
+    {
+        for(int k = 0; k < (int)m_aCalledVariantList[a_nChrNo].size(); k++)
+        {
+            if(m_aCalledVariantList[a_nChrNo][k].m_variantStatus == eCOMPLEX_SKIPPED)
+            {
+                m_aCalledVariantList[a_nChrNo][k].m_variantStatus = eNOT_ASSESSED;
+                result.push_back(&m_aCalledVariantList[a_nChrNo][k]);
             }
         }
     }

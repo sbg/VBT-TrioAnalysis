@@ -52,7 +52,7 @@ void CVcfAnalyzer::Run(int argc, char** argv)
     
     if(0 == strcmp(m_config.m_pOutputMode, "SPLIT"))
     {
-        std::cout << "Generating Outputs [SPLIT MODE]..." << std::endl;
+        std::cerr << "Generating Outputs [SPLIT MODE]..." << std::endl;
         CSplitOutputProvider outputprovider;
         outputprovider.SetVcfPath(m_config.m_pOutputDirectory);
         outputprovider.SetVariantProvider(&m_provider);
@@ -63,7 +63,7 @@ void CVcfAnalyzer::Run(int argc, char** argv)
     
     else
     {
-        std::cout << "Generating Outputs [GA4GH MODE]..." << std::endl;
+        std::cerr << "Generating Outputs [GA4GH MODE]..." << std::endl;
         CGa4ghOutputProvider outputprovider;
         outputprovider.SetVcfPath(m_config.m_pOutputDirectory);
         outputprovider.SetVariantProvider(&m_provider);
@@ -154,7 +154,10 @@ void CVcfAnalyzer::ThreadFunctionGA4GH(std::vector<SChrIdTuple> a_aTuples)
         mtx.lock();
         bool IsContigAvailable = m_provider.ReadContig(a_aTuples[k].m_chrName, ctg);
         if(false == IsContigAvailable)
+        {
+            std::cerr << "Congtig " << a_aTuples[k].m_chrName << " is not available in given FASTA file!" << std::endl;
             continue;
+        }
         mtx.unlock();
         
         //Check if the FASTA file covers all variants in VCF file
@@ -260,13 +263,16 @@ void CVcfAnalyzer::ThreadFunctionSPLIT(std::vector<SChrIdTuple> a_aTuples, bool 
         mtx.lock();
         bool IsContigAvailable = m_provider.ReadContig(a_aTuples[k].m_chrName, ctg);
         if(false == IsContigAvailable)
+        {
+            std::cerr << "Congtig " << a_aTuples[k].m_chrName << " is not available in given FASTA file!" << std::endl;
             continue;
+        }
         mtx.unlock();
         
         //Check if the FASTA file covers all variants in VCF file
         if(ctg.m_nRefLength < varListBase[varListBase.size()-1]->m_nEndPos || ctg.m_nRefLength < varListCalled[varListCalled.size()-1]->m_nEndPos)
         {
-            std::cerr << "Not all variants are in the Range of FASTA reference" << std::endl;
+            std::cerr << "Not all variants are in the Range of FASTA reference! Skipping Contig: " << ctg.m_chromosomeName << std::endl;
         }
         
         m_aBestPaths[a_aTuples[k].m_nTupleIndex] = pathReplay.FindBestPath(ctg,a_bIsGenotypeMatch);
