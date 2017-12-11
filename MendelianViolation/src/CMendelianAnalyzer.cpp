@@ -402,7 +402,11 @@ void CMendelianAnalyzer::ProcessChromosome(const std::vector<SChrIdTriplet>& a_n
         mtx.lock();
         bool bIsContigAvailable = m_provider.ReadContig(triplet.m_chrName, ctg);
         if(false == bIsContigAvailable)
+        {
+            std::cerr << "Contig " << triplet.m_chrName << " is not available in given FASTA file!" << std::endl;
+            mtx.unlock();
             continue;
+        }
         mtx.unlock();
 
         // === PROCESS FATHER-CHILD ===

@@ -155,7 +155,8 @@ void CVcfAnalyzer::ThreadFunctionGA4GH(std::vector<SChrIdTuple> a_aTuples)
         bool IsContigAvailable = m_provider.ReadContig(a_aTuples[k].m_chrName, ctg);
         if(false == IsContigAvailable)
         {
-            std::cerr << "Congtig " << a_aTuples[k].m_chrName << " is not available in given FASTA file!" << std::endl;
+            std::cerr << "Contig " << a_aTuples[k].m_chrName << " is not available in given FASTA file!" << std::endl;
+            mtx.unlock();
             continue;
         }
         mtx.unlock();
@@ -264,7 +265,8 @@ void CVcfAnalyzer::ThreadFunctionSPLIT(std::vector<SChrIdTuple> a_aTuples, bool 
         bool IsContigAvailable = m_provider.ReadContig(a_aTuples[k].m_chrName, ctg);
         if(false == IsContigAvailable)
         {
-            std::cerr << "Congtig " << a_aTuples[k].m_chrName << " is not available in given FASTA file!" << std::endl;
+            std::cerr << "Contig " << a_aTuples[k].m_chrName << " is not available in given FASTA file!" << std::endl;
+            mtx.unlock();
             continue;
         }
         mtx.unlock();
