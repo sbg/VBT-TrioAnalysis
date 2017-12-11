@@ -47,7 +47,7 @@ A **required** parameter which specifies the reference FASTA file path. It shoul
 
 An **optional** parameter which sets the way program process no call variants. Default mode is none.
 
-**explicit :** Marks noCall(variants with ./. genotype) variants as NoCall (Parent nocall or child nocall)
+**explicit :** Marks noCall(variants with ./. genotype) variants as NoCall (Parent nocall or child nocall) <br />
 **none     :** Process noCall sites as 0/0 HOMREF
 
 ### -outDir output_directory_path
