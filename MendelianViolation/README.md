@@ -28,16 +28,16 @@ A **single** parameter which prints all parameter options to the console. (./vbt
 
 ### -father father_vcf_path
 
-A **required** parameter which specifies the father vcf file path. It supports both bcf and vcf file formats. If given vcf contain multiple samples, first sample will be taken by default unless a Pedigree file is provided (see -pedigree command)
+A **required** parameter which specifies the father vcf file path. It supports both vcf.gz and vcf file formats. If given vcf contain multiple samples, first sample will be taken by default unless a Pedigree file is provided (see -pedigree command)
 
 
 ### -mother mother_vcf_path
 
-A **required** parameter which specifies the mother vcf file path. It supports both bcf and vcf file formats. If given vcf contain multiple samples, first sample will be taken by default unless a Pedigree file is provided (see -pedigree command)
+A **required** parameter which specifies the mother vcf file path. It supports both vcf.gz and vcf file formats. If given vcf contain multiple samples, first sample will be taken by default unless a Pedigree file is provided (see -pedigree command)
 
 ### -child child_vcf_path
 
-A **required** parameter which specifies the mother vcf file path. It supports both bcf and vcf file formats. If given vcf contain multiple samples, first sample will be taken by default unless a Pedigree file is provided (see -pedigree command)
+A **required** parameter which specifies the mother vcf file path. It supports both vcf.gz and vcf file formats. If given vcf contain multiple samples, first sample will be taken by default unless a Pedigree file is provided (see -pedigree command)
 
 ### -ref reference_fasta_path
 
@@ -52,7 +52,7 @@ An **optional** parameter which sets the way program process no call variants. D
 
 ### -outDir output_directory_path
 
-A **required** parameter which specifies the output directory for program/error logs and ga4gh output vcf file. In current version, in order not to damage multiplatform capability, **directory should exist. VBT will not generate a directory for different Operating System compatibility reasons**.
+A **required** parameter which specifies the output directory for program/error logs and ga4gh output vcf file. In current version, in order not to damage multiplatform capability, **directory should exist. VBT will not generate a directory to be able to support different Operating Systems**.
 
 
 ### -pedigree PED_file_path

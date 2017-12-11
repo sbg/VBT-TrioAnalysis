@@ -19,12 +19,12 @@ A **single** parameter mode which prints all parameter options to the console. (
 
 ### -base Baseline_vcf_path
 
-A **required** parameter which specifies the baseline vcf file path. It supports both bcf and vcf file formats.
+A **required** parameter which specifies the baseline vcf file path. It supports both vcf.gz and vcf file formats.
 
 
 ### -called Query_vcf_path
 
-A **required** parameter which specifies the query vcf file path. It supports both bcf and vcf file formats.
+A **required** parameter which specifies the query vcf file path. It supports both vcf.gz and vcf file formats.
 
 
 ### -ref Reference_fasta_path
