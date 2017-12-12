@@ -399,7 +399,8 @@ int CPathReplay::SkipVariantsTo(CPath& a_rPath, const SContig& a_rContig, int a_
     
     while(varIndex < (int)m_aVariantListBase.size() && (varIndex == -1  || m_aVariantListBase[varIndex]->GetStart() < a_nMaxPos))
     {
-        m_aVariantListBase[(varIndex >= 0 ? varIndex : 0)]->m_variantStatus = eCOMPLEX_SKIPPED;
+        if(a_rPath.m_baseSemiPath.GetIncludedVariantEndPosition() < m_aVariantListBase[(varIndex >= 0 ? varIndex : 0)]->m_nStartPos)
+           m_aVariantListBase[(varIndex >= 0 ? varIndex : 0)]->m_variantStatus = eCOMPLEX_SKIPPED;
         varIndex++;
         baseSkippedCount++;
     }
@@ -412,7 +413,8 @@ int CPathReplay::SkipVariantsTo(CPath& a_rPath, const SContig& a_rContig, int a_
     
     while(varIndex < (int)m_aVariantListCalled.size() && (varIndex == -1  || m_aVariantListCalled[varIndex]->GetStart() < a_nMaxPos))
     {
-        m_aVariantListCalled[(varIndex >= 0 ? varIndex : 0)]->m_variantStatus = eCOMPLEX_SKIPPED;
+        if(a_rPath.m_calledSemiPath.GetIncludedVariantEndPosition() < m_aVariantListCalled[(varIndex >= 0 ? varIndex : 0)]->m_nStartPos)
+            m_aVariantListCalled[(varIndex >= 0 ? varIndex : 0)]->m_variantStatus = eCOMPLEX_SKIPPED;
         varIndex++;
         calledSkippedCount++;
     }
