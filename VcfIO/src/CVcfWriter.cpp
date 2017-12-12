@@ -172,8 +172,11 @@ void CVcfWriter::AddRecord(const SVcfRecord& a_rVcfRecord)
             tmpstr[k] = new char[1];
             tmpstr[k][0] = bcf_str_missing;
         }
-        bcf_update_format_string(m_pHeader, m_pRecord, "BD", (const char**)tmpstr, m_nSampleCount);
+        success = bcf_update_format_string(m_pHeader, m_pRecord, "BD", (const char**)tmpstr, m_nSampleCount);
 
+        if(success < 0)
+            std::cerr << "Failed to update BD for Record: " << "Chr" << a_rVcfRecord.m_chrName << " Position: " << a_rVcfRecord.m_nPosition << std::endl;
+        
         //3.Match Type Set (BK)
         char* tmpstr2[m_nSampleCount];
         for(k = 0; k < (int)a_rVcfRecord.m_aSampleData.size(); k++)
@@ -187,10 +190,17 @@ void CVcfWriter::AddRecord(const SVcfRecord& a_rVcfRecord)
             tmpstr2[k] = new char[1];
             tmpstr2[k][0] = bcf_str_missing;
         }
-        bcf_update_format_string(m_pHeader, m_pRecord, "BK", (const char**)tmpstr2, m_nSampleCount);
         
+        success = bcf_update_format_string(m_pHeader, m_pRecord, "BK", (const char**)tmpstr2, m_nSampleCount);
+
+        if(success < 0)
+            std::cerr << "Failed to update BK for Record: " << "Chr" << a_rVcfRecord.m_chrName << " Position: " << a_rVcfRecord.m_nPosition << std::endl;
+
         //Write record to created VCF File
-        bcf_write1(m_pHtsFile, m_pHeader, m_pRecord);
+        success = bcf_write1(m_pHtsFile, m_pHeader, m_pRecord);
+        
+        if(success < 0)
+            std::cerr << "Failed to write Record to the file: " << "Chr" << a_rVcfRecord.m_chrName << " Position: " << a_rVcfRecord.m_nPosition << std::endl;
 
         //Clean Temporary strings we used
         for(int k = 0; k < (int)a_rVcfRecord.m_aSampleData.size(); k++)
