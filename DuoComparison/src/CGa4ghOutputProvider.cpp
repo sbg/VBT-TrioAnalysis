@@ -185,6 +185,7 @@ void CGa4ghOutputProvider::AddRecords(const core::CPath& a_rBestPath, SChrIdTupl
                 std::string decision = var.m_bIncluded ? "TP" : (var.m_pVariant->m_variantStatus == eNOT_ASSESSED ? "N" : "FN");
                 std::string match = GetMatchStr(var.m_pVariant->m_variantStatus);
                 VariantToVcfRecord(var.m_pVariant, record, true, match, decision);
+                record.m_aSampleData.push_back(SPerSampleData());
                 m_vcfWriter.AddRecord(record);
             }
             
@@ -219,6 +220,7 @@ void CGa4ghOutputProvider::AddRecords(const core::CPath& a_rBestPath, SChrIdTupl
                 std::string decision = var.m_bIncluded ? "TP" : (var.m_pVariant->m_variantStatus == eNOT_ASSESSED ? "N" : "FN");
                 std::string match = GetMatchStr(var.m_pVariant->m_variantStatus);
                 VariantToVcfRecord(var.m_pVariant, record, true, match, decision);
+                record.m_aSampleData.push_back(SPerSampleData());
                 m_vcfWriter.AddRecord(record);
             }
             
