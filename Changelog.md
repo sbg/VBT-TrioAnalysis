@@ -1,5 +1,11 @@
 # VBT Changelog
 
+### Version 0.7.4 :
+
+	- Complex Skipped variant assigning is corrected (a lower boundary is introduced not to mark an included variant as complex skipped)
+	- GA4GH output variant records with non BK/BD annotations are corrected
+
+
 ### Version 0.7.3 :
 	
 	- Sample test data is added under Example/
