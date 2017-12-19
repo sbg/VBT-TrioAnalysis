@@ -90,17 +90,12 @@ bool CFastaParser::FetchNewChromosome(std::string chromosome, SContig& a_rContig
 bool SContig::Clean()
 {
     bool bIsSuccess = true;
-
-    try
-    {
-        delete[] m_pRefSeq;
-        m_pRefSeq = 0;
-    }
-    catch(std::exception ex)
-    {
+    if(m_pRefSeq != NULL)
+        free(m_pRefSeq);
+    else
         bIsSuccess = false;
-    }
-
+    
+    m_pRefSeq = NULL;
     return bIsSuccess;
 }
 
