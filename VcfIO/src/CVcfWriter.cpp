@@ -30,6 +30,11 @@ void CVcfWriter::CloseVcf()
     bcf_destroy1(m_pRecord);
     bcf_hdr_destroy(m_pHeader);
     int ret= hts_close(m_pHtsFile);
+    
+    m_pRecord = NULL;
+    m_pHeader = NULL;
+    m_pHtsFile = NULL;
+    
     if(ret != 0)
     {
         std::cerr << "A problem occured with saving the VCF file." << std::endl;
