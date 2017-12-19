@@ -643,44 +643,6 @@ std::vector<const core::COrientedVariant*> CMendelianVariantProvider::GetOriente
 
 }
 
-void CMendelianVariantProvider::SetVariantStatus(const std::vector<const CVariant*>& a_rVariantList, EVariantMatch a_status) const
-{
-    for(const CVariant* pVar : a_rVariantList)
-    {
-        if(pVar->m_variantStatus == eCOMPLEX_SKIPPED)
-            continue;
-        
-        if(a_status == eGENOTYPE_MATCH)
-            pVar->m_variantStatus = a_status;
-        else if(a_status == eALLELE_MATCH && pVar->m_variantStatus != eGENOTYPE_MATCH)
-            pVar->m_variantStatus = a_status;
-        else if(a_status == eNO_MATCH && pVar-> m_variantStatus == eNOT_ASSESSED)
-            pVar->m_variantStatus = a_status;
-        else
-            continue;
-    }
-}
-
-
-void CMendelianVariantProvider::SetVariantStatus(const std::vector<const core::COrientedVariant*>& a_rVariantList, EVariantMatch a_status) const
-{
-    for(const core::COrientedVariant* pOVar : a_rVariantList)
-    {
-        if(pOVar->GetVariant().m_variantStatus == eCOMPLEX_SKIPPED)
-            continue;
-        
-        if(a_status == eGENOTYPE_MATCH)
-            pOVar->GetVariant().m_variantStatus = a_status;
-        else if(a_status == eALLELE_MATCH && pOVar->GetVariant().m_variantStatus != eGENOTYPE_MATCH)
-            pOVar->GetVariant().m_variantStatus = a_status;
-        else if(a_status == eNO_MATCH && pOVar->GetVariant().m_variantStatus == eNOT_ASSESSED)
-            pOVar->GetVariant().m_variantStatus = a_status;
-        else
-            continue;
-    }
-}
-
-
 std::vector<const CVariant*> CMendelianVariantProvider::GetVariantList(const std::vector<const CVariant*> a_rVariantList, const std::vector<int>& a_nIndexList) const
 {
     std::vector<const CVariant*> resultList(a_nIndexList.size());
