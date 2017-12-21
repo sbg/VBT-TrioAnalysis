@@ -34,12 +34,14 @@ public:
     ///Set the status of each variant in the given list
     void SetVariantStatus(const std::vector<const core::COrientedVariant*>& a_rVariantList, EVariantMatch a_status) const;
             
-    //Read contig given by the chromosome id
+    ///Read contig given by the chromosome id
     bool ReadContig(std::string a_chrId, SContig& a_rContig);
-
     
 protected:
 
+    ///Find the optimal Trimming for variant list that have more than 1 trimming options
+    void FindOptimalTrimmings(std::vector<CVariant>& a_rVariantList, std::vector<std::vector<CVariant>>* a_pAllVarList, const SConfig& a_rConfig);
+    
     //REFERENCE FASTA
     CFastaParser m_referenceFasta;
 
