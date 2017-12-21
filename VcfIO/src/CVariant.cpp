@@ -32,6 +32,7 @@ CVariant::CVariant(): m_nVcfId(-1),
     m_genotype[1] = -1;
     m_bIsNoCall = false;
     m_bHaveMultipleTrimOption = false;
+    m_variantIDfromVcf = "";
 }
 
 CVariant::CVariant(const CVariant& a_rObj)
@@ -52,6 +53,7 @@ CVariant::CVariant(const CVariant& a_rObj)
     m_alleles[1].m_bIsIgnored = a_rObj.m_alleles[1].m_bIsIgnored;
     m_alleles[1].m_bIsTrimmed = a_rObj.m_alleles[1].m_bIsTrimmed;
     
+    m_variantIDfromVcf = a_rObj.m_variantIDfromVcf;
     m_nStartPos = a_rObj.m_nStartPos;
     m_nEndPos = a_rObj.m_nEndPos;
     m_nId = a_rObj.m_nId;
@@ -102,6 +104,7 @@ bool CVariant::Clear()
     m_genotype[1] = -1;
     m_bIsNoCall = false;
     m_bHaveMultipleTrimOption = false;
+    m_variantIDfromVcf = "";
     return true;
 }
 

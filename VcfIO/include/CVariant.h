@@ -171,6 +171,9 @@ class CVariant
     bool m_bIsFilterPASS;
     std::vector<std::string> m_filterString;
     
+    ///Variant id retrieved from the VCF
+    std::string m_variantIDfromVcf;
+    
     ///Chromosome name
     std::string m_chrName;
     

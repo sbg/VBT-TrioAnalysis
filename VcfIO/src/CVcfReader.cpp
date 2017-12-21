@@ -124,6 +124,8 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
         }
         a_pVariant->m_bIsFilterPASS = isPassed;
         
+        //READ VARIANT ID
+        a_pVariant->m_variantIDfromVcf = std::string(m_pRecord->d.id);
         
         //READ QUALITY DATA
         // m_pRecord->qual
