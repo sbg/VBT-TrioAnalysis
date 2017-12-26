@@ -52,62 +52,53 @@ void CVariantProvider::SetChromosomeIdTuples()
     std::sort(m_aCommonChrTupleList.begin(), m_aCommonChrTupleList.end(), [](const SChrIdTuple& t1, const SChrIdTuple& t2){return t1.m_nBaseId < t2.m_nBaseId;});
 }
 
+
+bool CVariantProvider::OpenVcfFile(EVcfName a_uFrom, CVcfReader& a_rVcfReader)
+{
+    bool bIsSuccess;
+ 
+    bool bIsCustomSampleEnabled = a_uFrom == eBASE ? m_config.m_bBaseSampleEnabled : m_config.m_bCalledSampleEnabled;
+    const char* pSampleName = a_uFrom == eBASE ? m_config.m_pBaseSample : m_config.m_pCalledSample;
+    const char* pFileName = a_uFrom == eBASE ? m_config.m_pBaseVcfFileName : m_config.m_pCalledVcfFileName;
+    
+    bIsSuccess = a_rVcfReader.Open(pFileName);
+    if(!bIsSuccess)
+    {
+        std::cerr << "VCF file is unable to open: " << pFileName << std::endl;
+        return false;
+    }
+    a_rVcfReader.setID(a_uFrom == eBASE ? 0:1);
+    
+    //SET SAMPLE NAME TO READ ONLY ONE SAMPLE FROM THE VCF
+    if (true == bIsCustomSampleEnabled)
+        bIsSuccess = a_rVcfReader.SelectSample(pSampleName);
+    else
+    {
+        std::vector<std::string> sampleNames;
+        a_rVcfReader.GetSampleNames(sampleNames);
+        bIsSuccess = a_rVcfReader.SelectSample(sampleNames[0]);
+    }
+    
+    if(!bIsSuccess)
+    {
+        std::cerr << (a_uFrom == eBASE ? "Baseline" : "Called") << " sample name is incorrect!" << std::endl;
+        return false;
+    }
+    
+    return bIsSuccess;
+}
+
 bool CVariantProvider::InitializeReaders(const SConfig& a_rConfig)
 {
     bool bIsSuccess;
 
     m_config = a_rConfig;
-    
-    //OPEN VCF FILES
-    bIsSuccess = m_baseVCF.Open(a_rConfig.m_pBaseVcfFileName);
-    if(!bIsSuccess)
-    {
-        std::cerr << "Baseline VCF file is unable to open!: " << a_rConfig.m_pBaseVcfFileName << std::endl;
-        return false;
-    }
-    m_baseVCF.setID(0);
 
-    bIsSuccess = m_calledVCF.Open(a_rConfig.m_pCalledVcfFileName);
-    if(!bIsSuccess)
-    {
-        std::cerr << "Called VCF file is unable to open!: " << a_rConfig.m_pCalledVcfFileName << std::endl;
-        return false;
-    }
-    m_calledVCF.setID(1);
+    //Open VCF files
+    OpenVcfFile(eBASE, m_baseVCF);
+    OpenVcfFile(eCALLED, m_calledVCF);
     
-    //SET SAMPLE NAME TO READ ONLY ONE SAMPLE FROM THE VCF
-    if (true == m_config.m_bBaseSampleEnabled)
-       bIsSuccess = m_baseVCF.SelectSample(m_config.m_pBaseSample);
-    else
-    {
-        std::vector<std::string> sampleNames;
-        m_baseVCF.GetSampleNames(sampleNames);
-       bIsSuccess = m_baseVCF.SelectSample(sampleNames[0]);
-    }
-    
-    if(!bIsSuccess)
-    {
-        std::cerr << "Baseline Sample name is incorrect!" << std::endl;
-        return false;
-    }
-    
-    if (true == m_config.m_bCalledSampleEnabled)
-        bIsSuccess = m_calledVCF.SelectSample(m_config.m_pCalledSample);
-    else
-    {
-        std::vector<std::string> sampleNames;
-        m_calledVCF.GetSampleNames(sampleNames);
-        bIsSuccess = m_calledVCF.SelectSample(sampleNames[0]);
-    }
-    
-    if(!bIsSuccess)
-    {
-        std::cerr << "Called Sample name is incorrect!" << std::endl;
-        return false;
-    }
-
-    
-    // OPEN FASTA FILE
+    //Open FASTA file
     bIsSuccess = m_referenceFasta.OpenFastaFile(a_rConfig.m_pFastaFileName);
     if(!bIsSuccess)
     {
@@ -243,7 +234,6 @@ void CVariantProvider::FillOrientedVariantLists()
     m_aBaseOrientedVariantList = std::vector<std::vector<core::COrientedVariant>>(m_baseVCF.GetContigs().size());
     m_aCalledOrientedVariantList = std::vector<std::vector<core::COrientedVariant>>(m_calledVCF.GetContigs().size());
     
-    
     for(unsigned int i=0; i < m_aBaseOrientedVariantList.size(); i++)
     {
         for(unsigned int j=0; j < m_aBaseVariantList[i].size(); j++)
@@ -331,7 +321,6 @@ std::vector<const CVariant*> CVariantProvider::GetVariantList(EVcfName a_uFrom, 
     return result;
 }
 
-
 std::vector<const CVariant*> CVariantProvider::GetVariantList(std::vector<const CVariant*>& a_varList, const std::vector<int>& a_VariantIndexes)
 {
     std::vector<const CVariant*> result(a_VariantIndexes.size());
@@ -343,55 +332,30 @@ std::vector<const CVariant*> CVariantProvider::GetVariantList(std::vector<const 
     return result;
 }
 
-
 std::vector<const core::COrientedVariant*> CVariantProvider::GetOrientedVariantList(EVcfName a_uFrom, int a_nChrNo, bool a_bIsGenotypeMatch)
 {
+    unsigned long size;
+    std::vector<const core::COrientedVariant*> result;
+    std::vector<std::vector<core::COrientedVariant>>* pfrom;
+    
     if(a_bIsGenotypeMatch)
     {
-        unsigned long size = a_uFrom == eBASE ? m_aBaseOrientedVariantList[a_nChrNo].size() : m_aCalledOrientedVariantList[a_nChrNo].size();
-        std::vector<const core::COrientedVariant*> result(size);
-        
-        switch (a_uFrom)
-        {
-            case eBASE:
-                for(unsigned int k=0; k < size; k++)
-                    result[k] = &(m_aBaseOrientedVariantList[a_nChrNo][k]);
-                break;
-                
-            case eCALLED:
-                for(unsigned int k=0; k < size; k++)
-                    result[k] = &(m_aCalledOrientedVariantList[a_nChrNo][k]);
-                
-            default:
-                break;
-        }
-
-        return result;
+        size = a_uFrom == eBASE ? m_aBaseOrientedVariantList[a_nChrNo].size() : m_aCalledOrientedVariantList[a_nChrNo].size();
+        result = std::vector<const core::COrientedVariant*>(size);
+        pfrom = a_uFrom == eBASE ? &m_aBaseOrientedVariantList : &m_aCalledOrientedVariantList;
     }
     
     else
     {
-        unsigned long size = a_uFrom == eBASE ? m_aBaseHomozygousOrientedVariantList[a_nChrNo].size() : m_aCalledHomozygousOrientedVariantList[a_nChrNo].size();
-        std::vector<const core::COrientedVariant*> result(size);
-        
-        switch (a_uFrom)
-        {
-            case eBASE:
-                for(unsigned int k=0; k < size; k++)
-                    result[k] = &(m_aBaseHomozygousOrientedVariantList[a_nChrNo][k]);
-                break;
-                
-            case eCALLED:
-                for(unsigned int k=0; k < size; k++)
-                    result[k] = &(m_aCalledHomozygousOrientedVariantList[a_nChrNo][k]);
-                
-            default:
-                break;
-        }
-
-        return result;
+        size = a_uFrom == eBASE ? m_aBaseHomozygousOrientedVariantList[a_nChrNo].size() : m_aCalledHomozygousOrientedVariantList[a_nChrNo].size();
+        result = std::vector<const core::COrientedVariant*>(size);
+        pfrom = a_uFrom == eBASE ? &m_aBaseHomozygousOrientedVariantList : &m_aCalledHomozygousOrientedVariantList;
     }
     
+    for(unsigned int k=0; k < size; k++)
+        result[k] = &((*pfrom)[a_nChrNo][k]);
+    
+    return result;
 }
 
 std::vector<SChrIdTuple>& CVariantProvider::GetChromosomeIdTuples()
@@ -418,12 +382,12 @@ std::vector<const CVariant*> CVariantProvider::GetNotAssessedVariantList(EVcfNam
 {
     std::vector<const CVariant*> result;
     
-    
     if(eBASE == a_uFrom)
     {
         for(int k = 0; k < (int)m_aBaseNotAssessedVariantList[a_nChrNo].size(); k++)
             result.push_back(&m_aBaseNotAssessedVariantList[a_nChrNo][k]);
     }
+    
     else
     {
         for(int k = 0; k < (int)m_aCalledNotAssessedVariantList[a_nChrNo].size(); k++)
@@ -437,33 +401,19 @@ std::vector<const CVariant*> CVariantProvider::GetSkippedComplexVariantList(EVcf
 {
     std::vector<const CVariant*> result;
     
-    if(a_uFrom == eBASE)
+    std::vector<CVariant>* pFrom = a_uFrom == eBASE ? &m_aBaseVariantList[a_nChrNo] : &m_aCalledVariantList[a_nChrNo];
+    
+    for(int k = 0; k < (int)(*pFrom).size(); k++)
     {
-        for(int k = 0; k < (int)m_aBaseVariantList[a_nChrNo].size(); k++)
+        if((*pFrom)[k].m_variantStatus == eCOMPLEX_SKIPPED)
         {
-            if(m_aBaseVariantList[a_nChrNo][k].m_variantStatus == eCOMPLEX_SKIPPED)
-            {
-                m_aBaseVariantList[a_nChrNo][k].m_variantStatus = eNOT_ASSESSED;
-                result.push_back(&m_aBaseVariantList[a_nChrNo][k]);
-            }
+            (*pFrom)[k].m_variantStatus = eNOT_ASSESSED;
+            result.push_back(&m_aBaseVariantList[a_nChrNo][k]);
         }
     }
-
-    else // eCALLED
-    {
-        for(int k = 0; k < (int)m_aCalledVariantList[a_nChrNo].size(); k++)
-        {
-            if(m_aCalledVariantList[a_nChrNo][k].m_variantStatus == eCOMPLEX_SKIPPED)
-            {
-                m_aCalledVariantList[a_nChrNo][k].m_variantStatus = eNOT_ASSESSED;
-                result.push_back(&m_aCalledVariantList[a_nChrNo][k]);
-            }
-        }
-    }
-
+    
     return result;
 }
-
 
 const std::vector<SVcfContig>& CVariantProvider::GetContigs() const
 {

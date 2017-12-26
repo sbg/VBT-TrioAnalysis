@@ -78,6 +78,9 @@ public:
 
 private:
 
+    //Open Specified vcf file
+    bool OpenVcfFile(EVcfName a_uFrom, CVcfReader& a_rVcfReader);
+    
     //Finds the tuple index list of chromosome which is contained by both baseline and called vcf
     void SetChromosomeIdTuples();
 
