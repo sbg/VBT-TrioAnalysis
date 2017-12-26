@@ -45,6 +45,7 @@ void CVariantProvider::SetChromosomeIdTuples()
                 {
                     m_aCommonChrTupleList.push_back(SChrIdTuple(baseItr->second, calledItr->second, baseItr->first, tupleIndex++));
                 }
+                break;
             }
         }
     }
