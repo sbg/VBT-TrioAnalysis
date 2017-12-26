@@ -86,6 +86,24 @@ void CGa4ghOutputProvider::FillHeader()
     m_vcfWriter.WriteHeaderToVcf();
 }
 
+void CGa4ghOutputProvider::AddSingleSampleRecord(const SVariantSummary &a_rVariant, bool a_bIsBase)
+{
+    SVcfRecord record;
+    std::string falseTag = a_bIsBase ? "FN" : "FP";
+    
+    if(false == a_bIsBase)
+        record.m_aSampleData.push_back(SPerSampleData());
+    
+    std::string decision = a_rVariant.m_bIncluded ? "TP" : (a_rVariant.m_pVariant->m_variantStatus == eNOT_ASSESSED ? "N" : falseTag);
+    std::string match = GetMatchStr(a_rVariant.m_pVariant->m_variantStatus);
+    VariantToVcfRecord(a_rVariant.m_pVariant, record, a_bIsBase, match, decision);
+    
+    if(true == a_bIsBase)
+        record.m_aSampleData.push_back(SPerSampleData());
+    
+    m_vcfWriter.AddRecord(record);
+}
+
 void CGa4ghOutputProvider::AddRecords(const core::CPath& a_rBestPath, SChrIdTuple a_rTuple)
 {
     //Best Path excluded variants
@@ -166,71 +184,38 @@ void CGa4ghOutputProvider::AddRecords(const core::CPath& a_rBestPath, SChrIdTupl
 
             //If there are base variants exists which doesnt merge already
             for (SVariantSummary var : nextVarCalledList)
-            {
-                SVcfRecord record;
-                record.m_aSampleData.push_back(SPerSampleData());
-                std::string decision = var.m_bIncluded ? "TP" : (var.m_pVariant->m_variantStatus == eNOT_ASSESSED ? "N" : "FP");
-                std::string match = GetMatchStr(var.m_pVariant->m_variantStatus);
-                VariantToVcfRecord(var.m_pVariant, record, false, match, decision);
-                m_vcfWriter.AddRecord(record);
-            }
+                AddSingleSampleRecord(var, false);
             
             nextVarCalledList.clear();
             calledVariants.FillNext(nextVarCalledList);
             
             //If there are called variants exists which doesnt merge already
             for(SVariantSummary var : nextVarBaseList)
-            {
-                SVcfRecord record;
-                std::string decision = var.m_bIncluded ? "TP" : (var.m_pVariant->m_variantStatus == eNOT_ASSESSED ? "N" : "FN");
-                std::string match = GetMatchStr(var.m_pVariant->m_variantStatus);
-                VariantToVcfRecord(var.m_pVariant, record, true, match, decision);
-                record.m_aSampleData.push_back(SPerSampleData());
-                m_vcfWriter.AddRecord(record);
-            }
+                AddSingleSampleRecord(var, true);
             
             nextVarBaseList.clear();
             baseVariants.FillNext(nextVarBaseList);
         }
         
-        
-        
         else if (basePosition > calledPosition)
         {
             for (SVariantSummary var : nextVarCalledList)
-            {
-                SVcfRecord record;
-                record.m_aSampleData.push_back(SPerSampleData());
-                std::string decision = var.m_bIncluded ? "TP" : (var.m_pVariant->m_variantStatus == eNOT_ASSESSED ? "N" : "FP");
-                std::string match = GetMatchStr(var.m_pVariant->m_variantStatus);
-                VariantToVcfRecord(var.m_pVariant, record, false, match, decision);
-                m_vcfWriter.AddRecord(record);
-            }
+                AddSingleSampleRecord(var, false);
             
             nextVarCalledList.clear();
             calledVariants.FillNext(nextVarCalledList);
-
         }
         
         else
         {
             for(SVariantSummary var : nextVarBaseList)
-            {
-                SVcfRecord record;
-                std::string decision = var.m_bIncluded ? "TP" : (var.m_pVariant->m_variantStatus == eNOT_ASSESSED ? "N" : "FN");
-                std::string match = GetMatchStr(var.m_pVariant->m_variantStatus);
-                VariantToVcfRecord(var.m_pVariant, record, true, match, decision);
-                record.m_aSampleData.push_back(SPerSampleData());
-                m_vcfWriter.AddRecord(record);
-            }
-            
+                AddSingleSampleRecord(var, true);
+                
             nextVarBaseList.clear();
             baseVariants.FillNext(nextVarBaseList);
         }
     }
 }
-
-
 
 void CGa4ghOutputProvider::VariantToVcfRecord(const CVariant* a_pVariant, SVcfRecord& a_rOutputRec, bool a_bIsBase, const std::string& a_rMatchType, const::std::string& a_rDecision)
 {
@@ -291,7 +276,6 @@ void CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase,
         baseVariants.push_back(substr);
     }
 
-    
     for(int k=0; k < (int)a_pVariantBase->m_nZygotCount; k++)
     {
         std::string allele = baseVariants[(unsigned int)a_pVariantBase->m_genotype[k]];
@@ -313,8 +297,6 @@ void CGa4ghOutputProvider::MergeVariants(const CVariant* a_pVariantBase,
             a_rOutputRec.m_alleles += ("," + allele);
             data.m_aGenotype[k] = static_cast<int>(calledVariants.size()) - 1;
         }
-        
-        
     }
     
     data.m_decisionBD = a_rDecisionBase;
@@ -357,7 +339,8 @@ std::string CGa4ghOutputProvider::GetMatchStr(EVariantMatch a_match)
     const std::string ALLELE_MATCH = "am";
     const std::string NO_MATCH = "nm";
     
-    switch (a_match) {
+    switch (a_match)
+    {
         case eALLELE_MATCH:
             return ALLELE_MATCH;
         case eGENOTYPE_MATCH:
@@ -366,14 +349,3 @@ std::string CGa4ghOutputProvider::GetMatchStr(EVariantMatch a_match)
             return NO_MATCH;
     }
 }
-
-
-
-
-
-
-
-
-
-
-

@@ -14,6 +14,7 @@
 #include "CVcfWriter.h"
 #include "CVcfReader.h"
 #include "SChrIdTuple.h"
+#include "SVariantSummary.h"
 
 namespace core
 {
@@ -59,6 +60,9 @@ private:
     //Add records of best path to the vcf file (Contain single chromosome)
     void AddRecords(const core::CPath& a_rBestPath, SChrIdTuple a_rTuple);
 
+    //Generate and two sample record with one of them is empty
+    void AddSingleSampleRecord(const SVariantSummary& a_rVariant, bool a_bIsBase);
+    
     //Return true if base and called variants can be merged
     bool CanMerge(const CVariant* a_pVariantBase, const CVariant* a_pVariantCalled) const;
     
