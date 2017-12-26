@@ -19,22 +19,25 @@ bool CUtils::IsOverlap(int left1, int right1, int left2, int right2)
     //If the interval length is 0 (eg. 974791-974791) we need to check if the boundaries matches
     if(left1 == left2)
         return true;
-    else if(right1 == left1)
+    
+    if(right1 == left1)
         return (right2 > left1 && left2 <= left1);
-    else if(right2 == left2)
+    
+    if(right2 == left2)
         return (right1 > left2 && left1 <= left2);
-    else
-        return std::min(right1, right2) - std::max(left1, left2) > 0;
+    
+    return std::min(right1, right2) - std::max(left1, left2) > 0;
 }
 
 bool CUtils::CompareVariants(const CVariant& var1, const CVariant& var2)
 {
     if(var1.m_nStartPos != var2.m_nStartPos)
         return var1.m_nStartPos < var2.m_nStartPos;
-    else if(var1.m_nEndPos != var2.m_nEndPos)
+    
+    if(var1.m_nEndPos != var2.m_nEndPos)
         return var1.m_nEndPos < var2.m_nEndPos;
-    else
-        return var1.m_nId < var2.m_nId;
+
+    return var1.m_nId < var2.m_nId;
 }
 
 bool CUtils::IsHomRef(const CVariant& a_rVariant)
