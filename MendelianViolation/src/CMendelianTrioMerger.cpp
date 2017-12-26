@@ -226,6 +226,22 @@ void CMendelianTrioMerger::AddSample(const CVariant* a_pVariant, std::vector<std
     }
 }
 
+void CMendelianTrioMerger::AddAllele(const CVariant* a_pVariant, int a_nMaxRefSequenceLength, std::vector<std::string>& alleles)
+{
+    if(a_pVariant != NULL)
+    {
+        //If child reference is shorter than the the records reference, we complete all of its alleles with the missing Base pairs
+        int additionalBasePairCount = a_nMaxRefSequenceLength - (int)a_pVariant->m_refSequence.length();
+        
+        for(unsigned int k= 0; k < (unsigned int)a_pVariant->m_nAlleleCount; k++)
+        {
+            std::string Allele = a_pVariant->GetOriginalAlleleStr(k) + alleles[0].substr(a_nMaxRefSequenceLength - additionalBasePairCount);
+            if(Allele != "" && std::find(alleles.begin(), alleles.end(), Allele) == alleles.end())
+                alleles.push_back(Allele);
+        }
+    }
+}
+
 void CMendelianTrioMerger::DoMerge(const CVariant* a_pVarMother,
                                    const CVariant* a_pVarFather,
                                    const CVariant* a_pVarChild,
@@ -265,47 +281,10 @@ void CMendelianTrioMerger::DoMerge(const CVariant* a_pVarMother,
     else
         alleles.push_back(a_pVarFather->m_refSequence);
     
-    //Add child allele
-    if(a_pVarChild != NULL)
-    {
-        //If child reference is shorter than the the records reference, we complete all of its alleles with the missing Base pairs
-        int additionalBasePairCount = maxRefSequenceLength - (int)a_pVarChild->m_refSequence.length();
-        
-        for(unsigned int k= 0; k < (unsigned int)a_pVarChild->m_nAlleleCount; k++)
-        {
-            std::string childAllele = a_pVarChild->GetOriginalAlleleStr(k) + alleles[0].substr(maxRefSequenceLength-additionalBasePairCount);
-            if(childAllele != "" && std::find(alleles.begin(), alleles.end(), childAllele) == alleles.end())
-                alleles.push_back(childAllele);
-        }
-    }
-    
-    //Add different mother alleles
-    if(a_pVarMother != NULL)
-    {
-        //If mother reference is shorter than the the records reference, we complete all of its alleles with the missing Base pairs
-        int additionalBasePairCount = maxRefSequenceLength - (int)a_pVarMother->m_refSequence.length();
-        
-        for(unsigned int k= 0; k < (unsigned int)a_pVarMother->m_nAlleleCount; k++)
-        {
-            std::string motherAllele = a_pVarMother->GetOriginalAlleleStr(k) + alleles[0].substr(maxRefSequenceLength-additionalBasePairCount);
-            if(motherAllele != "" && std::find(alleles.begin(), alleles.end(), motherAllele) == alleles.end())
-                alleles.push_back(motherAllele);
-        }
-    }
-    
-    //Add different father alleles
-    if(a_pVarFather != NULL)
-    {
-        //If father reference is shorter than the the records reference, we complete all of its alleles with the missing Base pairs
-        int additionalBasePairCount = maxRefSequenceLength - (int)a_pVarFather->m_refSequence.length();
-        
-        for(unsigned int k= 0; k < (unsigned int)a_pVarFather->m_nAlleleCount; k++)
-        {
-            std::string fatherAllele = a_pVarFather->GetOriginalAlleleStr(k) + alleles[0].substr(maxRefSequenceLength-additionalBasePairCount);
-            if(fatherAllele != "" && std::find(alleles.begin(), alleles.end(), fatherAllele) == alleles.end())
-                alleles.push_back(fatherAllele);
-        }
-    }
+    //Add  mother father and child unique alleles
+    AddAllele(a_pVarChild, maxRefSequenceLength, alleles);
+    AddAllele(a_pVarMother, maxRefSequenceLength, alleles);
+    AddAllele(a_pVarFather, maxRefSequenceLength, alleles);
     
     //Write alleles to the vcf record
     std::string alleleString = "";
@@ -461,6 +440,28 @@ void CMendelianTrioMerger::RegisterGenotype(const SVcfRecord& a_rRecord, EVarian
     
 }
 
+bool CMendelianTrioMerger::CheckForOverlap(std::vector<SVcfRecord>&  a_rRecordList, std::vector<EMendelianDecision>& a_rRecordDecisionList, int recordItr, int temporaryItr, EMendelianDecision curVariantDecision)
+{
+    if(IsOverlap(a_rRecordList[recordItr], a_rRecordList[temporaryItr]))
+    {
+        if(a_rRecordDecisionList[temporaryItr] == eCompliant)
+        {
+            a_rRecordDecisionList[temporaryItr] = curVariantDecision;
+            a_rRecordList[temporaryItr].m_mendelianDecision = a_rRecordList[recordItr].m_mendelianDecision;
+        }
+        
+        else if(a_rRecordDecisionList[temporaryItr] == eViolation && curVariantDecision != eViolation)
+        {
+            a_rRecordDecisionList[temporaryItr] = curVariantDecision;
+            a_rRecordList[temporaryItr].m_mendelianDecision = a_rRecordList[recordItr].m_mendelianDecision;
+        }
+        
+        return true;
+    }
+    
+    return false;
+}
+
 void CMendelianTrioMerger::ProcessRefOverlappedRegions(std::vector<SVcfRecord>&  a_rRecordList, std::vector<EMendelianDecision>& a_rRecordDecisionList)
 {
 
@@ -477,47 +478,18 @@ void CMendelianTrioMerger::ProcessRefOverlappedRegions(std::vector<SVcfRecord>& 
             int temporaryItr = (int)recordItr-1;
             while(temporaryItr >= 0)
             {
-                if(IsOverlap(a_rRecordList[recordItr], a_rRecordList[temporaryItr]))
-                {
-                    if(a_rRecordDecisionList[temporaryItr] == eCompliant)
-                    {
-                        a_rRecordDecisionList[temporaryItr] = curVariantDecision;
-                        a_rRecordList[temporaryItr].m_mendelianDecision = a_rRecordList[recordItr].m_mendelianDecision;
-                    }
-                    
-                    else if(a_rRecordDecisionList[temporaryItr] == eViolation && curVariantDecision != eViolation)
-                    {
-                        a_rRecordDecisionList[temporaryItr] = curVariantDecision;
-                        a_rRecordList[temporaryItr].m_mendelianDecision = a_rRecordList[recordItr].m_mendelianDecision;
-                    }
-                    
+                if(CheckForOverlap(a_rRecordList, a_rRecordDecisionList, recordItr, temporaryItr, curVariantDecision))
                     temporaryItr--;
-                }
-                
                 else
                     break;
             }
             
             //Go Forward with second iterator
             temporaryItr = (int)recordItr + 1;
-            while(recordItr < a_rRecordList.size())
+            while(temporaryItr < (int)a_rRecordList.size())
             {
-                if(IsOverlap(a_rRecordList[recordItr], a_rRecordList[temporaryItr]))
-                {
-                    if(a_rRecordDecisionList[temporaryItr] == eCompliant)
-                    {
-                        a_rRecordDecisionList[temporaryItr] = curVariantDecision;
-                        a_rRecordList[temporaryItr].m_mendelianDecision = a_rRecordList[recordItr].m_mendelianDecision;
-                    }
-                    
-                    else if(a_rRecordDecisionList[temporaryItr] == eViolation && curVariantDecision != eViolation)
-                    {
-                        a_rRecordDecisionList[temporaryItr] = curVariantDecision;
-                        a_rRecordList[temporaryItr].m_mendelianDecision = a_rRecordList[recordItr].m_mendelianDecision;
-                    }
-                    
+                if(CheckForOverlap(a_rRecordList, a_rRecordDecisionList, recordItr, temporaryItr, curVariantDecision))
                     temporaryItr++;
-                }
                 else
                     break;
             }

@@ -73,6 +73,9 @@ private:
                  const CVariant* a_pVarChild,
                  EMendelianDecision a_initDecision,
                  std::vector<SVcfRecord>& a_rRecordList);
+   
+    //Add unique alleles of given variant to the allele list
+    void AddAllele(const CVariant* a_pVariant, int a_nMaxRefSequenceLength, std::vector<std::string>& alleles);
     
     ///Fill a_rSample with the information of variant
     void AddSample(const CVariant* a_pVariant, std::vector<std::string>& a_rAlleles, SPerSampleData& a_rSample);
@@ -98,6 +101,9 @@ private:
     
     ///For the given recordList unify the overlapping variant decisions
     void ProcessRefOverlappedRegions(std::vector<SVcfRecord>&  a_rRecordList, std::vector<EMendelianDecision>& a_rRecordDecisionList);
+    
+    ///if the record at recordItr and temporaryItr are overlapping change the decision of record at temopraryItr
+    bool CheckForOverlap(std::vector<SVcfRecord>&  a_rRecordList, std::vector<EMendelianDecision>& a_rRecordDecisionList, int recordItr, int temporaryItr, EMendelianDecision curVariantDecision);
     
     ///Vcf writer instance
     CVcfWriter m_vcfWriter;
