@@ -79,6 +79,9 @@ public:
         
 private:
     
+    //Open mother father and child vcf files and set their corresponding samples
+    bool OpenVcfFiles();
+    
     //Fill the common chromosome list
     void SetCommonChromosomes();
     

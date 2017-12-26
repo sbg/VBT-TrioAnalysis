@@ -18,34 +18,26 @@
 
 using namespace mendelian;
 
-bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildConfig, const SConfig& a_rMotherChildConfig)
+bool CMendelianVariantProvider::OpenVcfFiles()
 {
     bool bIsSuccessFather = true;
     bool bIsSuccessMother = true;
     bool bIsSuccessChild = true;
-    bool bIsSuccessFasta = true;
-    
-    m_motherChildConfig = a_rMotherChildConfig;
-    m_fatherChildConfig = a_rFatherChildConfig;
-    
-    //This vector will be used if the program initialized with a PED file
-    CSimplePEDParser pedParser;
-    std::vector<std::string> parentChildSampleIds;
     
     //Open FATHER vcf file
-    bIsSuccessFather = m_FatherVcf.Open(a_rFatherChildConfig.m_pBaseVcfFileName);
+    bIsSuccessFather = m_FatherVcf.Open(m_fatherChildConfig.m_pBaseVcfFileName);
     if(!bIsSuccessFather)
-        std::cerr << "Father VCF file is unable to open!: " << a_rFatherChildConfig.m_pBaseVcfFileName << std::endl;
-   
+        std::cerr << "Father VCF file is unable to open!: " << m_fatherChildConfig.m_pBaseVcfFileName << std::endl;
+    
     //Open MOTHER vcf file
-    bIsSuccessMother = m_MotherVcf.Open(a_rMotherChildConfig.m_pBaseVcfFileName);
+    bIsSuccessMother = m_MotherVcf.Open(m_motherChildConfig.m_pBaseVcfFileName);
     if(!bIsSuccessMother)
-        std::cerr << "Mother VCF file is unable to open!: " << a_rMotherChildConfig.m_pBaseVcfFileName << std::endl;
+        std::cerr << "Mother VCF file is unable to open!: " << m_motherChildConfig.m_pBaseVcfFileName << std::endl;
     
     //Open CHILD vcf file
-    bIsSuccessChild = m_ChildVcf.Open(a_rFatherChildConfig.m_pCalledVcfFileName);
+    bIsSuccessChild = m_ChildVcf.Open(m_fatherChildConfig.m_pCalledVcfFileName);
     if(!bIsSuccessChild)
-        std::cerr << "Child VCF file is unable to open!: " << a_rFatherChildConfig.m_pCalledVcfFileName << std::endl;
+        std::cerr << "Child VCF file is unable to open!: " << m_fatherChildConfig.m_pCalledVcfFileName << std::endl;
     
     if(!bIsSuccessChild || !bIsSuccessFather || !bIsSuccessMother)
         return false;
@@ -53,11 +45,15 @@ bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildC
     //Set Sample name from PED file
     if(true == m_motherChildConfig.m_bInitializeFromPED)
     {
+        //This vector will be used if the program initialized with a PED file
+        CSimplePEDParser pedParser;
+        std::vector<std::string> parentChildSampleIds;
+        
         pedParser.ParsePedigree(m_motherChildConfig.m_pPedigreeFileName);
         std::vector<std::string> sampleNamesChild;
         std::vector<std::string> sampleNamesMother;
         std::vector<std::string> sampleNamesFather;
-
+        
         m_FatherVcf.GetSampleNames(sampleNamesFather);
         m_MotherVcf.GetSampleNames(sampleNamesMother);
         m_ChildVcf.GetSampleNames(sampleNamesChild);
@@ -71,6 +67,7 @@ bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildC
         m_FatherVcf.SelectSample(parentChildSampleIds[1]);
         m_ChildVcf.SelectSample(parentChildSampleIds[2]);
     }
+    
     else
     {
         //Set sample name of FATHER
@@ -88,7 +85,7 @@ bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildC
             std::cerr << "Father Sample name is incorrect!" << std::endl;
             return false;
         }
-
+        
         //Set sample name of MOTHER
         if (true == m_motherChildConfig.m_bBaseSampleEnabled)
             m_MotherVcf.SelectSample(m_motherChildConfig.m_pBaseSample);
@@ -104,7 +101,7 @@ bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildC
             std::cerr << "Mother Sample name is incorrect!" << std::endl;
             return false;
         }
-
+        
         //Set sample name of CHILD
         if (true == m_fatherChildConfig.m_bCalledSampleEnabled)
             m_ChildVcf.SelectSample(m_fatherChildConfig.m_pCalledSample);
@@ -122,12 +119,30 @@ bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildC
         }
     }
 
+    return bIsSuccessMother && bIsSuccessFather && bIsSuccessChild;
+}
+
+bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildConfig, const SConfig& a_rMotherChildConfig)
+{
+    bool bIsSuccessVCFs = true;
+    bool bIsSuccessFasta = true;
+    
+    m_motherChildConfig = a_rMotherChildConfig;
+    m_fatherChildConfig = a_rFatherChildConfig;
+    
+    // OPEN VCF FILES
+    bIsSuccessVCFs = OpenVcfFiles();
+
+    if(!bIsSuccessVCFs)
+        std::cerr << "VCF file(s) has error!" << std::endl;
+
     // OPEN FASTA FILE
     bIsSuccessFasta = m_referenceFasta.OpenFastaFile(a_rFatherChildConfig.m_pFastaFileName);
+
     if(!bIsSuccessFasta)
         std::cerr << "FASTA file is unable to open!: " << a_rFatherChildConfig.m_pFastaFileName << std::endl;
     
-    if(bIsSuccessChild && bIsSuccessMother && bIsSuccessFather && bIsSuccessFasta)
+    if(bIsSuccessVCFs && bIsSuccessFasta)
     {
         //Fill the variants of 3 vcf file
         FillVariants();
@@ -142,7 +157,7 @@ bool CMendelianVariantProvider::InitializeReaders(const SConfig &a_rFatherChildC
         FillAlleleMatchOrientedVariants(m_aCommonChromosomes);
     }
 
-    return bIsSuccessChild && bIsSuccessMother && bIsSuccessFather && bIsSuccessFasta;
+    return bIsSuccessVCFs && bIsSuccessFasta;
 }
 
 void CMendelianVariantProvider::FillVariantForSample(int a_nSampleId, SConfig& a_rConfig)
@@ -203,7 +218,7 @@ void CMendelianVariantProvider::FillVariantForSample(int a_nSampleId, SConfig& a
         if(preChrId != variant.m_chrName)
         {
             preChrId = variant.m_chrName;
-            std::cerr << "Reading chromosome " << preChrId << " of Parent[FATHER] vcf" << std::endl;
+            std::cerr << "Reading chromosome " << preChrId << " of Parent[" << sampleNameStr <<"] vcf" << std::endl;
             id = 0;
             variant.m_nId = id;
             
@@ -273,7 +288,7 @@ void CMendelianVariantProvider::FillVariantForSample(int a_nSampleId, SConfig& a
     FindOptimalTrimmings(multiTrimmableVarList, sampleName);
     AppendTrimmedVariants(multiTrimmableVarList, sampleName);
     
-    for(unsigned int k = 0; k < m_FatherVcf.GetContigs().size(); k++)
+    for(unsigned int k = 0; k < pReader->GetContigs().size(); k++)
         std::sort((*pVariants)[k].begin(), (*pVariants)[k].end(), CUtils::CompareVariants);
     
 }
@@ -522,50 +537,25 @@ std::vector<const CVariant*> CMendelianVariantProvider::GetSortedVariantListByID
 std::vector<const core::COrientedVariant*> CMendelianVariantProvider::GetOrientedVariantList(EMendelianVcfName a_uFrom, int a_nChrNo, bool a_bIsAlleleMatch) const
 {
     std::vector<const core::COrientedVariant*> ovarList;
+    const std::vector<std::vector<core::COrientedVariant>>* pBaseVarList;
     
-    if(false == a_bIsAlleleMatch)
+    switch (a_uFrom)
     {
-        switch (a_uFrom)
-        {
-            case eCHILD:
-                for(unsigned int k = 0; k < m_aChildOrientedVariantList[a_nChrNo].size();k++)
-                    ovarList.push_back(&m_aChildOrientedVariantList[a_nChrNo][k]);
-                break;
-            case eFATHER:
-                for(unsigned int k = 0; k < m_aFatherOrientedVariantList[a_nChrNo].size();k++)
-                    ovarList.push_back(&m_aFatherOrientedVariantList[a_nChrNo][k]);
-                break;
-            case eMOTHER:
-                for(unsigned int k = 0; k < m_aMotherOrientedVariantList[a_nChrNo].size();k++)
-                    ovarList.push_back(&m_aMotherOrientedVariantList[a_nChrNo][k]);
-                break;
-                
-            default:
-                break;
-        }
+        case eCHILD:
+            pBaseVarList = a_bIsAlleleMatch ? &m_aChildAlleleMatchOrientedVariantList : &m_aChildOrientedVariantList;
+            break;
+        case eFATHER:
+            pBaseVarList = a_bIsAlleleMatch ? &m_aFatherAlleleMatchOrientedVariantList : &m_aFatherOrientedVariantList;
+            break;
+        case eMOTHER:
+            pBaseVarList = a_bIsAlleleMatch ? &m_aMotherAlleleMatchOrientedVariantList : &m_aMotherOrientedVariantList;
+            break;
+        default:
+            break;
     }
     
-    else
-    {
-        switch (a_uFrom)
-        {
-            case eCHILD:
-                for(unsigned int k = 0; k < m_aChildAlleleMatchOrientedVariantList[a_nChrNo].size();k++)
-                    ovarList.push_back(&m_aChildAlleleMatchOrientedVariantList[a_nChrNo][k]);
-                break;
-            case eFATHER:
-                for(unsigned int k = 0; k < m_aFatherAlleleMatchOrientedVariantList[a_nChrNo].size();k++)
-                    ovarList.push_back(&m_aFatherAlleleMatchOrientedVariantList[a_nChrNo][k]);
-                break;
-            case eMOTHER:
-                for(unsigned int k = 0; k < m_aMotherAlleleMatchOrientedVariantList[a_nChrNo].size();k++)
-                    ovarList.push_back(&m_aMotherAlleleMatchOrientedVariantList[a_nChrNo][k]);
-                break;
-                
-            default:
-                break;
-        }
-    }
+    for(unsigned int k = 0; k < (*pBaseVarList)[a_nChrNo].size();k++)
+        ovarList.push_back(&((*pBaseVarList)[a_nChrNo][k]));
     
     return ovarList;
 }
@@ -573,74 +563,30 @@ std::vector<const core::COrientedVariant*> CMendelianVariantProvider::GetOriente
 std::vector<const core::COrientedVariant*> CMendelianVariantProvider::GetOrientedVariantList(EMendelianVcfName a_uFrom, int a_nChrNo, bool a_bIsAlleleMatch, const std::vector<int>& a_nIndexList) const
 {
     std::vector<const core::COrientedVariant*> ovarList;
+    const std::vector<std::vector<core::COrientedVariant>>* pBaseVarList;
 
-    if(false == a_bIsAlleleMatch)
+    switch (a_uFrom)
     {
-        switch (a_uFrom)
-        {
-            case eCHILD:
-                for(unsigned int k = 0; k < a_nIndexList.size();k++)
-                {
-                    ovarList.push_back(&m_aChildOrientedVariantList[a_nChrNo][a_nIndexList[k]*2]);
-                    ovarList.push_back(&m_aChildOrientedVariantList[a_nChrNo][a_nIndexList[k]*2+1]);
-                }
-
-                break;
-            case eFATHER:
-                for(unsigned int k = 0; k < a_nIndexList.size();k++)
-                {
-                    ovarList.push_back(&m_aFatherOrientedVariantList[a_nChrNo][a_nIndexList[k]*2]);
-                    ovarList.push_back(&m_aFatherOrientedVariantList[a_nChrNo][a_nIndexList[k]*2+1]);
-                }
-                break;
-            case eMOTHER:
-                for(unsigned int k = 0; k < a_nIndexList.size();k++)
-                {
-                    ovarList.push_back(&m_aMotherOrientedVariantList[a_nChrNo][a_nIndexList[k]*2]);
-                    ovarList.push_back(&m_aMotherOrientedVariantList[a_nChrNo][a_nIndexList[k]*2+1]);
-                }
-                break;
-                
-            default:
-                break;
-        }
+        case eCHILD:
+            pBaseVarList = a_bIsAlleleMatch ? &m_aChildAlleleMatchOrientedVariantList : &m_aChildOrientedVariantList;
+            break;
+        case eFATHER:
+            pBaseVarList = a_bIsAlleleMatch ? &m_aFatherAlleleMatchOrientedVariantList : &m_aFatherOrientedVariantList;
+            break;
+        case eMOTHER:
+            pBaseVarList = a_bIsAlleleMatch ? &m_aMotherAlleleMatchOrientedVariantList : &m_aMotherOrientedVariantList;
+            break;
+        default:
+            break;
     }
     
-    else
+    for(unsigned int k = 0; k < a_nIndexList.size();k++)
     {
-        switch (a_uFrom)
-        {
-            case eCHILD:
-                for(unsigned int k = 0; k < a_nIndexList.size();k++)
-                {
-                    ovarList.push_back(&m_aChildAlleleMatchOrientedVariantList[a_nChrNo][a_nIndexList[k]*2]);
-                    ovarList.push_back(&m_aChildAlleleMatchOrientedVariantList[a_nChrNo][a_nIndexList[k]*2 +1]);
-                }
-                break;
-            case eFATHER:
-                for(unsigned int k = 0; k < a_nIndexList.size();k++)
-                {
-                    ovarList.push_back(&m_aFatherAlleleMatchOrientedVariantList[a_nChrNo][a_nIndexList[k]*2]);
-                    ovarList.push_back(&m_aFatherAlleleMatchOrientedVariantList[a_nChrNo][a_nIndexList[k]*2 +1]);
-                }
-                break;
-            case eMOTHER:
-                for(unsigned int k = 0; k < a_nIndexList.size();k++)
-                {
-                    ovarList.push_back(&m_aMotherAlleleMatchOrientedVariantList[a_nChrNo][a_nIndexList[k]*2]);
-                    ovarList.push_back(&m_aMotherAlleleMatchOrientedVariantList[a_nChrNo][a_nIndexList[k]*2 +1]);
-                }
-                break;
-                
-            default:
-                break;
-        }
-    
-    
+        ovarList.push_back(&((*pBaseVarList)[a_nChrNo][a_nIndexList[k]*2]));
+        ovarList.push_back(&((*pBaseVarList)[a_nChrNo][a_nIndexList[k]*2+1]));
     }
-    
+
     return ovarList;
-
 }
 
 std::vector<const CVariant*> CMendelianVariantProvider::GetVariantList(const std::vector<const CVariant*> a_rVariantList, const std::vector<int>& a_nIndexList) const
@@ -658,9 +604,9 @@ int CMendelianVariantProvider:: GetVariantCount(EMendelianVcfName a_uFrom, int a
 {
     if(a_uFrom == eMOTHER)
         return static_cast<int>(m_aMotherVariantList[a_nChrNo].size());
-    else if(a_uFrom == eFATHER)
+    if(a_uFrom == eFATHER)
         return static_cast<int>(m_aFatherVariantList[a_nChrNo].size());
-    else if(a_uFrom == eCHILD)
+    if(a_uFrom == eCHILD)
         return static_cast<int>(m_aChildVariantList[a_nChrNo].size());
     else
         return -1;
@@ -671,41 +617,28 @@ int CMendelianVariantProvider::GetSkippedVariantCount(EMendelianVcfName a_uFrom)
 {
     int totalCount = 0;
     
-    
-    if(a_uFrom == eFATHER)
+    const std::vector<std::vector<CVariant>>* pVariantList;
+    switch (a_uFrom)
     {
-        for(unsigned int k = 0; k < m_aFatherVariantList.size(); k++)
-        {
-            for(CVariant var : m_aFatherVariantList[k])
-            {
-                if(var.m_variantStatus == eCOMPLEX_SKIPPED)
-                    totalCount++;
-            }
-        }
-    }
-
-    else if(a_uFrom == eMOTHER)
-    {
-        for(unsigned int k = 0; k < m_aMotherVariantList.size(); k++)
-        {
-            for(CVariant var : m_aMotherVariantList[k])
-            {
-                if(var.m_variantStatus == eCOMPLEX_SKIPPED)
-                    totalCount++;
-            }
-        }
+        case eFATHER:
+            pVariantList = &m_aFatherVariantList;
+            break;
+        case eMOTHER:
+            pVariantList = &m_aMotherVariantList;
+            break;
+        case eCHILD:
+            pVariantList = &m_aChildVariantList;
+            break;
+        default:
+            break;
     }
     
-    
-    else if(a_uFrom == eCHILD)
+    for(unsigned int k = 0; k < pVariantList->size(); k++)
     {
-        for(unsigned int k = 0; k < m_aChildVariantList.size(); k++)
+        for(CVariant var : (*pVariantList)[k])
         {
-            for(CVariant var : m_aChildVariantList[k])
-            {
-                if(var.m_variantStatus == eCOMPLEX_SKIPPED)
-                    totalCount++;
-            }
+            if(var.m_variantStatus == eCOMPLEX_SKIPPED)
+                totalCount++;
         }
     }
     
