@@ -49,10 +49,7 @@ private:
     
     //Divide the jobs between different threads homogeneously for given number of thread count. Return the actual thread count
     int AssignJobsToThreads(int a_nThreadCount);
-    
-    //Calculate the thread count that will be generated and initialize the threads
-    void SetThreadsCustom(int a_nMemoryInMB);
-    
+        
     //Function that process chromosome in bulk for SPLIT mode (process either genotype or allele match)
     void ThreadFunctionSPLIT(std::vector<SChrIdTuple> a_aTuples, bool a_bIsGenotypeMatch);
 
