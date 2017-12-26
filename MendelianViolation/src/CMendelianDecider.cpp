@@ -164,7 +164,6 @@ void CMendelianDecider::CheckUniqueVars(EMendelianVcfName a_checkSide, SChrIdTri
         a_rSideDecisions[k] = selfCheck && childCheck;
         
     }
-    
 }
 
 void CMendelianDecider::GetSyncPointList(SChrIdTriplet& a_rTriplet, bool a_bIsFatherChild, std::vector<core::CSyncPoint>& a_rSyncPointList, bool a_bIsGT)
@@ -366,9 +365,7 @@ void CMendelianDecider::CheckFor0Path(SChrIdTriplet& a_rTriplet,
             }
         }
     }
-    
 }
-
 
 void CMendelianDecider::AssignDecisionToParentVars(EMendelianVcfName a_checkSide, SChrIdTriplet& a_rTriplet, std::vector<EMendelianDecision>& a_rParentDecisions)
 {
@@ -475,6 +472,164 @@ void CMendelianDecider::ReportChildChromosomeData(SChrIdTriplet& a_rTriplet, std
     m_resultLog.LogShortReport(a_rTriplet.m_chrName, compliantSNPcount, violationSNPcount, compliantINDELcount, violationINDELcount);
 }
 
+void CMendelianDecider::EliminateSameAlleleMatch(CVariantIterator& a_rMotherChildVariants,
+                                                 CVariantIterator& a_rFatherChildVariants,
+                                                 std::vector<const CVariant*>& a_rViolationVars,
+                                                 std::vector<const CVariant*>& a_rMendelianCompliantVars,
+                                                 std::vector<const CVariant*>& a_rCheck0atMotherSide,
+                                                 std::vector<const CVariant*>& a_rCheck0atFatherSide)
+{
+    const core::COrientedVariant* varMC = (a_rMotherChildVariants.hasNext() ? a_rMotherChildVariants.Next() : NULL);
+    const core::COrientedVariant* varFC = (a_rFatherChildVariants.hasNext() ? a_rFatherChildVariants.Next() : NULL);
+    
+    while(varMC != NULL && varFC != NULL)
+    {
+        //If Mother variant and Father variant is Common check for same allele match condition
+        if(varMC->GetVariant().m_nId == varFC->GetVariant().m_nId)
+        {
+            if(varMC->GetVariant().m_bIsHeterozygous)
+            {
+                //ELIMINATE SAME ALLELE MATCHING EXCEPTION
+                if(varMC->GetAlleleIndex() == varFC->GetAlleleIndex())
+                {
+                    if(varMC->GetVariant().m_variantStatus == eGENOTYPE_MATCH
+                       ||
+                       varFC->GetVariant().m_variantStatus == eGENOTYPE_MATCH)
+                        a_rMendelianCompliantVars.push_back(&varMC->GetVariant());
+                    else
+                        a_rViolationVars.push_back(&varMC->GetVariant());
+                }
+                else
+                    a_rMendelianCompliantVars.push_back(&varMC->GetVariant());
+            }
+            
+            else
+                a_rMendelianCompliantVars.push_back(&varMC->GetVariant());
+            
+            if(a_rMotherChildVariants.hasNext() && a_rFatherChildVariants.hasNext())
+            {
+                varMC = a_rMotherChildVariants.Next();
+                varFC = a_rFatherChildVariants.Next();
+            }
+            
+            else
+            {
+                varMC = NULL;
+                varFC = NULL;
+                break;
+            }
+        }
+        
+        //If we have variant match with Father side only, we filter 0/x variants and rest of them are marked as violation
+        else if(varMC->GetVariant().m_nId > varFC->GetVariant().m_nId)
+        {
+            if(varFC->GetVariant().m_genotype[0] == 0 || varFC->GetVariant().m_genotype[1] == 0)
+                a_rCheck0atMotherSide.push_back(&varFC->GetVariant());
+            else
+                a_rViolationVars.push_back(&varFC->GetVariant());
+            
+            if(a_rFatherChildVariants.hasNext())
+                varFC = a_rFatherChildVariants.Next();
+            else
+            {
+                varFC = NULL;
+                break;
+            }
+        }
+        
+        //If we have variant match with Mother side only, we filter 0/x variants and rest of them are marked as violation
+        else
+        {
+            if(varMC->GetVariant().m_genotype[0] == 0 || varMC->GetVariant().m_genotype[1] == 0)
+                a_rCheck0atFatherSide.push_back(&varMC->GetVariant());
+            else
+                a_rViolationVars.push_back(&varMC->GetVariant());
+            
+            if(a_rMotherChildVariants.hasNext())
+                varMC = a_rMotherChildVariants.Next();
+            else
+            {
+                varMC = NULL;
+                break;
+            }
+        }
+        
+    }
+    
+    //Process remaining vars in FatherChild explained as above
+    while(true)
+    {
+        if(varFC == NULL)
+        {
+            if(a_rFatherChildVariants.hasNext())
+                varFC = a_rFatherChildVariants.Next();
+            else
+                break;
+        }
+        
+        if(varFC->GetVariant().m_genotype[0] == 0 || varFC->GetVariant().m_genotype[1] == 0)
+            a_rCheck0atMotherSide.push_back(&varFC->GetVariant());
+        else
+            a_rViolationVars.push_back(&varFC->GetVariant());
+        
+        if(!a_rFatherChildVariants.hasNext())
+            break;
+        else
+            varFC = a_rFatherChildVariants.Next();
+    }
+    
+    //Process remaining vars in MotherChild explined as above
+    while(true)
+    {
+        if(varMC == NULL)
+        {
+            if(a_rMotherChildVariants.hasNext())
+                varMC = a_rMotherChildVariants.Next();
+            else
+                break;
+        }
+        
+        if(varMC->GetVariant().m_genotype[0] == 0 || varMC->GetVariant().m_genotype[1] == 0)
+            a_rCheck0atFatherSide.push_back(&varMC->GetVariant());
+        else
+            a_rViolationVars.push_back(&varMC->GetVariant());
+        
+        if(!a_rMotherChildVariants.hasNext())
+            break;
+        else
+            varMC = a_rMotherChildVariants.Next();
+    }
+}
+
+void CMendelianDecider::FindUniqueChildVariantList(std::vector<const CVariant*> a_rChildVariants,
+                                                   const std::vector<const CVariant*>& a_rViolationVars,
+                                                   const std::vector<const CVariant*>& a_rCompliantVars,
+                                                   std::vector<const CVariant*>& a_rChildUniqueList)
+{
+
+    std::vector<int>childProcessedArray(a_rChildVariants.size());
+    for(unsigned int k = 0; k < childProcessedArray.size(); k++)
+        childProcessedArray[k] = 0;
+    
+    //Mark mendelian compliant vars as processed
+    for(unsigned int k = 0; k < a_rCompliantVars.size(); k++)
+        childProcessedArray[a_rCompliantVars[k]->m_nId]++;
+    
+    //Mark mendelian violation vars as processed
+    for(unsigned int k = 0; k < a_rViolationVars.size(); k++)
+        childProcessedArray[a_rViolationVars[k]->m_nId]++;
+    
+    for(unsigned int childItr = 0; childItr < childProcessedArray.size(); childItr++)
+    {
+        if(childProcessedArray[childItr] == 0)
+        {
+            const CVariant* pVar = a_rChildVariants[childItr];
+            a_rChildUniqueList.push_back(pVar);
+        }
+    }
+}
+
+
 void CMendelianDecider::MergeFunc(SChrIdTriplet& a_triplet,
                                   std::vector<EMendelianDecision>& a_rMotherDecisions,
                                   std::vector<EMendelianDecision>& a_rFatherDecisions,
@@ -483,17 +638,10 @@ void CMendelianDecider::MergeFunc(SChrIdTriplet& a_triplet,
     std::vector<const CVariant*> compliants;
     std::vector<const CVariant*> violations;
     
-    std::vector<const CVariant*> SameAlleleMatchViolationVars;
-    std::vector<const CVariant*> MendelianCompliantVars;
-    
-    std::vector<const CVariant*> motherChildOnly;
-    std::vector<const CVariant*> fatherChildOnly;
-    
     std::vector<const CVariant*> check0atMotherSide;
     std::vector<const CVariant*> check0atFatherSide;
-    std::vector<const CVariant*> check00Child;
-    std::vector<const CVariant*> childUniqueList;
-    std::vector<const CVariant*> check00ChildGTMatched;
+    
+    std::vector<const CVariant*> childVariants = m_provider.GetSortedVariantListByID(eCHILD, a_triplet.m_nCid);
     
     //Sort variants according to variant ids
     m_aBestPathsFatherChildGT[a_triplet.m_nTripleIndex].SortIncludedVariants();
@@ -512,191 +660,28 @@ void CMendelianDecider::MergeFunc(SChrIdTriplet& a_triplet,
     if(FatherChildVariants.hasNext() == false && MotherChildVariants.hasNext() == false)
         return;
     
-    const core::COrientedVariant* varMC = (MotherChildVariants.hasNext() ? MotherChildVariants.Next() : NULL);
-    const core::COrientedVariant* varFC = (FatherChildVariants.hasNext() ? FatherChildVariants.Next() : NULL);
-    
-    while(varMC != NULL && varFC != NULL)
-    {
-        //If Mother variant and Father variant is Common check for same allele match condition
-        if(varMC->GetVariant().m_nId == varFC->GetVariant().m_nId)
-        {
-            if(varMC->GetVariant().m_genotype[0] == 0 && varMC->GetVariant().m_genotype[1] == 0)
-                check00ChildGTMatched.push_back(&varMC->GetVariant());
-            
-            else if(varMC->GetVariant().m_bIsHeterozygous)
-            {
-                //ELIMINATE SAME ALLELE MATCHING(EXCEPTION 1)
-                if(varMC->GetAlleleIndex() == varFC->GetAlleleIndex())
-                {
-                    if(varMC->GetVariant().m_variantStatus == eGENOTYPE_MATCH
-                       ||
-                       varFC->GetVariant().m_variantStatus == eGENOTYPE_MATCH)
-                        MendelianCompliantVars.push_back(&varMC->GetVariant());
-                    else
-                        SameAlleleMatchViolationVars.push_back(&varMC->GetVariant());
-                }
-                else
-                    MendelianCompliantVars.push_back(&varMC->GetVariant());
-            }
-            else
-                MendelianCompliantVars.push_back(&varMC->GetVariant());
-            
-            if(MotherChildVariants.hasNext() && FatherChildVariants.hasNext())
-            {
-                varMC = MotherChildVariants.Next();
-                varFC = FatherChildVariants.Next();
-            }
-            
-            else
-            {
-                varMC = NULL;
-                varFC = NULL;
-                break;
-            }
-        }
-        
-        //If we have variant match with Father side only, we filter 0/x variants and rest of them are marked as violation
-        else if(varMC->GetVariant().m_nId > varFC->GetVariant().m_nId)
-        {
-            if(varFC->GetVariant().m_genotype[0] == 0 || varFC->GetVariant().m_genotype[1] == 0)
-                check0atMotherSide.push_back(&varFC->GetVariant());
-            else
-                fatherChildOnly.push_back(&varFC->GetVariant());
-            
-            if(FatherChildVariants.hasNext())
-                varFC = FatherChildVariants.Next();
-            else
-            {
-                varFC = NULL;
-                break;
-            }
-        }
-        
-        //If we have variant match with Mother side only, we filter 0/x variants and rest of them are marked as violation
-        else
-        {
-            if(varMC->GetVariant().m_genotype[0] == 0 || varMC->GetVariant().m_genotype[1] == 0)
-                check0atFatherSide.push_back(&varMC->GetVariant());
-            else
-                motherChildOnly.push_back(&varMC->GetVariant());
-
-            if(MotherChildVariants.hasNext())
-                varMC = MotherChildVariants.Next();
-            else
-            {
-                varMC = NULL;
-                break;
-            }
-        }
-        
-    }
-    
-    //Process remaining vars in FatherChild explained as above
-    while(true)
-    {
-        if(varFC == NULL)
-        {
-            if(FatherChildVariants.hasNext())
-                varFC = FatherChildVariants.Next();
-            else
-                break;
-        }
-        
-        if(varFC->GetVariant().m_genotype[0] == 0 || varFC->GetVariant().m_genotype[1] == 0)
-            check0atMotherSide.push_back(&varFC->GetVariant());
-        else
-            fatherChildOnly.push_back(&varFC->GetVariant());
-
-        if(!FatherChildVariants.hasNext())
-            break;
-        else
-            varFC = FatherChildVariants.Next();
-    }
-    
-    //Process remaining vars in MotherChild explined as above
-    while(true)
-    {
-        if(varMC == NULL)
-        {
-            if(MotherChildVariants.hasNext())
-                varMC = MotherChildVariants.Next();
-            else
-                break;
-        }
-        
-        if(varMC->GetVariant().m_genotype[0] == 0 || varMC->GetVariant().m_genotype[1] == 0)
-            check0atFatherSide.push_back(&varMC->GetVariant());
-        else
-            motherChildOnly.push_back(&varMC->GetVariant());
-
-        if(!MotherChildVariants.hasNext())
-            break;
-        else
-            varMC = MotherChildVariants.Next();
-    }
-    
-    std::vector<const CVariant*> compliantVarsFrom0CheckMother;
-    std::vector<const CVariant*> compliantVarsFrom0CheckFather;
-    std::vector<const CVariant*> violationVarsFrom0CheckMother;
-    std::vector<const CVariant*> violationVarsFrom0CheckFather;
+    //Process child variants from mother-child and father-child comparisons. Eliminate same allele matches and identifies variants requires post-processing
+    EliminateSameAlleleMatch(MotherChildVariants,
+                             FatherChildVariants,
+                             violations,
+                             compliants,
+                             check0atMotherSide,
+                             check0atFatherSide);
     
     //Check for 0/x child variant set at father side
-    CheckFor0Path(a_triplet, true, check0atFatherSide, violationVarsFrom0CheckFather, compliantVarsFrom0CheckFather, a_rFatherDecisions);
+    CheckFor0Path(a_triplet, true, check0atFatherSide, violations, compliants, a_rFatherDecisions);
     //Check for 0/x child variant set at the mother side
-    CheckFor0Path(a_triplet, false, check0atMotherSide, violationVarsFrom0CheckMother, compliantVarsFrom0CheckMother, a_rMotherDecisions);
-    
-    //Gather all compliant variants of child we found so far
-    compliants.insert(std::end(compliants), std::begin(MendelianCompliantVars), std::end(MendelianCompliantVars));
-    compliants.insert(std::end(compliants), std::begin(compliantVarsFrom0CheckFather), std::end(compliantVarsFrom0CheckFather));
-    compliants.insert(std::end(compliants), std::begin(compliantVarsFrom0CheckMother), std::end(compliantVarsFrom0CheckMother));
-    std::sort(compliants.begin(), compliants.end(), CUtils::CompareVariantsById);
-    
-    //Gather all violation variants of child we found so far
-    violations.insert(std::end(violations), std::begin(SameAlleleMatchViolationVars), std::end(SameAlleleMatchViolationVars));
-    violations.insert(std::end(violations), std::begin(violationVarsFrom0CheckFather), std::end(violationVarsFrom0CheckFather));
-    violations.insert(std::end(violations), std::begin(violationVarsFrom0CheckMother), std::end(violationVarsFrom0CheckMother));
-    violations.insert(std::end(violations), std::begin(fatherChildOnly), std::end(fatherChildOnly));
-    violations.insert(std::end(violations), std::begin(motherChildOnly), std::end(motherChildOnly));
+    CheckFor0Path(a_triplet, false, check0atMotherSide, violations, compliants, a_rMotherDecisions);
     
     //Find Child Unique variants
-    std::vector<const CVariant*> childVariants = m_provider.GetSortedVariantListByID(eCHILD, a_triplet.m_nCid);
-    std::vector<int>childProcessedArray(childVariants.size());
-    for(unsigned int k = 0; k < childProcessedArray.size(); k++)
-        childProcessedArray[k] = 0;
+    FindUniqueChildVariantList(childVariants, violations, compliants, violations);
     
-    //Mark mendelian compliant vars as processed
-    for(unsigned int k = 0; k < compliants.size(); k++)
-    {
-        childProcessedArray[compliants[k]->m_nId]++;
-    }
-    
-    //Mark mendelian violation vars as processed
-    for(unsigned int k = 0; k < violations.size(); k++)
-    {
-        childProcessedArray[violations[k]->m_nId]++;
-    }
-    
-    for(unsigned int childItr = 0; childItr < childProcessedArray.size(); childItr++)
-    {
-        if(childProcessedArray[childItr] == 0)
-        {
-            if(childVariants[childItr]->m_genotype[0] == 0 && childVariants[childItr]->m_genotype[1] == 0)
-            {
-                check00Child.push_back(childVariants[childItr]);
-            }
-            else
-            {
-                const CVariant* pVar = childVariants[childItr];
-                childUniqueList.push_back(pVar);
-            }
-        }
-    }
-    
-    //Add the new violations we found to violation list
-    violations.insert(std::end(violations), std::begin(childUniqueList), std::end(childUniqueList));
+    //Sort compliant and violation variant list
+    std::sort(compliants.begin(), compliants.end(), CUtils::CompareVariantsById);
     std::sort(violations.begin(), violations.end(), CUtils::CompareVariantsById);
     
-    //We looked up all child variants. Now, we will look at parent variants where there is no corresponding child variant exist in the child.vcf (check for hidden 0/0 child variants)
+    //We looked up all child variants. Now, we will look at parent variants where there is no corresponding child variant exist
+    //in the child.vcf (check for hidden 0/0 child variants)
     
     //Fill the child decision array
     std::vector<const CVariant*>::iterator compliantsIterator = compliants.begin();

@@ -19,7 +19,7 @@
 
 namespace mendelian
 {
-    
+    class CVariantIterator;
     class CMendelianVariantProvider;
     class CMendelianResultLog;
     struct SChrIdTriplet;
@@ -58,6 +58,19 @@ public:
     
 private:
     
+    ///Eliminates same allele match exception
+    void EliminateSameAlleleMatch(CVariantIterator& a_rMotherChildVariants,
+                                  CVariantIterator& a_rFatherChildVariants,
+                                  std::vector<const CVariant*>& a_rViolationVars,
+                                  std::vector<const CVariant*>& a_rMendelianCompliantVars,
+                                  std::vector<const CVariant*>& a_rCheck0atMotherSide,
+                                  std::vector<const CVariant*>& a_rCheck0atFatherSide);
+    
+    //Fint the unique child variant list (write the list into the last parameter)
+    void FindUniqueChildVariantList(std::vector<const CVariant*> a_rChildVariants,
+                                    const std::vector<const CVariant*>& a_rViolationVars,
+                                    const std::vector<const CVariant*>& a_rCompliantVars,
+                                    std::vector<const CVariant*>& a_rChildUniqueList);
     
     ///Return the syncpointlist for given comparison. Writes to the last parameter
     void GetSyncPointList(SChrIdTriplet& a_rTriplet,
