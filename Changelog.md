@@ -1,5 +1,11 @@
 # VBT Changelog
 
+### Version 0.7.5 :
+
+	- VBT source is refactored (Duplicate code segment elimination, splitting long functions etc.) 
+	- GPL License header is added to all files
+
+
 ### Version 0.7.4 :
 
 	- Complex Skipped variant assigning is corrected (a lower boundary is introduced not to mark an included variant as complex skipped)
