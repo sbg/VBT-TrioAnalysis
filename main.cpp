@@ -1,12 +1,27 @@
-//
-//  main.cpp
-//  VariantBenchmarkingTools
-//
-//  Created by Berke.Toptas
-//  Copyright © 2016 Seven Bridges Genomics.
-//            © 2017 SBGD Inc.
-//  All rights reserved.
-//
+/*
+ *
+ * Copyright 2017 Seven Bridges Genomics Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ *  main.cpp
+ *  VariantBenchmarkingTools
+ *
+ *  Created by Berke Cagkan Toptas
+ *
+ */
 
 #include <iostream>
 #include "CVcfAnalyzer.h"
@@ -18,8 +33,8 @@ int main (int argc, char** argv)
     int successNo = 0;
     
     std::cout << "==== VARIANT BENCHMARKING TOOLS " << VBT_VERSION << " ==== " << std::endl;
+    std::cout << "Please contact us if you would like to report bugs or encounter run-time errors" << std::endl;
     std::cout << "Author: Berke Cagkan Toptas (berke.toptas@sbgdinc.com)" << std::endl;
-    std::cout << "Please send me an email if there is a problem (e.g. bug reporting, run-time errors)" << std::endl;
     std::cout << "Copyright 2017 Seven Bridges Genomics Inc." << std::endl;
     std::cout << std::endl;
     std::cout << std::endl;
