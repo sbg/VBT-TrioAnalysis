@@ -31,7 +31,7 @@
 int main (int argc, char** argv)
 {
     int successNo = 0;
-    
+    std::cout << std::endl;
     std::cout << "==== VARIANT BENCHMARKING TOOLS " << VBT_VERSION << " ==== " << std::endl;
     std::cout << "Please contact us if you would like to report bugs or encounter run-time errors" << std::endl;
     std::cout << "Author: Berke Cagkan Toptas (berke.toptas@sbgdinc.com)" << std::endl;
