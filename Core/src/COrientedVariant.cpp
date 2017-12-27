@@ -25,7 +25,6 @@
  *
  */
 
-
 #include "COrientedVariant.h"
 #include <iostream>
 

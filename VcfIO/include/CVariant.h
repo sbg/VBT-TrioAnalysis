@@ -23,7 +23,6 @@
  *
  */
 
-
 #ifndef _CVariant_H
 #define _CVariant_H
 

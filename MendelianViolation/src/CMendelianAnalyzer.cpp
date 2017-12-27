@@ -23,7 +23,6 @@
  *
  */
 
-
 #include "CMendelianAnalyzer.h"
 #include "SConfig.h"
 #include <string>

@@ -22,6 +22,7 @@
  *  Created by Berke Cagkan Toptas on 8/24/17.
  *
  */
+
 #include "CMendelianDecider.h"
 #include "CMendelianVariantProvider.h"
 #include "SChrIdTriplet.h"
