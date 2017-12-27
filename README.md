@@ -73,7 +73,7 @@ For additional help, please use the following commands:
 Example folder contains a minimal example for testing VBT. We placed chr21 of merged BWA+UG CEPH trio. For the FASTA file, we extract chr21 from GRCh37 reference. In order to run the sample test, following command can be executed :
 
 ```
-./vbt -mother Example/UG_CEU_merged_cleaned_chr21.vcf -father Example/UG_CEU_merged_cleaned_chr21.vcf -child Example/UG_CEU_merged_cleaned_chr21.vcf -ped Example/ceu.ped --ref-overlap --outDir Example/output -out-prefix ceu_21_sample
+./vbt mendelian -mother Example/UG_CEU_merged_cleaned_chr21.vcf -father Example/UG_CEU_merged_cleaned_chr21.vcf -child Example/UG_CEU_merged_cleaned_chr21.vcf -ped Example/ceu.ped --ref-overlap --outDir Example/output -out-prefix ceu_21_sample
 ```
 This sample execution will produce:
 
