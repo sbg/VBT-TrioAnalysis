@@ -73,4 +73,6 @@ An **optional** parameter which is used to select regions from VCF file.
 
 An **optional** parameter which is used to filter variants with given filter name. Filter name should be same in baseline and called variants. By default, **PASS filtering** is applied to the variants. In order to disable filtering, **'-filter none'** should be used.
 
+### -output-info-tags tag1,tag2,..
 
+An **optional** parameter which is used to output selected INFO columns in generated output trio VCF. Tags should be given as comma separated without whitespace. Each tag is should be exist in all mother, father and child samples. Info tag selection order is child, father and mother respectively.
