@@ -46,9 +46,8 @@ bool CFastaParser::OpenFastaFile(const char *fn)
 
 CFastaParser::~CFastaParser()
 {
-    //TODO: Whats the problem with that ??
-    //if(fai != 0)
-    //    fai_destroy(fai);
+    if(fai != 0)
+        fai_destroy(fai);
 }
 
 
