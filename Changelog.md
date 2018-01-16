@@ -1,5 +1,11 @@
 # VBT Changelog
 
+### Version 0.7.6 :
+
+	- Quality column is added to the output trio of mendelian vcf
+	- A new optional parameter is added that selects INFO tags from input file to be printed in the output file
+
+
 ### Version 0.7.5 :
 
 	- VBT source is refactored (Duplicate code segment elimination, splitting long functions etc.) 

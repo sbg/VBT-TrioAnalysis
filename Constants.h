@@ -53,6 +53,6 @@ const int SMALL_VARIANT_SIZE = 5;
 const int MEDIUM_VARIANT_SIZE = 15;
 
 //VBT VERSION AND YEAR TO BE COPIED OUTPUT VCFS
-const std::string VBT_VERSION = "v0.7.5 (2017)";
+const std::string VBT_VERSION = "v0.7.6 (2017)";
 
 #endif //_CONSTANTS_H_
