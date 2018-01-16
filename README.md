@@ -30,7 +30,7 @@ make install
 You can download the latest version of VBT using the following git command:
 
 ```
-git clone https://gitlab.sbgsbgd.com/cagkantoptas/VBT-TrioAnalysis   **[TO BE EDITED TO SBG GITHUB]**
+git clone https://github.com/sbg/vbt.git
 ```
 
 Once you have successfully installed htslib and download VBT, Then you can use following commands to compile VBT:
@@ -68,9 +68,9 @@ For additional help, please use the following commands:
 ./vbt [module_name] --help
 ```
 
-## Sample Execution:
+## Sample Execution (mendelian):
 
-Example folder contains a minimal example for testing VBT. We placed chr21 of merged BWA+UG CEPH trio. For the FASTA file, we extract chr21 from GRCh37 reference. In order to run the sample test, following command can be executed :
+**Example** folder contains a minimal example for testing VBT mendelian. We placed chr21 of merged BWA+UG CEPH trio as an input VCF. For the FASTA file, we extract chr21 from GRCh37 reference. In order to run the sample test, following command can be executed :
 
 ```
 ./vbt mendelian -mother Example/UG_CEU_merged_cleaned_chr21.vcf -father Example/UG_CEU_merged_cleaned_chr21.vcf -child Example/UG_CEU_merged_cleaned_chr21.vcf -ped Example/ceu.ped --ref-overlap --outDir Example/output -out-prefix ceu_21_sample
@@ -83,7 +83,7 @@ This sample execution will produce:
 	4. ceu_21_sample_tab_delim_detailed_log.tsv    //Tab delimited version of detailed logs
 	5. ceu_21_sample_trio.vcf                      //Merged output trio (Mendelian decisions are annotated for each record)
 	
-For additional parameters, please check paramater specifications.
+For additional parameters, please check mendelian paramater specifications.
 
 ## Source Code Documentation:
 
