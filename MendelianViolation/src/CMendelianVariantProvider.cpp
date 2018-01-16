@@ -57,6 +57,13 @@ bool CMendelianVariantProvider::OpenVcfFiles()
     if(!bIsSuccessChild || !bIsSuccessFather || !bIsSuccessMother)
         return false;
     
+    if(true == m_fatherChildConfig.m_bIsReadINFO)
+    {
+        m_FatherVcf.GetInfoNames(m_fatherChildConfig.m_infotags);
+        m_MotherVcf.GetInfoNames(m_motherChildConfig.m_infotags);
+        m_ChildVcf.GetInfoNames(m_motherChildConfig.m_infotags);
+    }
+    
     //Set Sample name from PED file
     if(true == m_motherChildConfig.m_bInitializeFromPED)
     {
@@ -180,10 +187,13 @@ void CMendelianVariantProvider::FillVariantForSample(int a_nSampleId, SConfig& a
     EMendelianVcfName sampleName = static_cast<EMendelianVcfName>(a_nSampleId);
 
     CSimpleBEDParser bedParser;
-    unsigned int remainingBedContigCount = bedParser.m_nTotalContigCount;
+    unsigned int remainingBedContigCount = 0;
     
     if(true == a_rConfig.m_bInitializeFromBed)
+    {
         bedParser.InitBEDFile(a_rConfig.m_pBedFileName);
+        remainingBedContigCount = bedParser.m_nTotalContigCount;
+    }
     
     int* pNonAssessedVariantCount;
     int* pAsteriskVariantCount;
@@ -232,14 +242,14 @@ void CMendelianVariantProvider::FillVariantForSample(int a_nSampleId, SConfig& a
     {
         if(preChrId != variant.m_chrName)
         {
+            //We update the remaining contig count in BED file
+            if(bedParser.m_regionMap[preChrId].size() > 0)
+                remainingBedContigCount--;
+            
             preChrId = variant.m_chrName;
             std::cerr << "Reading chromosome " << preChrId << " of Parent[" << sampleNameStr <<"] vcf" << std::endl;
             id = 0;
             variant.m_nId = id;
-            
-            //We update the remaining contig count in BED file
-            if(regionIterator > 0)
-                remainingBedContigCount--;
             
             regionIterator = 0;
         }
@@ -304,8 +314,12 @@ void CMendelianVariantProvider::FillVariantForSample(int a_nSampleId, SConfig& a
     AppendTrimmedVariants(multiTrimmableVarList, sampleName);
     
     for(unsigned int k = 0; k < pReader->GetContigs().size(); k++)
+    {
         std::sort((*pVariants)[k].begin(), (*pVariants)[k].end(), CUtils::CompareVariants);
+        (*pVariants)[k].shrink_to_fit();
+    }
     
+    (*pVariants).shrink_to_fit();
 }
 
 void CMendelianVariantProvider::FillVariants()

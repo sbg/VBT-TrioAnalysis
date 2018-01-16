@@ -73,14 +73,26 @@ public:
     ///Set the access of result log from mendelian vcf analyzer to for detailed logs
     void SetResultLogPointer(CMendelianResultLog* a_pResultLog);
     
+    ///Set the filename of child to access INFOs. If this function is called, then all info columns will be copied to the generated trio records
+    void SetInfoReadParameters(const std::string& a_rChildInputPath,
+                               const std::string& a_rFatherInputPath,
+                               const std::string& a_rMotherInputPath);
+    
 private:
 
     ///Merge 3 variant set into one trio.vcf that mendelian decisions are marked
     void AddRecords(SChrIdTriplet& a_rTriplet);
     
-    
+    ///Write VCF records to the VCF file and fill the log tables
+    void WriteRecords(const std::vector<SVcfRecord>& recordList,
+                            const std::vector<EVariantCategory>& recordCategoryList,
+                            const std::vector<EMendelianDecision>& recordDecisionList);
+
     ///Fill the header part of the trio vcf
     void FillHeader();
+    
+    ///Fill the INFO tags of the heaader that are taken from input vcf files
+    void FillInfoHeaderLines();
     
     //Merge given three variant to a single record
     void DoMerge(const CVariant* a_pVarMother,
@@ -139,6 +151,14 @@ private:
     
     ///Output trio full path
     std::string m_trioPath;
+    
+    //Input VCF file paths (To access INFO column)
+    std::string m_childPath;
+    std::string m_motherPath;
+    std::string m_fatherPath;
+    
+    //If annotations will be written to output merged vcf
+    bool m_bIsAnnotationsON = false;
     
     ///Objects to pass the result Log
     SMendelianDetailedLogEntry m_logEntry;

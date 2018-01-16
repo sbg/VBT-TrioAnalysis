@@ -48,6 +48,7 @@ CVariant::CVariant(): m_nVcfId(-1),
     m_bIsNoCall = false;
     m_bHaveMultipleTrimOption = false;
     m_variantIDfromVcf = "";
+    m_fQuality = 0.0f;
 }
 
 CVariant::CVariant(const CVariant& a_rObj)
@@ -77,6 +78,8 @@ CVariant::CVariant(const CVariant& a_rObj)
     m_bIsFirstNucleotideTrimmed = a_rObj.m_bIsFirstNucleotideTrimmed;
     m_bHaveMultipleTrimOption = a_rObj.m_bHaveMultipleTrimOption;
     
+    m_fQuality = a_rObj.m_fQuality;
+    m_info = a_rObj.m_info;
     m_filterString = a_rObj.m_filterString;
     m_allelesStr = a_rObj.m_allelesStr;
     m_nZygotCount = a_rObj.m_nZygotCount;
@@ -111,6 +114,7 @@ bool CVariant::Clear()
     m_bIsFirstNucleotideTrimmed = false;
     m_variantStatus = eNOT_ASSESSED;
     m_nOriginalPos = -1;
+    m_fQuality = 0.0f;
     m_alleles[0].m_bIsIgnored = false;
     m_alleles[1].m_bIsIgnored = false;
     m_alleles[0].m_bIsTrimmed = false;
@@ -120,6 +124,7 @@ bool CVariant::Clear()
     m_bIsNoCall = false;
     m_bHaveMultipleTrimOption = false;
     m_variantIDfromVcf = "";
+    m_info.Clear();
     return true;
 }
 

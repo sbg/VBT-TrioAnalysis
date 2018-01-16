@@ -30,6 +30,7 @@
 #include <algorithm>
 #include <iostream>
 #include <sstream>
+#include <unordered_map>
 
 
 using namespace mendelian;
@@ -117,10 +118,13 @@ void CMendelianTrioMerger::FillHeader()
     //ADD GT COLUMN
     m_vcfWriter.AddHeaderLine("##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">");
 
-    
     //ADD CONTIG IDs
     for(unsigned int k = 0; k < m_contigs.size(); k++)
         m_vcfWriter.AddHeaderLine("##contig=<ID=" + m_contigs[k].name + ",length=" + std::to_string(m_contigs[k].length) + ">");
+    
+    //IF ANNOTATION MODE IS ON WRITE INFO HEADERS
+    if(true == m_bIsAnnotationsON)
+        FillInfoHeaderLines();
     
     //ADD REQUIRED SAMPLES
     m_vcfWriter.AddSampleName("MOTHER");
@@ -157,6 +161,18 @@ void CMendelianTrioMerger::GenerateTrioVcf(std::vector<SChrIdTriplet>& a_rCommon
     m_vcfWriter.CloseVcf();
 }
 
+void CMendelianTrioMerger::WriteRecords(const std::vector<SVcfRecord>& recordList,
+                                              const std::vector<EVariantCategory>& recordCategoryList,
+                                              const std::vector<EMendelianDecision>& recordDecisionList)
+{
+    //Write the final updated variants to output vcf and logs to the report table
+    for(int k = 0; k < static_cast<int>(recordList.size()); k++)
+    {
+        m_vcfWriter.AddMendelianRecord(recordList[k]);
+        RegisterMergedLine(recordDecisionList[k], recordCategoryList[k]);
+        RegisterGenotype(recordList[k], recordCategoryList[k], recordDecisionList[k]);
+    }
+}
 
 void CMendelianTrioMerger::AddRecords(SChrIdTriplet &a_rTriplet)
 {
@@ -197,13 +213,8 @@ void CMendelianTrioMerger::AddRecords(SChrIdTriplet &a_rTriplet)
     
     std::cerr << "Writing variants to output vcf..." << std::endl;
     
-    //Write the final updated variants to output vcf and logs to the report table
-    for(int k = 0; k < static_cast<int>(recordList.size()); k++)
-    {
-        m_vcfWriter.AddMendelianRecord(recordList[k]);
-        RegisterMergedLine(recordDecisionList[k], recordCategoryList[k]);
-        RegisterGenotype(recordList[k], recordCategoryList[k], recordDecisionList[k]);
-    }
+    //Write records to the VCF file and fill logs
+    WriteRecords(recordList, recordCategoryList, recordDecisionList);
     
 }
 
@@ -269,6 +280,8 @@ void CMendelianTrioMerger::DoMerge(const CVariant* a_pVarMother,
     vcfrecord.m_nPosition = a_pVarMother == NULL ? (a_pVarFather != NULL ? a_pVarFather->m_nOriginalPos : a_pVarChild->m_nOriginalPos) : a_pVarMother->m_nOriginalPos;
     vcfrecord.m_chrName = a_pVarMother == NULL ? (a_pVarFather != NULL ? a_pVarFather->m_chrName : a_pVarChild->m_chrName) : a_pVarMother->m_chrName;
     vcfrecord.m_mendelianDecision = std::to_string(static_cast<int>(a_decision));
+    vcfrecord.m_fQuality = a_pVarChild == NULL ? (a_pVarFather != NULL ? a_pVarFather->m_fQuality : a_pVarMother->m_fQuality) : a_pVarChild->m_fQuality;
+
     
     //Left most position of vcf record
     vcfrecord.left = std::min({a_pVarMother != 0 ? a_pVarMother->m_nStartPos : INT_MAX,
@@ -321,6 +334,13 @@ void CMendelianTrioMerger::DoMerge(const CVariant* a_pVarMother,
     vcfrecord.m_aSampleData.push_back(dataMother);
     vcfrecord.m_aSampleData.push_back(dataFather);
     vcfrecord.m_aSampleData.push_back(dataChild);
+    
+    //Push SInfo columns to the vcfrecord
+    if(true == m_bIsAnnotationsON)
+    {
+        const SInfo& pInfoToCopy = (a_pVarChild == 0 ? (a_pVarFather == 0 ? a_pVarMother->m_info : a_pVarFather->m_info) : a_pVarChild->m_info);
+        vcfrecord.m_pInfo = new SInfo(pInfoToCopy);
+    }
     
     //Add record to the trio
     a_rRecordList.push_back(vcfrecord);
@@ -513,3 +533,52 @@ void CMendelianTrioMerger::ProcessRefOverlappedRegions(std::vector<SVcfRecord>& 
         recordItr++;
     }
 }
+
+void CMendelianTrioMerger::FillInfoHeaderLines()
+{
+    std::unordered_map<std::string, bool> isKeyExist;
+   
+    bcf_hdr_t* pHeader;
+    
+    //Open child vcf
+    CVcfReader childVcf;
+    childVcf.Open(m_childPath.c_str());
+    
+    pHeader = childVcf.GetHeaderPointer();
+    
+    //m_vcfWriter.AddHeaderLine("##INFO=<ID=MD,Number=1,Type=Integer,Description=\"Mendelian Violation Decision. (0)-complex, (1)-compliant, (2)-violation (3)-NoCall Parent (4)-NoCall Child \">");
+
+    
+    for(int k = 0; k < pHeader->nhrec; k++)
+    {
+        if(pHeader->hrec[k]->type == BCF_HL_INFO)
+        {
+            std::string headerLine = "##INFO=<";
+            
+            for(int m = 0; m < pHeader->hrec[k]->nkeys-1; m++)
+            {
+                if(m != 0)
+                    headerLine += ",";
+                
+                headerLine += std::string(pHeader->hrec[k]->keys[m]);
+                headerLine += std::string("=") + std::string(pHeader->hrec[k]->vals[m]);
+            }
+            headerLine += ">";
+            
+            m_vcfWriter.AddHeaderLine(headerLine);
+        }
+    }    
+}
+
+void CMendelianTrioMerger::SetInfoReadParameters(const std::string& a_rChildInputPath,
+                                                 const std::string& a_rFatherInputPath,
+                                                 const std::string& a_rMotherInputPath)
+{
+    m_childPath = a_rChildInputPath;
+    m_fatherPath = a_rFatherInputPath;
+    m_motherPath = a_rMotherInputPath;
+    m_bIsAnnotationsON = true;
+}
+
+
+

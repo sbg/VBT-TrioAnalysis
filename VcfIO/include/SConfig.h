@@ -104,6 +104,10 @@ struct SConfig
     ///Enable generating syncpoint files which is the intermediate output of core module
     bool m_bGenerateSyncPoints = false;
     
+    ///Enable reading whole info format into a structure while parsing VCF file
+    bool m_bIsReadINFO = false;
+    std::string m_infotags;
+    
     ///Number of thread to use during execution
     int m_nThreadCount = DEFAULT_THREAD_COUNT;
     

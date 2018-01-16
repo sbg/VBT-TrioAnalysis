@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include "CVcfReader.h"
 #include <iostream>
+#include <sstream>
 
 CVcfReader::CVcfReader()
 {
@@ -143,8 +144,40 @@ bool CVcfReader::GetNextRecord(CVariant * a_pVariant, int a_nId, const SConfig& 
         a_pVariant->m_variantIDfromVcf = std::string(m_pRecord->d.id);
         
         //READ QUALITY DATA
-        // m_pRecord->qual
+        a_pVariant->m_fQuality = m_pRecord->qual;
         
+        //READ INFO DATA
+        if(true == a_rConfig.m_bIsReadINFO)
+        {
+            for(int k = 0; k < (int)m_infoNames.size(); k++)
+            {
+                bcf_info_t* pInfo = bcf_get_info(m_pHeader, m_pRecord, m_infoNames[k].c_str());
+                SInfoEntry infoEntry;
+            
+                if(pInfo == NULL)
+                    continue;
+                
+                infoEntry.n = 0;
+                infoEntry.key = m_infoNames[k];
+                if(pInfo->type == BCF_BT_INT8 || pInfo->type == BCF_BT_INT16 || pInfo->type == BCF_BT_INT32)
+                    infoEntry.type = BCF_HT_INT;
+                if(pInfo->type == BCF_BT_FLOAT)
+                    infoEntry.type = BCF_HT_REAL;
+                if(pInfo->type == BCF_BT_CHAR)
+                    infoEntry.type = BCF_HT_STR;
+                if(pInfo->type == BCF_BT_NULL)
+                    infoEntry.type = BCF_HT_FLAG;
+                
+                infoEntry.values = malloc(pInfo->vptr_len);
+                int isSuccessToStructure = bcf_get_info_values(m_pHeader, m_pRecord, m_infoNames[k].c_str(),
+                                                           (void**)(&infoEntry.values), &infoEntry.n, infoEntry.type);
+                
+                if(isSuccessToStructure <= 0)
+                    std::cerr << "BCF info failed while reading tag:" << m_infoNames[k] << std::endl;
+                else
+                    a_pVariant->m_info.m_infoArray.push_back(infoEntry);
+            }
+        }
         
         //READ GENOTYPE DATA
         if(samplenumber != 0)
@@ -558,10 +591,35 @@ bcf1_t* CVcfReader::GetRecordPointer()
 }
 
 
+void CVcfReader::GetInfoNames(const std::string& a_rInfoColumns)
+{
+    std::stringstream ss(a_rInfoColumns);
 
+    while(ss.good())
+    {
+        std::string substr;
+        getline( ss, substr, ',');
+        m_infoNames.push_back(substr);
+    }
+}
 
-
-
+void CVcfReader::GetInfoNames()
+{
+    for(int k = 0; k < m_pHeader->nhrec; k++)
+    {
+        if(m_pHeader->hrec[k]->type == BCF_HL_INFO)
+        {
+            for(int m = 0; m < m_pHeader->hrec[k]->nkeys; m++)
+            {
+                if(strcmp(m_pHeader->hrec[k]->keys[m], "ID"))
+                {
+                    m_infoNames.push_back(std::string(m_pHeader->hrec[k]->vals[m-1]));
+                    break;
+                }
+            }
+        }
+    }
+}
 
 
 

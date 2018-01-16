@@ -73,6 +73,10 @@ public:
     ///Fills the a_PatientList with sample names
     void GetSampleNames(std::vector<std::string>& a_PatientList);
     
+    ///Read the info names from the vcf header
+    void GetInfoNames();
+    void GetInfoNames(const std::string& a_rInfoColumns);
+    
     ///Get the filename
     std::string GetFilename() const {return m_filename;};
     
@@ -142,6 +146,8 @@ private:
     std::vector<SVcfContig> m_contigs;
     int m_nVcfId;
   
+    
+    std::vector<std::string> m_infoNames;
 };
 
 #endif //VCF_READER_H_

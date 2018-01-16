@@ -71,7 +71,7 @@ struct SVcfRecord
     ///Position of the variant (0 based)
     int m_nPosition;
     ///Quality of the variant
-    int m_nQuality = -1;
+    float m_fQuality = 0.0f;
     ///Mendelian Decision INFO (Used for mendelian comparison feature)
     std::string m_mendelianDecision = "";
     ///Filter string of the variant (eg. "PASS")
@@ -82,6 +82,8 @@ struct SVcfRecord
     std::string m_chrName;
     ///Sample Data (Data to store for each sample)
     std::vector<SPerSampleData> m_aSampleData;
+    ///All info data that is stored for VCF Record (here is the priority from which sample the info columns are taken(for 3 single-sample vcf input): child > father > mother)
+    SInfo* m_pInfo = NULL;
 };
 
 /**
@@ -126,7 +128,15 @@ public:
     ///Set raw header to the output vcf
     void SetRawHeader(bcf_hdr_t* a_pHeader);
     
+    ///Set infoColumnTags of VCFs
+    void SetInfoColumnTags(const std::vector<std::string>& a_rMotherInfoTags,
+                           const std::vector<std::string>& a_rFatherInfoTags,
+                           const std::vector<std::string>& a_rChildInfoTags);
+    
 private:
+    
+    //Write info columns to the vcf record
+    void WriteInfoColumns(const SInfo* pInfo);
     
     ///Return the current time in YYYYMMDD format
     std::string GetTime();

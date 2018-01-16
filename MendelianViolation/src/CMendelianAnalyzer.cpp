@@ -117,6 +117,7 @@ int CMendelianAnalyzer::run(int argc, char **argv)
     
     std::cerr << "[stderr] Generating the output trio vcf..." << std::endl;
     //Generate trio output vcf from common chromosomes
+    m_trioWriter.SetInfoReadParameters(m_fatherChildConfig.m_pCalledVcfFileName, m_fatherChildConfig.m_pBaseVcfFileName, m_motherChildConfig.m_pBaseVcfFileName);
     m_trioWriter.GenerateTrioVcf(chrIds);
     
     std::cerr << "[stderr] Generating detailed output logs.." << std::endl;
@@ -165,6 +166,7 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
     const char* PARAM_CLIP_FROM_END = "--trim-endings-first";
     const char* PARAM_THREAD_COUNT = "-thread-count";
     const char* PARAM_NO_CALL = "-no-call";
+    const char* PARAM_PRINT_INFO = "-output-info-tags";
     
     const char* PARAM_OUTPUT_PREFIX = "-out-prefix";
     
@@ -290,6 +292,14 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
         {
             m_motherChildConfig.m_output_prefix = argv[it+1];
             m_fatherChildConfig.m_output_prefix = argv[it+1];
+        }
+        
+        else if(0 == strcmp(argv[it], PARAM_PRINT_INFO))
+        {
+            m_motherChildConfig.m_bIsReadINFO = true;
+            m_motherChildConfig.m_infotags = std::string(argv[it+1]);
+            m_fatherChildConfig.m_bIsReadINFO = true;
+            m_fatherChildConfig.m_infotags = std::string(argv[it+1]);
         }
         
         else if(0 == strcmp(argv[it], PARAM_SAMPLE_FATHER))

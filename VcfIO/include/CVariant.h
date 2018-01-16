@@ -31,7 +31,7 @@
 #include "htslib/vcf.h"
 #include "EVariantMatch.h"
 #include "EVariantCategory.h"
-
+#include "SInfo.h"
 
 enum EVariantType
 {
@@ -158,6 +158,9 @@ class CVariant
     ///Original variant position
     int m_nOriginalPos;
     
+    //Quality of variant
+    float m_fQuality;
+    
     mutable EVariantMatch m_variantStatus;
     
     ///True if the variant genotype is phased
@@ -187,6 +190,8 @@ class CVariant
     
     ///Variant id retrieved from the VCF
     std::string m_variantIDfromVcf;
+    SInfo m_info;
+    
     
     ///Chromosome name
     std::string m_chrName;

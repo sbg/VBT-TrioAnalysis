@@ -122,8 +122,8 @@ void CVcfWriter::AddRecord(const SVcfRecord& a_rVcfRecord)
     m_pRecord->pos = a_rVcfRecord.m_nPosition;
     
     //Set Quality
-    if(a_rVcfRecord.m_nQuality != -1)
-        m_pRecord->qual = a_rVcfRecord.m_nQuality;
+    if(a_rVcfRecord.m_fQuality != 0.0f)
+        m_pRecord->qual = a_rVcfRecord.m_fQuality;
     
     //Set alleles
     success = bcf_update_alleles_str(m_pHeader, m_pRecord, a_rVcfRecord.m_alleles.c_str());
@@ -257,13 +257,16 @@ void CVcfWriter::AddMendelianRecord(const SVcfRecord& a_rVcfRecord)
     m_pRecord->pos = a_rVcfRecord.m_nPosition;
     
     //Set Quality
-    if(a_rVcfRecord.m_nQuality != -1)
-        m_pRecord->qual = a_rVcfRecord.m_nQuality;
+    if(a_rVcfRecord.m_fQuality != 0.0f)
+        m_pRecord->qual = a_rVcfRecord.m_fQuality;
     
     //Set alleles
     success = bcf_update_alleles_str(m_pHeader, m_pRecord, a_rVcfRecord.m_alleles.c_str());
     if(success < 0)
         std::cerr << "Failed to update Alleles string for Record: " << "Chr" << a_rVcfRecord.m_chrName << " Position: " << a_rVcfRecord.m_nPosition << std::endl;
+    
+    //Write Info tags to the vcf record
+    WriteInfoColumns(a_rVcfRecord.m_pInfo);
     
     //Set Decision
     int decArray = atoi(a_rVcfRecord.m_mendelianDecision.c_str());
@@ -351,4 +354,24 @@ void CVcfWriter::AddRawRecord(bcf1_t* a_rRecord)
 {
     bcf_write1(m_pHtsFile, m_pHeader, a_rRecord);
 }
+
+void CVcfWriter::WriteInfoColumns(const SInfo* pInfo)
+{
+    int success;
+    
+    if(pInfo == NULL)
+        return;
+    else
+    {
+        for(int k = 0; k < (int)pInfo->m_infoArray.size(); k++)
+        {
+            success = bcf_update_info(m_pHeader, m_pRecord, pInfo->m_infoArray[k].key.c_str(), pInfo->m_infoArray[k].values, pInfo->m_infoArray[k].n, pInfo->m_infoArray[k].type);
+            if(success < 0)
+            {
+                std::cout << "INFO update is failed : " << pInfo->m_infoArray[k].key << std::endl;
+            }
+        }
+    }
+}
+
 
