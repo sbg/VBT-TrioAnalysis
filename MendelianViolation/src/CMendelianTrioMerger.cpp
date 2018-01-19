@@ -198,8 +198,8 @@ void CMendelianTrioMerger::AddRecords(SChrIdTriplet &a_rTriplet)
         //Push record decision
         recordDecisionList.push_back(decision);
         
-        //Push record category -> TODO: We should do it for final record?
-        EVariantCategory category = motherVariant == 0 ? ((fatherVariant == 0) ? childVariant->GetVariantCategory() : fatherVariant->GetVariantCategory()) : motherVariant->GetVariantCategory();
+        //Push record category // Child > Father > Mother
+        EVariantCategory category = childVariant == 0 ? ((fatherVariant == 0) ? motherVariant->GetVariantCategory() : fatherVariant->GetVariantCategory()) : childVariant->GetVariantCategory();
         recordCategoryList.push_back(category);
    
         //Merge variant and push it to the recordList
