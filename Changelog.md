@@ -1,9 +1,17 @@
 # VBT Changelog
 
+### Version 0.7.7 :
+
+	- Mendelian detailed logs table: variant category (SNP, INSERTION, DELETION) assign order changed from mother>father>child  to child>father>mother
+	- Ref overlap mode becomes the default mode of VBT
+	- Trim Variant from beginning is set to false by default in Mendelian tool
+
+
 ### Version 0.7.6 :
 
 	- Quality column is added to the output trio of mendelian vcf
 	- A new optional parameter is added that selects INFO tags from input file to be printed in the output file
+
 
 
 ### Version 0.7.5 :
