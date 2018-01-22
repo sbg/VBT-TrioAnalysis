@@ -96,7 +96,7 @@ struct SConfig
     bool m_bINDELOnly = false;
     
     ///Enable REF Overlap mode
-    bool m_bIsRefOverlap = false;
+    bool m_bIsRefOverlap = true;
     
     ///When a variant allele has multiple trimming option, TRUE: clips from beginning first FALSE: clips from ending first
     bool m_bTrimBeginningFirst = true;

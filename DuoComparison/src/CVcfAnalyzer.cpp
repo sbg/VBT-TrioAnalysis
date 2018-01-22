@@ -458,7 +458,7 @@ bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
     const char* PARAM_SNP_ONLY = "--SNP_ONLY";
     const char* PARAM_INDEL_ONLY = "--INDEL_ONLY";
     const char* PARAM_OUTPUT_DIR = "-outDir";
-    const char* PARAM_REF_OVERLAP = "--ref-overlap";
+    const char* PARAM_REF_OVERLAP = "--disable-ref-overlap";
     const char* PARAM_CLIP_FROM_END = "--trim-endings-first";
     const char* PARAM_THREAD_COUNT = "-thread-count";
     const char* PARAM_OUTPUT_MODE = "-output-mode";
@@ -542,7 +542,7 @@ bool CVcfAnalyzer::ReadParameters(int argc, char** argv)
         
         else if(0 == strcmp(argv[it], PARAM_REF_OVERLAP))
         {
-            m_config.m_bIsRefOverlap = true;
+            m_config.m_bIsRefOverlap = false;
             it++;
         }
         
@@ -659,7 +659,7 @@ void CVcfAnalyzer::PrintHelp() const
     std::cout << "--INDEL_ONLY                 [Optional.Filter SNPs out from both base and called VCF file.]" << std::endl;
     std::cout << "-sample-base <sample_name>   [Optional.Read only the given sample in base VCF. Default value is the first sample.]" << std::endl;
     std::cout << "-sample-called <sample_name> [Optional.Read only the given sample in called VCF. Default value is the first sample.]" << std::endl;
-    std::cout << "--ref-overlap                [Optional.Allow reference overlapping by trimming nucleotides and ignoring 0 genotype.]" << std::endl;
+    std::cout << "--disable-ref-overlap        [Optional.Disable reference overlapping. Does not trim alleles]" << std::endl;
     std::cout << "--generate-sync-point        [Optional.Prints the sync point list of two vcf file. Default value is false.]" << std::endl;
     std::cout << "--trim-endings-first         [Optional.If set, starts trimming variants from ending base pairs. Default is from beginning]" << std::endl;
     std::cout << "-thread-count                [Optional.Specify the number of threads that program will use. Default value is 2]" << std::endl;

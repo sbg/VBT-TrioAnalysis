@@ -162,8 +162,7 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
     const char* PARAM_SAMPLE_CHILD = "-sample-child";
     
     const char* PARAM_OUTPUT_DIR = "-outDir";
-    const char* PARAM_REF_OVERLAP = "--ref-overlap";
-    const char* PARAM_CLIP_FROM_END = "--trim-endings-first";
+    const char* PARAM_REF_OVERLAP = "--disable-ref-overlap";
     const char* PARAM_THREAD_COUNT = "-thread-count";
     const char* PARAM_NO_CALL = "-no-call";
     const char* PARAM_PRINT_INFO = "-output-info-tags";
@@ -177,6 +176,10 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
     bool bChildSet = false;
     bool bReferenceSet = false;
     bool bOutputDirSet = false;
+    
+    m_motherChildConfig.m_bTrimBeginningFirst = false;
+    m_fatherChildConfig.m_bTrimBeginningFirst = false;
+
     
     //Start from index 2 since first parameter will be mendelian mode indicator
     int it = 2;
@@ -240,15 +243,8 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
         
         else if(0 == strcmp(argv[it], PARAM_REF_OVERLAP))
         {
-            m_motherChildConfig.m_bIsRefOverlap = true;
-            m_fatherChildConfig.m_bIsRefOverlap = true;
-            it--;
-        }
-        
-        else if(0 == strcmp(argv[it], PARAM_CLIP_FROM_END))
-        {
-            m_motherChildConfig.m_bTrimBeginningFirst = false;
-            m_fatherChildConfig.m_bTrimBeginningFirst = false;
+            m_motherChildConfig.m_bIsRefOverlap = false;
+            m_fatherChildConfig.m_bIsRefOverlap = false;
             it--;
         }
         
@@ -273,12 +269,8 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
         {
             if(0 == strcmp("none", argv[it+1]))
                 m_noCallMode = ENoCallMode::eNone;
-            else if(0 == strcmp("explicit", argv[it+1]))
-                m_noCallMode = ENoCallMode::eExplicitNoCall;
-            else if(0 == strcmp("implicit", argv[it+1]))
-                m_noCallMode = ENoCallMode::eImplicitNoCall;
             else
-                m_noCallMode = ENoCallMode::eNone;
+                m_noCallMode = ENoCallMode::eExplicitNoCall;
         }
         
         else if(0 == strcmp(argv[it], PARAM_AUTOSOME_ONLY))
@@ -568,17 +560,15 @@ void CMendelianAnalyzer::PrintHelp() const
     std::cout << "-ref <reference_fasta_path>  [Required.Add reference FASTA file]" << std::endl;
     std::cout << "-outDir <output_directory>   [Required.Add output directory]" << std::endl;
     std::cout << "-pedigree <PED_file_path>    [Optional.Indentifies parent-child indexes from given PED file" << std::endl;
-    std::cout << "-no-call <no_call_mode>      [Optional. Decides what to do with no call variants. There are 3 modes:" << std::endl;
-    std::cout << "\t" << "implicit : mark boths implicit and explicit no call variant as NoCall" << std::endl;
-    std::cout << "\t" << "explicit : mark explicit no call variants only as NoCall. Implicit no call variants will be treated as 0/0" << std::endl;
-    std::cout << "\t" << "none : [Default Value] Treat all of no call variants as 0/0" << std::endl;
-    std::cout << "-filter <filter_name>        [Optional.Filter variants based on filter column. Default value is PASS. Use 'none' to unfilter]" << std::endl;
-    std::cout << "--ref-overlap                [Optional.Allow reference overlapping by trimming nucleotides and ignoring 0 genotype.]" << std::endl;
-    std::cout << "--trim-endings-first         [Optional.If set, starts trimming variants from ending base pairs. Default is from beginning]" << std::endl;
-    std::cout << "-sample-father <sample_name>  [Optional.Read only the given sample in father VCF. Default value is the first sample.]" << std::endl;
-    std::cout << "-sample-mother <sample_name>  [Optional.Read only the given sample in mother VCF. Default value is the first sample.]" << std::endl;
-    std::cout << "-sample-child <sample_name>   [Optional.Read only the given sample in child VCF. Default value is the first sample.]" << std::endl;
-    std::cout << "-thread-count                 [Optional.Specify the number of threads that program will use. Default value is 2]" << std::endl;
+    std::cout << "-no-call <no_call_mode>      [Optional. Decides what to do with no call variants. There are 2 modes:" << std::endl;
+    std::cout << "\t" << "explicit : [Default Value] mark variants with ./. genotype as NoCall. All other unknown sites will be treated as 0/0" << std::endl;
+    std::cout << "\t" << "none : Treat all unknown variants including ./. genotype will be treated as 0/0" << std::endl;
+    std::cout << "-filter <filter_name>        [Optional.Filter variants based on filter column. Default value is PASS. Use 'none' to disable filtering]" << std::endl;
+    std::cout << "--disable-ref-overlap        [Optional.Disable reference overlapping. Does not trim alleles]" << std::endl;;
+    std::cout << "-sample-father <sample_name> [Optional.Read only the given sample in father VCF. Default value is the first sample.]" << std::endl;
+    std::cout << "-sample-mother <sample_name> [Optional.Read only the given sample in mother VCF. Default value is the first sample.]" << std::endl;
+    std::cout << "-sample-child <sample_name>  [Optional.Read only the given sample in child VCF. Default value is the first sample.]" << std::endl;
+    std::cout << "-thread-count                [Optional.Specify the number of threads that program will use. Default value is 2]" << std::endl;
     std::cout << std::endl;
     std::cout << "Example Commands:" << std::endl;
     std::cout << "./vbt mendelian -mother mother.vcf -father father.vcf -child child.vcf -ref reference.fasta -outDir SampleResultDir -filter none -no-call explicit" << std::endl;
