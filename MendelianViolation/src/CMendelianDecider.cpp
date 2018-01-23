@@ -664,10 +664,11 @@ void CMendelianDecider::MergeFunc(SChrIdTriplet& a_triplet,
     m_aBestPathsMotherChildGT[a_triplet.m_nTripleIndex].SortIncludedVariants();
     m_aBestPathsMotherChildAM[a_triplet.m_nTripleIndex].SortIncludedVariants();
     
-    //Included lists of child
+    //Merged Genotype and Allele match Child variants with Father
     CVariantIterator FatherChildVariants(m_aBestPathsFatherChildGT[a_triplet.m_nTripleIndex].m_calledSemiPath.GetIncludedVariants(),
                                          m_aBestPathsFatherChildAM[a_triplet.m_nTripleIndex].m_calledSemiPath.GetIncludedVariants());
     
+    //Merged Genotype and Allele match Child variants with Mother
     CVariantIterator MotherChildVariants(m_aBestPathsMotherChildGT[a_triplet.m_nTripleIndex].m_calledSemiPath.GetIncludedVariants(),
                                          m_aBestPathsMotherChildAM[a_triplet.m_nTripleIndex].m_calledSemiPath.GetIncludedVariants());
     
@@ -675,7 +676,8 @@ void CMendelianDecider::MergeFunc(SChrIdTriplet& a_triplet,
     if(FatherChildVariants.hasNext() == false && MotherChildVariants.hasNext() == false)
         return;
     
-    //Process child variants from mother-child and father-child comparisons. Eliminate same allele matches and identifies variants requires post-processing
+    //Process child variants from mother-child and father-child comparisons. Eliminate same allele matches
+    //and identifies variants requires post-processing
     EliminateSameAlleleMatch(MotherChildVariants,
                              FatherChildVariants,
                              violations,
@@ -683,12 +685,12 @@ void CMendelianDecider::MergeFunc(SChrIdTriplet& a_triplet,
                              check0atMotherSide,
                              check0atFatherSide);
     
-    //Check for 0/x child variant set at father side
+    //Check for 0/x child variant set at father side. Set eligible 0/x child variants to compliants list and other to the violation list
     CheckFor0Path(a_triplet, true, check0atFatherSide, violations, compliants, a_rFatherDecisions);
-    //Check for 0/x child variant set at the mother side
+    //Check for 0/x child variant set at the mother side. Set eligible 0/x child variants to compliants list and other to the violation list
     CheckFor0Path(a_triplet, false, check0atMotherSide, violations, compliants, a_rMotherDecisions);
     
-    //Find Child Unique variants
+    //Find Child Unique variants and add them to the violation list
     FindUniqueChildVariantList(childVariants, violations, compliants, violations);
     
     //Sort compliant and violation variant list
