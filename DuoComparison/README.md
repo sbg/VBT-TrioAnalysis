@@ -68,9 +68,16 @@ An **optional** parameter which is used to eliminate all of INDELs and SVs from 
 
 An **optional** parameter which is used to eliminate all of SNPs and SVs from input vcf files.
 
-### --ref-overlap
+### --disable-ref-overlap
 
-An **optional** parameter which tolerates reference overlapping variants.
+An **optional** parameter which disables reference overlapping in variant comparison. Only one of overlapping variants will be placed to the True Positive variant set.
+
+### --generate-sync-points
+
+An **optional** parameter that prints the sync point list of two vcf file.
+
+### --trim-endings-first
+An **optional** parameter where in reference overlapping mode variants will be trimmed starting from the longest suffix first. By default, VBT is trimming prefix of alleles first.
 
 ### -thread-count [1-25]
 An **optional** parameter to specify number of threads. Default value is 2
