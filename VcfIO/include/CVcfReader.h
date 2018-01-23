@@ -63,10 +63,7 @@ public:
     
     ///Get next record in the file. a_nId sets the id of variant (no need to be set)
     bool GetNextRecord(CVariant* a_pVariant, int a_nId, const SConfig& a_rConfig);
-    
-    ///Get next record which has multiple samples in the file(Generates list of N variants and name of each sample)
-    bool GetNextRecordMultiSample(CVariant* a_pVariant);
-    
+        
     ///Selects the sample name from multi sample VCF file and ignore other samples
     bool SelectSample(std::string a_sampleName);
     
