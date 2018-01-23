@@ -30,7 +30,7 @@ make install
 You can download the latest version of VBT using the following git command:
 
 ```
-git clone https://github.com/sbg/vbt.git
+git clone https://github.com/sbg/VBT-TrioAnalysis.git
 ```
 
 Once you have successfully installed htslib and download VBT, Then you can use following commands to compile VBT:
