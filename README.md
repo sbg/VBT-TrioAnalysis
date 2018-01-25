@@ -6,7 +6,7 @@
 VBT provides a set of tools that is used for aligner/variant calling benchmarking. VBT uses [vcfeval](https://github.com/RealTimeGenomics/rtg-tools) as its core variant comparison library and [htslib](https://htslib.org) to read/write VCF and FASTA files. 
 <br />
 <br />
-**Preprint of VBT on Biorxiv :**  TO_BE_FILLED <br/>
+Preprint of VBT is published at Biorxiv: [Comparing complex variants in family trios](https://doi.org/10.1101/253492)  <br/>
 <br />
 VBT contains 2 tool:
 
