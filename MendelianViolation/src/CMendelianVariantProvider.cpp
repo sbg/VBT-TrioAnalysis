@@ -284,6 +284,10 @@ void CMendelianVariantProvider::FillVariantForSample(int a_nSampleId, SConfig& a
         if(!variant.m_bIsNoCall && CUtils::IsHomRef(variant))
             continue;
         
+        //Eliminate variants rather than diploid
+        if(variant.m_nZygotCount != 2)
+            continue;
+        
         std::size_t found = variant.m_allelesStr.find('*');
         if (found!=std::string::npos)
         {

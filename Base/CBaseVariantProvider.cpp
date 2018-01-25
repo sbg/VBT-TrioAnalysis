@@ -83,7 +83,7 @@ void CBaseVariantProvider::FindOptimalTrimmings(std::vector<CVariant>& a_rVarian
     
     for(unsigned int k = 0; k < a_rVariantList.size(); k++)
     {
-        for(int i = 0; i < 2; i++)
+        for(int i = 0; i < a_rVariantList[k].m_nZygotCount; i++)
         {
             if(a_rVariantList[k].m_alleles[i].m_bIsIgnored || a_rVariantList[k].m_alleles[i].m_bIsTrimmed)
                 continue;
@@ -128,7 +128,7 @@ void CBaseVariantProvider::FindOptimalTrimmings(std::vector<CVariant>& a_rVarian
                 for(unsigned int ovarItr = 0; ovarItr < tmpoverlapVariants.size(); ovarItr++)
                 {
                     //Check each allele of overlapping variant
-                    for(int tmpItr = 0; tmpItr < 2; tmpItr++)
+                    for(int tmpItr = 0; tmpItr < tmpoverlapVariants[ovarItr].m_nZygotCount; tmpItr++)
                     {
                         //If the allele does not overlap, continue
                         if(!CUtils::IsOverlap(a_rVariantList[k].m_alleles[i].m_nStartPos,
