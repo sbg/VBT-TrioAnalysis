@@ -45,7 +45,7 @@ A **required** parameter which specifies the reference FASTA file path. It shoul
 
 ### -no-call nocall_mode
 
-An **optional** parameter which sets the way program process no call variants. Default mode is none.
+An **optional** parameter which sets the way program process no call variants. Default mode is explicit.
 
 **explicit :** Marks noCall(variants with ./. genotype) variants as NoCall (Parent nocall or child nocall) <br />
 **none     :** Process noCall sites as 0/0 HOMREF
@@ -80,3 +80,6 @@ An **optional** parameter which is used to disable reference overlapping mode in
 ### -output-info-tags tag1,tag2,..
 
 An **optional** parameter which is used to output selected INFO columns in generated output trio VCF. Tags should be given as comma separated without whitespace. Each tag is should be exist in all mother, father and child samples. Info tag selection order is child, father and mother respectively.
+
+### -thread-count [1-25]
+An **optional** parameter which is used to specify number of threads that will be used for variant comparison step of trio analysis. Default value is 2.
