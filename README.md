@@ -89,7 +89,7 @@ This sample execution will produce:
 
 ## VBT Result Validation (mendelian):
 
-We implemented a pipeline that evaluates Mendelian decisions of VBT against naive tools. You can find the details and the tools at [Vbt Validation Pipeline](vbtValidationPipeline/README.md) folder.
+We implemented a pipeline that evaluates Mendelian decisions of VBT against naive tools. You can find the details and the tools at [Vbt Validation Pipeline](vbtValidationPipeline) folder.
 <br/>
 <br/>
 ## Source Code Documentation:
