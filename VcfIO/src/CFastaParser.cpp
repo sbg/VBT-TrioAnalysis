@@ -44,6 +44,11 @@ bool CFastaParser::OpenFastaFile(const char *fn)
     return bIsSuccess;
 }
 
+CFastaParser::CFastaParser()
+{
+    fai = NULL;
+}
+
 CFastaParser::~CFastaParser()
 {
     if(fai != 0)

@@ -56,6 +56,9 @@ class CFastaParser
     
 public:
     
+    ///Default Constructor
+    CFastaParser();
+    
     ///Destructor
     ~CFastaParser();
     
