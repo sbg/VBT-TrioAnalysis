@@ -1,0 +1,10 @@
+includedir=/Users/c1ms21p6h3qk/Desktop/htslib//include
+libdir=/Users/c1ms21p6h3qk/Desktop/htslib//lib
+
+Name: htslib
+Description: C library for high-throughput sequencing data formats
+Version: 1.3.2
+Cflags: -I${includedir}
+Libs: -L${libdir} -lhts
+Libs.private: -L${libdir} -lhts -lm -lpthread
+Requires.private: zlib
