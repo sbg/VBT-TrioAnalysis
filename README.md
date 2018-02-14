@@ -75,10 +75,9 @@ For additional help, please use the following commands:
 ```
 ./vbt mendelian -ref Example/human_g1k_v37_decoy_chr21.fasta -mother Example/UG_CEU_merged_cleaned_chr21.vcf -father Example/UG_CEU_merged_cleaned_chr21.vcf -child Example/UG_CEU_merged_cleaned_chr21.vcf -pedigree Example/ceu.ped -outDir <OUTPUT_DIRECTORY_FULL_PATH> -out-prefix ceu_21_sample
 ```
-**Important:** VBT does not generate the output folder if it does not exist in the system due to support different operating systems. Please make sure that, your directory already exists specified with **-outDir** parameter. Please refer to the [mendelian](MendelianViolation/README.md) page for additional parameter details.
-
-<br />
-<br />
+**Important:** VBT does not generate the output folder if it does not exist in the system due to support different operating systems. Please make sure that, your input directory already exists which is specified with **-outDir** parameter. Please refer to the [mendelian](MendelianViolation/README.md) page for additional parameter details.
+<br/>
+<br/>
 This sample execution will produce:
 
 	1. ceu_21_sample_BestPathLogs.txt              //Logs of Best Path Algorithm
@@ -88,6 +87,11 @@ This sample execution will produce:
 	5. ceu_21_sample_trio.vcf                      //Merged output trio (Mendelian decisions are annotated for each record)
 	
 
+## VBT Result Validation (mendelian):
+
+We implemented a pipeline that evaluates Mendelian decisions of VBT against naive tools. You can find the details and the tools at [Vbt Validation Pipeline](vbtValidationPipeline/README.md) folder.
+<br/>
+<br/>
 ## Source Code Documentation:
 
 A [Doxygen html documentation](Doxygen) is available for VBT under Doxygen folder.
