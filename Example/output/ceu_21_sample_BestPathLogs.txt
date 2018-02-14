@@ -1,0 +1,7 @@
+====== FATHER CHILD COMPARISON ======
+CHR ID    True-Pos-Child      True-Pos-Father     False-Pos      False-Neg      Precision      Recall         F-measure      
+21        62581               62586               14496          15372          0.8119         0.8028         0.8074         
+
+====== MOTHER CHILD COMPARISON ======
+CHR ID    True-Pos-Child      True-Pos-Mother     False-Pos      False-Neg      Precision      Recall         F-measure      
+21        60772               60769               16305          15931          0.7885         0.7923         0.7904         

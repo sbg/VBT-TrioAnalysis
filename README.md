@@ -73,8 +73,12 @@ For additional help, please use the following commands:
 **Example** folder contains a minimal example for testing VBT mendelian. We placed chr21 of merged BWA+UG CEPH trio as an input VCF. For the FASTA file, we extract chr21 from GRCh37 reference. In order to run the sample test, following command can be executed :
 
 ```
-./vbt mendelian -mother Example/UG_CEU_merged_cleaned_chr21.vcf -father Example/UG_CEU_merged_cleaned_chr21.vcf -child Example/UG_CEU_merged_cleaned_chr21.vcf -ped Example/ceu.ped --outDir Example/output -out-prefix ceu_21_sample
+./vbt mendelian -ref Example/human_g1k_v37_decoy_chr21.fasta -mother Example/UG_CEU_merged_cleaned_chr21.vcf -father Example/UG_CEU_merged_cleaned_chr21.vcf -child Example/UG_CEU_merged_cleaned_chr21.vcf -pedigree Example/ceu.ped -outDir <FULL_OUTPUT_PATH> -out-prefix ceu_21_sample
 ```
+**Important:** VBT does not generate the output folder if it does not exist in the system due to support different operating systems. Please make sure that, your directory already exists specified with **-outDir** parameter. Please refer to the [mendelian](MendelianViolation/README.md) page for additional parameter details.
+
+<br />
+<br />
 This sample execution will produce:
 
 	1. ceu_21_sample_BestPathLogs.txt              //Logs of Best Path Algorithm
@@ -83,7 +87,6 @@ This sample execution will produce:
 	4. ceu_21_sample_tab_delim_detailed_log.tsv    //Tab delimited version of detailed logs
 	5. ceu_21_sample_trio.vcf                      //Merged output trio (Mendelian decisions are annotated for each record)
 	
-For additional parameters, please check mendelian paramater specifications.
 
 ## Source Code Documentation:
 

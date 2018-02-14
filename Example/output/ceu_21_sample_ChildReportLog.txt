@@ -1,0 +1,7 @@
+Note: This file only contains violation/consistent variant count of child variants. Hom-ref child sites are not included
+
++---------------------------------------------------------+
+|VARIANT TYPES            COMPLIANT NO      VIOLATION NO  |
+|SNP                 |    67102          |    1929        |    
+|INDEL               |    6957           |    1089        |    
++---------------------------------------------------------+
