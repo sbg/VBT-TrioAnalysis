@@ -559,20 +559,21 @@ void CMendelianAnalyzer::PrintHelp() const
     std::cout << "-child <child_vcf_path>      [Required.Add child VCF file.]" << std::endl;
     std::cout << "-ref <reference_fasta_path>  [Required.Add reference FASTA file]" << std::endl;
     std::cout << "-outDir <output_directory>   [Required.Add output directory]" << std::endl;
+    std::cout << "-pedigree <pedigree_path>    [Optional.If a family trio is provided as input in -father, -mother and -child parameters, then samples can be identified using given pedigree file.]" << std::endl;
+    std::cout << "-out-prefix <prefix>         [Optional.Specifies the prefixes of generated output files. Default value is out]" << std::endl;
+    std::cout << "-output-info-tags tag1,tag2  [Optional.Selection of INFO columns in generated output trio VCF. Tags should be given as comma separated without whitespace." << std::endl;
     std::cout << "-pedigree <PED_file_path>    [Optional.Indentifies parent-child indexes from given PED file" << std::endl;
     std::cout << "-no-call <no_call_mode>      [Optional. Decides what to do with no call variants. There are 2 modes:" << std::endl;
     std::cout << "\t" << "explicit : [Default Value] mark variants with ./. genotype as NoCall. All other unknown sites will be treated as 0/0" << std::endl;
     std::cout << "\t" << "none : Treat all unknown variants including ./. genotype will be treated as 0/0" << std::endl;
     std::cout << "-filter <filter_name>        [Optional.Filter variants based on filter column. Default value is PASS. Use 'none' to disable filtering]" << std::endl;
     std::cout << "--disable-ref-overlap        [Optional.Disable reference overlapping. Does not trim alleles]" << std::endl;;
-    std::cout << "-sample-father <sample_name> [Optional.Read only the given sample in father VCF. Default value is the first sample.]" << std::endl;
-    std::cout << "-sample-mother <sample_name> [Optional.Read only the given sample in mother VCF. Default value is the first sample.]" << std::endl;
-    std::cout << "-sample-child <sample_name>  [Optional.Read only the given sample in child VCF. Default value is the first sample.]" << std::endl;
-    std::cout << "-thread-count                [Optional.Specify the number of threads that program will use. Default value is 2]" << std::endl;
+    std::cout << "--autosome-only              [Optional.If specified, process only autosomes. For this parameter, chromosome naming in VCF should be either chr1,chr2 or 1,2]" << std::endl;
+    std::cout << "-thread-count <1-25>         [Optional.Specify the number of threads that program will use. Default value is 2]" << std::endl;
     std::cout << std::endl;
     std::cout << "Example Commands:" << std::endl;
-    std::cout << "./vbt mendelian -mother mother.vcf -father father.vcf -child child.vcf -ref reference.fasta -outDir SampleResultDir -filter none -no-call explicit" << std::endl;
-    std::cout << "./vbt mendelian -mother trio.vcf -father trio.vcf -child trio.vcf -ref reference.fasta -outDir SampleResultDir -filter PASS -sample-mother mother -sample-father father -sample-child child" << std::endl;
+    std::cout << "./vbt mendelian -mother mother.vcf -father father.vcf -child child.vcf -ref reference.fasta -outDir <SampleResultDir> -filter none -no-call none" << std::endl;
+    std::cout << "./vbt mendelian -mother trio.vcf -father trio.vcf -child trio.vcf -ref reference.fasta -outDir <SampleResultDir> -filter PASS -ped trio.ped" << std::endl;
 }
 
 

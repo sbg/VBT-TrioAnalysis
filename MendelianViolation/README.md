@@ -54,6 +54,9 @@ An **optional** parameter which sets the way program process no call variants. D
 
 A **required** parameter which specifies the output directory for program/error logs and ga4gh output vcf file. In current version, in order not to damage multiplatform capability, **directory should exist. VBT will not generate a directory to be able to support different Operating Systems**.
 
+### -out-prefix prefix
+
+An **optional** parameter which specifies the prefixes of generatet output file names. Default prefix is 'out'.
 
 ### -pedigree PED_file_path
 
