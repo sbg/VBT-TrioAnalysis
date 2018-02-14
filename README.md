@@ -73,7 +73,7 @@ For additional help, please use the following commands:
 **Example** folder contains a minimal example for testing VBT mendelian. We placed chr21 of merged BWA+UG CEPH trio as an input VCF. For the FASTA file, we extract chr21 from GRCh37 reference. In order to run the sample test, following command can be executed :
 
 ```
-./vbt mendelian -ref Example/human_g1k_v37_decoy_chr21.fasta -mother Example/UG_CEU_merged_cleaned_chr21.vcf -father Example/UG_CEU_merged_cleaned_chr21.vcf -child Example/UG_CEU_merged_cleaned_chr21.vcf -pedigree Example/ceu.ped -outDir <FULL_OUTPUT_PATH> -out-prefix ceu_21_sample
+./vbt mendelian -ref Example/human_g1k_v37_decoy_chr21.fasta -mother Example/UG_CEU_merged_cleaned_chr21.vcf -father Example/UG_CEU_merged_cleaned_chr21.vcf -child Example/UG_CEU_merged_cleaned_chr21.vcf -pedigree Example/ceu.ped -outDir <OUTPUT_DIRECTORY_FULL_PATH> -out-prefix ceu_21_sample
 ```
 **Important:** VBT does not generate the output folder if it does not exist in the system due to support different operating systems. Please make sure that, your directory already exists specified with **-outDir** parameter. Please refer to the [mendelian](MendelianViolation/README.md) page for additional parameter details.
 
