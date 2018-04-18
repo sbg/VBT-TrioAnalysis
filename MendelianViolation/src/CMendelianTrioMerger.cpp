@@ -206,7 +206,7 @@ void CMendelianTrioMerger::AddRecords(SChrIdTriplet &a_rTriplet)
         DoMerge(motherVariant, fatherVariant, childVariant, decision, recordList);
     }
     
-    std::cerr << "Processing Overlapping Regions..." << std::endl;
+    std::cerr << "Adjusting Decision of overlapping variants ..." << std::endl;
     
     //Update records for overlapping regions
     ProcessRefOverlappedRegions(recordList, recordDecisionList);
@@ -497,11 +497,11 @@ bool CMendelianTrioMerger::CheckForOverlap(std::vector<SVcfRecord>&  a_rRecordLi
     return false;
 }
 
+
 void CMendelianTrioMerger::ProcessRefOverlappedRegions(std::vector<SVcfRecord>&  a_rRecordList, std::vector<EMendelianDecision>& a_rRecordDecisionList)
 {
-
     unsigned int recordItr = 0;
-    
+
     while(recordItr < a_rRecordList.size())
     {
         EMendelianDecision curVariantDecision = static_cast<EMendelianDecision>(std::stoi(a_rRecordList[recordItr].m_mendelianDecision));
@@ -509,21 +509,40 @@ void CMendelianTrioMerger::ProcessRefOverlappedRegions(std::vector<SVcfRecord>& 
         //Skip consistent variants
         if(curVariantDecision != eCompliant && curVariantDecision != eUnknown)
         {
+            //Check for overlap backwards recursively
+            
             //Go Backward and use a second iterator
             int temporaryItr = (int)recordItr-1;
-            while(temporaryItr >= 0)
+            int itrHasmostSpan = recordItr;
+            int leftmostStartPosition = a_rRecordList[recordItr].left - 200;
+            
+            while(temporaryItr >= 0 && a_rRecordList[temporaryItr].right > leftmostStartPosition)
             {
-                if(CheckForOverlap(a_rRecordList, a_rRecordDecisionList, recordItr, temporaryItr, curVariantDecision))
-                    temporaryItr--;
-                else
-                    break;
+                if(CheckForOverlap(a_rRecordList, a_rRecordDecisionList, itrHasmostSpan, temporaryItr, curVariantDecision))
+                {
+                    leftmostStartPosition = a_rRecordList[temporaryItr].left - 200;
+                    itrHasmostSpan = temporaryItr;
+                }
+                
+                temporaryItr--;
+            }
+            
+            //Mark all variants as violation between the furthest variant and the current variant
+            for(unsigned int k = itrHasmostSpan; k < recordItr; k++)
+            {
+                a_rRecordDecisionList[k] = curVariantDecision;
+                a_rRecordList[k].m_mendelianDecision = a_rRecordList[recordItr].m_mendelianDecision;
             }
             
             //Go Forward with second iterator
             temporaryItr = (int)recordItr + 1;
+            itrHasmostSpan = recordItr;
+
             while(temporaryItr < (int)a_rRecordList.size())
             {
-                if(CheckForOverlap(a_rRecordList, a_rRecordDecisionList, recordItr, temporaryItr, curVariantDecision))
+                itrHasmostSpan = (a_rRecordList[temporaryItr-1].right > a_rRecordList[itrHasmostSpan].right) ? temporaryItr - 1 : itrHasmostSpan;
+                
+                if(CheckForOverlap(a_rRecordList, a_rRecordDecisionList, itrHasmostSpan, temporaryItr, curVariantDecision))
                     temporaryItr++;
                 else
                     break;
