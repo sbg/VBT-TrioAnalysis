@@ -27,6 +27,7 @@
 #include "CVariant.h"
 #include "COrientedVariant.h"
 #include <fstream>
+#include <sys/stat.h>
 
 //Checks if the given two range is overlapping
 bool CUtils::IsOverlap(int left1, int right1, int left2, int right2)
@@ -112,3 +113,17 @@ bool CUtils::IsFileExists (const std::string& name)
     std::ifstream f(name.c_str());
     return f.good();
 }
+
+bool CUtils::IsDirectoryExists(const std::string& path)
+{
+    struct stat sb;
+    
+    if (stat(path.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode))
+        return true;
+    else
+        return false;
+}
+
+
+
+

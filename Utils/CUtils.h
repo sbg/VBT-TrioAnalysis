@@ -61,6 +61,9 @@ public:
     ///Return true if the given file path exists
     static bool IsFileExists (const std::string& name);
     
+    ///Return true if the given directory path exists
+    static bool IsDirectoryExists(const std::string& path);
+    
 };
 
 
