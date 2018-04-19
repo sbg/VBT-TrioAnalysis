@@ -34,6 +34,7 @@
 #include "SChrIdTriplet.h"
 #include "CMendelianDecider.h"
 #include "ENoCallMode.h"
+#include "CViolationRegionOutputGenerator.h"
 #include <thread>
 #include <mutex>
 
@@ -95,6 +96,9 @@ private:
     
     ///Result log for mendelian comparison
     CMendelianResultLog m_resultLog;
+    
+    ///Generates BED file for violation regions together with related statistics
+    CViolationRegionOutputGenerator m_violationRegionGenerator;
     
     //Best Paths written by each thread for each unique chromosome exists [Between father and child]
     std::vector<core::CPath> m_aBestPathsFatherChildGT;

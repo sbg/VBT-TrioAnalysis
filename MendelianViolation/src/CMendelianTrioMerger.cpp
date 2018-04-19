@@ -91,6 +91,11 @@ void CMendelianTrioMerger::SetResultLogPointer(CMendelianResultLog* a_pResultLog
     m_pResultLog = a_pResultLog;
 }
 
+void CMendelianTrioMerger::SetViolationRegionGeneratorPointer(CViolationRegionOutputGenerator* a_pViolationRegionGenerator)
+{
+    m_pViolationRegionGenerator = a_pViolationRegionGenerator;
+}
+
 void CMendelianTrioMerger::SetContigList(const std::vector<SVcfContig>& a_rCommonContigs, int a_nCommonContigCount, int a_nChildVarListSize, int a_nFatherVarListSize, int a_nMotherVarListSize)
 {
     m_contigs = a_rCommonContigs;
@@ -216,6 +221,8 @@ void CMendelianTrioMerger::AddRecords(SChrIdTriplet &a_rTriplet)
     //Write records to the VCF file and fill logs
     WriteRecords(recordList, recordCategoryList, recordDecisionList);
     
+    std::cerr << "Generating Region Based Results..." << std::endl;
+    m_pViolationRegionGenerator->GenerateViolationRegions(a_rTriplet, recordList, recordDecisionList);    
 }
 
 void CMendelianTrioMerger::AddSample(const CVariant* a_pVariant, std::vector<std::string>& a_rAlleles, SPerSampleData& a_rSampleData)

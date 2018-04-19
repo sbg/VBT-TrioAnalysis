@@ -81,6 +81,18 @@ struct SMendelianShortLogEntry
     int m_nINDELviolation;
     std::string m_chrName;
 };
+    
+/**
+ * @brief Stores violation/consistent variant count for SNP and INDEL which is used for short log report (child vars only)
+ *
+ */
+struct SMendelianRegionBasedLogEntry
+{
+    int m_nViolationRegion = 0;
+    int m_nConsistentRegion = 0;
+    int m_nParentNoCallRegion = 0;
+    int m_nChildNoCallRegion = 0;
+};
 
 /**
  * @brief Stores violation and consistent variant counts for each genotype combination
@@ -137,6 +149,9 @@ public:
     
     ///For ALL chromosomes, logs the filtered variant counts for father/mother/child
     void LogFilteredComplexVariantCounts(int a_nChildFiltered, int a_nFatherFiltered, int a_nMotherFiltered);
+    
+    ///For ALL chromosomes, logs the region based values
+    void LogRegionBasedCounts(int a_nConsistentRegionCount, int a_nViolationRegionCount, int a_nNocallParentRegionCount, int a_nNocallChildRegionCount);
     
     ///Write Statistic of parent-child comparison from Best Path Algorithm
     void WriteBestPathStatistics(const std::string& a_rPrefixName);
@@ -196,6 +211,10 @@ private:
     int m_nTotalNonAssessedVarCountFather;
     int m_nTotalNonAssessedVarCountMother;
     int m_nTotalNonAssessedVarCountChild;
+    
+    
+    //Region based numbers [if enabled by user]
+    SMendelianRegionBasedLogEntry m_regionBasedResults;
     
 };
 

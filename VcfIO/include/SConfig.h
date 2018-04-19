@@ -67,7 +67,7 @@ struct SConfig
     bool m_bIsFilterEnabled = true;
     //Filter name (Filter variants according to filter column)
     const char* m_pFilterName = "PASS";
-   
+    
     ///VBT mendelian mode PREFIX
     const char* m_output_prefix = "out";
     
@@ -103,6 +103,9 @@ struct SConfig
     
     ///Enable generating syncpoint files which is the intermediate output of core module
     bool m_bGenerateSyncPoints = false;
+    
+    //Enable generating violation regions as BED file
+    bool m_bGenerateViolationRegions = false;
     
     ///Enable reading whole info format into a structure while parsing VCF file
     bool m_bIsReadINFO = false;

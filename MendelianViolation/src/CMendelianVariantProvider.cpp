@@ -485,7 +485,7 @@ void CMendelianVariantProvider::SetCommonChromosomes()
     std::sort(m_aCommonChromosomes.begin(), m_aCommonChromosomes.end(), [](const SChrIdTriplet& t1, const SChrIdTriplet& t2){ return t1.m_nCid < t2.m_nCid; });
 }
 
-std::vector<SChrIdTriplet>& CMendelianVariantProvider::GetCommonChromosomes()
+const std::vector<SChrIdTriplet>& CMendelianVariantProvider::GetCommonChromosomes() const
 {
     return m_aCommonChromosomes;
 }
@@ -683,6 +683,20 @@ const std::vector<SVcfContig>& CMendelianVariantProvider::GetContigs() const
 {
     return m_ChildVcf.GetContigs();
 }
+
+SVcfContig CMendelianVariantProvider::GetContig(const std::string& a_rChrName) const
+{
+    int contigId = m_ChildVcf.GetContigId(a_rChrName);
+    
+    if(contigId < 0)
+    {
+        std::cerr << "Unknown Chromosome : " << a_rChrName << std::endl;
+        return SVcfContig();
+    }
+    
+    return m_ChildVcf.GetContigs()[contigId];
+}
+
 
 int CMendelianVariantProvider::GetContigCount(EMendelianVcfName a_uFrom)
 {

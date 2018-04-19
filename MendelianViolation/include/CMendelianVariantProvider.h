@@ -71,6 +71,9 @@ public:
     ///Return contig information from header of child vcf
     const std::vector<SVcfContig>& GetContigs() const;
     
+    ///Return the contig object from header of child vcf for given chromosome name
+    SVcfContig GetContig(const std::string& a_rChrName) const;
+    
     ///Return the total contig count of requested vcf
     int GetContigCount(EMendelianVcfName a_uFrom);
     
@@ -87,7 +90,7 @@ public:
                                                                       const std::vector<int>& a_nIndexList) const;
         
     //Return a list of common chromosome id triplets found in all 3 vcf file
-    std::vector<SChrIdTriplet>& GetCommonChromosomes();
+    const std::vector<SChrIdTriplet>& GetCommonChromosomes() const;
 
     //Returns the count of eNOT_ASSESSED variants for all chromosome belong to input VCF sample
     int GetSkippedVariantCount(EMendelianVcfName a_uFrom) const;

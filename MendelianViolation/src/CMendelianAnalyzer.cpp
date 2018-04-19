@@ -36,7 +36,8 @@
 using namespace mendelian;
 
 CMendelianAnalyzer::CMendelianAnalyzer() :
-m_mendelianDecider(m_aBestPathsFatherChildGT, m_aBestPathsFatherChildAM, m_aBestPathsMotherChildGT, m_aBestPathsMotherChildAM, m_provider, m_resultLog)
+m_mendelianDecider(m_aBestPathsFatherChildGT, m_aBestPathsFatherChildAM, m_aBestPathsMotherChildGT, m_aBestPathsMotherChildAM, m_provider, m_resultLog),
+m_violationRegionGenerator(m_aBestPathsFatherChildGT, m_aBestPathsFatherChildAM, m_aBestPathsMotherChildGT, m_aBestPathsMotherChildAM, m_provider, m_resultLog)
 {
     m_noCallMode = ENoCallMode::eExplicitNoCall;
 }
@@ -70,8 +71,14 @@ int CMendelianAnalyzer::run(int argc, char **argv)
     
     //Initialize output writer
     std::string directory = std::string(m_fatherChildConfig.m_pOutputDirectory);
-    std::string trioPath = directory + (directory[directory.length()-1] != '/' ? "/" + std::string(m_fatherChildConfig.m_output_prefix) + "_trio.vcf" : std::string(m_fatherChildConfig.m_output_prefix) + "_trio.vcf");
+    if(directory[directory.length()-1] == '/')
+        directory = directory.substr(0, directory.length()-1);
+    std::string trioPath = directory + "/" + std::string(m_fatherChildConfig.m_output_prefix) + "_trio.vcf";
     
+    if(true == m_fatherChildConfig.m_bGenerateViolationRegions)
+        m_violationRegionGenerator.OpenBedForWrite(directory + "/" + std::string(m_fatherChildConfig.m_output_prefix) + "_ViolationRegions.bed");
+    
+    m_trioWriter.SetViolationRegionGeneratorPointer(&m_violationRegionGenerator);
     m_trioWriter.SetTrioPath(trioPath);
     m_trioWriter.SetNoCallMode(m_noCallMode);
     m_trioWriter.SetResultLogPointer(&m_resultLog);
@@ -130,6 +137,10 @@ int CMendelianAnalyzer::run(int argc, char **argv)
                                                 m_provider.GetNotAssessedVariantCount(eFATHER),
                                                 m_provider.GetNotAssessedVariantCount(eMOTHER));
     
+    //Close the Region Based BED File
+    if(true == m_fatherChildConfig.m_bGenerateViolationRegions)
+        m_violationRegionGenerator.CloseBed();
+    
     //Write results to log file
     m_resultLog.SetLogDirectory(m_fatherChildConfig.m_pOutputDirectory);
     m_resultLog.WriteBestPathStatistics(m_fatherChildConfig.m_output_prefix);
@@ -166,6 +177,8 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
     const char* PARAM_THREAD_COUNT = "-thread-count";
     const char* PARAM_NO_CALL = "-no-call";
     const char* PARAM_PRINT_INFO = "-output-info-tags";
+    
+    const char* PARAM_OUTPUT_RANGES = "--output-violation-regions";
     
     const char* PARAM_OUTPUT_PREFIX = "-out-prefix";
     
@@ -286,6 +299,13 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
             m_fatherChildConfig.m_output_prefix = argv[it+1];
         }
         
+        else if(0 == strcmp(argv[it], PARAM_OUTPUT_RANGES))
+        {
+            m_motherChildConfig.m_bGenerateViolationRegions = true;
+            m_fatherChildConfig.m_bGenerateViolationRegions = true;
+            it--;
+        }
+        
         else if(0 == strcmp(argv[it], PARAM_PRINT_INFO))
         {
             m_motherChildConfig.m_bIsReadINFO = true;
@@ -348,6 +368,11 @@ bool CMendelianAnalyzer::ReadParameters(int argc, char **argv)
     {
         bIsVcfFilesAccesible = false;
         std::cerr << "One of vcf file paths is wrong" << std::endl;
+    }
+    else if(!CUtils::IsDirectoryExists(m_motherChildConfig.m_pOutputDirectory))
+    {
+        bIsVcfFilesAccesible = false;
+        std::cerr << "Output directory does not exist. (Please create the directory given as -outDir parameter)" << std::endl;
     }
     
     return bFatherSet && bMotherSet && bChildSet && bReferenceSet && bOutputDirSet && bIsVcfFilesAccesible;
@@ -561,7 +586,8 @@ void CMendelianAnalyzer::PrintHelp() const
     std::cout << "-outDir <output_directory>   [Required.Add output directory]" << std::endl;
     std::cout << "-pedigree <pedigree_path>    [Optional.If a family trio is provided as input in -father, -mother and -child parameters, then samples can be identified using given pedigree file.]" << std::endl;
     std::cout << "-out-prefix <prefix>         [Optional.Specifies the prefixes of generated output files. Default value is out]" << std::endl;
-    std::cout << "-output-info-tags tag1,tag2  [Optional.Selection of INFO columns in generated output trio VCF. Tags should be given as comma separated without whitespace." << std::endl;
+    std::cout << "-output-info-tags tag1,tag2  [Optional.Selection of INFO columns in generated output trio VCF. Tags should be given as comma separated without whitespace.]" << std::endl;
+    std::cout << "--output-violation-regions   [Optional.If enabled, produces a BED file that contains all Mendelian violation Regions.]" << std::endl;
     std::cout << "-pedigree <PED_file_path>    [Optional.Indentifies parent-child indexes from given PED file" << std::endl;
     std::cout << "-no-call <no_call_mode>      [Optional. Decides what to do with no call variants. There are 2 modes:" << std::endl;
     std::cout << "\t" << "explicit : [Default Value] mark variants with ./. genotype as NoCall. All other unknown sites will be treated as 0/0" << std::endl;

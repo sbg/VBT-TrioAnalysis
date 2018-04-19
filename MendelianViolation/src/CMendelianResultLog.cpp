@@ -313,8 +313,30 @@ void CMendelianResultLog::WriteDetailedReportTable(const std::string& a_rPrefixN
         outputLog << "Note: Please try to increase memory-related parameters for getting less skipped variants" << std::endl;
     outputLog << std::endl << std::endl;
     
-    outputLog << "+" << std::left << std::setw(91) << std::setfill('-') << "-" << "+" << std::endl;
     
+    int TotalCounts[4] = {0, 0 ,0, 0};
+    
+    for(int k = 0; k < 4 ; k++)
+    {
+        TotalCounts[k] = m_DetailedLogEntries.m_nSNP[k];
+        TotalCounts[k] += m_DetailedLogEntries.m_nInsertSmall[k] + m_DetailedLogEntries.m_nInsertMedium[k] + m_DetailedLogEntries.m_nInsertLarge[k];
+        TotalCounts[k] += m_DetailedLogEntries.m_nDeleteSmall[k] + m_DetailedLogEntries.m_nDeleteMedium[k] + m_DetailedLogEntries.m_nDeleteLarge[k];
+        TotalCounts[k] += m_DetailedLogEntries.m_nComplexSmall[k] + m_DetailedLogEntries.m_nComplexMedium[k] + m_DetailedLogEntries.m_nComplexLarge[k];
+    }
+    
+    outputLog << "=============Region Based Results=============" << std::endl << std::endl;
+    outputLog << "Consistent Region : " << m_regionBasedResults.m_nConsistentRegion << std::endl;
+    outputLog << "Violation  Region : " << m_regionBasedResults.m_nViolationRegion << std::endl;
+    outputLog << "No call    Region : " << m_regionBasedResults.m_nChildNoCallRegion + m_regionBasedResults.m_nParentNoCallRegion << std::endl;
+    outputLog << "Violation Rate :" << (double)m_regionBasedResults.m_nViolationRegion /
+                                    (double)(m_regionBasedResults.m_nViolationRegion + m_regionBasedResults.m_nConsistentRegion + m_regionBasedResults.m_nParentNoCallRegion + m_regionBasedResults.m_nChildNoCallRegion);
+    outputLog << std::endl << std::endl << std::endl;
+    
+    outputLog << "=============Variant Based Results=============" << std::endl << std::endl;
+    double violationRate = (double)TotalCounts[1] / (double)(TotalCounts[0] + TotalCounts[1] + TotalCounts[2] + TotalCounts[3]);
+    outputLog << "Violation Rate: " << violationRate << std::endl << std::endl;
+    
+    outputLog << "+" << std::left << std::setw(91) << std::setfill('-') << "-" << "+" << std::endl;
     outputLog << "|" << std::left << std::setw(20) << std::setfill(separator) << " VARIANT TYPES" << "|";
     outputLog << std::left << std::setw(19) << std::setfill(separator) << " COMPLIANT NO"  << "|" ;
     outputLog << std::left << std::setw(16) << std::setfill(separator) << " VIOLATION NO"  << "|";
@@ -336,11 +358,11 @@ void CMendelianResultLog::WriteDetailedReportTable(const std::string& a_rPrefixN
     
     outputLog << "+" << std::left << std::setw(91) << std::setfill('-') << "-" << "+" << std::endl;
     
-    outputLog << std::endl;
+    outputLog << std::endl << std::endl;
     outputLog << "Description of Columns for tables below:  There are 28 genotype columns for each category which are 3x3x3 genotype possibilities + 1 for multi-allelic site." << std::endl;
     outputLog << "Table is oriented as CHILD FATHER MOTHER the column calculation is 9 x sum(mother gt) + 3 x sum(father gt) + sum(child gt). The last column is the multi-allelic site." << std::endl;
     
-    outputLog << std::endl << std::endl << std:: endl;
+    outputLog << std::endl << std:: endl;
     
     outputLog << "+--------------------";
     for(int k = 0; k < 28; k++)
@@ -519,3 +541,14 @@ void CMendelianResultLog::LogFilteredComplexVariantCounts(int a_nChildFiltered, 
     m_nTotalNonAssessedVarCountFather = a_nFatherFiltered;
     m_nTotalNonAssessedVarCountMother = a_nMotherFiltered;
 }
+
+void CMendelianResultLog::LogRegionBasedCounts(int a_nConsistentRegionCount, int a_nViolationRegionCount, int a_nNocallParentRegionCount, int a_nNocallChildRegionCount)
+{
+    m_regionBasedResults.m_nConsistentRegion += a_nConsistentRegionCount;
+    m_regionBasedResults.m_nViolationRegion += a_nViolationRegionCount;
+    m_regionBasedResults.m_nParentNoCallRegion += a_nNocallParentRegionCount;
+    m_regionBasedResults.m_nChildNoCallRegion += a_nNocallChildRegionCount;
+}
+
+
+

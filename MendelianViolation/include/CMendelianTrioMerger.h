@@ -36,6 +36,7 @@
 #include "ENoCallMode.h"
 #include "CMendelianResultLog.h"
 #include "SChrIdTriplet.h"
+#include "CViolationRegionOutputGenerator.h"
 
 namespace mendelian
 {
@@ -72,6 +73,8 @@ public:
     
     ///Set the access of result log from mendelian vcf analyzer to for detailed logs
     void SetResultLogPointer(CMendelianResultLog* a_pResultLog);
+    
+    void SetViolationRegionGeneratorPointer(CViolationRegionOutputGenerator* a_pViolationRegionGenerator);
     
     ///Set the filename of child to access INFOs. If this function is called, then all info columns will be copied to the generated trio records
     void SetInfoReadParameters(const std::string& a_rChildInputPath,
@@ -165,6 +168,8 @@ private:
     SMendelianDetailedLogGenotypes m_logGenotypes;
     
     CMendelianResultLog* m_pResultLog;
+    
+    CViolationRegionOutputGenerator* m_pViolationRegionGenerator;
 };
 
 }
