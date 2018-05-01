@@ -462,9 +462,9 @@ void CMendelianVariantProvider::SetCommonChromosomes()
                 if(childItr->first == motherItr->first && childItr->first == fatherItr->first)
                 {
                     if(m_aChildVariantList[childItr->second].size() > LEAST_VARIANT_THRESHOLD
-                       &&
+                       ||
                        m_aFatherVariantList[fatherItr->second].size() > LEAST_VARIANT_THRESHOLD
-                       &&
+                       ||
                        m_aMotherVariantList[motherItr->second].size() > LEAST_VARIANT_THRESHOLD)
                     {
                         if(m_motherChildConfig.m_bAutosomeOnly && !IsAutosome(motherItr->first))
