@@ -56,6 +56,10 @@ public:
     //Reads next chromosome from given trio
     bool ReadNextChromosome(std::string& a_rChrName);
     
+    //Gets a pointer to the requested variant list
+    const std::vector<CVariant>& GetVariants(EVcfName a_vcfName);
+    
+    
     //Get the variants according to given interval
     void GetVariants(const vbtvalidator::SInterval& a_rInterval,
                 std::vector<const CVariant*>& a_rMotherVars,
@@ -63,6 +67,14 @@ public:
                 std::vector<const CVariant*>& a_rChildVars,
                 bool& a_rIsViolationOverlapConsistent,
                 int& a_rTotalViolationCount);
+    
+    //Get the variants according to given interval
+    void GetVariantsAll(const vbtvalidator::SInterval& a_rInterval,
+                     std::vector<const CVariant*>& a_rMotherVars,
+                     std::vector<const CVariant*>& a_rFatherVars,
+                     std::vector<const CVariant*>& a_rChildVars,
+                     int& a_rTotalViolationCount);
+    
 
     //Returns all the intervals to a_rViolationInterval that at least 1 violation variant exist
     void GetViolationIntervals(const std::vector<vbtvalidator::SInterval>& a_rIntervalList, std::vector<vbtvalidator::SInterval>& a_rViolationInterval);

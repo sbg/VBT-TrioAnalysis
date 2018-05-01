@@ -64,6 +64,10 @@ class CIntervalValidator
 {
     
 public:
+    
+    //For given interval test whether Mendelian decisions are correct or wrong
+    EIntervalDecision IntervalTestMV_RegionBased(const std::string& a_rChrName, const SInterval& a_rInterval, int& hasViolation) const;
+    
     //For given interval test whether Mendelian decisions are correct or wrong
     EIntervalDecision IntervalTestMV(const std::string& a_rChrName, const SInterval& a_rInterval, int& a_rViolationCount) const;
     

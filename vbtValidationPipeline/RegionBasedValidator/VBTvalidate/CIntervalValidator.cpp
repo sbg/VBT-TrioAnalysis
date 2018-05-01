@@ -66,6 +66,102 @@ void CIntervalValidator::GeneratePhases(std::deque<SPhase>& a_rPhaseVector, std:
         }
     }
 }
+
+EIntervalDecision CIntervalValidator::IntervalTestMV_RegionBased(const std::string& a_rChrName, const SInterval& a_rInterval, int& hasViolation) const
+{
+    //Containers to store variants in given interval
+    std::vector<const CVariant*> childVars;
+    std::vector<const CVariant*> motherVars;
+    std::vector<const CVariant*> fatherVars;
+    
+    //Containers to store phasing combinations of variants in given interval
+    std::deque<SPhase> childSubPhases;
+    std::deque<SPhase> motherSubPhases;
+    std::deque<SPhase> fatherSubPhases;
+    
+    
+    //Fill mother, father and child variants reside in given interval (will get consistent variants only)
+    m_pVariantProvider->GetVariantsAll(a_rInterval, motherVars, fatherVars, childVars, hasViolation);
+    
+    
+    //If there are more than 15 variants in a region, we mark the region as complex and do not process it
+    if(motherVars.size() + fatherVars.size() + childVars.size() > 15)
+        return eInterval_Complex;
+    
+    //If there is no consistent variant in region, we mark it as consistent without processing
+    if(motherVars.size() + fatherVars.size() + childVars.size() == 0)
+        return eInterval_CorrectlyAssessed;
+    
+    //Some variants overlaps with the sync point to prevent errors, we added 100 base pair to both sides
+    SInterval interval;
+    interval.m_nStart = a_rInterval.m_nStart - 100;
+    interval.m_nEnd = a_rInterval.m_nEnd + 100;
+    
+    //Clip the substring from FASTA referance
+    std::string intervalString = m_pFastaReader->GetSubSequence(*m_pContig, interval.m_nStart, interval.m_nEnd);
+    
+    //Get All possible phasing list for Child variants
+    GeneratePhases(childSubPhases, childVars);
+    GeneratePhases(motherSubPhases, motherVars);
+    GeneratePhases(fatherSubPhases, fatherVars);
+    
+    //List of sequences after variants are applied to the clipped reference in all possible combinations
+    std::deque<SSequence> childSequences;
+    std::deque<SSequence> motherSequences;
+    std::deque<SSequence> fatherSequences;
+    
+    //Create all replayed sequence given child phase list
+    for(int k = 0; k < childSubPhases.size(); k++)
+    {
+        SSequence seq = ApplyPhasing(childSubPhases[k], interval, intervalString, childVars);
+        if(seq.m_haplotypeA != "NONE")
+            childSequences.push_back(seq);
+    }
+    
+    //Create all replayed sequence given mother phase list
+    for(int k = 0; k < motherSubPhases.size(); k++)
+    {
+        SSequence seq = ApplyPhasing(motherSubPhases[k], interval, intervalString, motherVars);
+        if(seq.m_haplotypeA != "NONE")
+            motherSequences.push_back(seq);
+    }
+    
+    //Create all replayed sequence given father phase list
+    for(int k = 0; k < fatherSubPhases.size(); k++)
+    {
+        SSequence seq = ApplyPhasing(fatherSubPhases[k], interval, intervalString, fatherVars);
+        if(seq.m_haplotypeA != "NONE")
+            fatherSequences.push_back(seq);
+    }
+    
+    //Compare all generated sequences and check if there is a child sequence that matches to both mother and father
+    for(int c = 0; c < childSequences.size(); c++)
+    {
+        for(int m = 0; m < motherSequences.size(); m++)
+        {
+            for(int f = 0; f < fatherSequences.size(); f++)
+            {
+                if(childSequences[c].m_haplotypeA == motherSequences[m].m_haplotypeA
+                   &&
+                   childSequences[c].m_haplotypeB == fatherSequences[f].m_haplotypeA)
+                {
+                    //A consistent combination found!
+                    if(hasViolation > 0)
+                        return eInterval_WrongAssessed;
+                    else
+                        return eInterval_CorrectlyAssessed;
+                }
+            }
+        }
+    }
+    
+    //No consistent combination found!
+    if(hasViolation > 0)
+        return eInterval_CorrectlyAssessed;
+    else
+        return eInterval_WrongAssessed;
+}
+
 EIntervalDecision CIntervalValidator::IntervalTestMV(const std::string& a_rChrName, const SInterval& a_rInterval, int& a_rViolationCount) const
 {
     //Containers to store variants in given interval

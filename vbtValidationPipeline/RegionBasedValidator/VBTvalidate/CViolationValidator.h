@@ -42,7 +42,11 @@ public:
 private:
 
     //Do the main process
-    void ValidateRegions();
+    void ValidateRegionsVariantBased();
+    
+    void ValidateRegionsRegionBased();
+    
+    void GenerateViolationIntervals(const std::string& a_rContigName, std::vector<SInterval>& ViolationIntervals);
     
     //Takes vcf names as input and outputs total region counts per length
     void CalculatePerRegionVariantCounts(std::string a_rTrioPath);
@@ -56,10 +60,16 @@ private:
     
     //Read the interval files and merge them
     void SetIntervalFiles(const std::string& a_rMotherChildIntervalsPath, const std::string& a_rFatherChildIntervalsPath);
-    void MergeIntervals(const std::string& a_rMotherChildIntervalsPath, const std::string& a_rFatherChildIntervalsPath);
+    void MergeIntervals(const std::string& contig);
+    
+    void ReadIntervals(const std::string& a_rMotherChildIntervalsPath, const std::string& a_rFatherChildIntervalsPath);
     
     //Merged Interval List Map
     std::unordered_map<std::string, std::vector<SInterval>> m_intervalsListMap;
+    
+    std::unordered_map<std::string, std::vector<int>> m_motherChildSyncPoints;
+    std::unordered_map<std::string, std::vector<int>> m_fatherChildSyncPoints;
+    
     
     //Classes for VBT
     CVariantProvider m_vbtVariantProvider;

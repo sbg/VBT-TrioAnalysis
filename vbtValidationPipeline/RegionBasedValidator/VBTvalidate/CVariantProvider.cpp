@@ -439,6 +439,73 @@ bool CVariantProvider::IsHomRef(const CVariant& a_rVariant) const
 }
 
 
+//Get the variants according to given interval
+void CVariantProvider::GetVariantsAll(const vbtvalidator::SInterval& a_rInterval,
+                                      std::vector<const CVariant*>& a_rMotherVars,
+                                      std::vector<const CVariant*>& a_rFatherVars,
+                                      std::vector<const CVariant*>& a_rChildVars,
+                                      int& a_rTotalViolationCount)
+{
+    std::vector<EVcfName> violationSamples;
+    
+    //Skip irrelevant variants
+    while(m_nMotherItr < m_aMotherVariants.size() && m_aMotherVariants[m_nMotherItr].m_nEndPos < a_rInterval.m_nStart)
+        m_nMotherItr++;
+    while(m_nFatherItr < m_aFatherVariants.size() && m_aFatherVariants[m_nFatherItr].m_nEndPos < a_rInterval.m_nStart)
+        m_nFatherItr++;
+    while(m_nChildItr < m_aChildVariants.size() && m_aChildVariants[m_nChildItr].m_nEndPos < a_rInterval.m_nStart)
+        m_nChildItr++;
+    
+    //Temporary iterators to not lose starting indexes
+    int tmpFatherItr = m_nFatherItr;
+    int tmpMotherItr = m_nMotherItr;
+    int tmpChildItr = m_nChildItr;
+    
+    
+    //Push all consistent variants in given interval
+    while(tmpMotherItr < m_aMotherVariants.size() && m_aMotherVariants[tmpMotherItr].m_nStartPos < a_rInterval.m_nEnd)
+    {
+        if(true == isOverlap(a_rInterval.m_nStart, a_rInterval.m_nEnd, m_aMotherVariants[tmpMotherItr].m_nStartPos, m_aMotherVariants[tmpMotherItr].m_nEndPos))
+        {
+            if(m_aMotherVariants[tmpMotherItr].m_mendelianDecision == eVIOLATION)
+                a_rTotalViolationCount++;
+            
+            a_rMotherVars.push_back(&m_aMotherVariants[tmpMotherItr]);
+        }
+        
+        tmpMotherItr++;
+    }
+    
+    //Push all consistent variants in given interval
+    while(tmpFatherItr < m_aFatherVariants.size() && m_aFatherVariants[tmpFatherItr].m_nStartPos < a_rInterval.m_nEnd)
+    {
+        if(true == isOverlap(a_rInterval.m_nStart, a_rInterval.m_nEnd, m_aFatherVariants[tmpFatherItr].m_nStartPos, m_aFatherVariants[tmpFatherItr].m_nEndPos))
+        {
+            if(m_aFatherVariants[tmpFatherItr].m_mendelianDecision == eVIOLATION)
+                a_rTotalViolationCount++;
+            
+            a_rFatherVars.push_back(&m_aFatherVariants[tmpFatherItr]);
+        }
+        
+        tmpFatherItr++;
+    }
+    
+    //Push all consistent variants in given interval
+    while(tmpChildItr < m_aChildVariants.size() && m_aChildVariants[tmpChildItr].m_nStartPos < a_rInterval.m_nEnd)
+    {
+        if(true == isOverlap(a_rInterval.m_nStart, a_rInterval.m_nEnd, m_aChildVariants[tmpChildItr].m_nStartPos, m_aChildVariants[tmpChildItr].m_nEndPos))
+        {
+            if(m_aChildVariants[tmpChildItr].m_mendelianDecision == eVIOLATION)
+                a_rTotalViolationCount++;
+            
+            a_rChildVars.push_back(&m_aChildVariants[tmpChildItr]);
+        }
+
+        tmpChildItr++;
+    }
+
+}
+
 void CVariantProvider::GetVariants(const SInterval& a_rInterval,
                                    std::vector<const CVariant*>& a_rMotherVars,
                                    std::vector<const CVariant*>& a_rFatherVars,
@@ -653,6 +720,16 @@ void CVariantProvider::GetViolationIntervals(const std::vector<SInterval>& a_rIn
             childItr++;
         }
     }
+}
+
+const std::vector<CVariant>& CVariantProvider::GetVariants(EVcfName a_vcfName)
+{
+    if(a_vcfName == eMOTHER)
+        return m_aMotherVariants;
+    else if(a_vcfName == eFATHER)
+        return m_aFatherVariants;
+    else
+        return m_aChildVariants;
 }
 
 
