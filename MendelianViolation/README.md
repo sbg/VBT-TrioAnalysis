@@ -58,6 +58,10 @@ A **required** parameter which specifies the output directory for program/error 
 
 An **optional** parameter which specifies the prefixes of generatet output file names. Default prefix is 'out'.
 
+### --output-violation-regions
+
+An **optional** output mode intended as an intermediate result for de Novo mutation callers. Outputs all violation regions as a BED file for further processing.
+
 ### -pedigree PED_file_path
 
 

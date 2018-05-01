@@ -1,6 +1,6 @@
 # VBT Changelog
 
-### Version v1.1 :Changelog
+### Version v1.1 :
     - Least variant threshold for comparison is decreased to 1 non-ref variant (previously it was requiring 2 variants per sample)
     - Bug fix for consolidating final Mendelian decision of variants that overlaps with a violation variant
     - Region based Mendelian decision assesment is added
