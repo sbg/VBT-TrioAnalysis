@@ -85,6 +85,7 @@ This sample execution will produce:
 	3. ceu_21_sample_DetailedLogs.txt              //Detailed human-readable logs of trio concordance analysis
 	4. ceu_21_sample_tab_delim_detailed_log.tsv    //Tab delimited version of detailed logs
 	5. ceu_21_sample_trio.vcf                      //Merged output trio (Mendelian decisions are annotated for each record)
+	6. ceu_21_sample_ViolationRegions.bed          //Violation regions in BED format (dedicated for de novo mutation analysis)
 	
 
 ## VBT Result Validation (mendelian):
